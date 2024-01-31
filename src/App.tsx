@@ -1,45 +1,38 @@
 import { useState } from 'react'
-import logo from './logo.svg'
 import './App.scss'
+import FasadContainer from './components/FasadContainer'
+import Fasad from './classes/Fasad'
+import FasadState from './classes/FasadState'
+import { Division, FasadMaterial } from './types/enums'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [rootFasadState, setCount] = useState(getInitialState())
+  const fasad = new Fasad()
+  fasad.setState(rootFasadState)
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Doc
-          </a>
-        </p>
-      </header>
+      <FasadContainer rootFasad={fasad} />
     </div>
   )
 }
 
 export default App
+
+function getFasadState(width: number, height: number, division: Division, material: FasadMaterial) {
+  const state = new FasadState()
+  state.height = height
+  state.width = width
+  state.division = division
+  state.material = material
+
+  return state
+}
+function getInitialState() {
+  const root = getFasadState(1179, 2243, Division.WIDTH, FasadMaterial.DSP)
+  let children = [getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.DSP), getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.MIRROR), getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.DSP)]
+  root.children = children
+  children = [getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.FMP), getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.MIRROR), getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.SAND)]
+  root.children[1].children = children
+  return root
+}

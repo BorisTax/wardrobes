@@ -21,11 +21,11 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: rgb(255, 0, 119);
 }
 
 .App-link {
-  color: #61dafb;
+  color: #15ff00;
 }
 
 @keyframes App-logo-spin {
@@ -39,4 +39,10 @@
 
 button {
   font-size: calc(10px + 2vmin);
+}
+
+.fasad-container{
+  margin-left: auto;
+  margin-right: auto;
+  border: "2px solid black";
 }

@@ -1,0 +1,20 @@
+export enum Direction{
+    HORIZONTAL = 'HORIZONTAL',
+    VERTICAL = 'VERTICAL'
+}
+export enum Division{
+    HEIGHT,
+    WIDTH
+}
+export enum FasadMaterial{
+    DSP = 'DSP',
+    MIRROR = 'MIRROR',
+    LACOBEL = 'LACOBEL',
+    LACOBELGLASS = 'LACOBELGLASS',
+    FMP = 'FMP',
+    SAND = 'SAND'
+}
+export enum SandBase{
+    MIRROR = 'MIRROR',
+    SAND = 'SAND'
+}

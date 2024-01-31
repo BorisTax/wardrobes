@@ -17,16 +17,33 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         [FasadMaterial.SAND]: "#15ff00"
     }
     const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} />) : ""
+    let gridTemplate: {
+      gridTemplateColumns: string;
+      gridTemplateRows: string;
+    } = {gridTemplateRows: "1fr" , gridTemplateColumns: "1fr" };
+    if (fasad.Children.length > 1) {
+        const divHeight = fasad.Division === Division.HEIGHT
+        const total = divHeight?fasad.Height:fasad.Width
+        const template = fasad.Children.map((f:Fasad)=>`${(divHeight?f.Height/total:f.Width/total).toFixed(3)}fr`).join(" ") 
+        gridTemplate = divHeight?  {gridTemplateRows: template, gridTemplateColumns:"1fr"}:{gridTemplateRows: "1fr",gridTemplateColumns: template}
+    }
     const ratio = `${fasad.Width}/${fasad.Height}`
-    const dims = fasad.Parent === null ? {aspectRatio: ratio, width: "auto", height: "100svh"} : {width:"100%", height:"100%"}
+    let styles: ExtStyles = fasad.Parent === null ? {aspectRatio: ratio, width: "auto", height: "100svh"} : {}
+    if (fasad.Children.length===0) styles={...styles,  backgroundColor: colors[fasad.Material]}
     return <div style={{
-        ...dims,
-        display: "flex",
-        flexDirection: direction,
-        justifyContent: "stretch",
-        backgroundColor: colors[fasad.Material],
-        border: "1px solid black"
+        ...styles,
+        display: "grid",
+        ...gridTemplate,
+        gap: "1px",
+        
     }}>
         {contents}
     </div>
+}
+
+type ExtStyles={
+    aspectRatio?: string
+    width?: string
+    height?: string
+    backgroundColor?: string
 }

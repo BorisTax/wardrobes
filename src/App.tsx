@@ -29,8 +29,8 @@ function getFasadState(width: number, height: number, division: Division, materi
   return state
 }
 function getInitialState() {
-  const root = getFasadState(1179, 2243, Division.WIDTH, FasadMaterial.DSP)
-  let children = [getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.DSP), getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.MIRROR), getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.DSP)]
+  const root = getFasadState(1179, 2243, Division.HEIGHT, FasadMaterial.DSP)
+  let children = [getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.DSP), getFasadState(1179, 747, Division.WIDTH, FasadMaterial.MIRROR), getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.DSP)]
   root.children = children
   children = [getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.FMP), getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.MIRROR), getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.SAND)]
   root.children[1].children = children

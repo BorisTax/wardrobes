@@ -18,12 +18,12 @@ export default class Fasad {
     private fixedWidth: boolean = false
     private fixedHeight: boolean = false
     public Parent: Fasad | null = null
-    private minSize: number = 0
+    private minSize: number
     private backup: FasadBackup = {}
     constructor(props: FasadProps = {}) {
         this.width = props?.width || 0
         this.height = props?.height || 0
-        this.minSize = props?.minSize || 0
+        this.minSize = props?.minSize || 100
         this.material = props?.material || FasadMaterial.DSP
         this.extMaterial = props?.extMaterial || ""
         this.sandBase = props?.sandBase || SandBase.MIRROR
@@ -220,7 +220,7 @@ export default class Fasad {
                     totalFixedWidth = totalFixedWidth + profile
                 }
             }
-            if (totalFreeCount = 0) return false
+            if (totalFreeCount === 0) return false
             totalFreeWidth = this.width - totalFixedWidth
             partFreeWidth = +((totalFreeWidth / totalFreeCount).toFixed(1))
             partLastWidth = totalFreeWidth - partFreeWidth * (totalFreeCount - 1)
@@ -268,7 +268,7 @@ export default class Fasad {
                     totalFixedHeight = totalFixedHeight + profile
                 }
             }
-            if (totalFreeCount = 0) return false
+            if (totalFreeCount === 0) return false
             totalFreeHeight = this.height - totalFixedHeight
             partFreeHeight = +((totalFreeHeight / totalFreeCount).toFixed(1))
             partLastHeight = totalFreeHeight - partFreeHeight * (totalFreeCount - 1)

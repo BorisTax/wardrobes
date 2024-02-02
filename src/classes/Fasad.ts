@@ -27,7 +27,7 @@ export default class Fasad {
         this.material = props?.material || FasadMaterial.DSP
         this.extMaterial = props?.extMaterial || ""
         this.sandBase = props?.sandBase || SandBase.MIRROR
-        this.backup.hasBackup = false 
+        this.backup.hasBackup = false
         this.Children = []
     }
     public getState(): FasadState {
@@ -97,16 +97,18 @@ export default class Fasad {
     public set Height(value: number) {
         this.height = value
     }
-    public set FixWidth(value: boolean) {
+    public fixWidth(value: boolean, withSiblings: boolean = true) {
         this.fixedWidth = value
+        if (withSiblings && value && (this.Parent?.Division === Division.HEIGHT)) for (let c of this.Parent.Children) if (c !== this) c.fixWidth(value, false)
     }
-    public get FixWidth() {
+    public FixedWidth() {
         return this.fixedWidth
     }
-    public set FixHeight(value: boolean) {
+    public fixHeight(value: boolean, withSiblings: boolean = true) {
         this.fixedHeight = value
+        if (withSiblings && value && (this.Parent?.Division === Division.WIDTH)) for (let c of this.Parent.Children) if (c !== this) c.fixHeight(value, false)
     }
-    public get FixHeight() {
+    public FixedHeight() {
         return this.fixedHeight
     }
     public get cutWidth() {
@@ -162,7 +164,7 @@ export default class Fasad {
         if (this.Children.length > 1) this.Material = this.Children[0].Material
         const partHeight = +((this.Height - profileTotal) / count).toFixed(1)
         if (partHeight < this.minSize) return false
-        const partLast = this.height - partHeight * (count - 1) - profileTotal
+        const partLast = +(this.height - partHeight * (count - 1) - profileTotal).toFixed(1)
         this.Children = []
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
@@ -183,7 +185,7 @@ export default class Fasad {
         if (this.Children.length > 1) this.Material = this.Children[0].Material
         const partWidth = +((this.width - profileTotal) / count).toFixed(1)
         if (partWidth < this.minSize) return false
-        const partLast = this.width - partWidth * (count - 1) - profileTotal
+        const partLast = +(this.width - partWidth * (count - 1) - profileTotal).toFixed(1)
         this.Children = []
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
@@ -223,7 +225,7 @@ export default class Fasad {
             if (totalFreeCount === 0) return false
             totalFreeWidth = this.width - totalFixedWidth
             partFreeWidth = +((totalFreeWidth / totalFreeCount).toFixed(1))
-            partLastWidth = totalFreeWidth - partFreeWidth * (totalFreeCount - 1)
+            partLastWidth = +(totalFreeWidth - partFreeWidth * (totalFreeCount - 1)).toFixed(1)
             if (partFreeWidth < this.minSize || partLastWidth < this.minSize) return false
         }
         let part = 0
@@ -271,7 +273,7 @@ export default class Fasad {
             if (totalFreeCount === 0) return false
             totalFreeHeight = this.height - totalFixedHeight
             partFreeHeight = +((totalFreeHeight / totalFreeCount).toFixed(1))
-            partLastHeight = totalFreeHeight - partFreeHeight * (totalFreeCount - 1)
+            partLastHeight = +(totalFreeHeight - partFreeHeight * (totalFreeCount - 1)).toFixed(1)
             if (partFreeHeight < this.minSize || partLastHeight < this.minSize) return false
         }
         let part = 0
@@ -296,10 +298,7 @@ export default class Fasad {
 
     public trySetWidth(width: number): boolean {
         if (width < this.minSize) return false
-        if (this.Parent === null) {
-            this.width = width
-            return true
-        }
+        if (this.Parent === null) return false
         if (this.Parent.Division === Division.HEIGHT) {
             return this.Parent.trySetWidth(width)
         }
@@ -309,10 +308,7 @@ export default class Fasad {
 
     public trySetHeight(height: number): boolean {
         if (height < this.minSize) return false
-        if (this.Parent === null) {
-            this.height = height
-            return true
-        }
+        if (this.Parent === null) return false
         if (this.Parent.Division === Division.WIDTH) {
             return this.Parent.trySetHeight(height)
         }

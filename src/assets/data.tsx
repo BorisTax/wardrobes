@@ -8,11 +8,10 @@ export const colors = {
     [FasadMaterial.LACOBELGLASS]: "#fffb00",
     [FasadMaterial.SAND]: "#15ff00"
 }
-export const Materials = [
-    FasadMaterial.DSP,
-    FasadMaterial.MIRROR,
-    FasadMaterial.LACOBEL,
-    FasadMaterial.LACOBELGLASS,
-    FasadMaterial.FMP,
-    FasadMaterial.SAND
-]
+export const Materials: Map<string, string> = new Map()
+Materials.set("ДСП", FasadMaterial.DSP)
+Materials.set("ЗЕРКАЛО", FasadMaterial.MIRROR)
+Materials.set("ЛАКОБЕЛЬ", FasadMaterial.LACOBEL)
+Materials.set("ЛАКОБЕЛЬ(СТЕКЛО)", FasadMaterial.LACOBELGLASS)
+Materials.set("ФМП", FasadMaterial.FMP)
+Materials.set("ПЕСКОСТРУЙ", FasadMaterial.SAND)

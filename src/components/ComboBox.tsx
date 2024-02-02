@@ -1,8 +1,8 @@
 import React, { MouseEventHandler } from 'react';
 
 export type ComboBoxProps = {
-    onChange?: (index: number, value: string) => void
-    items: string[]
+    onChange?: (index: number, key: string, value: string) => void
+    items: string[] | Map<string, string>
     value: string
     title: string
     disabled: boolean
@@ -10,24 +10,30 @@ export type ComboBoxProps = {
 }
 
 export default function ComboBox(props: ComboBoxProps = { value: "", items: [], disabled: false, title: "", size: 1 }) {
-    const options = props.items?.map((i, index) =>
+    const items: string[] = props.items instanceof Map ? [...props.items.keys()] : props.items
+    let value = props.value
+    if (props.items instanceof Map) {
+        const key = [...props.items].find(i => i[1] === props.value)
+        if (key) value = key[0]
+    }
+    const options = items?.map((i, index) =>
         <option
             key={index}
-            //selected={props.value === i ? true : false}
         >
             {i}
         </option>
     )
     return (
         <>
-            {props.title ? <span style={{ whiteSpace: "nowrap" }}>{props.title}</span> : <></>}
+            {props.title ? <span className="text-end" style={{ whiteSpace: "nowrap" }}>{props.title}</span> : <></>}
             <select size={!props.size ? 1 : props.size}
-                value={props.value}
+                value={value}
                 disabled={props.disabled}
                 onClick={(e) => { e.stopPropagation() }}
                 onChange={(e) => {
-                    const index = props.items?.findIndex(i => i === e.target.value) || 0
-                    if (props.onChange) props.onChange(index, e.target.value)
+                    const index = items.findIndex(i => i === e.target.value) || 0
+                    const key = (props.items instanceof Map && (props.items as Map<string, string>).get(e.target.value)) || ""
+                    if (props.onChange) props.onChange(index, key, e.target.value)
                 }}>
                 {options}
             </select >

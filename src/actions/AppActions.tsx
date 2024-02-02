@@ -1,8 +1,11 @@
 import Fasad from "../classes/Fasad"
 export const DIVIDE_FASAD = "DIVIDE_FASAD"
 export const SET_ACTIVE_FASAD = "SET_ACTIVE_FASAD"
-export const SET_MATERIAL = "SET_MATERIAL"
+export const SET_FIXED_HEIGHT = "SET_FIXED_HEIGHT"
+export const SET_FIXED_WIDTH = "SET_FIXED_WIDTH"
 export const SET_HEIGHT = "SET_HEIGHT"
+export const SET_MATERIAL = "SET_MATERIAL"
+export const SET_PROFILE_DIRECTION = "SET_PROFILE_DIRECTION"
 export const SET_WIDTH = "SET_WIDTH"
 export function divideFasad(count: number) {
     return {
@@ -16,16 +19,34 @@ export function setActiveFasad(fasad: Fasad | null) {
         payload: fasad
     }
 }
-export function setMaterial(material: string) {
+export function setFixedHeight(fixed: boolean) {
     return {
-        type: SET_MATERIAL,
-        payload: material
+        type: SET_FIXED_HEIGHT,
+        payload: fixed
+    }
+}
+export function setFixedWidth(fixed: boolean) {
+    return {
+        type: SET_FIXED_WIDTH,
+        payload: fixed
     }
 }
 export function setHeight(height: number) {
     return {
         type: SET_HEIGHT,
         payload: height
+    }
+}
+export function setMaterial(material: string) {
+    return {
+        type: SET_MATERIAL,
+        payload: material
+    }
+}
+export function setProfileDirection(direction: string) {
+    return {
+        type: SET_PROFILE_DIRECTION,
+        payload: direction
     }
 }
 export function setWidth(width: number) {

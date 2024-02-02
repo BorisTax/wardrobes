@@ -4,12 +4,15 @@ import { Division, FasadMaterial } from "../types/enums";
 import { AppContext } from "../App";
 import { colors } from "../assets/data";
 import { setActiveFasad } from "../actions/AppActions";
+import FixedHeight from "./FixedHeight";
+import FixedWidth from "./FixedWidth";
+import FixedBoth from "./FixedBoth";
 type FasadSectionProps = {
     fasad: Fasad
 }
 export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fasad = props.fasad
-    const {state, dispatch} = useContext(AppContext)
+    const { state, dispatch } = useContext(AppContext)
     const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} />) : ""
     let gridTemplate: {
         gridTemplateColumns: string;
@@ -25,22 +28,43 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     let events = {}
     let classes = ""
     if (fasad.Children.length === 0) {
-        styles = { ...styles, backgroundColor: colors[fasad.Material], cursor: "pointer", border: (fasad === state.activeFasad ? "3px solid red" : "") }
-        events = { onClick: (e: Event) => {e.stopPropagation(); dispatch(setActiveFasad(fasad))}}
-        classes = "fasad-section" 
+        styles = {
+            ...styles,
+            display: "flex",
+            overflow: "hidden",
+            flexShrink: "0",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: colors[fasad.Material],
+            cursor: "pointer",
+            border: (fasad === state.activeFasad ? "3px solid red" : ""),
+
+        }
+        events = { onClick: (e: Event) => { e.stopPropagation(); dispatch(setActiveFasad(fasad)) } }
+        classes = "fasad-section"
     }
+    const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight()
+    const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth()
+    const fixedBoth = fixedHeight && fixedWidth
+    const fixed = fixedBoth ? <FixedBoth /> : fixedHeight ? <FixedHeight /> : fixedWidth ? <FixedWidth /> : <></>
     return <div className={classes} style={{
-        ...styles,
         display: "grid",
         ...gridTemplate,
         gap: "1px",
+        ...styles,
     }}
-    {...events}>
+        {...events}>
         {contents}
+        {fixed}
     </div>
 }
 
 type ExtStyles = {
+    display?: string
+    justifyContent?: string
+    overflow?: string
+    flexShrink?: string
+    alignItems?: string
     aspectRatio?: string
     width?: string
     height?: string
@@ -48,3 +72,4 @@ type ExtStyles = {
     cursor?: string
     border?: string
 }
+

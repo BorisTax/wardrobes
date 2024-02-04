@@ -34,7 +34,7 @@ app.use('/', router)
 const port = process.env.PORT || 5000
 var httpServer = http.createServer(app);
 httpServer.listen(port, () => {
-  debug(`HTTP server running on ${port}.`)
+  console.log(`HTTP server running on ${port}.`)
 })
 // var httpsServer = https.createServer(credentials, app);
 // httpsServer.listen(port, () => {

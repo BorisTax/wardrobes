@@ -7,7 +7,11 @@ export const dbOptions = {
   port: 5432,
   ssl: { rejectUnauthorized: false }
 }
-
+export const UserRoles = {
+  SUPERADMIN: 'SUPERADMIN',
+  ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
+}
 function readFile(file) {
   return new Promise((resolve, reject) => {
     fs.readFile(file, 'utf8', (err, data) => {

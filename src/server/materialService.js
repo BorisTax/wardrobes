@@ -4,8 +4,8 @@ export class MaterialService {
     constructor(provider){
         this.provider = provider
     }
-    async getExtMaterials(baseMaterial){
-        return await this.provider.getExtMaterials(baseMaterial)
+    async getExtMaterials(){
+        return await this.provider.getExtMaterials()
     }
     async getProfiles(){
       return await this.provider.getProfiles()

@@ -23,27 +23,21 @@ const clearExpiredTokens = () => {
 }
 setInterval(clearExpiredTokens, 60000)
 
-router.post("/activeUsers", async (req, res) => {
-  const result = []
-  activeTokens.forEach((v, token) => result.push({ token, name: v.name, role: v.role }))
-  res.json(result);
-});
-
 router.post("/login", async (req, res) => {
   const user = req.body;
   if (!user.name) user.name = "";
   if (!user.password) user.password = "";
   const result = await loginUser(user);
   if (result.success)
-    activeTokens.set(result.token, { name: result.name, role: result.role, time: Date.now() })
-  //res.cookie('token',result.token,{httpOnly:false})
-  res.json(result);
+  activeTokens.set(result.token, { name: result.name, role: result.role, time: Date.now() })
+//res.cookie('token',result.token,{httpOnly:false})
+res.json(result);
 });
 
 router.post("/logout", async (req, res) => {
   const user = req.body;
-  const result = activeTokens.delete(user.token)
-  res.json({ success: result });
+  activeTokens.delete(user.token)
+  res.json({ success: true });
 });
 
 router.use((req, res, next) => {
@@ -53,6 +47,19 @@ router.use((req, res, next) => {
   }
   next()
 })
+
+router.post("/activeUsers", async (req, res) => {
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
+  const result = []
+  activeTokens.forEach((v, token) => result.push({ token, name: v.name, role: v.role }))
+  res.json(result);
+});
+
+router.post("/logoutall", async (req, res) => {
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
+  activeTokens.clear()
+  res.json({ success: true });
+});
 
 router.post("/lang", async (req, res) => {
   let lang = req.body.lang;
@@ -77,9 +84,9 @@ router.post("/users", async (req, res) => {
 });
 
 router.post("/extmaterials", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN, UserRoles.MANAGER])) return
-  const baseMaterial = req.body.baseMaterial
-  const result = await getExtMaterials(baseMaterial);
+  //if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN, UserRoles.MANAGER])) return
+  //const baseMaterial = req.body.baseMaterial
+  const result = await getExtMaterials();
   res.json(result);
 });
 

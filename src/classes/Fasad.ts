@@ -68,6 +68,7 @@ export default class Fasad {
         return this.material
     }
     public set Material(value: FasadMaterial) {
+        if (this.material !== value) this.extMaterial = ""
         this.material = value
         for (let f of this.Children) {
             f.Material = value
@@ -78,6 +79,9 @@ export default class Fasad {
         for (let f of this.Children) {
             f.ExtMaterial = value
         }
+    }
+    public get ExtMaterial() {
+        return this.extMaterial
     }
     public set SandBase(value: SandBase) {
         this.sandBase = value

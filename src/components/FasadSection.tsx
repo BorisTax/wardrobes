@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext } from "react";
 import Fasad from "../classes/Fasad";
-import { Division, FasadMaterial } from "../types/enums";
+import { Division } from "../types/enums";
 import { AppContext } from "../App";
 import { colors } from "../assets/data";
 import { setActiveFasad } from "../actions/AppActions";

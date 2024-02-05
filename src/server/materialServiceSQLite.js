@@ -4,13 +4,13 @@ export default class UserServiceSQLite {
     constructor(dbFile) {
         this.dbFile = dbFile
     }
-    async getExtMaterials(baseMaterial) {
+    async getExtMaterials() {
         return new Promise((resolve, reject) => {
             const db = new sqlite3.Database(this.dbFile, (err) => {
                 if (err) { console.error(err); reject(err); db.close() }
-                db.all(`select * from 'extmaterials' where material='${baseMaterial}'`, (err, rows) => {
+                db.all("select * from 'extmaterials';", (err, rows) => {
                     if (err) { console.error(err); reject(err); db.close() }
-                    else resolve(rows)
+                    else {resolve(rows)}
                     db.close()
                 });
             });

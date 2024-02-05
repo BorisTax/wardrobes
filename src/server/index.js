@@ -2,8 +2,8 @@ import express from 'express'
 import http from 'http'
 import path from 'path'
 import { fileURLToPath } from 'url';
-//import config from 'config'
-//import cors from 'cors'
+import config from 'config'
+import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 //import _debug from 'debug'
@@ -18,13 +18,14 @@ const __dirname = path.dirname(__filename);
 //var credentials = {key: privateKey, cert: certificate};
 
 var app = express()
-//app.use(cors())
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
-//app.use(bodyParser.json({limit: config.bodyParserLimit}))
+app.use(bodyParser.json({limit: config.bodyParserLimit}))
 app.use(cookieParser())
+
 app.use(express.static(path.join(__dirname, '')))
 
-app.use('/', router)
+app.use('/api', router)
 
 // app.use(function (req, res) {
 //     res.sendFile(path.join(__dirname, '/index.html'))

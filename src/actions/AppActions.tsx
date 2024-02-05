@@ -4,7 +4,9 @@ export const SET_ACTIVE_FASAD = "SET_ACTIVE_FASAD"
 export const SET_FIXED_HEIGHT = "SET_FIXED_HEIGHT"
 export const SET_FIXED_WIDTH = "SET_FIXED_WIDTH"
 export const SET_HEIGHT = "SET_HEIGHT"
+export const SET_EXTMATERIAL = "SET_eXTMATERIAL"
 export const SET_MATERIAL = "SET_MATERIAL"
+export const SET_MATERIAL_LIST = "SET_MATERIAL_LIST"
 export const SET_PROFILE_DIRECTION = "SET_PROFILE_DIRECTION"
 export const SET_WIDTH = "SET_WIDTH"
 export function divideFasad(count: number) {
@@ -37,10 +39,22 @@ export function setHeight(height: number) {
         payload: height
     }
 }
+export function setExtMaterial(extmaterial: string) {
+    return {
+        type: SET_EXTMATERIAL,
+        payload: extmaterial
+    }
+}
 export function setMaterial(material: string) {
     return {
         type: SET_MATERIAL,
         payload: material
+    }
+}
+export function setMaterialList(materials: Map<string, string>) {
+    return {
+        type: SET_MATERIAL_LIST,
+        payload: materials
     }
 }
 export function setProfileDirection(direction: string) {

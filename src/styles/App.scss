@@ -24,3 +24,13 @@ svg{
   min-width: 0;
   min-height: 0;
 }
+.user{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.header{
+  padding: 1em;
+  display: flex;
+  justify-content: flex-end;
+}

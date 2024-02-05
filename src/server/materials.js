@@ -1,34 +1,31 @@
 import messages from './messages.js'
-import { dbOptions } from "./options.js";
 import { UserService } from './userService.js'
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 import MaterialServiceSQLite from "./materialServiceSQLite.js";
 import { MaterialService } from './materialService.js';
 
 const materialServiceProvider = new MaterialServiceSQLite('./database.db')
 
-export async function getExtMaterials(baseMaterial) {
+export async function getExtMaterials() {
   const materialService = new MaterialService(materialServiceProvider)
-  let matList
+  let materials
   try {
-    matList = await materialService.getExtMaterials(baseMaterial)
+    materials = await materialService.getExtMaterials()
   } catch (e) {
     return { success: false, message: messages.SERVER_ERROR };
   }
-  return matList
+  return { success: true, materials }
 }
 
 export async function getProfiles() {
   const materialService = new MaterialService(materialServiceProvider)
-  let matList
+  let profiles
   try {
-    matList = await materialService.getProfiles()
+    profiles = await materialService.getProfiles()
   } catch (e) {
     return { success: false, message: messages.SERVER_ERROR };
   }
-  return matList
+  return { success: true, profiles }
 }
 
 

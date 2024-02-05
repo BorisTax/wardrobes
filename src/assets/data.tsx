@@ -1,3 +1,4 @@
+import { UserRoles } from "../reducers/userReducer";
 import { FasadMaterial } from "../types/enums";
 
 export const colors = {
@@ -15,3 +16,10 @@ Materials.set("ЛАКОБЕЛЬ", FasadMaterial.LACOBEL)
 Materials.set("ЛАКОБЕЛЬ(СТЕКЛО)", FasadMaterial.LACOBELGLASS)
 Materials.set("ФМП", FasadMaterial.FMP)
 Materials.set("ПЕСКОСТРУЙ", FasadMaterial.SAND)
+
+export const UserRolesCaptions = {
+    [UserRoles.GUEST] : "ГОСТЬ",
+    [UserRoles.MANAGER] : "МЕНЕДЖЕР",
+    [UserRoles.ADMIN] : "МОДЕРАТОР",
+    [UserRoles.SUPERADMIN] : "АДМИНИСТРАТОР",
+}

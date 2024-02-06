@@ -13,6 +13,8 @@ type FasadSectionProps = {
 export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fasad = props.fasad
     const { state, dispatch } = useContext(AppContext)
+    const rootFasad = state.rootFasades[state.activeRootFasadIndex]
+    const activeFasad = rootFasad.getActiveFasad()
     const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} />) : ""
     let gridTemplate: {
         gridTemplateColumns: string;
@@ -21,10 +23,11 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     if (fasad.Children.length > 1) {
         const divHeight = fasad.Division === Division.HEIGHT
         const total = divHeight ? fasad.Height : fasad.Width
-        const template = fasad.Children.map((f: Fasad) => `${(divHeight ? f.Height / total : f.Width / total).toFixed(3)}fr`).join(" ")
+        const template = fasad.Children.map((f: Fasad) => `${(divHeight ? (f.Height + 1) / total : (f.Width + 1) / total).toFixed(3)}fr`).join(" ")
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
     let styles: ExtStyles = fasad.Parent === null ? { height: "100%" } : {}
+    styles = { ...styles, border: (fasad === activeFasad ? "3px solid red" : "") }
     let events = {}
     let classes = ""
     if (fasad.Children.length === 0) {
@@ -37,11 +40,13 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             alignItems: "center",
             backgroundColor: colors[fasad.Material],
             cursor: "pointer",
-            border: (fasad === state.activeFasad ? "3px solid red" : ""),
+            //border: (fasad === activeFasad ? "3px solid red" : ""),
 
         }
         events = { onClick: (e: Event) => { e.stopPropagation(); dispatch(setActiveFasad(fasad)) } }
         classes = "fasad-section"
+    } else {
+        //styles ={...styles, border}
     }
     const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight()
     const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth()

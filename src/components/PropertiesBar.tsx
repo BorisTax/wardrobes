@@ -3,16 +3,16 @@ import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
 import { Materials } from "../assets/data"
 import { AppContext, UserContext } from "../App"
-import { divideFasad, setExtMaterial, setFixedHeight, setFixedWidth, setHeight, setMaterial, setProfileDirection, setWidth } from "../actions/AppActions"
+import { divideFasad, selectParent, setExtMaterial, setFixedHeight, setFixedWidth, setHeight, setMaterial, setProfileDirection, setWidth } from "../actions/AppActions"
 import { Division } from "../types/enums"
 import InputField from "./InputField"
 import { PropertyTypes } from "../types/propertyTypes"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 import ToggleButton from "./ToggleButton"
-import ExtMaterialBox from "./ExtMaterialBox"
 import { ExtMaterial } from "../types/materials"
 import { UserRoles } from "../reducers/userReducer"
+import ToolButton from "./ToolButton"
 const sections = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar({ fasad }: { fasad: Fasad | null }) {
     const width = fasad?.cutWidth || 0
@@ -36,7 +36,8 @@ export default function PropertiesBar({ fasad }: { fasad: Fasad | null }) {
     let extMaterials = state.materials.get(material) || []
     if (user.role === UserRoles.GUEST) extMaterials = extMaterials.filter((i, index) => index === 0) || []
     return <div className="properties-bar">
-        <div>Параметры фасада</div>
+        <div>Параметры фасада<span>{` (${state.activeRootFasadIndex + 1} из ${state.rootFasades.length})`}</span></div>
+        <hr/>
         <PropertyGrid>
             <div className="text-end">Высота: </div>
             <PropertyRow>
@@ -53,5 +54,7 @@ export default function PropertiesBar({ fasad }: { fasad: Fasad | null }) {
             <ComboBox title="Направление профиля: " value={direction} items={directions} disabled={!fasad} onChange={(_, key, value) => { dispatch(setProfileDirection(key)) }} />
             <ComboBox title="Кол-во секций: " value={sectionCount} items={sections} disabled={!fasad} onChange={(_, key, value) => { dispatch(divideFasad(+value)) }} />
         </PropertyGrid>
+        <hr/>
+        <ToolButton title="Выбрать секцию" icon="selectParent" disabled={!((fasad !== null) && (fasad.Parent!==null))} onClick={() => { dispatch(selectParent(fasad)) }} />
     </div>
 }

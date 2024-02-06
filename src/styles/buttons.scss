@@ -7,17 +7,19 @@ $icon-url: '../images/icons/';
   position: relative;
   background-size: 100%;
   background-position: center;
-  width: 27px;
-  height: 27px;
+  -width: 27px;
+  -height: 27px;
   cursor: pointer;
 }
-
+.button:hover {
+  mix-blend-mode: multiply;
+}
 .button-disabled {
   display: inline-block;
   background-size: 100%;
   background-position: center;
-  width: 27px;
-  height: 27px;
+  -width: 27px;
+  -height: 27px;
   mix-blend-mode: multiply;
 }
 
@@ -102,15 +104,8 @@ $icon-url: '../images/icons/';
 }
 
 
-.fix {
-  background: url($icon-url+'fix.png') no-repeat;
-}
 
-.unfix {
-  background: url($icon-url+'unfix.png') no-repeat;
-}
-
-@mixin fixed{
+@mixin fixed {
   width: 100%;
   height: 100%;
   margin: auto;
@@ -130,6 +125,8 @@ $icon-url: '../images/icons/';
   background: url($icon-url+'fixedBoth.svg') no-repeat center;
   @include fixed;
 }
+
+
 .refresh {
   background: url($icon-url+'refresh.png') no-repeat center;
   height: 24px;
@@ -157,12 +154,45 @@ $statusBarIconWidth : 20px;
   width: 30px;
 }
 
-$table_icon_width: 55px;
-$table_icon_height: 39px;
+$instruments_button_width: 32px;
+$instruments_button_height: 32px;
+
 
 @mixin instruments_button {
-  width: $table_icon_width;
-  height: $table_icon_height;
+  width: $instruments_button_width;
+  height: $instruments_button_height;
+  background-repeat: no-repeat;
+}
+
+.prevFasad {
+  background-image: url($icon-url+'prevFasad.png');
+  background-size: 100% 100%;
+  @include instruments_button();
+  height: $instruments_button_width * 2;
+}
+
+.nextFasad {
+  background-image: url($icon-url+'nextFasad.png');
+  background-size: 100% 100%;
+  @include instruments_button();
+  height: $instruments_button_width * 2;
+}
+
+.selectParent {
+  background-image: url($icon-url+'selectParent.png');
+  @include instruments_button();
+}
+
+.fix {
+  background-image: url($icon-url+'fix.png');
+  background-size: 100% 100%;
+  @include instruments_button();
+}
+
+.unfix {
+  background-image: url($icon-url+'unfix.png');
+  background-size: 100% 100%;
+  @include instruments_button();
 }
 
 .table_move_to {

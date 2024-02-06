@@ -1,5 +1,6 @@
 import Fasad from "../classes/Fasad"
 export const DIVIDE_FASAD = "DIVIDE_FASAD"
+export const SELECT_PARENT = "SELECT_PARENT"
 export const SET_ACTIVE_FASAD = "SET_ACTIVE_FASAD"
 export const SET_FIXED_HEIGHT = "SET_FIXED_HEIGHT"
 export const SET_FIXED_WIDTH = "SET_FIXED_WIDTH"
@@ -8,11 +9,18 @@ export const SET_EXTMATERIAL = "SET_eXTMATERIAL"
 export const SET_MATERIAL = "SET_MATERIAL"
 export const SET_MATERIAL_LIST = "SET_MATERIAL_LIST"
 export const SET_PROFILE_DIRECTION = "SET_PROFILE_DIRECTION"
+export const SET_ROOTFASAD = "SET_ROOTFASAD"
 export const SET_WIDTH = "SET_WIDTH"
 export function divideFasad(count: number) {
     return {
         type: DIVIDE_FASAD,
         payload: count
+    }
+}
+export function selectParent(fasad: Fasad | null) {
+    return {
+        type: SELECT_PARENT,
+        payload: fasad
     }
 }
 export function setActiveFasad(fasad: Fasad | null) {
@@ -61,6 +69,12 @@ export function setProfileDirection(direction: string) {
     return {
         type: SET_PROFILE_DIRECTION,
         payload: direction
+    }
+}
+export function setRootfasad(index: number) {
+    return {
+        type: SET_ROOTFASAD,
+        payload: index
     }
 }
 export function setWidth(width: number) {

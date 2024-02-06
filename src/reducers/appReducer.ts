@@ -1,76 +1,93 @@
-import { DIVIDE_FASAD, SET_ACTIVE_FASAD, SET_EXTMATERIAL, SET_FIXED_HEIGHT, SET_FIXED_WIDTH, SET_HEIGHT, SET_MATERIAL, SET_MATERIAL_LIST, SET_PROFILE_DIRECTION, SET_WIDTH } from '../actions/AppActions'
+import { DIVIDE_FASAD, SELECT_PARENT, SET_ACTIVE_FASAD, SET_EXTMATERIAL, SET_FIXED_HEIGHT, SET_FIXED_WIDTH, SET_HEIGHT, SET_MATERIAL, SET_MATERIAL_LIST, SET_PROFILE_DIRECTION, SET_ROOTFASAD, SET_WIDTH } from '../actions/AppActions'
 import Fasad from '../classes/Fasad'
 import FasadState from '../classes/FasadState'
+import { trySetHeight, trySetWidth } from '../functions/fasadFunc'
 import { Division, FasadMaterial } from "../types/enums"
 import { ExtMaterial } from '../types/materials'
 
 export type AppState = {
-    rootFasad: Fasad
-    activeFasad: Fasad | null
+    rootFasades: Fasad[]
+    activeRootFasadIndex: number
     materials: Map<string, ExtMaterial[]>
-  }
+}
 
 export function appReducer(state: AppState, action: { type: string, payload?: any }) {
+    const rootFasad = state.rootFasades[state.activeRootFasadIndex]
+    const activeFasad = rootFasad.getActiveFasad()
     switch (action.type) {
         case DIVIDE_FASAD:
-            state.activeFasad?.divideFasad(action.payload)
+            activeFasad?.divideFasad(action.payload)
+            return { ...state }
+        case SELECT_PARENT:
+            rootFasad.setActiveFasad(action.payload.Parent)
             return { ...state }
         case SET_ACTIVE_FASAD:
-            state.activeFasad = action.payload
+            rootFasad.setActiveFasad(action.payload)
             return { ...state }
         case SET_FIXED_HEIGHT:
-            if (state.activeFasad) state.activeFasad.fixHeight(action.payload)
+            if (activeFasad) {
+                if (action.payload && (activeFasad.Parent?.Division === Division.WIDTH)) activeFasad.Parent.fixHeight(action.payload); else activeFasad.fixHeight(action.payload)
+            }
             return { ...state }
         case SET_FIXED_WIDTH:
-            if (state.activeFasad) state.activeFasad.fixWidth(action.payload)
+            if (activeFasad) {
+                if (action.payload && (activeFasad.Parent?.Division === Division.HEIGHT)) activeFasad.Parent.fixWidth(action.payload); else activeFasad.fixWidth(action.payload)
+            }
             return { ...state }
         case SET_EXTMATERIAL:
-            if (state.activeFasad) state.activeFasad.ExtMaterial = action.payload
+            if (activeFasad) activeFasad.ExtMaterial = action.payload
             return { ...state }
         case SET_MATERIAL:
-            if (state.activeFasad) state.activeFasad.Material = action.payload
+            if (activeFasad) activeFasad.Material = action.payload
             return { ...state }
         case SET_MATERIAL_LIST:
             state.materials = action.payload
             return { ...state }
         case SET_PROFILE_DIRECTION:
-            if (state.activeFasad) {
-            state.activeFasad.Division = action.payload
-            state.activeFasad.divideFasad(state.activeFasad.Children.length)
+            if (activeFasad) {
+                activeFasad.Division = action.payload
+                activeFasad.divideFasad(activeFasad.Children.length)
             }
             return { ...state }
+        case SET_ROOTFASAD:
+            return { ...state, activeRootFasadIndex: action.payload }
         case SET_HEIGHT:
-            if (state.activeFasad) {
-            const height = state.activeFasad.Material === FasadMaterial.DSP ? action.payload : action.payload + 3
-            state.activeFasad.trySetHeight(height)
+            let newRootFasad: Fasad
+            if (activeFasad) {
+                const height = activeFasad.Material === FasadMaterial.DSP ? action.payload : action.payload + 3
+                newRootFasad = rootFasad.clone()
+                const newActiveFasad = newRootFasad.getActiveFasad()
+                if (trySetHeight(newActiveFasad, height)) return { ...state, rootFasad: newRootFasad }
             }
             return { ...state }
         case SET_WIDTH:
-            if (state.activeFasad) {
-            const width = state.activeFasad.Material === FasadMaterial.DSP ? action.payload : action.payload + 3
-            state.activeFasad.trySetWidth(width)
+            if (activeFasad) {
+                let newRootFasad: Fasad
+                const width = activeFasad.Material === FasadMaterial.DSP ? action.payload : action.payload + 3
+                newRootFasad = rootFasad.clone()
+                const newActiveFasad = newRootFasad.getActiveFasad()
+                if (trySetWidth(newActiveFasad, width)) return { ...state, rootFasad: newRootFasad }
             }
-        return { ...state }
+            return { ...state }
     }
     return state
-  }
+}
 
-  function getFasadState(width: number, height: number, division: Division, material: FasadMaterial) {
+function getFasadState(width: number, height: number, division: Division, material: FasadMaterial) {
     const state = new FasadState()
     state.height = height
     state.width = width
     state.division = division
     state.material = material
-  
     return state
-  }
-  export function getInitialState(): AppState {
-    const root = getFasadState(1179, 2243, Division.HEIGHT, FasadMaterial.DSP)
-    let children = [getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.DSP), getFasadState(1179, 747, Division.WIDTH, FasadMaterial.MIRROR), getFasadState(1179, 747, Division.HEIGHT, FasadMaterial.DSP)]
-    root.children = children
-    children = [getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.FMP), getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.MIRROR), getFasadState(392.3, 747, Division.WIDTH, FasadMaterial.SAND)]
-    root.children[1].children = children
-    const fasad = new Fasad()
-    fasad.setState(root)
-    return { rootFasad: fasad, activeFasad: null, materials: new Map() }
-  }
+}
+export function getInitialState(): AppState {
+    const fasades: Fasad[] = []
+    const fasadCount = 3
+    for (let i = 0; i < fasadCount; i++) {
+        const fasad = new Fasad()
+        fasad.setState(getFasadState(1179, 2243, Division.HEIGHT, FasadMaterial.DSP))
+        fasades.push(fasad)
+    }
+    return { rootFasades: fasades, activeRootFasadIndex: 0, materials: new Map() }
+}

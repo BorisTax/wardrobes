@@ -10,8 +10,8 @@ export default function User() {
     const role = UserRolesCaptions[user.role]
     const dialogRef = useContext(DialogContext)
     const onResolve = (r: any) => { dispatchUser(logoutUser()); }
-    const login = <button onClick={() => { dialogRef?.current?.showModal() }}>Вход</button>
-    const logout = <button onClick={() => {
+    const login = <button className="btn btn-primary"  onClick={() => { dialogRef?.current?.showModal() }}>Вход</button>
+    const logout = <button className="btn btn-secondary" onClick={() => {
         if(!confirm("Вы действительно хотите выйти?")) return
         useFetch('api/logout', JSON.stringify({ token: user.token }), onResolve, () => { }, () => { })
     }}>Выход</button>

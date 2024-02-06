@@ -4,6 +4,7 @@ import { FasadBackup, FasadProps } from "../types/fasadProps"
 import FasadState from "./FasadState"
 
 export default class Fasad {
+    private active: boolean = false
     private material: FasadMaterial = FasadMaterial.DSP
     private extMaterial: string = ''
     private sandBase: SandBase = SandBase.MIRROR
@@ -30,6 +31,7 @@ export default class Fasad {
         this.backup.hasBackup = false
         this.Children = []
     }
+
     public getState(): FasadState {
         const state = new FasadState()
         state.division = this.division
@@ -101,16 +103,16 @@ export default class Fasad {
     public set Height(value: number) {
         this.height = value
     }
-    public fixWidth(value: boolean, withSiblings: boolean = true) {
+    public fixWidth(value: boolean) {
         this.fixedWidth = value
-        if (withSiblings && value && (this.Parent?.Division === Division.HEIGHT)) for (let c of this.Parent.Children) if (c !== this) c.fixWidth(value, false)
+        if (this.Division === Division.HEIGHT) this.Children.forEach((c: Fasad) => { c.fixWidth(value) })
     }
     public FixedWidth() {
         return this.fixedWidth
     }
-    public fixHeight(value: boolean, withSiblings: boolean = true) {
+    public fixHeight(value: boolean) {
         this.fixedHeight = value
-        if (withSiblings && value && (this.Parent?.Division === Division.WIDTH)) for (let c of this.Parent.Children) if (c !== this) c.fixHeight(value, false)
+        if (this.Division === Division.WIDTH) this.Children.forEach((c: Fasad) => { c.fixHeight(value) })
     }
     public FixedHeight() {
         return this.fixedHeight
@@ -136,6 +138,28 @@ export default class Fasad {
         if (left !== undefined) this.outerLeftEdge = left
         if (top !== undefined) this.outerTopEdge = top
         if (bottom !== undefined) this.outerBottomEdge = bottom
+    }
+    public get MinSize() {
+        return this.minSize
+    }
+    public set MinSize(value: number) {
+        this.minSize = value
+    }
+    public get Active() {
+        return this.active
+    }
+    public set Active(value: boolean) {
+        this.active = value
+    }
+    public getActiveFasad(): Fasad | null {
+        if (this.active) return this
+        let active: Fasad | null = null
+        this.Children.forEach((c: Fasad) => { active = c.getActiveFasad() || active })
+        return active
+    }
+    public setActiveFasad(fasad: Fasad) {
+        this.Children.forEach((c: Fasad) => { c.setActiveFasad(fasad) })
+        this.active = (this === fasad)
     }
     public makeBackup() {
         if (this.Children.length > 1) {
@@ -241,8 +265,8 @@ export default class Fasad {
             if (!c.fixedWidth && !(c === initiator)) part = lastFreeIndex = i ? partLastWidth : partFreeWidth
             if (useSameWidth) part = c.width
             if (!useSameWidth) c.backup
-            c.Width = part
-            c.Height = this.height
+            c.width = part
+            c.height = this.height
             if (c.Children.length > 1) {
                 let res: boolean
                 if (c.Division === Division.HEIGHT) res = c.DistributePartsOnHeight(null, 0, useSameWidth); else res = c.DistributePartsOnWidth(null, 0, useSameWidth)
@@ -284,7 +308,7 @@ export default class Fasad {
         i = 0
         for (let c of this.Children) {
             i = i + 1
-            if (c.fixedWidth) part = c.height
+            if (c.fixedHeight) part = c.height
             if (c === initiator) part = newHeight
             if (!c.fixedHeight && !(c === initiator)) part = lastFreeIndex = i ? partLastHeight : partFreeHeight
             if (useSameHeight) part = c.height
@@ -300,23 +324,22 @@ export default class Fasad {
         return true
     }
 
-    public trySetWidth(width: number): boolean {
-        if (width < this.minSize) return false
-        if (this.Parent === null) return false
-        if (this.Parent.Division === Division.HEIGHT) {
-            return this.Parent.trySetWidth(width)
-        }
-        else
-            return this.Parent.DistributePartsOnWidth(this, width, false)
-    }
 
-    public trySetHeight(height: number): boolean {
-        if (height < this.minSize) return false
-        if (this.Parent === null) return false
-        if (this.Parent.Division === Division.WIDTH) {
-            return this.Parent.trySetHeight(height)
-        }
-        else
-            return this.Parent.DistributePartsOnHeight(this, height, false)
+    public clone(): Fasad {
+        let fasad = new Fasad()
+        fasad.Active = this.Active
+        fasad.Division = this.division
+        fasad.ExtMaterial = this.extMaterial
+        fasad.Material = this.material
+        fasad.Height = this.height
+        fasad.Width = this.width
+        fasad.fixHeight(this.fixedHeight)
+        fasad.fixWidth(this.fixedWidth)
+        fasad.OuterEdges = { ...this.OuterEdges }
+        fasad.Parent = this.Parent
+        fasad.SandBase = this.sandBase
+        fasad.MinSize = this.minSize
+        fasad.Children = this.Children.map((c: Fasad) => { const s = c.clone(); s.Parent = fasad; return s })
+        return fasad
     }
 }

@@ -10,8 +10,8 @@ import { setActiveFasad, setMaterialList } from './actions/AppActions'
 import { UserState, getInitialUser, userReducer } from './reducers/userReducer'
 import { createToolTip, getMaterialList } from './functions/functions'
 import LoginDialog from './components/LoginDialog'
-import { FasadMaterial } from './types/enums'
 import useFetch from './custom-hooks/useFetch'
+import WardrobePropertiesBar from './components/WardrobePropertiesBar'
 
 type AppContextType = {
   state: AppState
@@ -32,8 +32,8 @@ export const DialogContext = createContext<DialogContextType>(null)
 function App() {
   const [state, dispatch] = useReducer(appReducer, initialState)
   const [user, dispatchUser] = useReducer(userReducer, initialUser)
-  const rootFasad = state.rootFasad
-  const activeFasad = state.activeFasad
+  const rootFasad = state.rootFasades[state.activeRootFasadIndex]
+  const activeFasad = rootFasad.getActiveFasad()
   const dialogRef = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     const onClick = (e: Event) => { e.preventDefault(); dispatch(setActiveFasad(null)) }
@@ -56,8 +56,11 @@ function App() {
           <DialogContext.Provider value={dialogRef}>
             <Header />
             <div className="container-md">
-              <div style={{ display: "flex", flexWrap: "wrap" }}>
-                <PropertiesBar fasad={activeFasad} />
+              <div style={{ display: "flex", flexWrap: "wrap", gap:"1em"}}>
+                <div>
+                  <WardrobePropertiesBar/>
+                  <PropertiesBar fasad={activeFasad} />
+                </div>
                 <FasadContainer rootFasad={rootFasad} />
               </div>
             </div>

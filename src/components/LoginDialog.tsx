@@ -19,20 +19,21 @@ export default function LoginDialog(props: DialogProps) {
         useFetch('api/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)
     }
     return <dialog ref={props.dialogRef}>
-        <form id="loginForm" onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(document.getElementById("loginForm") as HTMLFormElement)
-            login(formData.get("name") as string, formData.get("password") as string)
-        }}>
-            <div className="property-grid">
-                <label htmlFor="name">Логин</label>
-                <input name="name" />
-                <label htmlFor="password">Пароль</label>
-                <input name="password" type="password" />
-            </div>
-            <button type="submit">OK</button>
-            <button onClick={() => closeDialog()}>Отмена</button>
-            <div>{state.message}</div>
-        </form>
+            <form id="loginForm" onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(document.getElementById("loginForm") as HTMLFormElement)
+                login(formData.get("name") as string, formData.get("password") as string)
+            }}>
+                <div className="property-grid">
+                    <label htmlFor="name">Логин</label>
+                    <input id="name" name="name" required/>
+                    <label htmlFor="pass">Пароль</label>
+                    <input id="pass" name="password" type="password" required/>
+                </div>
+                <br/>
+                <input type="submit" value="OK"/>
+                <input type="button" value="Отмена" onClick={() => closeDialog()}/>
+                <div>{state.message}</div>
+            </form>
     </dialog>
 }

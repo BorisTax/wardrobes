@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="64px" height="64px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 64 64"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .fil0 {fill:none}
+   ]]>
+  </style>
+    <clipPath id="id0">
+     <path d="M64 2.98l-64 0 0 26.36 17.84 0.25 -1.84 28.01c-0.03,0.58 0.15,1.1 0.54,1.53 0.4,0.42 0.91,0.64 1.49,0.64l28.55 0.01c0.58,0 1.08,-0.22 1.48,-0.64 0.4,-0.42 0.58,-0.93 0.55,-1.51l-1.36 -27.91 16.65 -0.07 0.1 -26.67z"/>
+    </clipPath>
+ </defs>
+ <g id="Слой_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <g id="_1552657255904">
+   <rect class="fil0" width="64" height="64"/>
+   <g style="clip-path:url(#id0)">
+    <image id="ArrowUp.png" transform="matrix(-0.0864045 4.57677E-15 3.14978E-15 0.0594646 78.9242 2.9782)" x="0" y="0" width="1066.68" height="1066.68" xlink:href="selectParent_Images\selectParent_ImgID1.png"/>
+   </g>
+  </g>
+ </g>
+</svg>

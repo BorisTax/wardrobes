@@ -1,7 +1,4 @@
-export enum Direction {
-    HORIZONTAL = 'HORIZONTAL',
-    VERTICAL = 'VERTICAL'
-}
+
 export enum Division {
     HEIGHT = "HEIGHT",
     WIDTH = "WIDTH"

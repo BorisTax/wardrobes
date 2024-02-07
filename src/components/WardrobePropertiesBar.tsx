@@ -1,11 +1,9 @@
-import React, { useContext } from "react"
-import { AppContext } from "../App"
+import React from "react"
 import InputField from "./InputField"
 import { PropertyTypes } from "../types/propertyTypes"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 export default function WardrobePropertiesBar() {
-    const { state, dispatch } = useContext(AppContext)
     return <div className="properties-bar">
         <div>Параметры шкафа</div>
         <hr/>

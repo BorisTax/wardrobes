@@ -1,7 +1,7 @@
-import React, { MouseEventHandler } from 'react';
+import React from 'react';
 
 export type ComboBoxProps = {
-    onChange?: (index: number, key: string, value: string) => void
+    onChange?: (index: number, value: string) => void
     items: string[] | Map<string, string>
     value: string
     title: string
@@ -32,8 +32,8 @@ export default function ComboBox(props: ComboBoxProps = { value: "", items: [], 
                 onClick={(e) => { e.stopPropagation() }}
                 onChange={(e) => {
                     const index = items.findIndex(i => i === e.target.value) || 0
-                    const key = (props.items instanceof Map && (props.items as Map<string, string>).get(e.target.value)) || ""
-                    if (props.onChange) props.onChange(index, key, e.target.value)
+                    const value = props.items instanceof Map ? (props.items as Map<string, string>).get(e.target.value) || "" : e.target.value 
+                    if (props.onChange) props.onChange(index, value)
                 }}>
                 {options}
             </select >

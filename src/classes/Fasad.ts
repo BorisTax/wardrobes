@@ -1,5 +1,5 @@
 import { FasadOuterEdges } from "../types/edges"
-import { Direction, Division, FasadMaterial, SandBase } from "../types/enums"
+import { Division, FasadMaterial, SandBase } from "../types/enums"
 import { FasadBackup, FasadProps } from "../types/fasadProps"
 import FasadState from "./FasadState"
 
@@ -157,7 +157,7 @@ export default class Fasad {
         this.Children.forEach((c: Fasad) => { active = c.getActiveFasad() || active })
         return active
     }
-    public setActiveFasad(fasad: Fasad) {
+    public setActiveFasad(fasad: Fasad | null) {
         this.Children.forEach((c: Fasad) => { c.setActiveFasad(fasad) })
         this.active = (this === fasad)
     }

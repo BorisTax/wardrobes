@@ -1,4 +1,4 @@
-import { UserRoles } from "../reducers/userReducer";
+import { UserRoles } from "../atoms/users";
 import { FasadMaterial } from "../types/enums";
 
 export const colors = {

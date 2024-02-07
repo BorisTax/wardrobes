@@ -1,18 +1,20 @@
-import { ReactElement, useContext } from "react";
+import { ReactElement } from "react";
 import FasadSection from "./FasadSection";
-import Fasad from "../classes/Fasad";
 import ToolButton from "./ToolButton";
-import { AppContext } from "../App";
-import { setRootfasad } from "../actions/AppActions";
+import { useAtom } from "jotai";
+import { activeRootFasadIndexAtom, rootFasadesAtom } from "../atoms/fasades";
 
-export default function FasadContainer({ rootFasad }: { rootFasad: Fasad }): ReactElement {
+export default function FasadContainer(): ReactElement {
+    const [activeRootFasadIndex, setActiveRootFasadIndex] = useAtom(activeRootFasadIndexAtom)
+    const [rootFasades] = useAtom(rootFasadesAtom)
+    const rootFasad = rootFasades[activeRootFasadIndex]
+    const activeFasad = rootFasad.getActiveFasad()
     const ratio = `${rootFasad.Width}/${rootFasad.Height}`
-    const { state, dispatch } = useContext(AppContext)
     return <div style={{ display: "flex", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", gap: "0.5em" }}>
-        <ToolButton title="Предыдущий фасад" icon={"prevFasad"} disabled={state.activeRootFasadIndex === 0} onClick={() => { dispatch(setRootfasad(state.activeRootFasadIndex - 1)) }} />
+        <ToolButton title="Предыдущий фасад" icon={"prevFasad"} disabled={activeRootFasadIndex === 0} onClick={() => { setActiveRootFasadIndex(activeRootFasadIndex - 1) }} />
         <div className="fasad-container" style={{ aspectRatio: ratio, width: "auto", height: "90svh" }}>
-            <FasadSection fasad={rootFasad} />
+            <FasadSection fasad={rootFasad} activeFasad={activeFasad} rootFasad={rootFasad}/>
         </div>
-        <ToolButton title="Следующий фасад" icon={"nextFasad"} disabled={state.activeRootFasadIndex === state.rootFasades.length - 1} onClick={() => { dispatch(setRootfasad(state.activeRootFasadIndex + 1)) }} />
+        <ToolButton title="Следующий фасад" icon={"nextFasad"} disabled={activeRootFasadIndex === rootFasades.length - 1} onClick={() => { setActiveRootFasadIndex(activeRootFasadIndex + 1) }} />
     </div>
 }

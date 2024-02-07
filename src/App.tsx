@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/App.scss'
 import './styles/buttons.scss'
@@ -8,13 +8,16 @@ import PropertiesBar from './components/PropertiesBar'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/LoginDialog'
 import WardrobePropertiesBar from './components/WardrobePropertiesBar'
-import { Provider, useAtom, useSetAtom } from 'jotai'
+import { useSetAtom } from 'jotai'
 import { setActiveFasadAtom } from './atoms/fasades'
+import { loadMaterialListAtom } from './atoms/materials'
 
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
+  const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const dialogRef = useRef<HTMLDialogElement>(null)
   useEffect(() => {
+    loadMaterialList()
     const onClick = (e: Event) => { e.preventDefault(); setActiveFasad(null); }
     document.addEventListener("contextmenu", onClick)
     const toolTip = createToolTip()
@@ -26,7 +29,6 @@ function App() {
   }, [])
   return (
     <>
-      <Provider>
           <Header />
           <div className="container-md">
             <div style={{ display: "flex", flexWrap: "wrap", gap: "1em" }}>
@@ -38,7 +40,6 @@ function App() {
             </div>
           </div>
           <LoginDialog dialogRef={dialogRef} />
-      </Provider>
     </>
   )
 }

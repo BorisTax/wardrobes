@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
 import { Materials } from "../assets/data"
@@ -13,7 +13,7 @@ import ToolButton from "./ToolButton"
 import { useAtom, useSetAtom } from "jotai"
 import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, rootFasadesAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
 import { UserRoles, userAtom } from "../atoms/users"
-import { materialListAtom, loadMaterialListAtom } from "../atoms/materials"
+import { materialListAtom } from "../atoms/materials"
 const sections = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const [fasad] = useAtom(activeFasadAtom)
@@ -31,12 +31,8 @@ export default function PropertiesBar() {
     const setProfileDirection = useSetAtom(setProfileDirectionAtom)
     const divideFasad = useSetAtom(divideFasadAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
-    const loadMaterialList = useSetAtom(loadMaterialListAtom)
     let extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
     if (user.role === UserRoles.GUEST) extMaterials = extMaterials.filter((_, index: number) => index === 0) || []
-    useEffect(() => {
-        loadMaterialList()
-    }, [])
     return <div className="properties-bar">
         <div>Параметры фасада<span>{` (${activeRootFasadIndex + 1} из ${rootFasades.length})`}</span></div>
         <hr />

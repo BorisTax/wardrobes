@@ -14,7 +14,8 @@ hr{
   padding: 1em;
 }
 .fasad-section:hover{
-  border: 3px solid green;
+  -border: 3px solid green;
+  box-shadow: inset 10px green;
 }
 .property-grid{
   display: grid;

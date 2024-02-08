@@ -5,7 +5,7 @@ export type ComboBoxProps = {
     items: string[] | Map<string, string>
     value: string
     title: string
-    disabled: boolean
+    disabled?: boolean
     size?: number
 }
 
@@ -25,7 +25,7 @@ export default function ComboBox(props: ComboBoxProps = { value: "", items: [], 
     )
     return (
         <>
-            {props.title ? <span className="text-end" style={{ whiteSpace: "nowrap" }}>{props.title}</span> : <></>}
+            {props.title ? <span className="text-end text-nowrap">{props.title}</span> : <></>}
             <select size={!props.size ? 1 : props.size}
                 value={value}
                 disabled={props.disabled}

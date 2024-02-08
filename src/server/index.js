@@ -6,6 +6,8 @@ import config from 'config'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import multipart from 'connect-multiparty';
+const multipartMiddleware = multipart();
 //import _debug from 'debug'
 import { router } from './routers.js'
 
@@ -21,6 +23,7 @@ var app = express()
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json({limit: config.bodyParserLimit}))
+app.use(multipartMiddleware)
 app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname, '')))

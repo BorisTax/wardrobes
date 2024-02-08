@@ -8,14 +8,18 @@ import PropertiesBar from './components/PropertiesBar'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/LoginDialog'
 import WardrobePropertiesBar from './components/WardrobePropertiesBar'
-import { useSetAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { setActiveFasadAtom } from './atoms/fasades'
 import { loadMaterialListAtom } from './atoms/materials'
+import EditMaterialDialog from './components/EditMaterialDialog'
+import { UserRoles, userAtom } from './atoms/users'
 
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
-  const dialogRef = useRef<HTMLDialogElement>(null)
+  const loginDialogRef = useRef<HTMLDialogElement>(null)
+  const editMaterialDialogRef = useRef<HTMLDialogElement>(null)
+  const [user] = useAtom(userAtom)
   useEffect(() => {
     loadMaterialList()
     const onClick = (e: Event) => { e.preventDefault(); setActiveFasad(null); }
@@ -29,17 +33,18 @@ function App() {
   }, [])
   return (
     <>
-          <Header />
-          <div className="container-md">
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "1em" }}>
-              <div>
-                <WardrobePropertiesBar />
-                <PropertiesBar />
-              </div>
-              <FasadContainer />
-            </div>
+      <Header />
+      <div className="container-md">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "1em" }}>
+          <div>
+            <WardrobePropertiesBar />
+            <PropertiesBar />
           </div>
-          <LoginDialog dialogRef={dialogRef} />
+          <FasadContainer />
+        </div>
+      </div>
+      <LoginDialog dialogRef={loginDialogRef} />
+      {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditMaterialDialog dialogRef={editMaterialDialogRef} /> : <></>}
     </>
   )
 }

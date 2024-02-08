@@ -1,0 +1,1 @@
+nodemon --ignore database.db index.js

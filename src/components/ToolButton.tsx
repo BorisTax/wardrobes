@@ -4,7 +4,7 @@ import { useToolTip } from '../custom-hooks/useToolTip';
 type ToolButtonProps = {
         title: string
         onClick: ()=>void
-        disabled: boolean
+        disabled?: boolean
         icon: string
 }
 

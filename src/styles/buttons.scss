@@ -182,6 +182,10 @@ $instruments_button_height: 32px;
   background-image: url($icon-url+'selectParent.png');
   @include instruments_button();
 }
+.editMaterials {
+  background-image: url($icon-url+'editMaterials.png');
+  @include instruments_button();
+}
 
 .fix {
   background-image: url($icon-url+'fix.png');

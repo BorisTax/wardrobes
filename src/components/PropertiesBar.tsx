@@ -14,6 +14,7 @@ import { useAtom, useSetAtom } from "jotai"
 import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, rootFasadesAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
 import { UserRoles, userAtom } from "../atoms/users"
 import { materialListAtom } from "../atoms/materials"
+import { editMaterialDialogAtom } from "../atoms/dialogs"
 const sections = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const [fasad] = useAtom(activeFasadAtom)
@@ -31,6 +32,7 @@ export default function PropertiesBar() {
     const setProfileDirection = useSetAtom(setProfileDirectionAtom)
     const divideFasad = useSetAtom(divideFasadAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
+    const [editMaterialDialog] = useAtom(editMaterialDialogAtom)
     let extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
     if (user.role === UserRoles.GUEST) extMaterials = extMaterials.filter((_, index: number) => index === 0) || []
     return <div className="properties-bar">
@@ -54,6 +56,8 @@ export default function PropertiesBar() {
         </PropertyGrid>
         <hr />
         <ToolButton title="Выбрать секцию" icon="selectParent" disabled={!((fasad !== null) && (fasad.Parent !== null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
+        {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? 
+            <ToolButton title="Редактор материалов" icon="editMaterials" onClick={() => { editMaterialDialog?.current?.showModal() }} />: <></>}
     </div>
 }
 

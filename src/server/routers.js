@@ -1,20 +1,20 @@
 import messages from './messages.js'
-import jwt from 'jsonwebtoken'
-//import {captions as ruCaptions} from './locale/ru.js';
-//import {captions as uaCaptions} from './locale/ua.js';
+import path from 'path'
+import { fileURLToPath } from 'url';
 import express from "express";
+import multiparty from 'multiparty';
+
 import {
   getUsers,
   loginUser,
-  registerUser,
-  isUserNameExist
+  registerUser
 } from "./users.js";
 import { UserRoles } from './options.js';
-import { getExtMaterials, getProfiles } from './materials.js';
+import { addExtMaterial, deleteExtMaterial, getExtMaterials, getProfiles } from './materials.js';
+import { getParams, writeBase64ToFile } from './functions.js';
 
-//import { getCaptions } from "./options.js";
-
-//const captions = {"ru": ruCaptions, "ua": uaCaptions}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 export const router = express.Router();
 const activeTokens = new Map()
 const expiredInterval = 3600 * 1000
@@ -28,10 +28,11 @@ router.post("/login", async (req, res) => {
   if (!user.name) user.name = "";
   if (!user.password) user.password = "";
   const result = await loginUser(user);
+  
   if (result.success)
-  activeTokens.set(result.token, { name: result.name, role: result.role, time: Date.now() })
-//res.cookie('token',result.token,{httpOnly:false})
-res.json(result);
+    activeTokens.set(result.token, { name: result.name, role: result.role, time: Date.now() })
+  //res.cookie('token',result.token,{httpOnly:false})
+  res.json(result);
 });
 
 router.post("/logout", async (req, res) => {
@@ -91,8 +92,34 @@ router.post("/extmaterials", async (req, res) => {
 });
 
 router.post("/profiles", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN, UserRoles.MANAGER])) return
+  //if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN, UserRoles.MANAGER])) return
   const result = await getProfiles();
+  res.json(result);
+});
+
+router.delete("/extmaterials", async (req, res) => {
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  const { name, material } = req.body
+  let result
+  try {
+    result = await deleteExtMaterial(name, material);
+  } catch (e) { console.error(e) }
+  const status = result.success ? 200 : 404
+  res.status(status).json(result);
+});
+router.put("/extmaterials", async (req, res) => {
+  //if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  const { name, material, image, code1c } = req.body
+  const imageurl = material + " " + name + ".jpg"
+  const file = path.join(__dirname, 'images/' + imageurl)
+  let result ={}
+  try {
+    //const {fields, files} = await getParams(req)
+    console.log(req.body)
+    console.log(req.files)
+    //await writeBase64ToFile(file, image) 
+    //result = await addExtMaterial(name, material, imageurl, code1c);
+  } catch (e) { console.error(e) }
   res.json(result);
 });
 

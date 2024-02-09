@@ -55,7 +55,7 @@ export function getProfileDirection(direction: string): Division {
 }
 
 export function fetchData(url: string, method: string, body: string) {
-    return fetch(usedUrl + url, { method, headers: { "Content-Type": "application/json"  }, body }).then(r => r.json())
+    return fetch(usedUrl + url, { method, headers: { "Content-Type": "application/json" }, body }).then(r => r.json())
 }
 export function fetchFormData(url: string, method: string, body: FormData) {
     return fetch(usedUrl + url, { method, body }).then(r => r.json())

@@ -9,7 +9,7 @@ export const materialListAtom = atom(new Map())
 
 export const loadMaterialListAtom = atom(null, async (get, set) => {
     try {
-        const data = await fetchData('api/extmaterials', "POST", "")
+        const data = await fetchData('api/getmaterials', "POST", "")
         const mList = getMaterialList(data.materials)
         set(materialListAtom, mList)
     } catch (e) { }
@@ -19,15 +19,16 @@ export const imageUrlAtom = atom((get) => {
     get(materialListAtom)
 })
 
-export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial) => {
+export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial, callback: (result: { success: boolean }) => void) => {
     const user = get(userAtom)
     try {
-        await fetchData("api/extmaterials", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
+        const result = await fetchData("api/deletematerial", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
         await set(loadMaterialListAtom)
+        callback(result)
     } catch (e) { console.error(e) }
 })
 
-export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: File | null) => {
+export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: File | null, callback: (result: { success: boolean }) => void) => {
     const user = get(userAtom)
     const formData = new FormData()
     if (image) formData.append("image", image)
@@ -35,11 +36,27 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
     formData.append("material", material.material)
     formData.append("code1c", material.code1c)
     formData.append("token", user.token)
-    console.log(formData)
     try {
-        await fetchFormData("api/extmaterials", "PUT", formData)
+        const result = await fetchFormData("api/addmaterial", "POST", formData)
         await set(loadMaterialListAtom)
-    } catch (e) { console.error(e)}
+        callback(result)
+    } catch (e) { console.error(e) }
+})
+
+export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image }, callback: (result: { success: boolean }) => void) => {
+    const user = get(userAtom)
+    const formData = new FormData()
+    if (image) formData.append("image", image)
+    formData.append("name", name)
+    formData.append("newName", newName)
+    formData.append("material", material)
+    formData.append("code1c", newCode)
+    formData.append("token", user.token)
+    try {
+        const result = await fetchFormData("api/updatematerial", "PUT", formData)
+        await set(loadMaterialListAtom)
+        callback(result)
+    } catch (e) { console.error(e) }
 })
 
 export function useImageUrl(extMaterial: string) {

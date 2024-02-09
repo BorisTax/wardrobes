@@ -8,7 +8,7 @@ export default class UserServiceSQLite {
         return new Promise((resolve, reject) => {
             const db = new sqlite3.Database(this.dbFile, (err) => {
                 if (err) { console.error(err); reject(err); db.close() }
-                db.all("select * from 'extmaterials';", (err, rows) => {
+                db.all("select * from 'extmaterials' order by name;", (err, rows) => {
                     if (err) { console.error(err); reject(err); db.close() }
                     else { resolve(rows) }
                     db.close()
@@ -17,11 +17,26 @@ export default class UserServiceSQLite {
         }
         )
     }
-    async addExtMaterial(name, material, imageurl, code1c) {
+    async addExtMaterial({ name, material, imageurl, code1c }) {
         return new Promise((resolve, reject) => {
             const db = new sqlite3.Database(this.dbFile, (err) => {
                 if (err) { console.error(err); reject(err); db.close() }
                 db.all(`insert into extmaterials (name, material, imageurl, code1c) values('${name}', '${material}', '${imageurl}', '${code1c}');`, (err, rows) => {
+                    if (err) { console.error(err); reject(err); db.close() }
+                    else { resolve(rows) }
+                    db.close()
+                });
+            });
+        }
+        )
+    }
+
+    async updateExtMaterial({ name, material, newName, imageurl, code1c }) {
+        return new Promise((resolve, reject) => {
+            const db = new sqlite3.Database(this.dbFile, (err) => {
+                if (err) { console.error(err); reject(err); db.close() }
+                const query = getQuery({ newName, imageurl, code1c, name, material })
+                db.all(`update extmaterials set name='${newName}', imageurl='${imageurl}', code1c='${code1c}' where name='${name}' and material='${material}';`, (err, rows) => {
                     if (err) { console.error(err); reject(err); db.close() }
                     else { resolve(rows) }
                     db.close()
@@ -43,19 +58,7 @@ export default class UserServiceSQLite {
         }
         )
     }
-    async updateExtMaterial(name, material, newName) {
-        return new Promise((resolve, reject) => {
-            const db = new sqlite3.Database(this.dbFile, (err) => {
-                if (err) { console.error(err); reject(err); db.close() }
-                db.all(`UPDATE extmaterials SET name='${newName}' WHERE name='${name}' and material='${material}';`, (err, rows) => {
-                    if (err) { console.error(err); reject(err); db.close() }
-                    else { resolve(rows) }
-                    db.close()
-                });
-            });
-        }
-        )
-    }
+
     async getProfiles() {
         return new Promise((resolve, reject) => {
             const db = new sqlite3.Database(this.dbFile, (err) => {
@@ -88,4 +91,13 @@ export default class UserServiceSQLite {
         }
         )
     }
+}
+
+function getQuery({ newName, imageurl, code1c, name, material }) {
+    const namePart = newName ? `name='${newName}'` : ""
+    const imagePart = imageurl ? `imageurl='${imageurl}'` : ""
+    const codePart = code1c ? `code1c='${code1c}'` : ""
+
+    const query = `update extmaterials set ${namePart}`
+        `update extmaterials set name='${newName}', imageurl='${imageurl}', code1c='${code1c}' where name='${name}' and material='${material}';`
 }

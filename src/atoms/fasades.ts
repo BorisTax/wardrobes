@@ -4,6 +4,7 @@ import FasadState from '../classes/FasadState'
 import { Division, FasadMaterial } from '../types/enums'
 import { trySetHeight, trySetWidth } from '../functions/fasadFunc'
 import { getFasadMaterial, getProfileDirection } from '../functions/functions'
+import { materialListAtom } from './materials'
 
 export const rootFasadesAtom = atom(getInitialState())
 export const activeRootFasadIndexAtom = atom(0)
@@ -78,6 +79,8 @@ export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial | s
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
     activeFasad.Material = getFasadMaterial(material)
+    const matList = get(materialListAtom)
+    activeFasad.ExtMaterial = matList.get(activeFasad.Material)[0]?.name
     set(rootFasadesAtom, [...rootFasades])
 })
 export const setProfileDirectionAtom = atom(null, (get, set, direction: string) => {

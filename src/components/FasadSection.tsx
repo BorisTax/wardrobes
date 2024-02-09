@@ -35,6 +35,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     styles = { ...styles, boxShadow: (fasad === activeFasad ? "inset 0px 0px 10px red" : "") }
     let events = {}
     let classes = ""
+    const backImage = `url("${usedUrl}images/${imageUrl}")`
     if (fasad.Children.length === 0) {
         styles = {
             ...styles,
@@ -44,9 +45,8 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: colors[fasad.Material],
-            backgroundImage: `url(${usedUrl}images/${imageUrl})`,
+            backgroundImage: backImage,
             cursor: "pointer",
-
         }
         events = { onClick: (e: Event) => { e.stopPropagation();setActiveFasad(fasad) } }
         classes = "fasad-section"
@@ -55,6 +55,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth()
     const fixedBoth = fixedHeight && fixedWidth
     const fixed = fixedBoth ? <FixedBoth /> : fixedHeight ? <FixedHeight /> : fixedWidth ? <FixedWidth /> : <></>
+    console.log(backImage)
     return <div className={classes} style={{
         display: "grid",
         ...gridTemplate,

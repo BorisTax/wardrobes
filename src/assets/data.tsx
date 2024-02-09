@@ -17,9 +17,17 @@ Materials.set("ЛАКОБЕЛЬ(СТЕКЛО)", FasadMaterial.LACOBELGLASS)
 Materials.set("ФМП", FasadMaterial.FMP)
 Materials.set("ПЕСКОСТРУЙ", FasadMaterial.SAND)
 
+export const MaterialCaptions: Map<string, string> = new Map()
+MaterialCaptions.set(FasadMaterial.DSP, "ДСП")
+MaterialCaptions.set(FasadMaterial.MIRROR, "ЗЕРКАЛО")
+MaterialCaptions.set(FasadMaterial.LACOBEL, "ЛАКОБЕЛЬ")
+MaterialCaptions.set(FasadMaterial.LACOBELGLASS, "ЛАКОБЕЛЬ(СТЕКЛО)")
+MaterialCaptions.set(FasadMaterial.FMP, "ФМП")
+MaterialCaptions.set(FasadMaterial.SAND, "ПЕСКОСТРУЙ")
+
 export const UserRolesCaptions = {
-    [UserRoles.GUEST] : "ГОСТЬ",
-    [UserRoles.MANAGER] : "МЕНЕДЖЕР",
-    [UserRoles.ADMIN] : "МОДЕРАТОР",
-    [UserRoles.SUPERADMIN] : "АДМИНИСТРАТОР",
+    [UserRoles.GUEST]: "ГОСТЬ",
+    [UserRoles.MANAGER]: "МЕНЕДЖЕР",
+    [UserRoles.ADMIN]: "МОДЕРАТОР",
+    [UserRoles.SUPERADMIN]: "АДМИНИСТРАТОР",
 }

@@ -13,12 +13,16 @@ import { setActiveFasadAtom } from './atoms/fasades'
 import { loadMaterialListAtom } from './atoms/materials'
 import EditMaterialDialog from './components/EditMaterialDialog'
 import { UserRoles, userAtom } from './atoms/users'
+import MessageDialog from './components/MessageDialog'
+import ConfirmDialog from './components/ConfirmDialog'
 
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loginDialogRef = useRef<HTMLDialogElement>(null)
   const editMaterialDialogRef = useRef<HTMLDialogElement>(null)
+  const messageDialogRef = useRef<HTMLDialogElement>(null)
+  const confirmDialogRef = useRef<HTMLDialogElement>(null)
   const [user] = useAtom(userAtom)
   useEffect(() => {
     loadMaterialList()
@@ -45,6 +49,8 @@ function App() {
       </div>
       <LoginDialog dialogRef={loginDialogRef} />
       {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditMaterialDialog dialogRef={editMaterialDialogRef} /> : <></>}
+      <MessageDialog dialogRef={messageDialogRef} />
+      <ConfirmDialog dialogRef={confirmDialogRef} />
     </>
   )
 }

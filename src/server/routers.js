@@ -2,7 +2,6 @@ import messages from './messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import multiparty from 'multiparty';
 
 import {
   getUsers,
@@ -10,8 +9,8 @@ import {
   registerUser
 } from "./users.js";
 import { UserRoles } from './options.js';
-import { addExtMaterial, deleteExtMaterial, getExtMaterials, getProfiles } from './materials.js';
-import { getParams, writeBase64ToFile } from './functions.js';
+import { addExtMaterial, deleteExtMaterial, getExtMaterials, getProfiles, updateExtMaterial } from './materials.js';
+import { moveFile } from './functions.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,7 +27,7 @@ router.post("/login", async (req, res) => {
   if (!user.name) user.name = "";
   if (!user.password) user.password = "";
   const result = await loginUser(user);
-  
+
   if (result.success)
     activeTokens.set(result.token, { name: result.name, role: result.role, time: Date.now() })
   //res.cookie('token',result.token,{httpOnly:false})
@@ -84,20 +83,20 @@ router.post("/users", async (req, res) => {
   res.json(result);
 });
 
-router.post("/extmaterials", async (req, res) => {
+router.post("/getmaterials", async (req, res) => {
   //if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN, UserRoles.MANAGER])) return
   //const baseMaterial = req.body.baseMaterial
   const result = await getExtMaterials();
   res.json(result);
 });
 
-router.post("/profiles", async (req, res) => {
+router.post("/getprofiles", async (req, res) => {
   //if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN, UserRoles.MANAGER])) return
   const result = await getProfiles();
   res.json(result);
 });
 
-router.delete("/extmaterials", async (req, res) => {
+router.delete("/deletematerial", async (req, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
   const { name, material } = req.body
   let result
@@ -107,25 +106,43 @@ router.delete("/extmaterials", async (req, res) => {
   const status = result.success ? 200 : 404
   res.status(status).json(result);
 });
-router.put("/extmaterials", async (req, res) => {
-  //if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
-  const { name, material, image, code1c } = req.body
-  const imageurl = material + " " + name + ".jpg"
-  const file = path.join(__dirname, 'images/' + imageurl)
-  let result ={}
+
+router.post("/addmaterial", async (req, res) => {
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  const { name, material, code1c } = req.body
+  const image = req.files.image
+  let imageurl = material + " " + name + ".jpg"
+  const sourcefile = image ? image.path : ""
+  const destfile = path.join(__dirname, 'images/' + imageurl)
+  let result = {}
   try {
-    //const {fields, files} = await getParams(req)
-    console.log(req.body)
-    console.log(req.files)
-    //await writeBase64ToFile(file, image) 
-    //result = await addExtMaterial(name, material, imageurl, code1c);
+    result = await moveFile(sourcefile, destfile)
+    imageurl = result.copy ? imageurl : ""
+    result = await addExtMaterial({name, material, imageurl, code1c});
+  } catch (e) { console.error(e) } 
+  const status = result.success ? 201 : 409
+  res.status(status).json(result);
+});
+
+router.put("/updatematerial", async (req, res) => {
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  const { name, material, newName, code1c } = req.body
+  const image = req.files.image
+  let imageurl = material + " " + name + ".jpg"
+  const sourcefile = image ? image.path : ""
+  const destfile = path.join(__dirname, 'images/' + imageurl)
+  let result = {}
+  try {
+    result = await moveFile(sourcefile, destfile)
+    imageurl = result.copy ? imageurl : ""
+    result = await updateExtMaterial({ name, material, newName, imageurl, code1c });
   } catch (e) { console.error(e) }
   res.json(result);
 });
 
 const checkPermissions = (req, res, roles) => {
   if (!roles.some(r => r === req.userRole)) {
-    res.status(403).json({ message: messages.ACCESS_DENIED })
+    res.status(403).json({ success: false, message: messages.ACCESS_DENIED })
     return false
   }
   return true

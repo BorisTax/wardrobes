@@ -16,13 +16,25 @@ export async function getExtMaterials() {
   }
   return { success: true, materials }
 }
-export async function addExtMaterial(name, material, imageurl, code1c) {
+export async function addExtMaterial({ name, material, imageurl, code1c }) {
   const materialService = new MaterialService(materialServiceProvider)
   let materials
   try {
     materials = await materialService.getExtMaterials()
-    if (materials.find(m => m.name === name && m.material === material)) return {success: false, message: messages.MATERIAL_EXIST}
-    await materialService.addExtMaterial(name, material, imageurl, code1c)
+    if (materials.find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_EXIST }
+    await materialService.addExtMaterial({ name, material, imageurl, code1c })
+  } catch (e) {
+    return { success: false, message: messages.SERVER_ERROR };
+  }
+  return { success: true }
+}
+export async function updateExtMaterial({ name, material, newName, imageurl, code1c }) {
+  const materialService = new MaterialService(materialServiceProvider)
+  let materials
+  try {
+    materials = await materialService.getExtMaterials()
+    if (!materials.find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_NO_EXIST }
+    await materialService.updateExtMaterial({ name, material, newName, imageurl, code1c })
   } catch (e) {
     return { success: false, message: messages.SERVER_ERROR };
   }
@@ -33,8 +45,7 @@ export async function deleteExtMaterial(name, material) {
   let materials
   try {
     materials = await materialService.getExtMaterials()
-    console.log(name, material)
-    if (!materials.find(m => m.name === name && m.material === material)) return {success: false, message: messages.MATERIAL_NO_EXIST}
+    if (!materials.find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_NO_EXIST }
     await materialService.deleteExtMaterial(name, material)
   } catch (e) {
     return { success: false, message: messages.SERVER_ERROR };

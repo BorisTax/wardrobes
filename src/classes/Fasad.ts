@@ -30,6 +30,7 @@ export default class Fasad {
         this.sandBase = props?.sandBase || SandBase.MIRROR
         this.backup.hasBackup = false
         this.Children = []
+        this.OuterEdges = { left: true, right: true, top: true, bottom: true }
     }
 
     public getState(): FasadState {
@@ -69,26 +70,28 @@ export default class Fasad {
     public get Material() {
         return this.material
     }
-    public set Material(value: FasadMaterial) {
-        if (this.material !== value) this.extMaterial = ""
+    public setMaterial(value: FasadMaterial, toChildren: boolean = true) {
         this.material = value
+        if (!toChildren) return
         for (let f of this.Children) {
-            f.Material = value
+            f.setMaterial(value, toChildren)
         }
     }
-    public set ExtMaterial(value: string) {
+    public setExtMaterial(value: string, toChildren: boolean = true) {
         this.extMaterial = value
+        if (!toChildren) return
         for (let f of this.Children) {
-            f.ExtMaterial = value
+            f.setExtMaterial(value, toChildren)
         }
     }
     public get ExtMaterial() {
         return this.extMaterial
     }
-    public set SandBase(value: SandBase) {
+    public setSandBase(value: SandBase, toChildren: boolean = true) {
         this.sandBase = value
+        if (!toChildren) return
         for (let f of this.Children) {
-            f.SandBase = value
+            f.setSandBase(value, toChildren)
         }
     }
     public get Width() {
@@ -189,7 +192,7 @@ export default class Fasad {
     public divideOnHeight(count: number): boolean {
         const profileTotal = (count - 1)
         const division = Division.HEIGHT
-        if (this.Children.length > 1) this.Material = this.Children[0].Material
+        if (this.Children.length > 1) this.setMaterial(this.Children[0].Material)
         const partHeight = +((this.Height - profileTotal) / count).toFixed(1)
         if (partHeight < this.minSize) return false
         const partLast = +(this.height - partHeight * (count - 1) - profileTotal).toFixed(1)
@@ -210,7 +213,7 @@ export default class Fasad {
     public divideOnWidth(count: number): boolean {
         const profileTotal = (count - 1)
         const division = Division.WIDTH
-        if (this.Children.length > 1) this.Material = this.Children[0].Material
+        if (this.Children.length > 1) this.setMaterial(this.Children[0].Material)
         const partWidth = +((this.width - profileTotal) / count).toFixed(1)
         if (partWidth < this.minSize) return false
         const partLast = +(this.width - partWidth * (count - 1) - profileTotal).toFixed(1)
@@ -325,21 +328,21 @@ export default class Fasad {
     }
 
 
-    public clone(): Fasad {
+    public clone(parent: Fasad | null = null): Fasad {
         let fasad = new Fasad()
+        fasad.Children = this.Children.map((c: Fasad) => c.clone(fasad))
         fasad.Active = this.Active
         fasad.Division = this.division
-        fasad.ExtMaterial = this.extMaterial
-        fasad.Material = this.material
+        fasad.setExtMaterial(this.extMaterial, false)
+        fasad.setMaterial(this.material, false)
         fasad.Height = this.height
         fasad.Width = this.width
         fasad.fixHeight(this.fixedHeight)
         fasad.fixWidth(this.fixedWidth)
         fasad.OuterEdges = { ...this.OuterEdges }
-        fasad.Parent = this.Parent
-        fasad.SandBase = this.sandBase
+        fasad.Parent = parent
+        fasad.setSandBase(this.sandBase, false)
         fasad.MinSize = this.minSize
-        fasad.Children = this.Children.map((c: Fasad) => { const s = c.clone(); s.Parent = fasad; return s })
         return fasad
     }
 }

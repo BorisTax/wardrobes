@@ -71,16 +71,16 @@ export const setExtMaterialAtom = atom(null, (get, set, extMaterial: string) => 
     const rootFasades = get(rootFasadesAtom)
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
-    activeFasad.ExtMaterial = extMaterial
+    activeFasad.setExtMaterial(extMaterial)
     set(rootFasadesAtom, [...rootFasades])
 })
 export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial | string) => {
     const rootFasades = get(rootFasadesAtom)
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
-    activeFasad.Material = getFasadMaterial(material)
+    activeFasad.setMaterial(getFasadMaterial(material))
     const matList = get(materialListAtom)
-    activeFasad.ExtMaterial = matList.get(activeFasad.Material)[0]?.name
+    activeFasad.setExtMaterial(matList.get(activeFasad.Material)[0]?.name)
     set(rootFasadesAtom, [...rootFasades])
 })
 export const setProfileDirectionAtom = atom(null, (get, set, direction: string) => {

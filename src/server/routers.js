@@ -26,6 +26,7 @@ router.post("/login", async (req, res) => {
   const user = req.body;
   if (!user.name) user.name = "";
   if (!user.password) user.password = "";
+  console.log({user})
   const result = await loginUser(user);
 
   if (result.success)

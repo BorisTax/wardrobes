@@ -12,6 +12,7 @@ export function createToolTip() {
     toolTip.id = "tooltip"
     toolTip.style.position = "absolute"
     toolTip.style.border = "1px solid black"
+    toolTip.setAttribute("popover", "")
     toolTip.style.padding = "0.5em"
     toolTip.style.backgroundColor = "white"
     toolTip.style.display = "none"

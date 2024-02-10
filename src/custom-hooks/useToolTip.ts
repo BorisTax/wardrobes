@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { isMobile } from "../functions/functions";
 
-export const useToolTip = (title: string) => {
+export const useToolTip = (title: string | undefined) => {
+  if (!title) return { onMouseLeave: () => { }, onMouseOver: () => { } }
   const toolTip: HTMLElement | null = document.getElementById("tooltip");
   const onMouseOver = (e: React.MouseEvent) => {
     if (isMobile()) return
@@ -9,6 +10,8 @@ export const useToolTip = (title: string) => {
     if (title && toolTip) {
       toolTip.innerText = title;
       toolTip.style.display = "inline";
+      toolTip.showPopover()
+      toolTip.style.zIndex = "10"
       toolTip.style.fontSize = "0.8rem"
       const { width: toolTipWidth, height: toolTipHeight } = toolTip.getBoundingClientRect()
       let top = elementTop + elementHeight + window.scrollY + 5

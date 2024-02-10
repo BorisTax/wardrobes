@@ -20,7 +20,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     const activeFasad = props.activeFasad
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const imageUrl = useImageUrl(fasad.ExtMaterial)
-    const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} activeFasad={activeFasad} rootFasad={rootFasad} />) : ""
+    if (fasad.Active) console.log(fasad.ExtMaterial)
     let gridTemplate: {
         gridTemplateColumns: string;
         gridTemplateRows: string;
@@ -32,7 +32,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
     let styles: ExtStyles = fasad.Parent === null ? { height: "100%" } : {}
-    styles = { ...styles, boxShadow: (fasad === activeFasad ? "inset 0px 0px 10px red" : "") }
+    styles = { ...styles, border: (fasad === activeFasad ? "3px solid red" : "") }
     let events = {}
     let classes = ""
     const backImage = `url("${usedUrl}images/${imageUrl}")`
@@ -46,16 +46,17 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             alignItems: "center",
             backgroundColor: colors[fasad.Material],
             backgroundImage: backImage,
+            objectFit: "contain",
             cursor: "pointer",
         }
-        events = { onClick: (e: Event) => { e.stopPropagation();setActiveFasad(fasad) } }
+        events = { onClick: (e: Event) => { e.stopPropagation(); setActiveFasad(fasad) } }
         classes = "fasad-section"
-    } 
+    }
     const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight()
     const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth()
     const fixedBoth = fixedHeight && fixedWidth
+    const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} activeFasad={activeFasad} rootFasad={rootFasad} />) : ""
     const fixed = fixedBoth ? <FixedBoth /> : fixedHeight ? <FixedHeight /> : fixedWidth ? <FixedWidth /> : <></>
-    console.log(backImage)
     return <div className={classes} style={{
         display: "grid",
         ...gridTemplate,
@@ -79,6 +80,7 @@ type ExtStyles = {
     height?: string
     backgroundColor?: string
     backgroundImage?: string
+    objectFit?: any
     cursor?: string
     border?: string
     boxShadow?: string

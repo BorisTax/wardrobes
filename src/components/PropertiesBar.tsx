@@ -1,4 +1,3 @@
-import React from "react"
 import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
 import { Materials } from "../assets/data"
@@ -9,7 +8,7 @@ import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 import ToggleButton from "./ToggleButton"
 import { ExtMaterial } from "../types/materials"
-import ToolButton from "./ToolButton"
+import ImageButton from "./ImageButton"
 import { useAtom, useSetAtom } from "jotai"
 import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, rootFasadesAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
 import { UserRoles, userAtom } from "../atoms/users"
@@ -35,7 +34,7 @@ export default function PropertiesBar() {
     const [editMaterialDialog] = useAtom(editMaterialDialogAtom)
     let extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
     if (user.role === UserRoles.GUEST) extMaterials = extMaterials.filter((_, index: number) => index === 0) || []
-    return <div className="properties-bar">
+    return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}>
         <div>Параметры фасада<span>{` (${activeRootFasadIndex + 1} из ${rootFasades.length})`}</span></div>
         <hr />
         <PropertyGrid>
@@ -55,9 +54,9 @@ export default function PropertiesBar() {
             <ComboBox title="Кол-во секций: " value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
         </PropertyGrid>
         <hr />
-        <ToolButton title="Выбрать секцию" icon="selectParent" disabled={!((fasad !== null) && (fasad.Parent !== null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
-        {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? 
-            <ToolButton title="Редактор материалов" icon="editMaterials" onClick={() => { editMaterialDialog?.current?.showModal() }} />: <></>}
+        <ImageButton title="Выбрать секцию" icon="selectParent" disabled={!((fasad !== null) && (fasad.Parent !== null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
+        {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ?
+            <ImageButton title="Редактор материалов" icon="editMaterials" onClick={() => { editMaterialDialog?.current?.showModal() }} /> : <></>}
     </div>
 }
 

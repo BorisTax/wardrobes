@@ -1,4 +1,3 @@
-@import "./toolbars.scss";
 
 $icon-url: '../images/icons/';
 
@@ -30,79 +29,6 @@ $icon-url: '../images/icons/';
   width: 1px;
   border: inset 1px;
 }
-
-#ru {
-  background: url($icon-url+'rus.png') no-repeat;
-  background-size: 100%;
-}
-
-#en {
-  background: url($icon-url+'eng.png') no-repeat;
-  background-size: 100%;
-}
-
-#fr {
-  background: url($icon-url+'fra.png') no-repeat;
-  background-size: 100%;
-}
-
-.help {
-  background: url($icon-url+'help.png') no-repeat;
-}
-
-.new {
-  background: url($icon-url+'new.png') no-repeat;
-}
-
-.open {
-  background: url($icon-url+'open.png') no-repeat;
-}
-
-.save {
-  background: url($icon-url+'save.png') no-repeat;
-}
-
-.save-pdf {
-  background: url($icon-url+'savePdf.png') no-repeat;
-}
-
-.preview {
-  background: url($icon-url+'preview.png') no-repeat;
-}
-
-.add {
-  background: url($icon-url+'add.png') no-repeat center;
-}
-
-.open_path {
-  background: url($icon-url+'path.png') no-repeat center;
-}
-
-.delete_path {
-  background: url($icon-url+'delete_path.png') no-repeat center;
-}
-
-.delete {
-  background: url($icon-url+'deleteRow.png') no-repeat center;
-}
-
-.created-all-panels {
-  background: url($icon-url+'created_all.png') no-repeat center;
-
-}
-
-.placedAllPanels {
-  background: url($icon-url+'placed_all.png') no-repeat center;
-}
-
-.createPanel {
-  background: url($icon-url+'create.png') no-repeat center;
-}
-
-.createPanelError {
-  background: url($icon-url+'create_error.png') no-repeat center;
-}
-
 
 
 @mixin fixed {
@@ -157,11 +83,11 @@ $statusBarIconWidth : 20px;
 $instruments_button_width: 32px;
 $instruments_button_height: 32px;
 
-
 @mixin instruments_button {
   width: $instruments_button_width;
   height: $instruments_button_height;
   background-repeat: no-repeat;
+  min-width: $instruments_button_width;
 }
 
 .prevFasad {
@@ -197,145 +123,4 @@ $instruments_button_height: 32px;
   background-image: url($icon-url+'unfix.png');
   background-size: 100% 100%;
   @include instruments_button();
-}
-
-.table_move_to {
-  background-image: url($icon-url+'table_move_to.png');
-  @include instruments_button();
-}
-
-.table_hor_center {
-  background-image: url($icon-url+'table_hor_center.png');
-  @include instruments_button();
-}
-
-.table_vert_center {
-  background-image: url($icon-url+'table_vert_center.png');
-  @include instruments_button();
-}
-
-.measure {
-  background: url($icon-url+'measure.png') no-repeat center;
-  @include instruments_button();
-}
-
-.measure_cancel {
-  background: url($icon-url+'measure_cancel.png') no-repeat center;
-  @include instruments_button();
-}
-
-.flip {
-  background: url($icon-url+'flip.png') no-repeat center;
-  @include instruments_button();
-}
-
-#gest_zoom {
-  background-image: url($icon-url+'gest_zoom.svg');
-  @include statusBarIcon;
-}
-
-#gest_move {
-  background-image: url($icon-url+'gest_move.svg');
-  @include statusBarIcon;
-}
-
-#gest_dbltap {
-  background-image: url($icon-url+'gest_dbltap.svg');
-  @include statusBarIcon;
-}
-
-#lmb {
-  background-image: url($icon-url+'lmb.svg');
-
-  @include statusBarIcon;
-}
-
-#rmb {
-  content: url($icon-url+'rmb.svg');
-  @include statusBarIcon;
-}
-
-#mmb_wheel {
-  content: url($icon-url+'mmb_wheel.svg');
-  @include statusBarIcon;
-}
-
-#mmb {
-  content: url($icon-url+'mmb.svg');
-  @include statusBarIcon;
-}
-
-#button_ctrl {
-  content: url($icon-url+'button_ctrl.svg');
-  @include statusBarIcon;
-}
-
-#button_esc {
-  content: url($icon-url+'button_esc.svg');
-  @include statusBarIcon;
-}
-
-.increase {
-  background: url($icon-url+'increase.png') no-repeat center;
-  background-size: 100% 100%;
-  width: 15px;
-  height: 15px
-}
-
-.decrease {
-  background: url($icon-url+'decrease.png') no-repeat center;
-  background-size: 100% 100%;
-  width: 15px;
-  height: 15px
-}
-
-.left {
-  background: url($icon-url+'left.png') no-repeat;
-}
-
-.right {
-  background: url($icon-url+'right.png') no-repeat;
-}
-
-
-.minimize {
-  background: url($icon-url+'minimize.png') no-repeat;
-}
-
-.maximize {
-  background: url($icon-url+'maximize.png') no-repeat;
-}
-
-
-
-
-#goTop {
-  display: none;
-  width: 60px;
-  height: 60px;
-  border-radius: 60px;
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  cursor: pointer;
-  background-color: $toolbar-background-color;
-  border: $toolbar-border;
-  z-index: 100;
-}
-
-#goTop div {
-  margin: 0 auto;
-  margin-top: 13px;
-  width: 30px;
-  height: 30px;
-  transform: rotate(0.5turn);
-  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0yOTMuNzUxLDQ1NS44NjhjLTIwLjE4MSwyMC4xNzktNTMuMTY1LDE5LjkxMy03My42NzMtMC41OTVsMCwwYy0yMC41MDgtMjAuNTA4LTIwLjc3My01My40OTMtMC41OTQtNzMuNjcyICBsMTg5Ljk5OS0xOTBjMjAuMTc4LTIwLjE3OCw1My4xNjQtMTkuOTEzLDczLjY3MiwwLjU5NWwwLDBjMjAuNTA4LDIwLjUwOSwyMC43NzIsNTMuNDkyLDAuNTk1LDczLjY3MUwyOTMuNzUxLDQ1NS44Njh6Ii8+DQo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMjIwLjI0OSw0NTUuODY4YzIwLjE4LDIwLjE3OSw1My4xNjQsMTkuOTEzLDczLjY3Mi0wLjU5NWwwLDBjMjAuNTA5LTIwLjUwOCwyMC43NzQtNTMuNDkzLDAuNTk2LTczLjY3MiAgbC0xOTAtMTkwYy0yMC4xNzgtMjAuMTc4LTUzLjE2NC0xOS45MTMtNzMuNjcxLDAuNTk1bDAsMGMtMjAuNTA4LDIwLjUwOS0yMC43NzIsNTMuNDkyLTAuNTk1LDczLjY3MUwyMjAuMjQ5LDQ1NS44Njh6Ii8+DQo8L3N2Zz4=);
-  background-size: contain;
-}
-
-.big_ok {
-  background-image: url($icon-url+'placed_all.png');
-  width: 18px;
-  height: 19px;
-  border: none;
 }

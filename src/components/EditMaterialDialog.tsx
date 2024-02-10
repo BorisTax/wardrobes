@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useAtom, useSetAtom } from "jotai"
-import { editMaterialDialogAtom, messageDialogAtom } from "../atoms/dialogs"
+import { editMaterialDialogAtom } from "../atoms/dialogs"
 import { existMaterial, getFasadMaterial } from "../functions/functions"
 import ComboBox from "./ComboBox"
 import { ExtMaterial } from "../types/materials"
 import { FasadMaterial } from "../types/enums"
 import { MaterialCaptions, Materials } from "../assets/data"
 import { usedUrl } from "../options"
-import { addMaterialAtom, deleteMaterialAtom, loadMaterialListAtom, materialListAtom, updateMaterialAtom } from "../atoms/materials"
+import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../atoms/materials"
 import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
+import CheckBox from "./CheckBox"
+import Button from "./Button"
 
 type DialogProps = {
     dialogRef: React.RefObject<HTMLDialogElement>
@@ -27,6 +29,7 @@ export default function EditMaterialDialog(props: DialogProps) {
     const imageSrc = `${usedUrl}images/${extMaterials[extMaterialIndex].imageurl}`
     const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code1c, newImageSrc: imageSrc })
     const [{ nameChecked, codeChecked, imageChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false })
+    const [imageFileName, setImageFileName] = useState("???")
     useMemo(() => { setNewValues({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code1c, newImageSrc: imageSrc }) }, [extMaterials[extMaterialIndex].name])
     const nameRef = useRef<HTMLInputElement>(null)
     const codeRef = useRef<HTMLInputElement>(null)
@@ -44,34 +47,37 @@ export default function EditMaterialDialog(props: DialogProps) {
                     <ComboBox title="Цвет/Рисунок: " value={extMaterials[extMaterialIndex].name} items={extMaterials.map((m: ExtMaterial) => m.name)} onChange={(index, value) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
                 </div>
                 <br />
-                <input style={{ width: "200px", height: "200px", border: "1px solid black" }} name="image" type="image" alt="Нет изображения" src={newImageSrc} />
+                <input style={{ width: "200px", height: "200px", border: "1px solid black" }} name="image" type="image" alt="Нет изображения" src={newImageSrc} onClick={() => imageRef.current?.click()} />
             </div>
         </div>
         <hr />
-        <div className="d-flex flex-nowrap gap-2 align-items-start">
+        <div className="editmaterial-container">
             <hr />
             <div className="property-grid">
                 <span className="text-end text-nowrap">Наименование:</span>
-                <div className="d-flex gap-2">
-                    <input type="checkbox" checked={nameChecked} onChange={() => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />
+                <div className="d-flex justify-content-start gap-2">
+                    <input type="checkbox" checked={nameChecked} onChange={(e) => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />
                     <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewValues(prev => ({ ...prev, newName: e.target.value })) }} />
                 </div>
                 <span className="text-end text-nowrap">Код:</span>
-                <div className="d-flex gap-2">
+                <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
                     <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} />
                 </div>
                 <span className="text-end text-nowrap">Изображение:</span>
-                <div className="d-flex gap-2">
-                    <input type="checkbox" checked={imageChecked} onChange={() => { setChecked(prev => ({ ...prev, imageChecked: !imageChecked })) }} />
-                    <input type="file" ref={imageRef} src={newImageSrc} onChange={(e) => {
+                <div className="d-flex justify-content-start gap-2">
+                    <input type="checkbox" checked={imageChecked} onChange={(e) => { setChecked(prev => ({ ...prev, imageChecked: !imageChecked })) }} />
+                    <input style={{ display: "none" }} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newImageSrc} onChange={(e) => {
                         const file = e.target.files && e.target.files[0]
+                        console.log(file)
                         const url = file ? URL.createObjectURL(file) : ""
                         setNewValues(prev => ({ ...prev, newImageSrc: url || "" }))
+                        setImageFileName(file?.name || "")
                     }} />
+                    <span className="text-start text-wrap">{imageFileName}</span>
                 </div>
             </div>
-            <div className="d-flex flex-column gap-1">
+            <div className="editmaterial-buttons-container">
                 <input type="button" value="Удалить" onClick={() => {
                     const name = extMaterials[extMaterialIndex].name
                     const message = `Удалить материал: "${MaterialCaptions.get(baseMaterial)} - ${name}" ?`
@@ -83,21 +89,19 @@ export default function EditMaterialDialog(props: DialogProps) {
                         setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
                     })
                 }} />
-                <input type="button" value="Добавить" onClick={() => {
+                <Button caption="Добавить" disabled={!(nameChecked && codeChecked)} onClick={() => {
                     const name = newName
                     const code = newCode
-                    if (name.trim() === "") {
-                        showMessage("Введите наименование")
-                        return
-                    }
-                    if (existMaterial(name, baseMaterial, materialList)) showMessage("Материал уже существует");
-                    else {
-                        const file = imageRef.current && imageRef.current.files && imageRef.current.files[0]
+                    const file = imageRef.current && imageRef.current.files && imageRef.current.files[0]
+                    if (!checkFields({ imageChecked, newName, newCode, file }, showMessage)) return
+                    if (existMaterial(name, baseMaterial, materialList)) { showMessage("Материал уже существует"); return }
+                    const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode })
+                    showConfirm(message, () => {
                         addMaterial({ name, material: baseMaterial, code1c: code, imageurl: "" }, file, (result) => {
                             const message = result.success ? "Материал добавлен" : "Доступ запрещен. Перезайдите в систему"
                             showMessage(message)
                         });
-                    }
+                    })
                 }} />
                 <input type="button" value="Заменить" disabled={!(nameChecked || codeChecked || imageChecked)} onClick={() => {
                     const name = extMaterials[extMaterialIndex].name
@@ -124,7 +128,7 @@ export default function EditMaterialDialog(props: DialogProps) {
     </dialog>
 }
 
-function checkFields({ nameChecked, codeChecked, imageChecked, newName, newCode, file }: { nameChecked: boolean, codeChecked: boolean, imageChecked: boolean, newName: string, newCode: string, file: File | null }, showMessage: (message: string) => void) {
+function checkFields({ nameChecked = true, codeChecked = true, imageChecked, newName, newCode, file }: { nameChecked?: boolean, codeChecked?: boolean, imageChecked: boolean, newName: string, newCode: string, file: File | null }, showMessage: (message: string) => void) {
     if (nameChecked && newName.trim() === "") {
         showMessage("Введите наименование")
         return false
@@ -149,5 +153,10 @@ function getMessage({ nameChecked, codeChecked, imageChecked, name, code, newNam
     const sub1 = (nameChecked || codeChecked) && imageChecked ? "и" : ""
     const sub2 = nameChecked || codeChecked ? "на" : ""
     const message = `Заменить ${changeName} ${changeCode} ${sub2} ${changeName2} ${changeCode2} ${sub1} ${changeImage} ?`
+    return message
+}
+
+function getAddMessage({ material, name, code }: { material: string, name: string, code: string }): string {
+    const message = `Добавить материал ${material} - ${name}, код: ${code} ?`
     return message
 }

@@ -36,7 +36,7 @@ export default class UserServiceSQLite {
             const db = new sqlite3.Database(this.dbFile, (err) => {
                 if (err) { console.error(err); reject(err); db.close() }
                 const query = getQuery({ newName, imageurl, code1c, name, material })
-                db.all(`update extmaterials set name='${newName}', imageurl='${imageurl}', code1c='${code1c}' where name='${name}' and material='${material}';`, (err, rows) => {
+                db.all(query, (err, rows) => {
                     if (err) { console.error(err); reject(err); db.close() }
                     else { resolve(rows) }
                     db.close()
@@ -94,10 +94,11 @@ export default class UserServiceSQLite {
 }
 
 function getQuery({ newName, imageurl, code1c, name, material }) {
-    const namePart = newName ? `name='${newName}'` : ""
-    const imagePart = imageurl ? `imageurl='${imageurl}'` : ""
-    const codePart = code1c ? `code1c='${code1c}'` : ""
-
-    const query = `update extmaterials set ${namePart}`
-        `update extmaterials set name='${newName}', imageurl='${imageurl}', code1c='${code1c}' where name='${name}' and material='${material}';`
+    const parts = []
+    if (newName) parts.push(`name='${newName}'`)
+    if (imageurl) parts.push(`imageurl='${imageurl}'`)
+    if (code1c) parts.push(`code1c='${code1c}'`)
+    const query = `update extmaterials set ${parts.join(', ')} where name='${name}' and material='${material}';`
+    return query
 }
+

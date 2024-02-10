@@ -26,8 +26,8 @@ MaterialCaptions.set(FasadMaterial.FMP, "ФМП")
 MaterialCaptions.set(FasadMaterial.SAND, "ПЕСКОСТРУЙ")
 
 export const UserRolesCaptions = {
-    [UserRoles.GUEST]: "ГОСТЬ",
+    [UserRoles.GUEST]: "АНОНИМ",
     [UserRoles.MANAGER]: "МЕНЕДЖЕР",
-    [UserRoles.ADMIN]: "МОДЕРАТОР",
-    [UserRoles.SUPERADMIN]: "АДМИНИСТРАТОР",
+    [UserRoles.ADMIN]: "АДМИН",
+    [UserRoles.SUPERADMIN]: "СУПЕРАДМИН",
 }

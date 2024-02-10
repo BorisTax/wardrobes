@@ -1,0 +1,75 @@
+@media (orientation: landscape) {
+  .main-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fasad-container {
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .fasad-section-container {
+    border: 2px solid black;
+    width: auto;
+    height: 100%;
+  }
+  .editmaterial-container{
+    display: flex;
+    gap: 1em;
+  }
+  .editmaterial-buttons-container{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+}
+
+@media (orientation: portrait) {
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .fasad-container {
+    width: 90svw;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1em;
+    margin-top: 1em;
+  }
+
+  .fasad-section-container {
+    border: 2px solid black;
+    width: 90svw;
+    height: auto;
+  }
+  .editmaterial-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+  .editmaterial-buttons-container{
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+  }
+}
+
+.properties-container {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.properties-bar {
+  border: 2px solid black;
+  padding: 1em;
+}
+
+.fasad-section:hover {
+  box-shadow: inset 0px 0px 10px green;
+}

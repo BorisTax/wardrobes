@@ -10,6 +10,7 @@ import multipart from 'connect-multiparty';
 const multipartMiddleware = multipart();
 //import _debug from 'debug'
 import { router } from './routers.js'
+import { userRoleParser } from './options.js';
 
 //var debug = _debug('server')
 
@@ -28,12 +29,13 @@ app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname, '')))
 
+app.use(userRoleParser)
+
 app.use('/api', router)
 
 // app.use(function (req, res) {
 //     res.sendFile(path.join(__dirname, '/index.html'))
 //   })
-
 
 const port = process.env.PORT || 5000
 var httpServer = http.createServer(app);

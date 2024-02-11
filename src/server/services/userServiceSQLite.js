@@ -1,7 +1,8 @@
-import messages from './messages.js'
+import messages from '../messages.js'
 import sqlite3 from "sqlite3";
 import jwt from "jsonwebtoken";
 import { hashData } from './userService.js'
+
 export default class UserServiceSQLite {
     constructor(dbFile) {
         this.dbFile = dbFile

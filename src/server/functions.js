@@ -1,4 +1,4 @@
-import { hashData } from "./userService.js";
+import { hashData } from "./services/userService.js";
 import fs from 'fs'
 import multiparty from 'multiparty'
 hashData("manager123").then(p => console.log(p))
@@ -27,3 +27,11 @@ export async function getParams(req) {
         });
     })
 }
+
+export const checkPermissions = (req, res, roles) => {
+    if (!roles.some(r => r === req.userRole)) {
+      res.status(403).json({ success: false, message: messages.ACCESS_DENIED })
+      return false
+    }
+    return true
+  }

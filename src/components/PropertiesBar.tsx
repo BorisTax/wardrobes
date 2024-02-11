@@ -1,6 +1,5 @@
 import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
-import { Materials } from "../assets/data"
 import { Division } from "../types/enums"
 import InputField from "./InputField"
 import { PropertyTypes } from "../types/propertyTypes"
@@ -12,7 +11,7 @@ import ImageButton from "./ImageButton"
 import { useAtom, useSetAtom } from "jotai"
 import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, rootFasadesAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
 import { UserRoles, userAtom } from "../atoms/users"
-import { materialListAtom } from "../atoms/materials"
+import { Materials, materialListAtom } from "../atoms/materials"
 import { editMaterialDialogAtom } from "../atoms/dialogs"
 const sections = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {

@@ -1,5 +1,3 @@
-import messages from './messages.js'
-
 export class MaterialService {
     constructor(provider) {
         this.provider = provider

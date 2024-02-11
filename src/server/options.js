@@ -1,12 +1,19 @@
 import fs from 'fs'
-export const dbOptions = {
-  user: 'gofzadfozcwtpt',
-  host: 'ec2-176-34-215-248.eu-west-1.compute.amazonaws.com',
-  database: 'd3j3bviak3ovb8',
-  password: '52a36d47a25b4b1037172862e96a0d30acaf34c4f334d69d4dcd1300b4ab0ad3',
-  port: 5432,
-  ssl: { rejectUnauthorized: false }
+export const activeTokens = new Map()
+const expiredInterval = 3600 * 1000
+const clearExpiredTokens = () => {
+  activeTokens.forEach((v, t) => { if (Date.now() - v.time > expiredInterval) activeTokens.delete(t) })
 }
+setInterval(clearExpiredTokens, 60000)
+
+export const userRoleParser = (req, res, next) => {
+  const user = activeTokens.get(req.body.token)
+  if (user) {
+    req.userRole = user.role
+  }
+  next()
+}
+
 export const UserRoles = {
   SUPERADMIN: 'SUPERADMIN',
   ADMIN: 'ADMIN',
@@ -19,10 +26,4 @@ function readFile(file) {
     })
   })
 }
-export async function getCaptions(lang) {
-  try {
-    const data = await readFile(`./locale/${lang}.json`);
-    var result = JSON.parse(data);
-  } catch (e) { result = null }
-  return result;
-}
+

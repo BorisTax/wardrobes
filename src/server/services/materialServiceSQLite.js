@@ -1,4 +1,4 @@
-import messages from './messages.js'
+import messages from '../messages.js'
 import sqlite3 from "sqlite3";
 export default class UserServiceSQLite {
     constructor(dbFile) {

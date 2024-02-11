@@ -1,4 +1,4 @@
-import { atom, useAtom } from "jotai"
+import { atom } from "jotai"
 import { fetchData } from "../functions/functions"
 
 export enum UserRoles {
@@ -6,6 +6,13 @@ export enum UserRoles {
     ADMIN = 'ADMIN',
     MANAGER = 'MANAGER',
     GUEST = "GUEST"
+}
+
+export const UserRolesCaptions = {
+    [UserRoles.GUEST]: "",
+    [UserRoles.MANAGER]: "МЕНЕДЖЕР",
+    [UserRoles.ADMIN]: "АДМИН",
+    [UserRoles.SUPERADMIN]: "СУПЕРАДМИН",
 }
 
 export type UserState = {
@@ -24,7 +31,7 @@ export const logoutUserAtom = atom(null, async (get, set) => {
     localStorage.removeItem("user")
     const user = get(userAtom)
     try {
-        fetchData('api/logout', "POST", JSON.stringify({ token: user.token }))
+        fetchData('api/users/logout', "POST", JSON.stringify({ token: user.token }))
     } catch (e) { console.error(e) }
     set(userAtom, getInitialUser())
 })
@@ -37,7 +44,7 @@ export const setTestAtom = atom(null, (get, set, message: string) => {
 export function getInitialUser(): UserState {
     const storeUser = localStorage.getItem("user")
     const user = storeUser ? JSON.parse(storeUser) : {
-        name: "Гость",
+        name: UserRolesCaptions[UserRoles.GUEST],
         role: UserRoles.GUEST,
         token: ""
     }

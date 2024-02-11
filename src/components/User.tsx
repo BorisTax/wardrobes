@@ -1,6 +1,5 @@
-import { UserRolesCaptions } from "../assets/data";
 import { useAtom, useSetAtom } from "jotai";
-import { UserRoles, logoutUserAtom, userAtom } from "../atoms/users";
+import { UserRoles, UserRolesCaptions, logoutUserAtom, userAtom } from "../atoms/users";
 import { loginDialogAtom } from "../atoms/dialogs";
 import useConfirm from "../custom-hooks/useConfirm";
 

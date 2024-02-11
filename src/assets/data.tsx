@@ -1,4 +1,3 @@
-import { UserRoles } from "../atoms/users";
 import { FasadMaterial } from "../types/enums";
 
 export const colors = {
@@ -9,25 +8,5 @@ export const colors = {
     [FasadMaterial.LACOBELGLASS]: "#fffb00",
     [FasadMaterial.SAND]: "#15ff00"
 }
-export const Materials: Map<string, string> = new Map()
-Materials.set("ДСП", FasadMaterial.DSP)
-Materials.set("ЗЕРКАЛО", FasadMaterial.MIRROR)
-Materials.set("ЛАКОБЕЛЬ", FasadMaterial.LACOBEL)
-Materials.set("ЛАКОБЕЛЬ(СТЕКЛО)", FasadMaterial.LACOBELGLASS)
-Materials.set("ФМП", FasadMaterial.FMP)
-Materials.set("ПЕСКОСТРУЙ", FasadMaterial.SAND)
 
-export const MaterialCaptions: Map<string, string> = new Map()
-MaterialCaptions.set(FasadMaterial.DSP, "ДСП")
-MaterialCaptions.set(FasadMaterial.MIRROR, "ЗЕРКАЛО")
-MaterialCaptions.set(FasadMaterial.LACOBEL, "ЛАКОБЕЛЬ")
-MaterialCaptions.set(FasadMaterial.LACOBELGLASS, "ЛАКОБЕЛЬ(СТЕКЛО)")
-MaterialCaptions.set(FasadMaterial.FMP, "ФМП")
-MaterialCaptions.set(FasadMaterial.SAND, "ПЕСКОСТРУЙ")
 
-export const UserRolesCaptions = {
-    [UserRoles.GUEST]: "АНОНИМ",
-    [UserRoles.MANAGER]: "МЕНЕДЖЕР",
-    [UserRoles.ADMIN]: "АДМИН",
-    [UserRoles.SUPERADMIN]: "СУПЕРАДМИН",
-}

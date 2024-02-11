@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useAtom, useSetAtom } from "jotai"
 import { editMaterialDialogAtom } from "../atoms/dialogs"
-import { existMaterial, getFasadMaterial } from "../functions/functions"
+import { existMaterial, getFasadMaterial } from "../functions/materials"
 import ComboBox from "./ComboBox"
 import { ExtMaterial } from "../types/materials"
 import { FasadMaterial } from "../types/enums"
-import { MaterialCaptions, Materials } from "../atoms/materials"
-import { usedUrl } from "../options"
+import { MaterialCaptions, Materials } from "../functions/materials"
+import { baseUrl, imagesSrcUrl } from "../options"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../atoms/materials"
 import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
-import CheckBox from "./CheckBox"
 import Button from "./Button"
 
 type DialogProps = {
@@ -26,11 +25,11 @@ export default function EditMaterialDialog(props: DialogProps) {
     const addMaterial = useSetAtom(addMaterialAtom)
     const updateMaterial = useSetAtom(updateMaterialAtom)
     const extMaterials: ExtMaterial[] = materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }]
-    const imageSrc = `${usedUrl}images/${extMaterials[extMaterialIndex].imageurl}`
-    const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code1c, newImageSrc: imageSrc })
+    const imageSrc = `${baseUrl}${imagesSrcUrl}${extMaterials[extMaterialIndex].imageurl}`
+    const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc })
     const [{ nameChecked, codeChecked, imageChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false })
     const [imageFileName, setImageFileName] = useState("???")
-    useMemo(() => { setNewValues({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code1c, newImageSrc: imageSrc }) }, [extMaterials[extMaterialIndex].name])
+    useMemo(() => { setNewValues({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc }) }, [extMaterials[extMaterialIndex].name])
     const nameRef = useRef<HTMLInputElement>(null)
     const codeRef = useRef<HTMLInputElement>(null)
     const imageRef = useRef<HTMLInputElement>(null)
@@ -97,7 +96,7 @@ export default function EditMaterialDialog(props: DialogProps) {
                     if (existMaterial(name, baseMaterial, materialList)) { showMessage("Материал уже существует"); return }
                     const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode })
                     showConfirm(message, () => {
-                        addMaterial({ name, material: baseMaterial, code1c: code, imageurl: "" }, file, (result) => {
+                        addMaterial({ name, material: baseMaterial, code, imageurl: "" }, file, (result) => {
                             const message = result.success ? "Материал добавлен" : "Доступ запрещен. Перезайдите в систему"
                             showMessage(message)
                         });
@@ -108,7 +107,7 @@ export default function EditMaterialDialog(props: DialogProps) {
                     const file = imageRef.current && imageRef.current.files && imageRef.current.files[0]
                     if (!checkFields({ nameChecked, codeChecked, imageChecked, newName, newCode, file }, showMessage)) return
                     const material = baseMaterial
-                    const message = getMessage({ nameChecked, codeChecked, imageChecked, name, code: extMaterials[extMaterialIndex].code1c, newName, newCode })
+                    const message = getMessage({ nameChecked, codeChecked, imageChecked, name, code: extMaterials[extMaterialIndex].code, newName, newCode })
                     showConfirm(message, () => {
                         const usedName = nameChecked ? newName : ""
                         const usedCode = codeChecked ? newCode : ""

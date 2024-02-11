@@ -11,8 +11,9 @@ import ImageButton from "./ImageButton"
 import { useAtom, useSetAtom } from "jotai"
 import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, rootFasadesAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
 import { UserRoles, userAtom } from "../atoms/users"
-import { Materials, materialListAtom } from "../atoms/materials"
+import { materialListAtom } from "../atoms/materials"
 import { editMaterialDialogAtom } from "../atoms/dialogs"
+import { Materials } from "../functions/materials"
 const sections = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const [fasad] = useAtom(activeFasadAtom)

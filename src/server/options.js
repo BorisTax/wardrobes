@@ -1,13 +1,22 @@
 import fs from 'fs'
-export const activeTokens = new Map()
+import UserServiceSQLite from './services/userServiceSQLite.js'
+import { UserService } from './services/userService.js'
+
+export const userServiceProvider = new UserServiceSQLite('./database/database.db')
+
 const expiredInterval = 3600 * 1000
 const clearExpiredTokens = () => {
-  activeTokens.forEach((v, t) => { if (Date.now() - v.time > expiredInterval) activeTokens.delete(t) })
+  const userService = new UserService(userServiceProvider)
+  userService.getTokens().then(tokenList => {
+    tokenList.forEach(t => { 
+      if (Date.now() - t.time > expiredInterval) userService.deleteToken(t.token) })
+  })
 }
 setInterval(clearExpiredTokens, 60000)
 
-export const userRoleParser = (req, res, next) => {
-  const user = activeTokens.get(req.body.token)
+export const userRoleParser = async (req, res, next) => {
+  const userService = new UserService(userServiceProvider)
+  const user = await userService.getUser(req.body.token)
   if (user) {
     req.userRole = user.role
   }

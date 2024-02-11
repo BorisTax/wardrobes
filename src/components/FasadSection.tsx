@@ -1,14 +1,14 @@
 import React, { ReactElement } from "react";
 import Fasad from "../classes/Fasad";
 import { Division } from "../types/enums";
-import { colors } from "../assets/data";
+import { colors } from "../functions/materials";
 import FixedHeight from "./FixedHeight";
 import FixedWidth from "./FixedWidth";
 import FixedBoth from "./FixedBoth";
 import { useSetAtom } from "jotai";
 import { setActiveFasadAtom } from "../atoms/fasades";
 import { useImageUrl } from "../atoms/materials";
-import { usedUrl } from "../options";
+import { baseUrl, imagesSrcUrl } from "../options";
 type FasadSectionProps = {
     fasad: Fasad
     rootFasad: Fasad
@@ -20,7 +20,6 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     const activeFasad = props.activeFasad
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const imageUrl = useImageUrl(fasad.ExtMaterial)
-    if (fasad.Active) console.log(fasad.ExtMaterial)
     let gridTemplate: {
         gridTemplateColumns: string;
         gridTemplateRows: string;
@@ -35,7 +34,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     styles = { ...styles, border: (fasad === activeFasad ? "3px solid red" : "") }
     let events = {}
     let classes = ""
-    const backImage = `url("${usedUrl}images/${imageUrl}")`
+    const backImage = `url("${baseUrl}${imagesSrcUrl}${imageUrl}")`
     if (fasad.Children.length === 0) {
         styles = {
             ...styles,

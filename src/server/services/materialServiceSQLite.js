@@ -17,11 +17,11 @@ export default class UserServiceSQLite {
         }
         )
     }
-    async addExtMaterial({ name, material, imageurl, code1c }) {
+    async addExtMaterial({ name, material, imageurl, code }) {
         return new Promise((resolve, reject) => {
             const db = new sqlite3.Database(this.dbFile, (err) => {
                 if (err) { console.error(err); reject(err); db.close() }
-                db.all(`insert into extmaterials (name, material, imageurl, code1c) values('${name}', '${material}', '${imageurl}', '${code1c}');`, (err, rows) => {
+                db.all(`insert into extmaterials (name, material, imageurl, code1c) values('${name}', '${material}', '${imageurl}', '${code}');`, (err, rows) => {
                     if (err) { console.error(err); reject(err); db.close() }
                     else { resolve(rows) }
                     db.close()
@@ -31,11 +31,11 @@ export default class UserServiceSQLite {
         )
     }
 
-    async updateExtMaterial({ name, material, newName, imageurl, code1c }) {
+    async updateExtMaterial({ name, material, newName, imageurl, code }) {
         return new Promise((resolve, reject) => {
             const db = new sqlite3.Database(this.dbFile, (err) => {
                 if (err) { console.error(err); reject(err); db.close() }
-                const query = getQuery({ newName, imageurl, code1c, name, material })
+                const query = getQuery({ newName, imageurl, code, name, material })
                 db.all(query, (err, rows) => {
                     if (err) { console.error(err); reject(err); db.close() }
                     else { resolve(rows) }
@@ -93,11 +93,11 @@ export default class UserServiceSQLite {
     }
 }
 
-function getQuery({ newName, imageurl, code1c, name, material }) {
+function getQuery({ newName, imageurl, code, name, material }) {
     const parts = []
     if (newName) parts.push(`name='${newName}'`)
     if (imageurl) parts.push(`imageurl='${imageurl}'`)
-    if (code1c) parts.push(`code1c='${code1c}'`)
+    if (code) parts.push(`code1c='${code}'`)
     const query = `update extmaterials set ${parts.join(', ')} where name='${name}' and material='${material}';`
     return query
 }

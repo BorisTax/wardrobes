@@ -1,5 +1,5 @@
 import { atom } from "jotai"
-import { fetchData } from "../functions/functions"
+import { fetchData } from "../functions/fetch"
 
 export enum UserRoles {
     SUPERADMIN = 'SUPERADMIN',

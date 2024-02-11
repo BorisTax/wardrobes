@@ -1,44 +1,49 @@
 import messages from '../messages.js'
 import express from "express";
-import { UserRoles } from '../options.js';
-import UserServiceSQLite from "../services/userServiceSQLite.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { UserRoles, userServiceProvider } from '../options.js';
 import { UserService } from '../services/userService.js';
 import { checkPermissions } from '../functions.js';
-import { activeTokens } from '../options.js';
-
-const userServiceProvider = new UserServiceSQLite('./database/database.db')
 
 const router = express.Router();
 export default router
+
 router.post("/login", async (req, res) => {
   const user = req.body;
   if (!user.name) user.name = "";
   if (!user.password) user.password = "";
-  
+  const userService = new UserService(userServiceProvider)
   const result = await loginUser(user);
-  
-  if (result.success)
-  activeTokens.set(result.token, { name: result.name, role: result.role, time: Date.now() })
-//res.cookie('token',result.token,{httpOnly:false})
-res.json(result);
+  if (result.success) userService.addToken({token: result.token, username: user.name})
+  //res.cookie('token',result.token,{httpOnly:false})
+  res.json(result);
 });
 
 router.post("/logout", async (req, res) => {
   const user = req.body;
-  activeTokens.delete(user.token)
+  const userService = new UserService(userServiceProvider)
+  userService.deleteToken(user.token)
   res.json({ success: true });
 });
 
 router.post("/active", async (req, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
+  const userService = new UserService(userServiceProvider)
   const result = []
-  activeTokens.forEach((v, token) => result.push({ token, name: v.name, role: v.role }))
+  const tokens = await userService.getTokens()
+  const users = await userService.getUsers()
+  tokens.forEach(t => {
+    const user = users.find(u => u.name === t.username)
+    if (user) result.push({ token: t.token, name: user.name, role: user.role, time: t.time })
+  })
   res.json(result);
 });
 
 router.post("/logoutall", async (req, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
-  activeTokens.clear()
+  const userService = new UserService(userServiceProvider)
+  userService.clearAllTokens()
   res.json({ success: true });
 });
 

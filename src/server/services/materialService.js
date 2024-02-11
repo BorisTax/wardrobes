@@ -5,11 +5,11 @@ export class MaterialService {
     async getExtMaterials() {
         return await this.provider.getExtMaterials()
     }
-    async addExtMaterial({name, material, imageurl, code1c}) {
-        return await this.provider.addExtMaterial({name, material, imageurl, code1c})
+    async addExtMaterial({name, material, imageurl, code}) {
+        return await this.provider.addExtMaterial({name, material, imageurl, code})
     }
-    async updateExtMaterial({name, material, newName, imageurl, code1c}) {
-        return await this.provider.updateExtMaterial({name, material, newName,  imageurl, code1c})
+    async updateExtMaterial({name, material, newName, imageurl, code}) {
+        return await this.provider.updateExtMaterial({name, material, newName,  imageurl, code})
     }
     async deleteExtMaterial(name, material){
         return await this.provider.deleteExtMaterial(name, material)

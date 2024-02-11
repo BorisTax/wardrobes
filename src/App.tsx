@@ -11,7 +11,7 @@ import LoginDialog from './components/LoginDialog'
 import WardrobePropertiesBar from './components/WardrobePropertiesBar'
 import { useAtom, useSetAtom } from 'jotai'
 import { setActiveFasadAtom } from './atoms/fasades'
-import { loadMaterialListAtom } from './atoms/materials'
+import { loadMaterialListAtom, loadProfileListAtom } from './atoms/materials'
 import EditMaterialDialog from './components/EditMaterialDialog'
 import { UserRoles, userAtom } from './atoms/users'
 import MessageDialog from './components/MessageDialog'
@@ -20,6 +20,7 @@ import ConfirmDialog from './components/ConfirmDialog'
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
+  const loadProfileList = useSetAtom(loadProfileListAtom)
   const loginDialogRef = useRef<HTMLDialogElement>(null)
   const editMaterialDialogRef = useRef<HTMLDialogElement>(null)
   const messageDialogRef = useRef<HTMLDialogElement>(null)
@@ -27,6 +28,7 @@ function App() {
   const [user] = useAtom(userAtom)
   useEffect(() => {
     loadMaterialList()
+    loadProfileList()
     //const onClick = (e: Event) => { setActiveFasad(null); }
     const onContextMenu = (e: Event) => { e.preventDefault() }
     document.addEventListener("contextmenu", onContextMenu)

@@ -1,28 +1,11 @@
 import { atom, useAtom } from "jotai";
 import { ExtMaterial } from "../types/materials";
-import { fetchData, fetchFormData, getMaterialList } from "../functions/functions";
+import { fetchData, fetchFormData } from "../functions/fetch";
 import { userAtom } from "./users";
-import { FasadMaterial } from "../types/enums";
-
-export const Materials: Map<string, string> = new Map()
-Materials.set("ДСП", FasadMaterial.DSP)
-Materials.set("ЗЕРКАЛО", FasadMaterial.MIRROR)
-Materials.set("ЛАКОБЕЛЬ", FasadMaterial.LACOBEL)
-Materials.set("ЛАКОБЕЛЬ(СТЕКЛО)", FasadMaterial.LACOBELGLASS)
-Materials.set("ФМП", FasadMaterial.FMP)
-Materials.set("ПЕСКОСТРУЙ", FasadMaterial.SAND)
-
-export const MaterialCaptions: Map<string, string> = new Map()
-MaterialCaptions.set(FasadMaterial.DSP, "ДСП")
-MaterialCaptions.set(FasadMaterial.MIRROR, "ЗЕРКАЛО")
-MaterialCaptions.set(FasadMaterial.LACOBEL, "ЛАКОБЕЛЬ")
-MaterialCaptions.set(FasadMaterial.LACOBELGLASS, "ЛАКОБЕЛЬ(СТЕКЛО)")
-MaterialCaptions.set(FasadMaterial.FMP, "ФМП")
-MaterialCaptions.set(FasadMaterial.SAND, "ПЕСКОСТРУЙ")
-
-export type MaterialList = Map<string, ExtMaterial[]>
+import { getMaterialList, getProfileList } from "../functions/materials";
 
 export const materialListAtom = atom(new Map())
+export const profileListAtom = atom(new Map())
 
 export const loadMaterialListAtom = atom(null, async (get, set) => {
     try {
@@ -32,6 +15,13 @@ export const loadMaterialListAtom = atom(null, async (get, set) => {
     } catch (e) { }
 })
 
+export const loadProfileListAtom = atom(null, async (get, set) => {
+    try {
+        const data = await fetchData('api/materials/profiles', "POST", "")
+        console.log(data.profiles)
+        set(profileListAtom, data.profiles)
+    } catch (e) { }
+})
 export const imageUrlAtom = atom((get) => {
     get(materialListAtom)
 })
@@ -51,7 +41,7 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
     if (image) formData.append("image", image)
     formData.append("name", material.name)
     formData.append("material", material.material)
-    formData.append("code1c", material.code1c)
+    formData.append("code1c", material.code)
     formData.append("token", user.token)
     try {
         const result = await fetchFormData("api/materials/add", "POST", formData)

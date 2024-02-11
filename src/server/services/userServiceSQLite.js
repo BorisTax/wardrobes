@@ -1,7 +1,7 @@
 import messages from '../messages.js'
 import sqlite3 from "sqlite3";
 import jwt from "jsonwebtoken";
-import { hashData } from './userService.js'
+import { hashData } from '../functions.js'
 
 export default class UserServiceSQLite {
     constructor(dbFile) {
@@ -20,7 +20,68 @@ export default class UserServiceSQLite {
         }
         )
     }
+    async getTokens() {
+        return new Promise((resolve, reject) => {
+            const db = new sqlite3.Database(this.dbFile, (err) => {
+                if (err) { console.error(err); reject(err); db.close() }
+                db.all("select * from 'tokens'", (err, rows) => {
+                    if (err) { console.error(err); reject(err); db.close()  }
+                    else resolve(rows)
+                    db.close()
+                });
+            });
+        }
+        )
+    }
+    async addToken({token, username}){
+        return new Promise((resolve, reject) => {
+            const db = new sqlite3.Database(this.dbFile, (err) => {
+                if (err) { console.error(err); reject(err); db.close() }
+                const time = Date.now()
+                db.all(`INSERT INTO tokens VALUES(?, ?, ?)`,[token, username, time], (err, rows) => {
+                    if (err) { console.error(err); reject({ success: false, message: messages.SERVER_ERROR }); db.close()  }
+                    else {
+                        resolve({ success: true })
+                    }
+                    db.close()
+                });
+            });
 
+        }
+        )
+      }
+      async deleteToken(token){
+        return new Promise((resolve, reject) => {
+            const db = new sqlite3.Database(this.dbFile, (err) => {
+                if (err) { console.error(err); reject(err); db.close() }
+                db.all(`DELETE FROM tokens WHERE token='${token}'`, (err, rows) => {
+                    if (err) { console.error(err); reject({ success: false, message: messages.SERVER_ERROR }); db.close()  }
+                    else {
+                        resolve({ success: true })
+                    }
+                    db.close()
+                });
+            });
+
+        }
+        )
+      }
+      async clearAllTokens(){
+        return new Promise((resolve, reject) => {
+            const db = new sqlite3.Database(this.dbFile, (err) => {
+                if (err) { console.error(err); reject(err); db.close() }
+                db.all(`DELETE FROM tokens`, (err, rows) => {
+                    if (err) { console.error(err); reject({ success: false, message: messages.SERVER_ERROR }); db.close()  }
+                    else {
+                        resolve({ success: true })
+                    }
+                    db.close()
+                });
+            });
+
+        }
+        )
+      }
     async registerUser(user) {
         const hash = await hashData(user.password);
         return new Promise((resolve, reject) => {
@@ -40,25 +101,4 @@ export default class UserServiceSQLite {
         )
     }
 
-    async activateUser(userName, code) {
-        const res = await this.getUsers()
-        const user = res.find(u => (userName === u.name && u.activationCode === code))
-        if (user !== undefined) {
-            return new Promise((resolve, reject) => {
-                const db = new sqlite3.Database(this.dbFile, (err) => {
-                    if (err) { console.error(err); reject(err); db.close() }
-                    db.all("UPDATE users SET activated=?, activationCode=? WHERE name=?", ['TRUE', 'NULL', userName], (err, rows) => {
-                        if (err) { console.error(err); reject({ success: false, message: messages.SERVER_ERROR }); db.close()  }
-                        else {
-                            const token = jwt.sign({ name: user.name, activated: true }, "secretkey", { expiresIn: 1440 });
-                            resolve({ success: true, token, message: messages.ACTIVATION_SUCCEED })
-                        }
-                        db.close()
-                    });
-                });
-            }
-            )
-        }
-        return { success: false, message: messages.INVALID_ACTIVATION_CODE }
-    }
 }

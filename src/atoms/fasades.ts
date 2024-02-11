@@ -3,7 +3,7 @@ import Fasad from '../classes/Fasad'
 import FasadState from '../classes/FasadState'
 import { Division, FasadMaterial } from '../types/enums'
 import { trySetHeight, trySetWidth } from '../functions/fasadFunc'
-import { getFasadMaterial, getProfileDirection } from '../functions/functions'
+import { getFasadMaterial, getProfileDirection } from '../functions/materials'
 import { materialListAtom } from './materials'
 
 export const rootFasadesAtom = atom(getInitialState())

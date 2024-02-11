@@ -1,10 +1,10 @@
-import { hashData } from "./services/userService.js";
 import fs from 'fs'
 import multiparty from 'multiparty'
-hashData("manager123").then(p => console.log(p))
+import bcrypt from "bcrypt";
+import messages from './messages.js';
 
 export async function moveFile(sourcefile, destfile) {
-    const result = { copy: false, delete: false }
+    const result = { copy: false, delete: false } 
     return new Promise((resolve, reject) => {
         fs.copyFile(sourcefile, destfile, function (err) {
             if (err) resolve(result); else {
@@ -34,4 +34,13 @@ export const checkPermissions = (req, res, roles) => {
       return false
     }
     return true
+  }
+
+  export function hashData(data) {
+    return new Promise((resolve, reject) => {
+      bcrypt.hash(data, 10, (err, hash) => {
+        if (err) reject(err);
+        else resolve(hash);
+      });
+    });
   }

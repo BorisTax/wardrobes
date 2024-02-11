@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 var app = express()
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json({limit: config.bodyParserLimit}))
+app.use(bodyParser.json())
 app.use(multipartMiddleware)
 app.use(cookieParser())
 

@@ -1,1 +1,1 @@
-nodemon --ignore database.db index.js
+nodemon --ignore /database --ext "ts,json" --exec "ts-node --esm index.ts"

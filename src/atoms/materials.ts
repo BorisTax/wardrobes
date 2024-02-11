@@ -10,7 +10,7 @@ export const profileListAtom = atom(new Map())
 export const loadMaterialListAtom = atom(null, async (get, set) => {
     try {
         const data = await fetchData('api/materials/list', "POST", "")
-        const mList = getMaterialList(data.materials)
+        const mList = getMaterialList(data)
         set(materialListAtom, mList)
     } catch (e) { }
 })
@@ -18,8 +18,7 @@ export const loadMaterialListAtom = atom(null, async (get, set) => {
 export const loadProfileListAtom = atom(null, async (get, set) => {
     try {
         const data = await fetchData('api/materials/profiles', "POST", "")
-        console.log(data.profiles)
-        set(profileListAtom, data.profiles)
+        set(profileListAtom, data)
     } catch (e) { }
 })
 export const imageUrlAtom = atom((get) => {

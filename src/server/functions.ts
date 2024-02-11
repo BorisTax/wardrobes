@@ -1,8 +1,23 @@
 import fs from 'fs'
 import bcrypt from "bcrypt";
+import sqlite3 from "sqlite3";
 import messages from './messages.js';
-import { Request, Response } from "express"
-import { MyRequest, UserRoles } from '../types/server.js';
+import { Response } from "express"
+import { MyRequest, Results, UserRoles } from '../types/server.js';
+
+export function dataBaseQuery(dbFile: string, query: string): Promise<Results>{
+    return new Promise((resolve) => {
+        const db = new sqlite3.Database(dbFile, (err) => {
+            if (err) { resolve({ success: false, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close() }
+            db.all(query, (err: Error, rows: []) => {
+                if (err) { resolve({ success: false, message: messages.SQL_QUERY_ERROR, error: err }); db.close() }
+                else { resolve({success: true, data: rows}) }
+                db.close()
+            });
+        });
+    }
+    )
+}
 
 export async function moveFile(sourcefile: string, destfile: string): Promise<{ copy: boolean, delete: boolean }> {
     const result = { copy: false, delete: false }

@@ -1,4 +1,4 @@
-import { Result, User } from '../../types/server.js'
+import { Results, Token, User } from '../../types/server.js'
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 
@@ -8,7 +8,7 @@ export class UserService implements IUserService {
   constructor(provider: IUserServiceProvider) {
     this.provider = provider
   }
-  async getUsers(): Promise<Result<User[]>> {
+  async getUsers(): Promise<Results> {
     return await this.provider.getUsers()
   }
   async getUser(token: string): Promise<User | undefined> {
@@ -16,9 +16,9 @@ export class UserService implements IUserService {
     if(!tokenList.success) return undefined
     const userList = await this.getUsers()
     if(!userList.success) return undefined
-    const foundToken = tokenList.data?.find(t => t.token === token)
+    const foundToken = (tokenList.data as Token[]).find(t => t.token === token)
     const userName = foundToken && foundToken.username
-    const user = userList.data?.find(u => u.name === userName)
+    const user = (userList.data as User[]).find(u => u.name === userName)
     return user
   }
   async getTokens() {
@@ -43,7 +43,7 @@ export class UserService implements IUserService {
     const result = await this.getUsers()
     if(!result.success) return {success: false}
     const userList = result.data || []
-    const user = userList.find(u => u.name === name)
+    const user = (userList as User[]).find(u => u.name === name)
     if (user) return { success: false, message: messages.USER_NAME_EXIST }
     return { success: true, message: messages.USER_NAME_ALLOWED }
   }

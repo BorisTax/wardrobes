@@ -1,4 +1,5 @@
 import { Request } from "express"
+import { ExtMaterial, Profile } from "./materials"
 export type Token = {
     token: string
     username: string
@@ -36,3 +37,10 @@ export type Result<T> = {
     data?: T
     error?: Error
 }
+
+export type Results = Result<null> | 
+                        Result<ExtMaterial[]> | 
+                        Result<Profile[]> | 
+                        Result<User[]> |
+                        Result<Token[]> |
+                        Result<string>

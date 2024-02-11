@@ -1,19 +1,19 @@
 import { ExtMaterial, ExtNewMaterial, Profile } from "./materials"
-import { Result, Token, User } from "./server"
+import { Result, Results, Token, User } from "./server"
 interface IUserAbstractService {
-    getUsers: () => Promise<Result<User[]>>
-    getTokens: () => Promise<Result<Token[]>>
-    addToken: ({ token, userName }: { token: string, userName: string }) => Promise<Result<null>>
-    deleteToken: (token: string) => Promise<Result<null>>
-    clearAllTokens: () => Promise<Result<null>>
-    registerUser: (user: User) => Promise<Result<string>>
+    getUsers: () => Promise<Results>
+    getTokens: () => Promise<Results>
+    addToken: ({ token, userName }: { token: string, userName: string }) => Promise<Results>
+    deleteToken: (token: string) => Promise<Results>
+    clearAllTokens: () => Promise<Results>
+    registerUser: (user: User) => Promise<Results>
 }
 interface IMaterialAbstractService {
-    getExtMaterials: () => Promise<Result<ExtMaterial[]>>
-    addExtMaterial: ({ name, material, imageurl, code }: ExtMaterial) => Promise<Result<null>>
-    updateExtMaterial: ({ name, material, newName, imageurl, code }: ExtNewMaterial) => Promise<Result<null>>
-    deleteExtMaterial: (name: string, base: string) => Promise<Result<null>>
-    getProfiles: () => Promise<Result<Profile[]>>
+    getExtMaterials: () => Promise<Results>
+    addExtMaterial: ({ name, material, imageurl, code }: ExtMaterial) => Promise<Results>
+    updateExtMaterial: ({ name, material, newName, imageurl, code }: ExtNewMaterial) => Promise<Results>
+    deleteExtMaterial: (name: string, base: string) => Promise<Results>
+    getProfiles: () => Promise<Results>
 }
 
 export interface IMaterialServiceProvider extends IMaterialAbstractService {

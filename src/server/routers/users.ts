@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { userServiceProvider } from '../options.js';
 import { UserService } from '../services/userService.js';
 import { checkPermissions } from '../functions.js';
-import { ActiveUser, User, UserRoles } from '../../types/server.js';
+import { ActiveUser, Token, User, UserRoles } from '../../types/server.js';
 
 const router = express.Router();
 export default router
@@ -31,10 +31,10 @@ router.post("/active", async (req, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
   const userService = new UserService(userServiceProvider)
   const result: ActiveUser[] = []
-  const tokens = await userService.getTokens()
-  const users = await userService.getUsers()
-  tokens.data?.forEach(t => {
-    const user = users.data?.find(u => u.name === t.username)
+  const tokens = await userService.getTokens();
+  const users = await userService.getUsers();
+  (tokens.data as Token[]).forEach((t: Token) => {
+    const user = (users.data as User[]).find((u: User) => u.name === t.username)
     if (user) result.push({ token: t.token, name: user.name, role: user.role, time: t.time })
   })
   res.json(result);
@@ -61,7 +61,7 @@ router.post("/all", async (req, res) => {
   let result = await userService.getUsers()
   if(!result.success) return res.json(result)
   const users = result.data
-  res.json(users?.map(u => ({ name: u.name, role: u.role })));
+  res.json((users as User[]).map(u => ({ name: u.name, role: u.role })));
 });
 
 async function loginUser(user: User) {
@@ -70,7 +70,7 @@ async function loginUser(user: User) {
   const result = await userService.getUsers()
   if(!result.success) return result;
   const userList = result.data
-  const foundUser = userList?.find(u => (user.name === u.name))
+  const foundUser = (userList as User[]).find(u => (user.name === u.name))
   if (!foundUser) return { success: false, message: messages.INVALID_USER_DATA };
   if (!bcrypt.compareSync(user.password, foundUser.password)) return { success: false, message: messages.INVALID_USER_DATA };
   const token = jwt.sign({ name: foundUser.name, role: foundUser.role }, "secretkey", { expiresIn: 1440 });

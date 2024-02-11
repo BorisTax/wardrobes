@@ -76,7 +76,7 @@ export async function addExtMaterial({ name, material, imageurl, code }: ExtMate
   const result = await materialService.getExtMaterials()
   if (!result.success) return result
   const materials = result.data
-  if (materials?.find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_EXIST }
+  if ((materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_EXIST }
   const res = await materialService.addExtMaterial({ name, material, imageurl, code })
   if (!res.success) return res
   return { success: true }
@@ -87,7 +87,7 @@ export async function updateExtMaterial({ name, material, newName, imageurl, cod
   const result = await materialService.getExtMaterials()
   if (!result.success) return result
   const materials = result.data
-  if (!materials?.find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_NO_EXIST }
+  if (!(materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_NO_EXIST }
   const res = await materialService.updateExtMaterial({ name, material, newName, imageurl, code })
   if (!res.success) return res
   return { success: true }
@@ -98,7 +98,7 @@ export async function deleteExtMaterial(name: string, material: string) {
   const result = await materialService.getExtMaterials()
   if (!result.success) return result
   const materials = result.data
-  if (!materials?.find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_NO_EXIST }
+  if (!(materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_NO_EXIST }
   const res = await materialService.deleteExtMaterial(name, material)
   if (!res.success) return res
   return { success: true }

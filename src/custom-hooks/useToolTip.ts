@@ -2,8 +2,13 @@ import { useEffect } from "react";
 import { isMobile } from "../functions/functions";
 
 export const useToolTip = (title: string | undefined) => {
-  if (!title) return { onMouseLeave: () => { }, onMouseOver: () => { } }
   const toolTip: HTMLElement | null = document.getElementById("tooltip");
+  useEffect(() => {
+    return () => {
+      toolTip && (toolTip.style.display = "none");
+    }
+  }, [toolTip])
+  if (!title) return { onMouseLeave: () => { }, onMouseOver: () => { } }
   const onMouseOver = (e: React.MouseEvent) => {
     if (isMobile()) return
     const { top: elementTop, left: elementLeft, height: elementHeight } = e.target ? (e.target as HTMLElement).getBoundingClientRect() : { top: 0, left: 0, height: 0 };
@@ -14,8 +19,8 @@ export const useToolTip = (title: string | undefined) => {
       toolTip.style.zIndex = "10"
       toolTip.style.fontSize = "0.8rem"
       const { width: toolTipWidth, height: toolTipHeight } = toolTip.getBoundingClientRect()
-      let top = elementTop + elementHeight + window.scrollY + 5
-      let left = elementLeft + window.scrollX
+      const top = elementTop + elementHeight + window.scrollY + 5
+      const left = elementLeft + window.scrollX
       if ((left + toolTipWidth) > window.innerWidth) {
         toolTip.style.right = "0px";
         toolTip.style.left = "auto";
@@ -36,10 +41,6 @@ export const useToolTip = (title: string | undefined) => {
   const onMouseLeave = () => {
     toolTip && (toolTip.style.display = "none");
   }
-  useEffect(() => {
-    return () => {
-      toolTip && (toolTip.style.display = "none");
-    }
-  }, [])
+
   return { onMouseOver, onMouseLeave };
 };

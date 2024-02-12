@@ -8,7 +8,7 @@ import FixedBoth from "./FixedBoth";
 import { useSetAtom } from "jotai";
 import { setActiveFasadAtom } from "../atoms/fasades";
 import { useImageUrl } from "../atoms/materials";
-import { baseUrl, imagesSrcUrl } from "../options";
+import { imagesSrcUrl } from "../options";
 type FasadSectionProps = {
     fasad: Fasad
     rootFasad: Fasad
@@ -34,7 +34,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     styles = { ...styles, border: (fasad === activeFasad ? "3px solid red" : "") }
     let events = {}
     let classes = ""
-    const backImage = `url("${baseUrl}${imagesSrcUrl}${imageUrl}")`
+    const backImage = `url("${imagesSrcUrl}${imageUrl}")`
     if (fasad.Children.length === 0) {
         styles = {
             ...styles,

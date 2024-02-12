@@ -6,7 +6,7 @@ import ComboBox from "./ComboBox"
 import { ExtMaterial } from "../types/materials"
 import { FasadMaterial } from "../types/enums"
 import { MaterialCaptions, Materials } from "../functions/materials"
-import { baseUrl, imagesSrcUrl } from "../options"
+import { imagesSrcUrl } from "../options"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../atoms/materials"
 import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
@@ -25,7 +25,7 @@ export default function EditMaterialDialog(props: DialogProps) {
     const addMaterial = useSetAtom(addMaterialAtom)
     const updateMaterial = useSetAtom(updateMaterialAtom)
     const extMaterials: ExtMaterial[] = materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }]
-    const imageSrc = `${baseUrl}${imagesSrcUrl}${extMaterials[extMaterialIndex].imageurl}`
+    const imageSrc = `${imagesSrcUrl}${extMaterials[extMaterialIndex].imageurl}`
     const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc })
     const [{ nameChecked, codeChecked, imageChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false })
     const [imageFileName, setImageFileName] = useState("???")

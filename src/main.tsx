@@ -1,20 +1,20 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
 import { Provider } from 'jotai'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ErrorBoundary } from 'react-error-boundary'
 const queryClient = new QueryClient()
-ReactDOM.render(
+const root = createRoot((document.getElementById('root') as HTMLElement))
+root.render(
   <React.StrictMode>
     <Provider>
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary fallback={<div>Произошла ошибка! Обновите страницу</div>}>
-        <App />
+          <App />
         </ErrorBoundary>
       </QueryClientProvider>
     </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 )

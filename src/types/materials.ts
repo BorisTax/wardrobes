@@ -9,6 +9,11 @@ export type ExtNewMaterial = ExtMaterial & {
 }
 export type Profile = {
     name: string
-    profile: string
+    type: ProfileType
     code: string
+}
+
+export enum ProfileType {
+    STANDART = 'STANDART',
+    BAVARIA = 'BAVARIA'
 }

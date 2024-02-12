@@ -5,8 +5,11 @@ import { Division, FasadMaterial } from '../types/enums'
 import { trySetHeight, trySetWidth } from '../functions/fasadFunc'
 import { getFasadMaterial, getProfileDirection } from '../functions/materials'
 import { materialListAtom } from './materials'
+import { WardType } from '../types/app'
+import { Profile, ProfileType } from '../types/materials'
+import { getFasadHeight, getFasadWidth } from '../functions/wardrobe'
 
-export const rootFasadesAtom = atom(getInitialState())
+export const rootFasadesAtom = atom(getInitialState(2400, 2400, 3, WardType.WARDROBE, ProfileType.STANDART))
 export const activeRootFasadIndexAtom = atom(0)
 export const activeFasadAtom = atom<Fasad | null>((get) => {
     const index = get(activeRootFasadIndexAtom)
@@ -102,12 +105,13 @@ function getFasadState(width: number, height: number, division: Division, materi
     state.material = material
     return state
 }
-export function getInitialState(): Fasad[] {
+export function getInitialState(wardHeight: number, wardWidth: number, fasadCount: number, wardType: WardType, profileType: ProfileType): Fasad[] {
+    const width = getFasadWidth(wardWidth, fasadCount, wardType, profileType)
+    const height = getFasadHeight(wardHeight, wardType, profileType)
     const fasades: Fasad[] = []
-    const fasadCount = 3
     for (let i = 0; i < fasadCount; i++) {
         const fasad = new Fasad()
-        fasad.setState(getFasadState(1179, 2243, Division.HEIGHT, FasadMaterial.DSP))
+        fasad.setState(getFasadState(width, height, Division.HEIGHT, FasadMaterial.DSP))
         fasades.push(fasad)
     }
     return fasades

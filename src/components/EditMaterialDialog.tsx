@@ -20,16 +20,18 @@ export default function EditMaterialDialog(props: DialogProps) {
     const [materialList] = useAtom(materialListAtom)
     const [{ baseMaterial, extMaterialIndex }, setState] = useState({ baseMaterial: FasadMaterial.DSP, extMaterialIndex: 0 })
     const closeDialog = () => { props.dialogRef.current?.close() }
-    const [_, setMaterialDialogRef] = useAtom(editMaterialDialogAtom)
+    const [, setMaterialDialogRef] = useAtom(editMaterialDialogAtom)
     const deleteMaterial = useSetAtom(deleteMaterialAtom)
     const addMaterial = useSetAtom(addMaterialAtom)
     const updateMaterial = useSetAtom(updateMaterialAtom)
-    const extMaterials: ExtMaterial[] = materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }]
+    const extMaterials: ExtMaterial[] = useMemo(() => materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }], [materialList, baseMaterial]);
     const imageSrc = `${imagesSrcUrl}${extMaterials[extMaterialIndex].imageurl}`
     const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc })
     const [{ nameChecked, codeChecked, imageChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false })
     const [imageFileName, setImageFileName] = useState("???")
-    useMemo(() => { setNewValues({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc }) }, [extMaterials[extMaterialIndex].name])
+    useMemo(() => {
+        setNewValues({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc })
+    }, [extMaterials, extMaterialIndex, imageSrc])
     const nameRef = useRef<HTMLInputElement>(null)
     const codeRef = useRef<HTMLInputElement>(null)
     const imageRef = useRef<HTMLInputElement>(null)
@@ -37,13 +39,13 @@ export default function EditMaterialDialog(props: DialogProps) {
     const showConfirm = useConfirm()
     useEffect(() => {
         setMaterialDialogRef(props.dialogRef)
-    }, [])
+    }, [setMaterialDialogRef, props.dialogRef])
     return <dialog ref={props.dialogRef}>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">
                     <ComboBox title="Материал: " value={baseMaterial} items={Materials} onChange={(_, value: string) => { setState((prev) => ({ ...prev, baseMaterial: getFasadMaterial(value), extMaterialIndex: 0 })); }} />
-                    <ComboBox title="Цвет/Рисунок: " value={extMaterials[extMaterialIndex].name} items={extMaterials.map((m: ExtMaterial) => m.name)} onChange={(index, value) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
+                    <ComboBox title="Цвет/Рисунок: " value={extMaterials[extMaterialIndex].name} items={extMaterials.map((m: ExtMaterial) => m.name)} onChange={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
                 </div>
                 <br />
                 <input style={{ width: "200px", height: "200px", border: "1px solid black" }} name="image" type="image" alt="Нет изображения" src={newImageSrc} onClick={() => imageRef.current?.click()} />
@@ -55,7 +57,7 @@ export default function EditMaterialDialog(props: DialogProps) {
             <div className="property-grid">
                 <span className="text-end text-nowrap">Наименование:</span>
                 <div className="d-flex justify-content-start gap-2">
-                    <input type="checkbox" checked={nameChecked} onChange={(e) => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />
+                    <input type="checkbox" checked={nameChecked} onChange={() => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />
                     <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewValues(prev => ({ ...prev, newName: e.target.value })) }} />
                 </div>
                 <span className="text-end text-nowrap">Код:</span>
@@ -65,7 +67,7 @@ export default function EditMaterialDialog(props: DialogProps) {
                 </div>
                 <span className="text-end text-nowrap">Изображение:</span>
                 <div className="d-flex justify-content-start gap-2">
-                    <input type="checkbox" checked={imageChecked} onChange={(e) => { setChecked(prev => ({ ...prev, imageChecked: !imageChecked })) }} />
+                    <input type="checkbox" checked={imageChecked} onChange={() => { setChecked(prev => ({ ...prev, imageChecked: !imageChecked })) }} />
                     <input style={{ display: "none" }} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newImageSrc} onChange={(e) => {
                         const file = e.target.files && e.target.files[0]
                         console.log(file)

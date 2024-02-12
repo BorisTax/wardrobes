@@ -30,7 +30,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         const template = fasad.Children.map((f: Fasad) => `${(divHeight ? (f.Height + 1) / total : (f.Width + 1) / total).toFixed(3)}fr`).join(" ")
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
-    let styles: ExtStyles = fasad.Parent === null ? { height: "100%" } : {}
+    let styles: object = fasad.Parent === null ? { height: "100%" } : {}
     styles = { ...styles, border: (fasad === activeFasad ? "3px solid red" : "") }
     let events = {}
     let classes = ""
@@ -68,20 +68,5 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     </div>
 }
 
-type ExtStyles = {
-    display?: string
-    justifyContent?: string
-    overflow?: string
-    flexShrink?: string
-    alignItems?: string
-    aspectRatio?: string
-    width?: string
-    height?: string
-    backgroundColor?: string
-    backgroundImage?: string
-    objectFit?: any
-    cursor?: string
-    border?: string
-    boxShadow?: string
-}
+
 

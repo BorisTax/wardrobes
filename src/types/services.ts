@@ -1,5 +1,5 @@
-import { ExtMaterial, ExtNewMaterial, Profile } from "./materials"
-import { Result, Results, Token, User } from "./server"
+import { ExtMaterial, ExtNewMaterial } from "./materials"
+import { Results, User } from "./server"
 interface IUserAbstractService {
     getUsers: () => Promise<Results>
     getTokens: () => Promise<Results>

@@ -203,7 +203,7 @@ export default class Fasad {
             const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize: this.minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) //fasadManager.CreateFasad(sContainer, FasadWidth, part)
             const topEdge = i === 1 ? this.outerTopEdge : false
             const bottomEdge = i === count ? this.outerBottomEdge : false
-            fasad.OuterEdges = { top: topEdge, bottom: bottomEdge }
+            fasad.OuterEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: topEdge, bottom: bottomEdge }
             fasad.Parent = this
             fasad.Division = Division.WIDTH
             this.Children.push(fasad)
@@ -224,7 +224,7 @@ export default class Fasad {
             const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize: this.minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) //fasadManager.CreateFasad(sContainer, FasadWidth, part)
             const leftEdge = i === 1 ? this.outerLeftEdge : false
             const rightEdge = i === count ? this.outerRightEdge : false
-            fasad.OuterEdges = { left: leftEdge, right: rightEdge }
+            fasad.OuterEdges = { left: leftEdge, right: rightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
             fasad.Parent = this
             fasad.Division = Division.HEIGHT
             this.Children.push(fasad)

@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from "react";
+import { ReactElement } from "react";
 import FasadSection from "./FasadSection";
 import ImageButton from "./ImageButton";
 import { useAtom } from "jotai";

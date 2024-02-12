@@ -40,11 +40,11 @@ function App() {
       //document.removeEventListener("click", onClick)
       document.body.removeChild(toolTip)
     }
-  }, [])
+  }, [loadMaterialList, loadProfileList])
   return (
     <>
       <Header />
-      <div className="main-container" onClick={(e) => { setActiveFasad(null); }}>
+      <div className="main-container" onClick={() => { setActiveFasad(null); }}>
             <div className='properties-container'>
               <WardrobePropertiesBar />
               <PropertiesBar />

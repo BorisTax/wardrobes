@@ -1,4 +1,3 @@
-import React from "react"
 import InputField from "./InputField"
 import { PropertyTypes } from "../types/propertyTypes"
 import PropertyGrid from "./PropertyGrid"
@@ -10,11 +9,11 @@ export default function WardrobePropertiesBar() {
         <PropertyGrid>
             <div className="text-end">Высота: </div>
             <PropertyRow>
-                <InputField value={0} type={PropertyTypes.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { }} disabled={true} />
+                <InputField value={0} type={PropertyTypes.INTEGER_POSITIVE_NUMBER} min={100} setValue={() => { }} disabled={true} />
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <InputField value={0} type={PropertyTypes.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => {  }} disabled={true} />
+                <InputField value={0} type={PropertyTypes.INTEGER_POSITIVE_NUMBER} min={100} setValue={() => {  }} disabled={true} />
             </PropertyRow>
         </PropertyGrid>
     </div>

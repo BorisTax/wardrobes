@@ -13,7 +13,7 @@ export default function ImageButton(props: ImageButtonProps) {
         const [pressed, setPressed] = useState(false)
         let className = props.disabled ? "button-disabled" : "button"
         className += pressed ? " button-down" : " button-up";
-        className += " " + props.classes || ""
+        if(props.classes) className += " " + props.classes
         const { onMouseOver, onMouseLeave } = useToolTip(props.title);
         return <div
                 className={`${className} ${props.icon} noselect`}

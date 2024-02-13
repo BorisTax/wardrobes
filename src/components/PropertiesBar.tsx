@@ -1,6 +1,6 @@
 import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
-import { Division } from "../types/enums"
+import { Division, FasadMaterial, SandBase } from "../types/enums"
 import InputField from "./InputField"
 import { PropertyTypes } from "../types/propertyTypes"
 import PropertyGrid from "./PropertyGrid"
@@ -9,15 +9,15 @@ import ToggleButton from "./ToggleButton"
 import { ExtMaterial } from "../types/materials"
 import ImageButton from "./ImageButton"
 import { useAtom, useSetAtom } from "jotai"
-import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, rootFasadesAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
+import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, rootFasadesAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
 import { UserRoles, userAtom } from "../atoms/users"
 import { materialListAtom } from "../atoms/materials"
 import { editMaterialDialogAtom } from "../atoms/dialogs"
-import { Materials } from "../functions/materials"
+import { Materials, SandBases, SandBasesCaptions } from "../functions/materials"
 const sections = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const [fasad] = useAtom(activeFasadAtom)
-    const { width, height, material, extmaterial, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
+    const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const [user] = useAtom(userAtom)
     const [materialList] = useAtom(materialListAtom)
     const [activeRootFasadIndex] = useAtom(activeRootFasadIndexAtom)
@@ -28,6 +28,7 @@ export default function PropertiesBar() {
     const setFixedHeight = useSetAtom(setFixedHeightAtom)
     const setMaterial = useSetAtom(setMaterialAtom)
     const setExtMaterial = useSetAtom(setExtMaterialAtom)
+    const setSandBase = useSetAtom(setSandBaseAtom)
     const setProfileDirection = useSetAtom(setProfileDirectionAtom)
     const divideFasad = useSetAtom(divideFasadAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
@@ -48,10 +49,11 @@ export default function PropertiesBar() {
                 <InputField value={width} type={PropertyTypes.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" disabled={disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
-            <ComboBox title="Материал: " value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value) }} />
-            <ComboBox title="Цвет/Рисунок: " value={extmaterial} items={extMaterials.map((m: ExtMaterial) => m.name)} disabled={!extMaterials} onChange={(_, value) => { setExtMaterial(value) }} />
-            <ComboBox title="Направление профиля: " value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
-            <ComboBox title="Кол-во секций: " value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
+            <ComboBox title="Материал:" value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value as FasadMaterial) }} />
+            <ComboBox title="Цвет/Рисунок:" value={extmaterial} items={extMaterials.map((m: ExtMaterial) => m.name)} disabled={!extMaterials} onChange={(_, value) => { setExtMaterial(value) }} />
+            <ComboBox title="Основа:" value={sandBase || ""} items={sandBase ? SandBases : []} disabled={fasad?.Material !== FasadMaterial.SAND} onChange={(_, value) => { setSandBase(value as SandBase) }} />
+            <ComboBox title="Направление профиля:" value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
+            <ComboBox title="Кол-во секций:" value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
         </PropertyGrid>
         <hr />
         <ImageButton title="Выбрать секцию" icon="selectParent" disabled={!((fasad !== null) && (fasad.Parent !== null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
@@ -65,6 +67,7 @@ function getProperties(fasad: Fasad | null) {
     const height = fasad?.cutHeight || 0
     const material = fasad?.Material || ""
     const extmaterial = fasad?.ExtMaterial || ""
+    const sandBase = (fasad?.Material === FasadMaterial.SAND && fasad?.SandBase) || ""
     const materials = fasad ? Materials : []
     const directions: Map<string, string> = new Map()
     directions.set("Вертикально", Division.WIDTH)
@@ -73,9 +76,11 @@ function getProperties(fasad: Fasad | null) {
     const sectionCount = (fasad && (fasad.Children.length > 1)) ? `${fasad.Children.length}` : "1"
     const fixWidth = fasad?.FixedWidth() || false
     const fixHeight = fasad?.FixedHeight() || false
-    const disabledWidth = !fasad || fasad.FixedWidth()
-    const disabledHeight = !fasad || fasad.FixedHeight()
+    let disabledWidth = !fasad || fasad.FixedWidth()
+    let disabledHeight = !fasad || fasad.FixedHeight()
     const disabledFixWidth = !fasad
     const disabledFixHeight = !fasad
-    return { width, height, material, extmaterial, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth }
+    disabledWidth = disabledWidth || !(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.WIDTH)
+    disabledHeight = disabledHeight || !(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.HEIGHT)
+    return { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth }
 }

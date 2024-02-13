@@ -13,7 +13,7 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
     }
 
     async addExtMaterial({ name, material, imageurl, code }: ExtMaterial): Promise<Results> {
-        return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, imageurl, code1c) values('${name}', '${material}', '${imageurl}', '${code}');`)
+        return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, imageurl, code) values('${name}', '${material}', '${imageurl}', '${code}');`)
     }
 
     async updateExtMaterial({ name, material, newName, imageurl, code }: ExtNewMaterial): Promise<Results> {
@@ -32,9 +32,9 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
 function getQuery({ newName, imageurl, code, name, material }: ExtNewMaterial) {
     const parts = []
     if (newName) parts.push(`name='${newName}'`)
-    if (imageurl) parts.push(`imageurl='${imageurl}'`)
-    if (code) parts.push(`code1c='${code}'`)
-    const query = `update extmaterials set ${parts.join(', ')} where name='${name}' and material='${material}';`
+    if (imageurl) parts.push(`imageurl='${imageurl || ""}'`)
+    if (code) parts.push(`code='${code}'`)
+    const query = parts.length > 0 ? `update extmaterials set ${parts.join(', ')} where name='${name}' and material='${material}';` : ""
     return query
 }
 

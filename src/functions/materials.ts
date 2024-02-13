@@ -1,4 +1,4 @@
-import { Division, FasadMaterial } from "../types/enums";
+import { Division, FasadMaterial, SandBase } from "../types/enums";
 import { ExtMaterial, Profile } from "../types/materials";
 
 export const colors = {
@@ -18,6 +18,15 @@ Materials.set("ЛАКОБЕЛЬ(СТЕКЛО)", FasadMaterial.LACOBELGLASS)
 Materials.set("ФМП", FasadMaterial.FMP)
 Materials.set("ПЕСКОСТРУЙ", FasadMaterial.SAND)
 
+export const SandBases: Map<string, string> = new Map()
+SandBases.set("ЗЕРКАЛО", SandBase.MIRROR)
+SandBases.set("ПЕСКОСТРУЙ", SandBase.SAND)
+
+
+export const SandBasesCaptions: Map<string, string> = new Map()
+SandBasesCaptions.set(SandBase.MIRROR, "ЗЕРКАЛО")
+SandBasesCaptions.set(SandBase.SAND, "ПЕСКОСТРУЙ")
+
 export const MaterialCaptions: Map<string, string> = new Map()
 MaterialCaptions.set(FasadMaterial.DSP, "ДСП")
 MaterialCaptions.set(FasadMaterial.MIRROR, "ЗЕРКАЛО")
@@ -34,7 +43,7 @@ export function getMaterialList(materials: ExtMaterial[]): MaterialList {
     if (!materials) return list
     materials.forEach((m: ExtMaterial) => {
         if (!list.has(m.material)) list.set(m.material, []);
-        list.get(m.material).push({ name: m.name, material: m.material, imageurl: m.imageurl, code1c: m.code })
+        list.get(m.material).push({ name: m.name, material: m.material, imageurl: m.imageurl, code: m.code })
     })
     return list
 }
@@ -43,8 +52,8 @@ export function getProfileList(profiles: Profile[]): ProfileList {
     const list = new Map()
     if (!profiles) return list
     profiles.forEach((m: Profile) => {
-        if (!list.has(m.profile)) list.set(m.profile, []);
-        list.get(m.profile).push({ name: m.name, profile: m.profile, code: m.code })
+        if (!list.has(m.type)) list.set(m.type, []);
+        list.get(m.type).push({ name: m.name, type: m.type, code: m.code })
     })
     return list
 }

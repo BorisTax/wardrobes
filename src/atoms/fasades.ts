@@ -1,9 +1,9 @@
 import { atom } from 'jotai'
 import Fasad from '../classes/Fasad'
 import FasadState from '../classes/FasadState'
-import { Division, FasadMaterial } from '../types/enums'
+import { Division, FasadMaterial, SandBase } from '../types/enums'
 import { trySetHeight, trySetWidth } from '../functions/fasadFunc'
-import { getFasadMaterial, getProfileDirection } from '../functions/materials'
+import { Materials, getFasadMaterial, getProfileDirection } from '../functions/materials'
 import { materialListAtom } from './materials'
 import { WardType } from '../types/app'
 import { Profile, ProfileType } from '../types/materials'
@@ -77,15 +77,24 @@ export const setExtMaterialAtom = atom(null, (get, set, extMaterial: string) => 
     activeFasad.setExtMaterial(extMaterial)
     set(rootFasadesAtom, [...rootFasades])
 })
-export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial | string) => {
+export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial) => {
     const rootFasades = get(rootFasadesAtom)
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
-    activeFasad.setMaterial(getFasadMaterial(material))
+    activeFasad.setMaterial(material)
     const matList = get(materialListAtom)
     activeFasad.setExtMaterial(matList.get(activeFasad.Material)[0]?.name)
     set(rootFasadesAtom, [...rootFasades])
 })
+
+export const setSandBaseAtom = atom(null, (get, set, sandBase: SandBase) => {
+    const rootFasades = get(rootFasadesAtom)
+    const activeFasad = get(activeFasadAtom)
+    if (!activeFasad) return
+    activeFasad.setSandBase(sandBase)
+    set(rootFasadesAtom, [...rootFasades])
+})
+
 export const setProfileDirectionAtom = atom(null, (get, set, direction: string) => {
     const rootFasades = get(rootFasadesAtom)
     const activeFasad = get(activeFasadAtom)

@@ -19,6 +19,7 @@ export default class Fasad {
     private fixedWidth: boolean = false
     private fixedHeight: boolean = false
     public Parent: Fasad | null = null
+    private level: number = 0
     private minSize: number
     private backup: FasadBackup = {}
     constructor(props: FasadProps = {}) {
@@ -86,6 +87,9 @@ export default class Fasad {
     }
     public get ExtMaterial() {
         return this.extMaterial
+    }
+    public get SandBase() {
+        return this.sandBase
     }
     public setSandBase(value: SandBase, toChildren: boolean = true) {
         this.sandBase = value
@@ -205,6 +209,7 @@ export default class Fasad {
             const bottomEdge = i === count ? this.outerBottomEdge : false
             fasad.OuterEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: topEdge, bottom: bottomEdge }
             fasad.Parent = this
+            fasad.Level = this.level + 1
             fasad.Division = Division.WIDTH
             this.Children.push(fasad)
         }
@@ -226,6 +231,7 @@ export default class Fasad {
             const rightEdge = i === count ? this.outerRightEdge : false
             fasad.OuterEdges = { left: leftEdge, right: rightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
             fasad.Parent = this
+            fasad.Level = this.level + 1
             fasad.Division = Division.HEIGHT
             this.Children.push(fasad)
         }
@@ -326,8 +332,12 @@ export default class Fasad {
         }
         return true
     }
-
-
+    public set Level(value: number) {
+        this.level = value
+    }
+    public get Level(): number {
+        return this.level
+    }
     public clone(parent: Fasad | null = null): Fasad {
         let fasad = new Fasad()
         fasad.Children = this.Children.map((c: Fasad) => c.clone(fasad))

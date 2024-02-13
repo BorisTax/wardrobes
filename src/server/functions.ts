@@ -5,13 +5,14 @@ import messages from './messages.js';
 import { Response } from "express"
 import { MyRequest, Results, UserRoles } from '../types/server.js';
 
-export function dataBaseQuery(dbFile: string, query: string): Promise<Results>{
+export function dataBaseQuery(dbFile: string, query: string): Promise<Results> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
-            if (err) { resolve({ success: false, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close() }
+            if (err) { resolve({ success: false, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
+            if (!query) { resolve({ success: false, message: messages.SQL_QUERY_ERROR }); db.close(); return }
             db.all(query, (err: Error, rows: []) => {
                 if (err) { resolve({ success: false, message: messages.SQL_QUERY_ERROR, error: err }); db.close() }
-                else { resolve({success: true, data: rows}) }
+                else { resolve({ success: true, data: rows }) }
                 db.close()
             });
         });

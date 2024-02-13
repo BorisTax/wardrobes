@@ -43,7 +43,7 @@ router.post("/add", async (req: MyRequest, res) => {
   const image = req.files?.image
   let imageurl = material + " " + name + ".jpg"
   const sourcefile = image ? image.path : ""
-  const destfile = path.join(__dirname, 'images/' + imageurl)
+  const destfile = path.join(__dirname, '../database/images/' + imageurl)
   const moveResult: { copy: boolean, delete: boolean } = await moveFile(sourcefile, destfile)
   imageurl = moveResult.copy ? imageurl : ""
   const result = await addExtMaterial({ name, material, imageurl, code });
@@ -55,9 +55,10 @@ router.put("/update", async (req: MyRequest, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
   const { name, material, newName, code } = req.body
   const image = req.files?.image
+  
   let imageurl = material + " " + name + ".jpg"
   const sourcefile = image ? image.path : ""
-  const destfile = path.join(__dirname, 'images/' + imageurl)
+  const destfile = path.join(__dirname, '../database/images/' + imageurl)
   const moveResult: { copy: boolean, delete: boolean } = await moveFile(sourcefile, destfile)
   imageurl = moveResult.copy ? imageurl : ""
   const result = await updateExtMaterial({ name, material, newName, imageurl, code });
@@ -68,7 +69,7 @@ export async function getExtMaterials() {
   const materialService = new MaterialService(materialServiceProvider)
   const result = await materialService.getExtMaterials()
   if (!result) return result
-  return { success: true, materials: result.data }
+  return { success: true, materials: result.data } 
 }
 
 export async function addExtMaterial({ name, material, imageurl, code }: ExtMaterial) {

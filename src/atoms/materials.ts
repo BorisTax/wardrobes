@@ -1,11 +1,10 @@
 import { atom, useAtom } from "jotai";
-import { ExtMaterial } from "../types/materials";
+import { ExtMaterial, Profile } from "../types/materials";
 import { fetchData, fetchFormData } from "../functions/fetch";
 import { userAtom } from "./users";
-import { getMaterialList, getProfileList } from "../functions/materials";
+import { getMaterialList } from "../functions/materials";
 
 export const materialListAtom = atom(new Map())
-export const profileListAtom = atom(new Map())
 
 export const loadMaterialListAtom = atom(null, async (get, set) => {
     try {
@@ -15,12 +14,6 @@ export const loadMaterialListAtom = atom(null, async (get, set) => {
     } catch (e) { }
 })
 
-export const loadProfileListAtom = atom(null, async (get, set) => {
-    try {
-        const data = await fetchData('api/materials/profiles', "POST", "")
-        set(profileListAtom, data)
-    } catch (e) { }
-})
 export const imageUrlAtom = atom((get) => {
     get(materialListAtom)
 })

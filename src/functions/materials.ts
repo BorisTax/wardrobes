@@ -52,8 +52,8 @@ export function getProfileList(profiles: Profile[]): ProfileList {
     const list = new Map()
     if (!profiles) return list
     profiles.forEach((m: Profile) => {
-        if (!list.has(m.type)) list.set(m.type, []);
-        list.get(m.type).push({ name: m.name, type: m.type, code: m.code })
+        if (!list.has(m.name)) list.set(m.name, []);
+        list.get(m.name).push({ name: m.name, type: m.type, code: m.code })
     })
     return list
 }

@@ -9,11 +9,12 @@ import ToggleButton from "./ToggleButton"
 import { ExtMaterial } from "../types/materials"
 import ImageButton from "./ImageButton"
 import { useAtom, useSetAtom } from "jotai"
-import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, rootFasadesAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
+import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
 import { UserRoles, userAtom } from "../atoms/users"
 import { materialListAtom } from "../atoms/materials"
 import { editMaterialDialogAtom } from "../atoms/dialogs"
 import { Materials, SandBases, SandBasesCaptions } from "../functions/materials"
+import { appDataAtom } from "../atoms/app"
 const sections = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const [fasad] = useAtom(activeFasadAtom)
@@ -21,7 +22,7 @@ export default function PropertiesBar() {
     const [user] = useAtom(userAtom)
     const [materialList] = useAtom(materialListAtom)
     const [activeRootFasadIndex] = useAtom(activeRootFasadIndexAtom)
-    const [rootFasades] = useAtom(rootFasadesAtom)
+    const [{ rootFasades }] = useAtom(appDataAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)
     const setFixedWidth = useSetAtom(setFixedWidthAtom)
@@ -76,8 +77,8 @@ function getProperties(fasad: Fasad | null) {
     const sectionCount = (fasad && (fasad.Children.length > 1)) ? `${fasad.Children.length}` : "1"
     const fixWidth = fasad?.FixedWidth() || false
     const fixHeight = fasad?.FixedHeight() || false
-    let disabledWidth = !fasad || fasad.FixedWidth()
-    let disabledHeight = !fasad || fasad.FixedHeight()
+    let disabledWidth = !fasad || !fasad.Parent || fasad.FixedWidth()
+    let disabledHeight = !fasad || !fasad.Parent || fasad.FixedHeight()
     const disabledFixWidth = !fasad
     const disabledFixHeight = !fasad
     disabledWidth = disabledWidth || !!(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.HEIGHT)

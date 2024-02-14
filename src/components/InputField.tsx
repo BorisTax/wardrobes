@@ -6,7 +6,7 @@ export type InputFieldProps = {
     setValue: (value: string | number) => void
     value: string | number
     type: string
-    disabled: boolean
+    disabled?: boolean
     max?: number
     min?: number
 }

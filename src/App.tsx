@@ -11,11 +11,12 @@ import LoginDialog from './components/LoginDialog'
 import WardrobePropertiesBar from './components/WardrobePropertiesBar'
 import { useAtom, useSetAtom } from 'jotai'
 import { setActiveFasadAtom } from './atoms/fasades'
-import { loadMaterialListAtom, loadProfileListAtom } from './atoms/materials'
+import { loadMaterialListAtom } from './atoms/materials'
 import EditMaterialDialog from './components/EditMaterialDialog'
 import { UserRoles, userAtom } from './atoms/users'
 import MessageDialog from './components/MessageDialog'
 import ConfirmDialog from './components/ConfirmDialog'
+import { loadProfileListAtom } from './atoms/profiles'
 
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)

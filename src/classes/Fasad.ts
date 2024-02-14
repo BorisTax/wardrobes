@@ -238,6 +238,7 @@ export default class Fasad {
         return true
     }
     public DistributePartsOnWidth(initiator: Fasad | null, newWidth: number, useSameWidth: boolean): boolean {
+        if(this.Children.length===0) return true
         let totalFixedWidth = 0
         let totalFreeWidth = 0
         let totalFreeCount = 0
@@ -286,6 +287,7 @@ export default class Fasad {
     }
 
     public DistributePartsOnHeight(initiator: Fasad | null, newHeight: number, useSameHeight: boolean): boolean {
+        if(this.Children.length===0) return true
         let totalFixedHeight = 0
         let totalFreeHeight = 0
         let totalFreeCount = 0

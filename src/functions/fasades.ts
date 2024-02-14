@@ -6,24 +6,34 @@ export function trySetWidth(fasad: Fasad | null, width: number): boolean {
     if (!fasad) return false
     if (fasad.FixedWidth()) return false
     if (width < fasad.MinSize) return false
-    const { parent, initiator }: { parent: Fasad, initiator: Fasad | null } = fasad.Parent ? { parent: fasad.Parent, initiator: fasad } : { parent: fasad, initiator: null }
-    if (parent.Division === Division.HEIGHT) {
-        return parent.Parent ? trySetWidth(parent.Parent, width) : parent.DistributePartsOnHeight(null, 0, true)
+    if(!fasad.Parent){
+      fasad.Width = width;
+      return fasad.Division === Division.HEIGHT
+        ? fasad.DistributePartsOnHeight(null, 0, false)
+        : fasad.DistributePartsOnWidth(null, 0, false);
     }
+
+    if (fasad.Parent.Division === Division.HEIGHT) 
+        return trySetWidth(fasad.Parent, width);
     else
-        return parent.DistributePartsOnWidth(initiator, width, false) || false
+        return fasad.Parent.DistributePartsOnWidth(fasad, width, false)
 }
 
 export function trySetHeight(fasad: Fasad | null, height: number): boolean {
     if (!fasad) return false
     if (fasad.FixedHeight()) return false
     if (height < fasad.MinSize) return false
-    const { parent, initiator } = fasad.Parent ? { parent: fasad.Parent, initiator: fasad } : { parent: fasad, initiator: null }
-    if (parent.Division === Division.WIDTH) {
-        return parent.Parent ? trySetHeight(parent.Parent, height) : parent.DistributePartsOnWidth(null, 0, true)
+    if(!fasad.Parent){
+        fasad.Height = height;
+        return fasad.Division === Division.HEIGHT
+          ? fasad.DistributePartsOnHeight(null, 0, false)
+          : fasad.DistributePartsOnWidth(null, 0, false);
+      }
+    if (fasad.Parent.Division === Division.WIDTH) {
+        return trySetHeight(fasad.Parent, height) 
     }
     else
-        return parent.DistributePartsOnHeight(initiator, height, false) || false
+        return fasad.Parent.DistributePartsOnHeight(fasad, height, false) || false
 }
 
 export function getFasadState(width: number, height: number, division: Division, material: FasadMaterial) {

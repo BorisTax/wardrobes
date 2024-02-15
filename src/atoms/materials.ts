@@ -74,7 +74,7 @@ export const updateMaterialAtom = atom(null, async (get, set, { name, material, 
 
 export function useImageUrl(extMaterial: string) {
     const [materials] = useAtom(materialListAtom)
-    for (let k of materials.keys()) {
+    for (const k of materials.keys()) {
         const mat = (materials.get(k) as ExtMaterial[]).find((m: ExtMaterial) => m.name === extMaterial)
         if (mat) return mat.image
     }

@@ -84,12 +84,21 @@ $statusBarIconWidth : 20px;
 
 $instruments_button_width: 32px;
 $instruments_button_height: 32px;
+$header_button_width: 48px;
+$header_button_height: 48px;
 
 @mixin instruments_button {
   width: $instruments_button_width;
   height: $instruments_button_height;
   background-repeat: no-repeat;
   min-width: $instruments_button_width;
+}
+
+@mixin header_button {
+  @include instruments_button();
+  width: $header_button_width;
+  height: $header_button_height;
+  min-width: $header_button_width;
 }
 
 .prevFasad {
@@ -113,7 +122,19 @@ $instruments_button_height: 32px;
 
 .editMaterials {
   background-image: url($icon-url+'editMaterials.png');
-  @include instruments_button();
+  @include header_button();
+}
+.save {
+  background-image: url($icon-url+'save.png');
+  @include header_button();
+}
+.open {
+  background-image: url($icon-url+'open.png');
+  @include header_button();
+}
+.new {
+  background-image: url($icon-url+'new.png');
+  @include header_button();
 }
 
 .fix {

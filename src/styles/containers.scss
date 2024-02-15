@@ -1,9 +1,20 @@
+.header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0.5rem;
+  background: linear-gradient(45deg, #88dffa, #96e0f3);
+}
+.header-buttons-bar{
+  justify-self: center;
+}
+
 @media (orientation: landscape) {
   .main-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     margin-top: 1em;
   }
+
   @media (min-width: 1240px) {
     .main-container {
       grid-template-columns: 1fr 2fr;
@@ -16,7 +27,7 @@
     margin-left: auto;
     margin-right: auto;
     height: 100%;
-    width:auto;
+    width: auto;
   }
 
   .fasad-section-container {
@@ -24,11 +35,13 @@
     width: auto;
     height: 100%;
   }
-  .editmaterial-container{
+
+  .editmaterial-container {
     display: flex;
     gap: 1em;
   }
-  .editmaterial-buttons-container{
+
+  .editmaterial-buttons-container {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
@@ -57,12 +70,14 @@
     width: 90svw;
     height: auto;
   }
-  .editmaterial-container{
+
+  .editmaterial-container {
     display: flex;
     flex-direction: column;
     gap: 1em;
   }
-  .editmaterial-buttons-container{
+
+  .editmaterial-buttons-container {
     display: flex;
     flex-direction: row;
     gap: 2px;

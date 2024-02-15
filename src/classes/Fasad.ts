@@ -45,7 +45,7 @@ export default class Fasad {
         state.extMaterial = this.extMaterial
         state.sandBase = this.sandBase
         state.children = []
-        for (let c of this.Children) state.children.push(c.getState())
+        for (const c of this.Children) state.children.push(c.getState())
         return state
     }
     public setState(state: FasadState) {
@@ -61,7 +61,7 @@ export default class Fasad {
         if (state.children.length !== 0) {
             if (this.division === Division.HEIGHT) this.divideOnHeight(state.children.length); else this.divideOnWidth(state.children.length)
             let i = 0
-            for (let c of state.children) {
+            for (const c of state.children) {
                 this.Children[i].setState(c)
                 i = i + 1
             }
@@ -74,14 +74,14 @@ export default class Fasad {
     public setMaterial(value: FasadMaterial, toChildren: boolean = true) {
         this.material = value
         if (!toChildren) return
-        for (let f of this.Children) {
+        for (const f of this.Children) {
             f.setMaterial(value, toChildren)
         }
     }
     public setExtMaterial(value: string, toChildren: boolean = true) {
         this.extMaterial = value
         if (!toChildren) return
-        for (let f of this.Children) {
+        for (const f of this.Children) {
             f.setExtMaterial(value, toChildren)
         }
     }
@@ -94,7 +94,7 @@ export default class Fasad {
     public setSandBase(value: SandBase, toChildren: boolean = true) {
         this.sandBase = value
         if (!toChildren) return
-        for (let f of this.Children) {
+        for (const f of this.Children) {
             f.setSandBase(value, toChildren)
         }
     }
@@ -172,7 +172,7 @@ export default class Fasad {
     }
     public makeBackup() {
         if (this.Children.length > 1) {
-            for (let c of this.Children) c.makeBackup
+            for (const c of this.Children) c.makeBackup
         }
         this.backup = {
             width: this.width,
@@ -183,7 +183,7 @@ export default class Fasad {
     }
     public restore() {
         if (this.Children.length > 1) {
-            for (let c of this.Children) c.restore()
+            for (const c of this.Children) c.restore()
         }
         if (!this.backup.hasBackup) return
         if (this.backup.width) this.width = this.backup.width
@@ -197,7 +197,6 @@ export default class Fasad {
     }
     public divideOnHeight(count: number): boolean {
         const profileTotal = (count - 1)
-        const division = Division.HEIGHT
         if (this.Children.length > 1) this.setMaterial(this.Children[0].Material)
         const partHeight = +((this.Height - profileTotal) / count).toFixed(1)
         if (partHeight < this.minSize) return false
@@ -219,15 +218,12 @@ export default class Fasad {
     }
     public divideOnWidth(count: number): boolean {
         const profileTotal = (count - 1)
-        const division = Division.WIDTH
         if (this.Children.length > 1) this.setMaterial(this.Children[0].Material)
         const partWidth = +((this.width - profileTotal) / count).toFixed(1)
         if (partWidth < this.minSize) return false
-        const partLast = +(this.width - partWidth * (count - 1) - profileTotal).toFixed(1)
         this.Children = []
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
-            const part = i < count ? partWidth : partLast
             const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize: this.minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) //fasadManager.CreateFasad(sContainer, FasadWidth, part)
             const leftEdge = i === 1 ? this.outerLeftEdge : false
             const rightEdge = i === count ? this.outerRightEdge : false
@@ -250,7 +246,7 @@ export default class Fasad {
         const profile = 1
         let i = 0
         if (!useSameWidth) {
-            for (let c of this.Children) {
+            for (const c of this.Children) {
                 i = i + 1
                 if (c.fixedWidth && !(c === initiator)) totalFixedWidth = totalFixedWidth + c.width
                 if (c === initiator) totalFixedWidth = totalFixedWidth + newWidth
@@ -270,11 +266,11 @@ export default class Fasad {
         }
         let part = 0
         i = 0
-        for (let c of this.Children) {
+        for (const c of this.Children) {
             i = i + 1
             if (c.fixedWidth) part = c.width
             if (c === initiator) part = newWidth
-            if (!c.fixedWidth && !(c === initiator)) part = lastFreeIndex = i ? partLastWidth : partFreeWidth
+            if (!c.fixedWidth && !(c === initiator)) part = lastFreeIndex === i ? partLastWidth : partFreeWidth
             if (useSameWidth) part = c.width
             if (!useSameWidth) c.backup
             c.width = part
@@ -299,7 +295,7 @@ export default class Fasad {
         const profile = 1
         let i = 0
         if (!useSameHeight) {
-            for (let c of this.Children) {
+            for (const c of this.Children) {
                 i = i + 1
                 if (c.fixedHeight && !(c === initiator)) totalFixedHeight = totalFixedHeight + c.height
                 if (c === initiator) totalFixedHeight = totalFixedHeight + newHeight
@@ -319,11 +315,11 @@ export default class Fasad {
         }
         let part = 0
         i = 0
-        for (let c of this.Children) {
+        for (const c of this.Children) {
             i = i + 1
             if (c.fixedHeight) part = c.height
             if (c === initiator) part = newHeight
-            if (!c.fixedHeight && !(c === initiator)) part = lastFreeIndex = i ? partLastHeight : partFreeHeight
+            if (!c.fixedHeight && !(c === initiator)) part = lastFreeIndex === i ? partLastHeight : partFreeHeight
             if (useSameHeight) part = c.height
             if (!useSameHeight) c.backup
             c.height = part
@@ -343,7 +339,7 @@ export default class Fasad {
         return this.level
     }
     public clone(parent: Fasad | null = null): Fasad {
-        let fasad = new Fasad()
+        const fasad = new Fasad()
         fasad.Children = this.Children.map((c: Fasad) => c.clone(fasad))
         fasad.Active = this.Active
         fasad.Level = this.level

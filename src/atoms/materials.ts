@@ -3,15 +3,27 @@ import { ExtMaterial, Profile } from "../types/materials";
 import { fetchData, fetchFormData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { getMaterialList } from "../functions/materials";
+import { appDataAtom } from "./app";
+import Fasad from "../classes/Fasad";
+import { setActiveFasadAtom, setMaterialAtom } from "./fasades";
+import { FasadMaterial } from "../types/enums";
 
 export const materialListAtom = atom(new Map())
 
-export const loadMaterialListAtom = atom(null, async (get, set) => {
+export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial: boolean = false) => {
     try {
         const data = await fetchData('api/materials/list', "POST", "")
         const mList = getMaterialList(data)
         set(materialListAtom, mList)
-    } catch (e) { }
+        const { rootFasades } = get(appDataAtom)
+        const material = [...mList.keys()][0] as FasadMaterial
+        if (setAsInitial) {
+            rootFasades.forEach((f: Fasad) => {
+                set(setActiveFasadAtom, f)
+                set(setMaterialAtom, material)
+            })
+        }
+    } catch (e) { console.error(e) }
 })
 
 export const imageUrlAtom = atom((get) => {

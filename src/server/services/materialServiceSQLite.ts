@@ -9,7 +9,7 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
         this.dbFile = dbFile
     }
     async getExtMaterials(): Promise<Results> {
-        return dataBaseQuery(this.dbFile, "select * from 'extmaterials' order by name;")
+        return dataBaseQuery(this.dbFile, "select * from 'extmaterials' order by material, name;")
     }
 
     async addExtMaterial({ name, material, imageurl, code }: ExtMaterial): Promise<Results> {

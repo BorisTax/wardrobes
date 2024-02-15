@@ -29,7 +29,7 @@ function App() {
   const confirmDialogRef = useRef<HTMLDialogElement>(null)
   const [user] = useAtom(userAtom)
   useEffect(() => {
-    loadMaterialList()
+    loadMaterialList(true)
     loadProfileList()
     //const onClick = (e: Event) => { setActiveFasad(null); }
     const onContextMenu = (e: Event) => { e.preventDefault() }
@@ -47,12 +47,12 @@ function App() {
     <>
       <Header />
       <div className="main-container" onClick={() => { setActiveFasad(null); }}>
-            <div className='properties-container'>
-              <WardrobePropertiesBar />
-              <PropertiesBar />
-            </div>
-            <FasadContainer />
+        <div className='properties-container'>
+          <WardrobePropertiesBar />
+          <PropertiesBar />
         </div>
+        <FasadContainer />
+      </div>
       <LoginDialog dialogRef={loginDialogRef} />
       {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditMaterialDialog dialogRef={editMaterialDialogRef} /> : <></>}
       <MessageDialog dialogRef={messageDialogRef} />

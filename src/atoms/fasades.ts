@@ -45,7 +45,7 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
     const width = activeFasad.Material === FasadMaterial.DSP ? newWidth : newWidth + 3
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
-    if (trySetWidth(newActiveFasad, newWidth)) {
+    if (trySetWidth(newActiveFasad, width)) {
         appData.rootFasades[rootFasadIndex] = newRootFasad
         set(appDataAtom, { ...appData })
     }

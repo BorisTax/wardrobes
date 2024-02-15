@@ -13,12 +13,13 @@ import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, setActiveFa
 import { UserRoles, userAtom } from "../atoms/users"
 import { materialListAtom } from "../atoms/materials"
 import { editMaterialDialogAtom } from "../atoms/dialogs"
-import { Materials, SandBases, SandBasesCaptions } from "../functions/materials"
+import { Materials, SandBases } from "../functions/materials"
 import { appDataAtom } from "../atoms/app"
-const sections = ["1", "2", "3", "4", "5", "6", "7", "8"]
+const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const [fasad] = useAtom(activeFasadAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
+    const sections = fasad ? sectionsTemplate : []
     const [user] = useAtom(userAtom)
     const [materialList] = useAtom(materialListAtom)
     const [activeRootFasadIndex] = useAtom(activeRootFasadIndexAtom)
@@ -34,7 +35,7 @@ export default function PropertiesBar() {
     const divideFasad = useSetAtom(divideFasadAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const [editMaterialDialog] = useAtom(editMaterialDialogAtom)
-    let extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
+    const extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}>
         <div>Параметры фасада<span>{` (${activeRootFasadIndex + 1} из ${rootFasades.length})`}</span></div>
         <hr />
@@ -50,7 +51,7 @@ export default function PropertiesBar() {
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" disabled={disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
             <ComboBox title="Материал:" value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value as FasadMaterial) }} />
-            <ComboBox title="Цвет/Рисунок:" value={extmaterial} items={extMaterials.map((m: ExtMaterial) => m.name)} disabled={!extMaterials} onChange={(_, value) => { setExtMaterial(value) }} />
+            <ComboBox title="Цвет/Рисунок:" value={extmaterial} items={extMaterials.map((m: ExtMaterial) => m.name)} disabled={!fasad} onChange={(_, value) => { setExtMaterial(value) }} />
             <ComboBox title="Основа:" value={sandBase || ""} items={sandBase ? SandBases : []} disabled={fasad?.Material !== FasadMaterial.SAND} onChange={(_, value) => { setSandBase(value as SandBase) }} />
             <ComboBox title="Направление профиля:" value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
             <ComboBox title="Кол-во секций:" value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
@@ -63,17 +64,19 @@ export default function PropertiesBar() {
 }
 
 function getProperties(fasad: Fasad | null) {
-    const width = fasad?.cutWidth || 0
-    const height = fasad?.cutHeight || 0
+    const width = fasad?.cutWidth || ""
+    const height = fasad?.cutHeight || ""
     const material = fasad?.Material || ""
     const extmaterial = fasad?.ExtMaterial || ""
     const sandBase = (fasad?.Material === FasadMaterial.SAND && fasad?.SandBase) || ""
     const materials = fasad ? Materials : []
     const directions: Map<string, string> = new Map()
-    directions.set("Вертикально", Division.WIDTH)
-    directions.set("Горизонтально", Division.HEIGHT)
-    const direction = fasad?.Division === Division.HEIGHT ? "Горизонтально" : "Вертикально"
-    const sectionCount = (fasad && (fasad.Children.length > 1)) ? `${fasad.Children.length}` : "1"
+    if (fasad) {
+        directions.set("Вертикально", Division.WIDTH)
+        directions.set("Горизонтально", Division.HEIGHT)
+    }
+    const direction = fasad ? (fasad.Division === Division.HEIGHT ? "Горизонтально" : "Вертикально") : ""
+    const sectionCount = (fasad && (fasad.Children.length > 1)) ? `${fasad.Children.length}` : ""
     const fixWidth = fasad?.FixedWidth() || false
     const fixHeight = fasad?.FixedHeight() || false
     let disabledWidth = !fasad || !fasad.Parent || fasad.FixedWidth()

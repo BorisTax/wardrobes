@@ -62,14 +62,16 @@ export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
-    if (fixed && (activeFasad.Parent?.Division === Division.WIDTH)) activeFasad.Parent.fixHeight(fixed); else activeFasad.fixHeight(fixed)
+    if (fixed && (activeFasad.Parent?.Division === Division.WIDTH)) activeFasad.Parent.fixHeight(fixed);
+    activeFasad.fixHeight(fixed)
     set(appDataAtom, { ...appData })
 })
 export const setFixedWidthAtom = atom(null, (get, set, fixed: boolean) => {
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
-    if (fixed && (activeFasad.Parent?.Division === Division.HEIGHT)) activeFasad.Parent.fixWidth(fixed); else activeFasad.fixWidth(fixed)
+    if (fixed && (activeFasad.Parent?.Division === Division.HEIGHT)) activeFasad.Parent.fixWidth(fixed);
+    activeFasad.fixWidth(fixed)
     set(appDataAtom, { ...appData })
 })
 

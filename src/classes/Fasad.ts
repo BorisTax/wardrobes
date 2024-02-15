@@ -110,16 +110,18 @@ export default class Fasad {
     public set Height(value: number) {
         this.height = value
     }
-    public fixWidth(value: boolean) {
+    public fixWidth(value: boolean, toChildren: boolean = true) {
         this.fixedWidth = value
-        if (this.Division === Division.HEIGHT) this.Children.forEach((c: Fasad) => { c.fixWidth(value) })
+        if (!toChildren) return
+        if (this.Division === Division.HEIGHT) this.Children.forEach((c: Fasad) => { c.fixWidth(value, toChildren) })
     }
     public FixedWidth() {
         return this.fixedWidth
     }
-    public fixHeight(value: boolean) {
+    public fixHeight(value: boolean, toChildren: boolean = true) {
         this.fixedHeight = value
-        if (this.Division === Division.WIDTH) this.Children.forEach((c: Fasad) => { c.fixHeight(value) })
+        if (!toChildren) return
+        if (this.Division === Division.WIDTH) this.Children.forEach((c: Fasad) => { c.fixHeight(value, toChildren) })
     }
     public FixedHeight() {
         return this.fixedHeight
@@ -238,7 +240,7 @@ export default class Fasad {
         return true
     }
     public DistributePartsOnWidth(initiator: Fasad | null, newWidth: number, useSameWidth: boolean): boolean {
-        if(this.Children.length===0) return true
+        if (this.Children.length === 0) return true
         let totalFixedWidth = 0
         let totalFreeWidth = 0
         let totalFreeCount = 0
@@ -287,7 +289,7 @@ export default class Fasad {
     }
 
     public DistributePartsOnHeight(initiator: Fasad | null, newHeight: number, useSameHeight: boolean): boolean {
-        if(this.Children.length===0) return true
+        if (this.Children.length === 0) return true
         let totalFixedHeight = 0
         let totalFreeHeight = 0
         let totalFreeCount = 0
@@ -344,13 +346,14 @@ export default class Fasad {
         let fasad = new Fasad()
         fasad.Children = this.Children.map((c: Fasad) => c.clone(fasad))
         fasad.Active = this.Active
+        fasad.Level = this.level
         fasad.Division = this.division
         fasad.setExtMaterial(this.extMaterial, false)
         fasad.setMaterial(this.material, false)
         fasad.Height = this.height
         fasad.Width = this.width
-        fasad.fixHeight(this.fixedHeight)
-        fasad.fixWidth(this.fixedWidth)
+        fasad.fixHeight(this.fixedHeight, false)
+        fasad.fixWidth(this.fixedWidth, false)
         fasad.OuterEdges = { ...this.OuterEdges }
         fasad.Parent = parent
         fasad.setSandBase(this.sandBase, false)

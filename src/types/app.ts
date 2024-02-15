@@ -22,3 +22,5 @@ export enum WardType {
     WARDROBE = "WARDROBE",
     SYSTEM = "SYSTEM"
 }
+
+export type SetAtomComfirm<T> = [T, () => Promise<boolean>]

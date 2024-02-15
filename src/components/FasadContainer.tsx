@@ -19,7 +19,7 @@ export default function FasadContainer(): ReactElement {
             const height = sectionContainerRef.current.offsetWidth / ratio
             screen.orientation.type.startsWith('landscape-') ? sectionContainerRef.current.style.width = `${width}px` : sectionContainerRef.current.style.height = `${height}px`
         }
-    }, [rootFasades, screen.orientation.type])
+    }, [ratio])
     return <div className='fasad-container' style={{ display: "flex", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", gap: "0.5em" }}>
         <ImageButton title="Предыдущий фасад" icon={"prevFasad"} disabled={activeRootFasadIndex === 0} onClick={() => { setActiveRootFasadIndex(activeRootFasadIndex - 1); setActiveFasad(null) }} />
         <div className="d-flex flex-column align-items-center h-100 w-auto">

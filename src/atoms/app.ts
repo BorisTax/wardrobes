@@ -1,5 +1,5 @@
-import { atom } from "jotai";
-import { AppData, WardType } from "../types/app";
+import { Setter, atom } from "jotai";
+import { AppData, SetAtomComfirm, WardType } from "../types/app";
 import { getAppDataFromState, getAppState, getFasadHeight, getFasadWidth, getInitialAppState } from "../functions/wardrobe";
 import { Profile } from "../types/materials";
 import Fasad from "../classes/Fasad";
@@ -8,14 +8,20 @@ import { activeRootFasadIndexAtom } from "./fasades";
 
 export const appDataAtom = atom<AppData>(getAppDataFromState(getInitialAppState()))
 
-export const setFasadCountAtom = atom(null, (get, set, newCount: number) => {
+export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmCallback]: SetAtomComfirm<number>) => {
     const { wardWidth, wardHeight, profile, type, rootFasades } = get(appDataAtom)
+    const prevCount = rootFasades.length
     const newAppData = getAppDataFromState(getAppState(wardWidth, wardHeight, newCount, profile, type))
-    set(appDataAtom, newAppData)
-    set(activeRootFasadIndexAtom, 0)
+    const fasadWidth = getFasadWidth(wardWidth, newCount, type, profile.type)
+    const newRootFasades = rootFasades.filter((_, index) => index < newCount).map((f: Fasad) => f.clone())
+    if (newCount > prevCount) {
+        for (let i = prevCount; i < newCount; i++) newRootFasades.push(newAppData.rootFasades[i])
+    }
+    const setWidth = newRootFasades.every((f: Fasad) => trySetWidth(f, fasadWidth))
+    if (await setAppData(setWidth, newAppData, newRootFasades, set, confirmCallback)) set(activeRootFasadIndexAtom, 0)
 })
 
-export const setProfileAtom = atom(null, (get, set, profile: Profile) => {
+export const setProfileAtom = atom(null, async (get, set, [profile, confirmCallback]: SetAtomComfirm<Profile>) => {
     const { wardWidth, wardHeight, fasadCount, type, rootFasades } = get(appDataAtom)
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, type, profile.type)
     const fasadHeight = getFasadHeight(wardHeight, type, profile.type)
@@ -23,23 +29,28 @@ export const setProfileAtom = atom(null, (get, set, profile: Profile) => {
     const newRootFasades = rootFasades.map((f: Fasad) => f.clone())
     const setWidth = newRootFasades.every((f: Fasad) => trySetWidth(f, fasadWidth))
     const setHeight = newRootFasades.every((f: Fasad) => trySetHeight(f, fasadHeight))
-    if(setWidth && setHeight) newAppData.rootFasades = newRootFasades
-    set(appDataAtom, newAppData)
+    await setAppData(setWidth && setHeight, newAppData, newRootFasades, set, confirmCallback)
 })
 
-export const setWardWidthAtom = atom(null, (get, set, wardWidth: number) => {
+export const setWardWidthAtom = atom(null, async (get, set, [wardWidth, confirmCallback]: SetAtomComfirm<number>) => {
     const { wardHeight, fasadCount, profile, type, rootFasades } = get(appDataAtom)
+    const fasadWidth = getFasadWidth(wardWidth, fasadCount, type, profile.type)
     const newAppData = getAppDataFromState(getAppState(wardWidth, wardHeight, fasadCount, profile, type))
-    set(appDataAtom, newAppData)
+    const newRootFasades = rootFasades.map((f: Fasad) => f.clone())
+    const setWidth = newRootFasades.every((f: Fasad) => trySetWidth(f, fasadWidth))
+    await setAppData(setWidth, newAppData, newRootFasades, set, confirmCallback)
 })
 
-export const setWardHeightAtom = atom(null, (get, set, wardHeight: number) => {
+export const setWardHeightAtom = atom(null, async (get, set, [wardHeight, confirmCallback]: SetAtomComfirm<number>) => {
     const { wardWidth, fasadCount, profile, type, rootFasades } = get(appDataAtom)
+    const fasadHeight = getFasadHeight(wardHeight, type, profile.type)
     const newAppData = getAppDataFromState(getAppState(wardWidth, wardHeight, fasadCount, profile, type))
-    set(appDataAtom, newAppData)
+    const newRootFasades = rootFasades.map((f: Fasad) => f.clone())
+    const setHeight = newRootFasades.every((f: Fasad) => trySetHeight(f, fasadHeight))
+    await setAppData(setHeight, newAppData, newRootFasades, set, confirmCallback)
 })
 
-export const setWardTypeAtom = atom(null, (get, set, wardType: WardType) => {
+export const setWardTypeAtom = atom(null, async (get, set, [wardType, confirmCallback]: SetAtomComfirm<WardType>) => {
     const { wardWidth, wardHeight, fasadCount, profile, rootFasades } = get(appDataAtom)
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardType, profile.type)
     const fasadHeight = getFasadHeight(wardHeight, wardType, profile.type)
@@ -47,6 +58,20 @@ export const setWardTypeAtom = atom(null, (get, set, wardType: WardType) => {
     const newRootFasades = rootFasades.map((f: Fasad) => f.clone())
     const setWidth = newRootFasades.every((f: Fasad) => trySetWidth(f, fasadWidth))
     const setHeight = newRootFasades.every((f: Fasad) => trySetHeight(f, fasadHeight))
-    if(setWidth && setHeight) newAppData.rootFasades = newRootFasades
-    set(appDataAtom, newAppData)
+    await setAppData(setWidth && setHeight, newAppData, newRootFasades, set, confirmCallback)
 })
+
+
+async function setAppData(condition: boolean, newAppData: AppData, newRootFasades: Fasad[], set: Setter, confirmCallback: () => Promise<boolean>) {
+    if (condition) {
+        newAppData.rootFasades = newRootFasades
+        set(appDataAtom, newAppData)
+        return true
+    }
+    const result = await confirmCallback()
+    if (result) {
+        set(appDataAtom, newAppData)
+        return true
+    }
+    return false
+}

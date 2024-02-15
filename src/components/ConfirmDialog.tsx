@@ -13,7 +13,7 @@ export default function ConfirmDialog(props: DialogProps) {
         setConfirmDialogRef(props.dialogRef)
     }, [])
     return <dialog ref={props.dialogRef}>
-        <div>{message}</div>
+        <div className="confirm-message">{message}</div>
         <div className="d-flex justify-content-center gap-2">
             <button className="btn btn-primary" onClick={() => { onYesAction(); props.dialogRef.current?.close(); }}>Да</button>
             <button className="btn btn-secondary"  onClick={() => { onNoAction(); props.dialogRef.current?.close(); }}>Нет</button>

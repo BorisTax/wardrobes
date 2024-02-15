@@ -2,7 +2,7 @@ import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
 import { Division, FasadMaterial, SandBase } from "../types/enums"
 import InputField from "./InputField"
-import { PropertyTypes } from "../types/propertyTypes"
+import { PropertyType } from "../types/property"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 import ToggleButton from "./ToggleButton"
@@ -42,12 +42,12 @@ export default function PropertiesBar() {
         <PropertyGrid>
             <div className="text-end">Высота: </div>
             <PropertyRow>
-                <InputField value={height} type={PropertyTypes.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
+                <InputField value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
                 <ToggleButton pressed={fixHeight} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать высоту" disabled={disabledFixHeight} onClick={() => { setFixedHeight(!fixHeight) }} />
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <InputField value={width} type={PropertyTypes.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
+                <InputField value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" disabled={disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
             <ComboBox title="Материал:" value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value as FasadMaterial) }} />

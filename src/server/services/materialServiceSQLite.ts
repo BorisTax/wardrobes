@@ -2,7 +2,6 @@ import { ExtMaterial, ExtNewMaterial } from '../../types/materials.js';
 import { Results } from '../../types/server.js';
 import { IMaterialServiceProvider } from '../../types/services.js';
 import { dataBaseQuery } from '../functions.js';
-
 export default class MaterialServiceSQLite implements IMaterialServiceProvider {
     dbFile: string;
     constructor(dbFile: string) {
@@ -12,12 +11,12 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
         return dataBaseQuery(this.dbFile, "select * from 'extmaterials' order by material, name;")
     }
 
-    async addExtMaterial({ name, material, imageurl, code }: ExtMaterial): Promise<Results> {
-        return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, imageurl, code) values('${name}', '${material}', '${imageurl}', '${code}');`)
+    async addExtMaterial({ name, material, image, code }: ExtMaterial): Promise<Results> {
+        return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, image, code) values('${name}', '${material}', '${image}', '${code}');`)
     }
 
-    async updateExtMaterial({ name, material, newName, imageurl, code }: ExtNewMaterial): Promise<Results> {
-        return dataBaseQuery(this.dbFile, getQuery({ newName, imageurl, code, name, material }))
+    async updateExtMaterial({ name, material, newName, image, code }: ExtNewMaterial): Promise<Results> {
+        return dataBaseQuery(this.dbFile, getQuery({ newName, image, code, name, material }))
     }
 
     async deleteExtMaterial(name: string, material: string): Promise<Results> {
@@ -29,10 +28,10 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
     }
 }
 
-function getQuery({ newName, imageurl, code, name, material }: ExtNewMaterial) {
+function getQuery({ newName, image, code, name, material }: ExtNewMaterial) {
     const parts = []
     if (newName) parts.push(`name='${newName}'`)
-    if (imageurl) parts.push(`imageurl='${imageurl || ""}'`)
+    if (image) parts.push(`image='${image || ""}'`)
     if (code) parts.push(`code='${code}'`)
     const query = parts.length > 0 ? `update extmaterials set ${parts.join(', ')} where name='${name}' and material='${material}';` : ""
     return query

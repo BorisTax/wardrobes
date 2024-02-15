@@ -1,7 +1,7 @@
 export type ExtMaterial = {
     name: string
     material: string
-    imageurl: string
+    image: string
     code: string 
 }
 export type ExtNewMaterial = ExtMaterial & {

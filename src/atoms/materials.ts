@@ -1,5 +1,5 @@
 import { atom, useAtom } from "jotai";
-import { ExtMaterial, Profile } from "../types/materials";
+import { ExtMaterial } from "../types/materials";
 import { fetchData, fetchFormData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { getMaterialList } from "../functions/materials";
@@ -7,6 +7,7 @@ import { appDataAtom } from "./app";
 import Fasad from "../classes/Fasad";
 import { setActiveFasadAtom, setMaterialAtom } from "./fasades";
 import { FasadMaterial } from "../types/enums";
+import { TableFields } from "../types/server";
 
 export const materialListAtom = atom(new Map())
 
@@ -22,6 +23,7 @@ export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial: bo
                 set(setActiveFasadAtom, f)
                 set(setMaterialAtom, material)
             })
+            set(setActiveFasadAtom, null)
         }
     } catch (e) { console.error(e) }
 })
@@ -42,11 +44,11 @@ export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMater
 export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: File | null, callback: (result: { success: boolean }) => void) => {
     const user = get(userAtom)
     const formData = new FormData()
-    if (image) formData.append("image", image)
-    formData.append("name", material.name)
-    formData.append("material", material.material)
-    formData.append("code1c", material.code)
-    formData.append("token", user.token)
+    if (image) formData.append(TableFields.IMAGE, image)
+    formData.append(TableFields.NAME, material.name)
+    formData.append(TableFields.MATERIAL, material.material)
+    formData.append(TableFields.CODE, material.code)
+    formData.append(TableFields.TOKEN, user.token)
     try {
         const result = await fetchFormData("api/materials/add", "POST", formData)
         await set(loadMaterialListAtom)
@@ -57,12 +59,12 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
 export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image }, callback: (result: { success: boolean }) => void) => {
     const user = get(userAtom)
     const formData = new FormData()
-    if (image) formData.append("image", image)
-    formData.append("name", name)
-    formData.append("newName", newName)
-    formData.append("material", material)
-    formData.append("code1c", newCode)
-    formData.append("token", user.token)
+    if (image) formData.append(TableFields.IMAGE, image)
+    formData.append(TableFields.NAME, name)
+    formData.append(TableFields.NEWNAME, newName)
+    formData.append(TableFields.MATERIAL, material)
+    formData.append(TableFields.CODE, newCode)
+    formData.append(TableFields.TOKEN, user.token)
     try {
         const result = await fetchFormData("api/materials/update", "PUT", formData)
         await set(loadMaterialListAtom)
@@ -74,7 +76,7 @@ export function useImageUrl(extMaterial: string) {
     const [materials] = useAtom(materialListAtom)
     for (let k of materials.keys()) {
         const mat = (materials.get(k) as ExtMaterial[]).find((m: ExtMaterial) => m.name === extMaterial)
-        if (mat) return mat.imageurl
+        if (mat) return mat.image
     }
     return ""
 }

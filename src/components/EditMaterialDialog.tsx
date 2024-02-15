@@ -25,7 +25,7 @@ export default function EditMaterialDialog(props: DialogProps) {
     const addMaterial = useSetAtom(addMaterialAtom)
     const updateMaterial = useSetAtom(updateMaterialAtom)
     const extMaterials: ExtMaterial[] = useMemo(() => materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }], [materialList, baseMaterial]);
-    const imageSrc = `${imagesSrcUrl}${extMaterials[extMaterialIndex].imageurl}`
+    const imageSrc = `${imagesSrcUrl}${extMaterials[extMaterialIndex].image}`
     const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc })
     const [{ nameChecked, codeChecked, imageChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false })
     const [imageFileName, setImageFileName] = useState("???")
@@ -70,7 +70,6 @@ export default function EditMaterialDialog(props: DialogProps) {
                     <input type="checkbox" checked={imageChecked} onChange={() => { setChecked(prev => ({ ...prev, imageChecked: !imageChecked })) }} />
                     <input style={{ display: "none" }} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newImageSrc} onChange={(e) => {
                         const file = e.target.files && e.target.files[0]
-                        console.log(file)
                         const url = file ? URL.createObjectURL(file) : ""
                         setNewValues(prev => ({ ...prev, newImageSrc: url || "" }))
                         setImageFileName(file?.name || "")
@@ -98,7 +97,7 @@ export default function EditMaterialDialog(props: DialogProps) {
                     if (existMaterial(name, baseMaterial, materialList)) { showMessage("Материал уже существует"); return }
                     const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode })
                     showConfirm(message, () => {
-                        addMaterial({ name, material: baseMaterial, code, imageurl: "" }, file, (result) => {
+                        addMaterial({ name, material: baseMaterial, code, image: "" }, file, (result) => {
                             const message = result.success ? "Материал добавлен" : "Доступ запрещен. Перезайдите в систему"
                             showMessage(message)
                         });

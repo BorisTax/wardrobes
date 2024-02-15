@@ -46,7 +46,7 @@ router.post("/add", async (req: MyRequest, res) => {
   const destfile = path.join(__dirname, '../database/images/' + imageurl)
   const moveResult: { copy: boolean, delete: boolean } = await moveFile(sourcefile, destfile)
   imageurl = moveResult.copy ? imageurl : ""
-  const result = await addExtMaterial({ name, material, imageurl, code });
+  const result = await addExtMaterial({ name, material, image: imageurl, code });
   const status = result.success ? 201 : 409
   res.status(status).json(result);
 });
@@ -55,13 +55,13 @@ router.put("/update", async (req: MyRequest, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
   const { name, material, newName, code } = req.body
   const image = req.files?.image
-  
+
   let imageurl = material + " " + name + ".jpg"
   const sourcefile = image ? image.path : ""
   const destfile = path.join(__dirname, '../database/images/' + imageurl)
   const moveResult: { copy: boolean, delete: boolean } = await moveFile(sourcefile, destfile)
   imageurl = moveResult.copy ? imageurl : ""
-  const result = await updateExtMaterial({ name, material, newName, imageurl, code });
+  const result = await updateExtMaterial({ name, material, newName, image: imageurl, code });
   res.json(result);
 });
 
@@ -69,27 +69,27 @@ export async function getExtMaterials() {
   const materialService = new MaterialService(materialServiceProvider)
   const result = await materialService.getExtMaterials()
   if (!result) return result
-  return { success: true, materials: result.data } 
+  return { success: true, materials: result.data }
 }
 
-export async function addExtMaterial({ name, material, imageurl, code }: ExtMaterial) {
+export async function addExtMaterial({ name, material, image, code }: ExtMaterial) {
   const materialService = new MaterialService(materialServiceProvider)
   const result = await materialService.getExtMaterials()
   if (!result.success) return result
   const materials = result.data
   if ((materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_EXIST }
-  const res = await materialService.addExtMaterial({ name, material, imageurl, code })
+  const res = await materialService.addExtMaterial({ name, material, image, code })
   if (!res.success) return res
   return { success: true }
 }
 
-export async function updateExtMaterial({ name, material, newName, imageurl, code }: ExtNewMaterial) {
+export async function updateExtMaterial({ name, material, newName, image, code }: ExtNewMaterial) {
   const materialService = new MaterialService(materialServiceProvider)
   const result = await materialService.getExtMaterials()
   if (!result.success) return result
   const materials = result.data
   if (!(materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, message: messages.MATERIAL_NO_EXIST }
-  const res = await materialService.updateExtMaterial({ name, material, newName, imageurl, code })
+  const res = await materialService.updateExtMaterial({ name, material, newName, image, code })
   if (!res.success) return res
   return { success: true }
 }

@@ -30,6 +30,16 @@ export type ActiveUser = {
     token: string
     time: number
 }
+
+export enum TableFields {
+    NAME = 'name',
+    MATERIAL = 'material',
+    IMAGE = 'image',
+    CODE = 'code',
+    TOKEN = 'token',
+    NEWNAME = 'newName'
+}
+
 export type Result<T> = {
     success: boolean
     token?: string

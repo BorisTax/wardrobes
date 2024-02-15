@@ -1,4 +1,3 @@
-
 $icon-url: '../images/icons/';
 
 .button {
@@ -10,9 +9,11 @@ $icon-url: '../images/icons/';
   -height: 27px;
   cursor: pointer;
 }
+
 .button:hover {
   mix-blend-mode: multiply;
 }
+
 .button-disabled {
   display: inline-block;
   background-size: 100%;
@@ -35,6 +36,7 @@ $icon-url: '../images/icons/';
   width: 100%;
   height: 100%;
   margin: auto;
+  mix-blend-mode: exclusion;
 }
 
 .fixedWidth {
@@ -108,6 +110,7 @@ $instruments_button_height: 32px;
   background-image: url($icon-url+'selectParent.png');
   @include instruments_button();
 }
+
 .editMaterials {
   background-image: url($icon-url+'editMaterials.png');
   @include instruments_button();

@@ -39,11 +39,11 @@ export type MaterialList = Map<string, ExtMaterial[]>
 export type ProfileList = Map<string, Profile[]>
 
 export function getMaterialList(materials: ExtMaterial[]): MaterialList {
-    const list = new Map()
+    const list = new Map<string, ExtMaterial[]>()
     if (!materials) return list
     materials.forEach((m: ExtMaterial) => {
         if (!list.has(m.material)) list.set(m.material, []);
-        list.get(m.material).push({ name: m.name, material: m.material, imageurl: m.imageurl, code: m.code })
+        list.get(m.material)?.push({ name: m.name, material: m.material, image: m.image, code: m.code })
     })
     return list
 }
@@ -61,7 +61,7 @@ export function getProfileList(profiles: Profile[]): ProfileList {
 export function getInitialMaterialList(): ExtMaterial[] {
 
     const list: ExtMaterial[] = []
-    list.push({ name: "белый", material: "DSP", imageurl: "", code: "" })
+    list.push({ name: "белый", material: "DSP", image: "", code: "" })
 
     return list
 }

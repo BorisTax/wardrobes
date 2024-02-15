@@ -35,7 +35,6 @@ export default function PropertiesBar() {
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const [editMaterialDialog] = useAtom(editMaterialDialogAtom)
     let extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
-    if (user.role === UserRoles.GUEST) extMaterials = extMaterials.filter((_, index: number) => index === 0) || []
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}>
         <div>Параметры фасада<span>{` (${activeRootFasadIndex + 1} из ${rootFasades.length})`}</span></div>
         <hr />

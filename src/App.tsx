@@ -4,7 +4,6 @@ import './styles/App.scss'
 import './styles/buttons.scss'
 import './styles/containers.scss'
 import './styles/messages.scss'
-import FasadContainer from './components/FasadContainer'
 import Header from './components/Header'
 import PropertiesBar from './components/PropertiesBar'
 import { createToolTip } from './functions/functions'
@@ -18,6 +17,7 @@ import { UserRoles, userAtom } from './atoms/users'
 import MessageDialog from './components/MessageDialog'
 import ConfirmDialog from './components/ConfirmDialog'
 import { loadProfileListAtom } from './atoms/profiles'
+import RootFasadesContainer from './components/RootFasadesContainer'
 
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
@@ -51,7 +51,7 @@ function App() {
           <WardrobePropertiesBar />
           <PropertiesBar />
         </div>
-        <FasadContainer />
+        <RootFasadesContainer/>
       </div>
       <LoginDialog dialogRef={loginDialogRef} />
       {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditMaterialDialog dialogRef={editMaterialDialogRef} /> : <></>}

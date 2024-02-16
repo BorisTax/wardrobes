@@ -1,33 +1,33 @@
 import { ReactElement, useLayoutEffect, useRef } from "react";
 import FasadSection from "./FasadSection";
-import ImageButton from "./ImageButton";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { appDataAtom } from "../atoms/app";
-import { activeRootFasadIndexAtom, setActiveFasadAtom } from "../atoms/fasades";
+import { activeFasadAtom } from "../atoms/fasades";
 
-export default function FasadContainer(): ReactElement {
-    const [activeRootFasadIndex, setActiveRootFasadIndex] = useAtom(activeRootFasadIndexAtom)
-    const setActiveFasad = useSetAtom(setActiveFasadAtom)
+type FasadContainerProps = {
+    index: number
+}
+
+export default function FasadContainer({ index }: FasadContainerProps): ReactElement {
     const [{ rootFasades }] = useAtom(appDataAtom)
-    const rootFasad = rootFasades[activeRootFasadIndex]
-    const activeFasad = rootFasad.getActiveFasad()
+    const innerWidth = window.innerWidth
+    const rootFasad = rootFasades[index]
     const ratio = rootFasad.Width / rootFasad.Height
-    const sectionContainerRef = useRef<HTMLDivElement>(null)
-    useLayoutEffect(() => {
-        if (sectionContainerRef.current) {
-            const width = sectionContainerRef.current.offsetHeight * ratio
-            const height = sectionContainerRef.current.offsetWidth / ratio
-            screen.orientation.type.startsWith('landscape-') ? sectionContainerRef.current.style.width = `${width}px` : sectionContainerRef.current.style.height = `${height}px`
+    const aspectRatio = `${rootFasad.Width}/${rootFasad.Height}`
+    const [activeFasad] = useAtom(activeFasadAtom)
+    const sectionRef = useRef<HTMLDivElement>(null)
+    const resize = (ratio: number) => {
+        if (sectionRef.current) {
+            sectionRef.current.style.width = sectionRef.current.offsetHeight * ratio + "px"
         }
-    }, [ratio])
-    return <div className='fasad-container' style={{ display: "flex", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", gap: "0.5em" }}>
-        <ImageButton title="Предыдущий фасад" icon={"prevFasad"} disabled={activeRootFasadIndex === 0} onClick={() => { setActiveRootFasadIndex(activeRootFasadIndex - 1); setActiveFasad(null) }} />
-        <div className="d-flex flex-column align-items-center h-100 w-auto">
-            <div>{`Фасад ${activeRootFasadIndex + 1}`}</div>
-            <div ref={sectionContainerRef} className='fasad-section-container' >
-                <FasadSection fasad={rootFasad} activeFasad={activeFasad} rootFasad={rootFasad} />
-            </div>
+    }
+    useLayoutEffect(() => {
+        resize(ratio)
+    }, [ratio, innerWidth])
+    return <div className="fasad-container">
+        <div className="text-center">{`Фасад ${index + 1}`}</div>
+        <div ref={sectionRef} className='fasad-section-container' style={{ aspectRatio, height: "100%", width: "auto" }}>
+            <FasadSection fasad={rootFasad} activeFasad={activeFasad} rootFasad={rootFasad} />
         </div>
-        <ImageButton title="Следующий фасад" icon={"nextFasad"} disabled={activeRootFasadIndex === rootFasades.length - 1} onClick={() => { setActiveRootFasadIndex(activeRootFasadIndex + 1); setActiveFasad(null) }} />
     </div>
 }

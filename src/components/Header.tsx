@@ -13,7 +13,7 @@ export default function Header() {
       <ImageButton title="Открыть" icon="open" onClick={() => { }} />
       <ImageButton title="Сохранить" icon="save" onClick={() => { }} />
     </div>
-    <div className="header-buttons-bar">
+    <div className="instruments-buttons-bar">
       {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ?
         <ImageButton title="Редактор материалов" icon="editMaterials" onClick={() => { editMaterialDialog?.current?.showModal() }} /> : <></>}
     </div>

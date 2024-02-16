@@ -4,8 +4,41 @@
   padding: 0.5rem;
   background: linear-gradient(45deg, #88dffa, #96e0f3);
 }
-.header-buttons-bar{
+
+.instruments-buttons-bar {
   justify-self: center;
+  display: flex;
+  align-items: center;
+}
+
+.file-buttons-bar {
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.main-container {
+ padding: 0.2rem;
+}
+
+.rootfasades-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1rem;
+  width: auto;
+  height: auto;
+}
+
+.fasad-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: auto;
 }
 
 @media (orientation: landscape) {
@@ -19,15 +52,6 @@
     .main-container {
       grid-template-columns: 1fr 2fr;
     }
-  }
-
-  .fasad-container {
-    display: flex;
-    justify-content: center;
-    margin-left: auto;
-    margin-right: auto;
-    height: 100%;
-    width: auto;
   }
 
   .fasad-section-container {
@@ -51,24 +75,17 @@
 @media (orientation: portrait) {
   .main-container {
     display: flex;
+    width: 100%;
     flex-direction: column;
     justify-content: space-between;
     margin-top: 1em;
-  }
-
-  .fasad-container {
-    width: 90svw;
-    height: auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 1em;
-    margin-top: 1em;
+    
   }
 
   .fasad-section-container {
     border: 2px solid black;
-    width: 90svw;
-    height: auto;
+    width: auto;
+    height: 100%;
   }
 
   .editmaterial-container {
@@ -85,8 +102,10 @@
 }
 
 .properties-container {
+  align-self: start;
   margin-left: 1em;
   margin-right: 1em;
+  min-width: 320px;
 }
 
 .properties-bar {

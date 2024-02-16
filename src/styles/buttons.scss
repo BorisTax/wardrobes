@@ -91,6 +91,7 @@ $header_button_height: 48px;
   width: $instruments_button_width;
   height: $instruments_button_height;
   background-repeat: no-repeat;
+  background-size: contain;
   min-width: $instruments_button_width;
 }
 
@@ -126,15 +127,15 @@ $header_button_height: 48px;
 }
 .save {
   background-image: url($icon-url+'save.png');
-  @include header_button();
+  @include instruments_button();
 }
 .open {
   background-image: url($icon-url+'open.png');
-  @include header_button();
+  @include instruments_button();
 }
 .new {
   background-image: url($icon-url+'new.png');
-  @include header_button();
+  @include instruments_button();
 }
 
 .fix {

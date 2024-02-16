@@ -15,7 +15,7 @@ export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmC
     const fasadWidth = getFasadWidth(wardWidth, newCount, type, profile.type)
     const newRootFasades = rootFasades.filter((_, index) => index < newCount).map((f: Fasad) => f.clone())
     if (newCount > prevCount) {
-        for (let i = prevCount; i < newCount; i++) newRootFasades.push(newAppData.rootFasades[i])
+        for (let i = prevCount; i < newCount; i++) newRootFasades.push(newRootFasades[prevCount - 1].clone())
     }
     const setWidth = newRootFasades.every((f: Fasad) => trySetWidth(f, fasadWidth))
     if (await setAppData(setWidth, newAppData, newRootFasades, set, confirmCallback)) set(activeRootFasadIndexAtom, 0)

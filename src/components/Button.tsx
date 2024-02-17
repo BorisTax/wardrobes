@@ -2,17 +2,19 @@ import { useToolTip } from '../custom-hooks/useToolTip';
 
 type ButtonProps = {
         caption: string
-        title?: string
         onClick: () => void
+        title?: string
         disabled?: boolean
+        visible?: boolean
 }
 
-export default function Button(props: ButtonProps) {
-        const { onMouseOver, onMouseLeave } = useToolTip(props.title);
+export default function Button({ caption, onClick, title = "", disabled = false, visible = true }: ButtonProps) {
+        const { onMouseOver, onMouseLeave } = useToolTip(title);
         return <input type="button"
-                disabled={props.disabled}
-                value={props.caption}
-                onClick={() => { props.onClick() }}
+                style={{ visibility: visible ? "visible" : "hidden" }}
+                disabled={disabled}
+                value={caption}
+                onClick={() => { onClick() }}
                 onMouseOver={(e) => { onMouseOver(e) }}
                 onMouseLeave={() => { onMouseLeave() }}
                 onContextMenu={(e) => { e.preventDefault(); }}

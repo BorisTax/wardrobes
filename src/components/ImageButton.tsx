@@ -3,21 +3,23 @@ import { useToolTip } from '../custom-hooks/useToolTip';
 
 type ImageButtonProps = {
         title: string
-        onClick: ()=>void
-        disabled?: boolean
+        onClick: () => void
         icon: string
-        classes?: string 
+        disabled?: boolean
+        visible?: boolean
+        classes?: string
 }
 
-export default function ImageButton(props: ImageButtonProps) {
+export default function ImageButton({ title, onClick, icon, disabled = false, visible = true, classes = "" }: ImageButtonProps) {
         const [pressed, setPressed] = useState(false)
-        let className = props.disabled ? "button-disabled" : "button"
+        let className = disabled ? "button-disabled" : "button"
         className += pressed ? " button-down" : " button-up";
-        if(props.classes) className += " " + props.classes
-        const { onMouseOver, onMouseLeave } = useToolTip(props.title);
+        className += " " + classes
+        const { onMouseOver, onMouseLeave } = useToolTip(title);
         return <div
-                className={`${className} ${props.icon} noselect`}
-                onClick={(e) => { if (!props.disabled) { e.stopPropagation(); props.onClick() } }}
+                style={{ visibility: visible ? "visible" : "hidden" }}
+                className={`${className} ${icon} noselect`}
+                onClick={(e) => { if (!disabled) { e.stopPropagation(); onClick() } }}
                 onMouseDown={() => { setPressed(true) }}
                 onMouseUp={() => { setPressed(false) }}
                 onMouseOver={(e) => { onMouseOver(e) }}

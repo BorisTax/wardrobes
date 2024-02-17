@@ -32,19 +32,19 @@ export default function PropertiesBar() {
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}>
         <div className="property-bar-header">
             Параметры фасада
-            <ImageButton title="Выбрать секцию" icon="selectParent" disabled={!((fasad !== null) && (fasad.Parent !== null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
+            <ImageButton title="Выбрать секцию" icon="selectParent" visible={!((fasad === null) || (fasad.Parent === null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
         </div>
         <hr />
         <PropertyGrid>
             <div className="text-end">Высота: </div>
             <PropertyRow>
                 <InputField value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
-                <ToggleButton pressed={fixHeight} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать высоту" disabled={disabledFixHeight} onClick={() => { setFixedHeight(!fixHeight) }} />
+                <ToggleButton pressed={fixHeight} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать высоту" visible={!disabledFixHeight} onClick={() => { setFixedHeight(!fixHeight) }} />
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
                 <InputField value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
-                <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" disabled={disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
+                <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" visible={!disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
             <ComboBox title="Материал:" value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value as FasadMaterial) }} />
             <ComboBox title="Цвет/Рисунок:" value={extmaterial} items={extMaterials.map((m: ExtMaterial) => m.name)} disabled={!fasad} onChange={(_, value) => { setExtMaterial(value) }} />

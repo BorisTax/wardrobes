@@ -30,7 +30,10 @@ export default function PropertiesBar() {
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}>
-        <div>Параметры фасада</div>
+        <div className="property-bar-header">
+            Параметры фасада
+            <ImageButton title="Выбрать секцию" icon="selectParent" disabled={!((fasad !== null) && (fasad.Parent !== null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
+        </div>
         <hr />
         <PropertyGrid>
             <div className="text-end">Высота: </div>
@@ -49,9 +52,6 @@ export default function PropertiesBar() {
             <ComboBox title="Направление профиля:" value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
             <ComboBox title="Кол-во секций:" value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
         </PropertyGrid>
-        <hr />
-        <ImageButton title="Выбрать секцию" icon="selectParent" disabled={!((fasad !== null) && (fasad.Parent !== null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
-
     </div>
 }
 

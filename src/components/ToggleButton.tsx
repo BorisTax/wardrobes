@@ -19,7 +19,7 @@ export default function ToggleButton({ title, onClick, iconPressed, iconUnPresse
                 style={{ visibility: visible ? "visible" : "hidden" }}
                 className={`${className} ${pressed ? iconPressed : iconUnPressed} noselect`}
                 onClick={(e) => { if (!disabled) { e.stopPropagation(); onClick() } }}
-                onMouseOver={(e) => { onMouseOver(e) }}
+                onMouseOver={(e) => { onMouseOver(e, { disabled }) }}
                 onMouseLeave={() => { onMouseLeave() }}
                 onContextMenu={(e) => { e.preventDefault(); }}
         >

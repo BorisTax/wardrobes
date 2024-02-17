@@ -15,7 +15,7 @@ export default function Button({ caption, onClick, title = "", disabled = false,
                 disabled={disabled}
                 value={caption}
                 onClick={() => { onClick() }}
-                onMouseOver={(e) => { onMouseOver(e) }}
+                onMouseOver={(e) => { onMouseOver(e, { disabled }) }}
                 onMouseLeave={() => { onMouseLeave() }}
                 onContextMenu={(e) => { e.preventDefault(); }}
         >

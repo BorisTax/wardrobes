@@ -20,17 +20,22 @@ $icon-url: '../images/icons/';
   background-position: center;
   -width: 27px;
   -height: 27px;
-  mix-blend-mode: difference;
+  mix-blend-mode: hard-light;
 }
 
-.separator {
+.horizontal-separator {
   position: relative;
   bottom: 1px;
   margin: 0;
   width: 1px;
-  border: inset 1px;
+  border: inset;
 }
-
+.vertical-separator{
+  height: 100%;
+  width: 1px;
+  box-sizing: border-box;
+  border: inset;
+}
 
 @mixin fixed {
   width: 100%;

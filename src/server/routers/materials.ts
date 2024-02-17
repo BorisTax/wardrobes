@@ -5,7 +5,7 @@ import express from "express";
 import { checkPermissions, moveFile } from '../functions.js';
 import { MaterialService } from '../services/materialService.js';
 import { MyRequest, UserRoles } from '../../types/server.js';
-import { ExtMaterial, ExtNewMaterial } from '../../types/materials.js';
+import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../../types/materials.js';
 import { materialServiceProvider } from '../options.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,19 +14,44 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 export default router
 
-router.post("/list", async (req, res) => {
-  const result = await getExtMaterials();
-  if (!result.success) return res.json(result)
-  res.json(result.materials);
-});
 
-router.post("/profiles", async (req, res) => {
+
+router.get("/profiles", async (req, res) => {
   const result = await getProfiles();
   if (!result.success) return res.json(result)
   res.json(result.profiles);
 });
+router.delete("/profile", async (req, res) => {
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  const { name, type } = req.body
+  let result
+  result = await deleteProfile(name, type);
+  const status = result.success ? 200 : 404
+  res.status(status).json(result);
+});
 
-router.delete("/delete", async (req, res) => {
+router.post("/profile", async (req: MyRequest, res) => {
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  const { name, type, code } = req.body
+  const result = await addProfile({ name, type, code });
+  const status = result.success ? 201 : 409
+  res.status(status).json(result);
+});
+
+router.put("/profile", async (req: MyRequest, res) => {
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  const { name, type, newName, code } = req.body
+  const result = await updateProfile({ name, type, newName, code });
+  res.json(result);
+});
+
+
+router.get("/materials", async (req, res) => {
+  const result = await getExtMaterials();
+  if (!result.success) return res.json(result)
+  res.json(result.materials);
+});
+router.delete("/material", async (req, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
   const { name, material } = req.body
   let result
@@ -35,7 +60,7 @@ router.delete("/delete", async (req, res) => {
   res.status(status).json(result);
 });
 
-router.post("/add", async (req: MyRequest, res) => {
+router.post("/material", async (req: MyRequest, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
   const { name, material, code } = req.body
   const image = req.files?.image
@@ -49,7 +74,7 @@ router.post("/add", async (req: MyRequest, res) => {
   res.status(status).json(result);
 });
 
-router.put("/update", async (req: MyRequest, res) => {
+router.put("/material", async (req: MyRequest, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
   const { name, material, newName, code } = req.body
   const image = req.files?.image
@@ -107,4 +132,38 @@ export async function getProfiles() {
   const result = await materialService.getProfiles()
   if (!result) return result
   return { success: true, profiles: result.data }
+}
+
+
+export async function addProfile({ name, type, code }: Profile) {
+  const materialService = new MaterialService(materialServiceProvider)
+  const result = await materialService.getProfiles()
+  if (!result.success) return result
+  const profiles = result.data
+  if ((profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, message: messages.MATERIAL_EXIST }
+  const res = await materialService.addProfile({ name, type,  code })
+  if (!res.success) return res
+  return { success: true }
+}
+
+export async function updateProfile({ name,  newName, type, code }: NewProfile) {
+  const materialService = new MaterialService(materialServiceProvider)
+  const result = await materialService.getExtMaterials()
+  if (!result.success) return result
+  const profiles = result.data
+  if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, message: messages.MATERIAL_NO_EXIST }
+  const res = await materialService.updateProfile({ name, type, newName, code })
+  if (!res.success) return res
+  return { success: true }
+}
+
+export async function deleteProfile(name: string, type: string) {
+  const materialService = new MaterialService(materialServiceProvider)
+  const result = await materialService.getExtMaterials()
+  if (!result.success) return result
+  const profiles = result.data
+  if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, message: messages.MATERIAL_NO_EXIST }
+  const res = await materialService.deleteProfile(name, type)
+  if (!res.success) return res
+  return { success: true }
 }

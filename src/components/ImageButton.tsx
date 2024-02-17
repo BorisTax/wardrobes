@@ -22,7 +22,7 @@ export default function ImageButton({ title, onClick, icon, disabled = false, vi
                 onClick={(e) => { if (!disabled) { e.stopPropagation(); onClick() } }}
                 onMouseDown={() => { setPressed(true) }}
                 onMouseUp={() => { setPressed(false) }}
-                onMouseOver={(e) => { onMouseOver(e) }}
+                onMouseOver={(e) => { onMouseOver(e, { disabled }) }}
                 onMouseLeave={() => { setPressed(false); onMouseLeave() }}
                 onContextMenu={(e) => { e.preventDefault(); }}
         >

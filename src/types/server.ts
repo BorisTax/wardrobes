@@ -50,9 +50,9 @@ export type Result<T> = {
     error?: Error
 }
 
-export type Results = Result<null> | 
-                        Result<ExtMaterial[]> | 
-                        Result<Profile[]> | 
-                        Result<User[]> |
-                        Result<Token[]> |
-                        Result<string>
+export type Results = Result<null> |
+    Result<ExtMaterial[]> |
+    Result<Profile[]> |
+    Result<User[]> |
+    Result<Token[]> |
+    Result<string>

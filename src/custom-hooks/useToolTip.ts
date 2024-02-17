@@ -9,8 +9,9 @@ export const useToolTip = (title: string | undefined) => {
     }
   }, [toolTip])
   if (!title) return { onMouseLeave: () => { }, onMouseOver: () => { } }
-  const onMouseOver = (e: React.MouseEvent, text = "") => {
+  const onMouseOver = (e: React.MouseEvent, {text = "", disabled = false}) => {
     if (isMobile()) return
+    if (disabled) return
     const { top: elementTop, left: elementLeft, height: elementHeight } = e.target ? (e.target as HTMLElement).getBoundingClientRect() : { top: 0, left: 0, height: 0 };
     if (title && toolTip) {
       toolTip.innerText = text || title;
@@ -35,7 +36,7 @@ export const useToolTip = (title: string | undefined) => {
         toolTip.style.bottom = "auto";
       } else {
         toolTip.style.bottom = "auto";
-        toolTip.style.top =  bottom + "px";
+        toolTip.style.top = bottom + "px";
       }
     }
   }

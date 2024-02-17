@@ -1,4 +1,4 @@
-import { ExtMaterial, ExtNewMaterial } from '../../types/materials.js';
+import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../../types/materials.js';
 import { Results } from '../../types/server.js';
 import { IMaterialServiceProvider } from '../../types/services.js';
 import { dataBaseQuery } from '../functions.js';
@@ -26,6 +26,15 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
     async getProfiles(): Promise<Results> {
         return dataBaseQuery(this.dbFile, `select * from 'profileColors'`)
     }
+    async addProfile({ name, code, type }: Profile) {
+        return dataBaseQuery(this.dbFile, `insert into profilecolors (name, type, code) values('${name}', '${type}', '${code}');`)
+    }
+    async deleteProfile(name: string, type: string) {
+        return dataBaseQuery(this.dbFile, `DELETE FROM profilecolors WHERE name='${name}' and type='${type}';`)
+    }
+    async updateProfile({ newName, code, type, name }: NewProfile) {
+        return dataBaseQuery(this.dbFile, getProfileQuery({ newName, code, name, type }))
+    }
 }
 
 function getQuery({ newName, image, code, name, material }: ExtNewMaterial) {
@@ -34,6 +43,15 @@ function getQuery({ newName, image, code, name, material }: ExtNewMaterial) {
     if (image) parts.push(`image='${image || ""}'`)
     if (code) parts.push(`code='${code}'`)
     const query = parts.length > 0 ? `update extmaterials set ${parts.join(', ')} where name='${name}' and material='${material}';` : ""
+    return query
+}
+
+function getProfileQuery({ newName, code, name, type }: NewProfile) {
+    const parts = []
+    if (newName) parts.push(`name='${newName}'`)
+    if (code) parts.push(`code='${code}'`)
+    if (type) parts.push(`type='${type}'`)
+    const query = parts.length > 0 ? `update profilecolors set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }
 

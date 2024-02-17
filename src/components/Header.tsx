@@ -17,11 +17,12 @@ export default function Header() {
   const { next, previous } = useAtomValue(historyAppAtom)
   const undo = useSetAtom(undoAtom)
   const redo = useSetAtom(redoAtom)
+  const disabledFiles = user.role === UserRoles.ANONYM
   return <nav className="header">
     <div className="file-buttons-bar">
       <ImageButton title="Новый" icon="new" onClick={() => { showConfirm("Сбросить в первоначальное состояние?", () => resetAppData()) }} />
-      <ImageButton title="Открыть" icon="open" onClick={() => { openState() }} />
-      <ImageButton title="Сохранить" icon="save" onClick={() => { saveState() }} />
+      <ImageButton title="Открыть" icon="open" disabled={disabledFiles} onClick={() => { openState() }} />
+      <ImageButton title="Сохранить" icon="save" disabled={disabledFiles} onClick={() => { saveState() }} />
       <MenuSeparator />
       <ImageButton title="Отменить" icon="undo" disabled={!previous} onClick={() => { undo() }} />
       <ImageButton title="Повторить" icon="redo" disabled={!next} onClick={() => { redo() }} />

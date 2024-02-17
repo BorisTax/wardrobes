@@ -1,4 +1,4 @@
-import { ExtMaterial, ExtNewMaterial } from "./materials"
+import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
 import { Results, User } from "./server"
 interface IUserAbstractService {
     getUsers: () => Promise<Results>
@@ -10,10 +10,13 @@ interface IUserAbstractService {
 }
 interface IMaterialAbstractService {
     getExtMaterials: () => Promise<Results>
-    addExtMaterial: ({ name, material, imageurl, code }: ExtMaterial) => Promise<Results>
-    updateExtMaterial: ({ name, material, newName, imageurl, code }: ExtNewMaterial) => Promise<Results>
+    addExtMaterial: ({ }: ExtMaterial) => Promise<Results>
+    updateExtMaterial: ({ }: ExtNewMaterial) => Promise<Results>
     deleteExtMaterial: (name: string, base: string) => Promise<Results>
     getProfiles: () => Promise<Results>
+    addProfile: ({ }: Profile) => Promise<Results>
+    deleteProfile: (name: string, type: string) => Promise<Results>
+    updateProfile: ({ }: NewProfile) => Promise<Results>
 }
 
 export interface IMaterialServiceProvider extends IMaterialAbstractService {

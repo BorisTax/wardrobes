@@ -1,6 +1,6 @@
 import { atom, useAtom } from "jotai";
 import { ExtMaterial } from "../types/materials";
-import { fetchData, fetchFormData } from "../functions/fetch";
+import { fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { getMaterialList } from "../functions/materials";
 import { appDataAtom } from "./app";
@@ -12,7 +12,7 @@ export const materialListAtom = atom(new Map())
 
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
     try {
-        const data = await fetchData('api/materials/list', "POST", "")
+        const data = await fetchGetData('api/materials/materials')
         const mList = getMaterialList(data)
         set(materialListAtom, mList)
         const { rootFasades } = get(appDataAtom)
@@ -30,7 +30,7 @@ export const imageUrlAtom = atom((get) => {
 export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial, callback: (result: { success: boolean }) => void) => {
     const user = get(userAtom)
     try {
-        const result = await fetchData("api/materials/delete", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
+        const result = await fetchData("api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
         await set(loadMaterialListAtom)
         callback(result)
     } catch (e) { console.error(e) }
@@ -45,7 +45,7 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
     formData.append(TableFields.CODE, material.code)
     formData.append(TableFields.TOKEN, user.token)
     try {
-        const result = await fetchFormData("api/materials/add", "POST", formData)
+        const result = await fetchFormData("api/materials/material", "POST", formData)
         await set(loadMaterialListAtom)
         callback(result)
     } catch (e) { console.error(e) }
@@ -61,7 +61,7 @@ export const updateMaterialAtom = atom(null, async (get, set, { name, material, 
     formData.append(TableFields.CODE, newCode)
     formData.append(TableFields.TOKEN, user.token)
     try {
-        const result = await fetchFormData("api/materials/update", "PUT", formData)
+        const result = await fetchFormData("api/materials/material", "PUT", formData)
         await set(loadMaterialListAtom)
         callback(result)
     } catch (e) { console.error(e) }

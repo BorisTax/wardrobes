@@ -17,8 +17,8 @@ export default class Fasad {
     public Children: Fasad[]
     private width = 0
     private height = 0
-    private fixedWidth = false
-    private fixedHeight = false
+    private fWidth = false
+    private fHeight = false
     public Parent: Fasad | null = null
     private level = 0
     private minSize: number
@@ -42,8 +42,8 @@ export default class Fasad {
         state.division = this.division
         state.width = this.width
         state.height = this.height
-        state.fixedWidth = this.fixedWidth
-        state.fixedHeight = this.fixedHeight
+        state.fixedWidth = this.fWidth
+        state.fixedHeight = this.fHeight
         state.material = this.material
         state.extMaterial = this.extMaterial
         state.sandBase = this.sandBase
@@ -57,8 +57,8 @@ export default class Fasad {
         this.active = state.active
         this.width = state.width
         this.height = state.height
-        this.fixedWidth = state.fixedWidth
-        this.fixedHeight = state.fixedHeight
+        this.fWidth = state.fixedWidth
+        this.fHeight = state.fixedHeight
         this.material = state.material
         this.extMaterial = state.extMaterial
         this.sandBase = state.sandBase
@@ -69,27 +69,18 @@ export default class Fasad {
             f.Parent = this
             return f
         })
-        // if (state.children.length !== 0) {
-        //     if (this.division === Division.HEIGHT) this.divideOnHeight(state.children.length); else this.divideOnWidth(state.children.length)
-        //     let i = 0
-        //     for (const c of state.children) {
-        //         this.Children[i].setState(c)
-        //         i = i + 1
-        //     }
-        //     if (this.division === Division.HEIGHT) this.DistributePartsOnHeight(null, 0, true); else this.DistributePartsOnWidth(null, 0, true)
-        // }
     }
     public get Material() {
         return this.material
     }
-    public setMaterial(value: FasadMaterial, toChildren: boolean = true) {
+    public setMaterial(value: FasadMaterial, toChildren = true) {
         this.material = value
         if (!toChildren) return
         for (const f of this.Children) {
             f.setMaterial(value, toChildren)
         }
     }
-    public setExtMaterial(value: string, toChildren: boolean = true) {
+    public setExtMaterial(value: string, toChildren = true) {
         this.extMaterial = value
         if (!toChildren) return
         for (const f of this.Children) {
@@ -102,7 +93,7 @@ export default class Fasad {
     public get SandBase() {
         return this.sandBase
     }
-    public setSandBase(value: SandBase, toChildren: boolean = true) {
+    public setSandBase(value: SandBase, toChildren = true) {
         this.sandBase = value
         if (!toChildren) return
         for (const f of this.Children) {
@@ -121,21 +112,21 @@ export default class Fasad {
     public set Height(value: number) {
         this.height = value
     }
-    public fixWidth(value: boolean, toChildren: boolean = true) {
-        this.fixedWidth = value
+    public fixWidth(value: boolean, toChildren = true) {
+        this.fWidth = value
         if (!toChildren) return
         if (this.Division === Division.HEIGHT) this.Children.forEach((c: Fasad) => { c.fixWidth(value, toChildren) })
     }
-    public FixedWidth() {
-        return this.fixedWidth
+    public FixedWidth(): boolean {
+        return this.fWidth || (this.Division === Division.HEIGHT && this.Children.some((f: Fasad) => f.FixedWidth()))
     }
-    public fixHeight(value: boolean, toChildren: boolean = true) {
-        this.fixedHeight = value
+    public fixHeight(value: boolean, toChildren = true) {
+        this.fHeight = value
         if (!toChildren) return
         if (this.Division === Division.WIDTH) this.Children.forEach((c: Fasad) => { c.fixHeight(value, toChildren) })
     }
-    public FixedHeight() {
-        return this.fixedHeight
+    public FixedHeight(): boolean {
+        return this.fHeight || (this.Division === Division.WIDTH && this.Children.some((f: Fasad) => f.FixedHeight()))
     }
     public get cutWidth() {
         return this.width - (this.material === FasadMaterial.DSP ? 0 : 3)
@@ -238,9 +229,9 @@ export default class Fasad {
         if (!useSameWidth) {
             for (const c of this.Children) {
                 i = i + 1
-                if (c.fixedWidth && !(c === initiator)) totalFixedWidth = totalFixedWidth + c.width
+                if (c.FixedWidth() && !(c === initiator)) totalFixedWidth = totalFixedWidth + c.width
                 if (c === initiator) totalFixedWidth = totalFixedWidth + newWidth
-                if ((!c.fixedWidth) && !(c === initiator)) {
+                if ((!c.FixedWidth()) && !(c === initiator)) {
                     totalFreeCount = totalFreeCount + 1
                     lastFreeIndex = i
                 }
@@ -258,9 +249,9 @@ export default class Fasad {
         i = 0
         for (const c of this.Children) {
             i = i + 1
-            if (c.fixedWidth) part = c.width
+            if (c.FixedWidth()) part = c.width
             if (c === initiator) part = newWidth
-            if (!c.fixedWidth && !(c === initiator)) part = lastFreeIndex === i ? partLastWidth : partFreeWidth
+            if (!c.FixedWidth() && !(c === initiator)) part = lastFreeIndex === i ? partLastWidth : partFreeWidth
             if (useSameWidth) part = c.width
             if (!useSameWidth) c.backup
             c.width = part
@@ -287,9 +278,9 @@ export default class Fasad {
         if (!useSameHeight) {
             for (const c of this.Children) {
                 i = i + 1
-                if (c.fixedHeight && !(c === initiator)) totalFixedHeight = totalFixedHeight + c.height
+                if (c.FixedHeight() && !(c === initiator)) totalFixedHeight = totalFixedHeight + c.height
                 if (c === initiator) totalFixedHeight = totalFixedHeight + newHeight
-                if ((!c.fixedHeight) && !(c === initiator)) {
+                if ((!c.FixedHeight()) && !(c === initiator)) {
                     totalFreeCount = totalFreeCount + 1
                     lastFreeIndex = i
                 }
@@ -307,9 +298,9 @@ export default class Fasad {
         i = 0
         for (const c of this.Children) {
             i = i + 1
-            if (c.fixedHeight) part = c.height
+            if (c.FixedHeight()) part = c.height
             if (c === initiator) part = newHeight
-            if (!c.fixedHeight && !(c === initiator)) part = lastFreeIndex === i ? partLastHeight : partFreeHeight
+            if (!c.FixedHeight() && !(c === initiator)) part = lastFreeIndex === i ? partLastHeight : partFreeHeight
             if (useSameHeight) part = c.height
             if (!useSameHeight) c.backup
             c.height = part
@@ -338,8 +329,8 @@ export default class Fasad {
         fasad.setMaterial(this.material, false)
         fasad.Height = this.height
         fasad.Width = this.width
-        fasad.fixHeight(this.fixedHeight, false)
-        fasad.fixWidth(this.fixedWidth, false)
+        fasad.fixHeight(this.fHeight, false)
+        fasad.fixWidth(this.fWidth, false)
         fasad.OuterEdges = { ...this.OuterEdges }
         fasad.Parent = parent
         fasad.setSandBase(this.sandBase, false)

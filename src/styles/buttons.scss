@@ -20,7 +20,7 @@ $icon-url: '../images/icons/';
   background-position: center;
   -width: 27px;
   -height: 27px;
-  mix-blend-mode:exclusion;
+  mix-blend-mode: difference;
 }
 
 .separator {
@@ -36,7 +36,7 @@ $icon-url: '../images/icons/';
   width: 100%;
   height: 100%;
   margin: auto;
-  mix-blend-mode: exclusion;
+  mix-blend-mode: difference;
 }
 
 .fixedWidth {
@@ -125,26 +125,32 @@ $header_button_height: 48px;
   background-image: url($icon-url+'editMaterials.png');
   @include header_button();
 }
+
 .new {
   background-image: url($icon-url+'new.png');
   @include instruments_button();
 }
+
 .open {
   background-image: url($icon-url+'open.png');
   @include instruments_button();
 }
+
 .save {
   background-image: url($icon-url+'save.png');
   @include instruments_button();
 }
+
 .undo {
   background-image: url($icon-url+'undo.png');
   @include instruments_button();
 }
+
 .redo {
   background-image: url($icon-url+'redo.png');
   @include instruments_button();
 }
+
 .fix {
   background-image: url($icon-url+'fix.png');
   background-size: 100% 100%;

@@ -4,6 +4,7 @@ import { createAppState, getAppDataFromState, getAppState, getFasadHeight, getFa
 import { Profile } from "../types/materials";
 import Fasad from "../classes/Fasad";
 import { trySetHeight, trySetWidth } from "../functions/fasades";
+import { openFile, saveState } from '../functions/file';
 
 const storage = localStorage.getItem('appState')
 const initialAppState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
@@ -27,11 +28,18 @@ export const redoAtom = atom(null, (get: Getter, set: Setter) => {
     if (!app.next) return
     set(appAtom, { previous: app, state: app.next.state, next: app.next.next })
 })
-
+export const saveStateAtom = atom(null, (get: Getter, set: Setter) => {
+    saveState(get(appAtom).state)
+})
+export const openStateAtom = atom(null, async (get: Getter, set: Setter) => {
+    const { result, content } = await openFile()
+    if (result && content) {
+        set(appAtom, { state: content.state as AppState, next: null, previous: null })
+    }
+})
 export const resetAppDataAtom = atom(null, (get: Getter, set: Setter) => {
     set(appAtom, { state: getInitialAppState(), next: null, previous: null })
 })
-
 export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmCallback]: SetAtomComfirm<number>) => {
     const { wardWidth, wardHeight, profile, type, rootFasades } = get(appDataAtom)
     const prevCount = rootFasades.length

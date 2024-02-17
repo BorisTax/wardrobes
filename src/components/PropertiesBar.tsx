@@ -73,8 +73,8 @@ function getProperties(fasad: Fasad | null) {
     const fixHeight = fasad?.FixedHeight() || false
     let disabledWidth = !fasad || !fasad.Parent || fasad.FixedWidth()
     let disabledHeight = !fasad || !fasad.Parent || fasad.FixedHeight()
-    const disabledFixWidth = !fasad
-    const disabledFixHeight = !fasad
+    const disabledFixWidth = !fasad || !fasad.Parent || (fasad.Level === 1 && fasad.Parent.Division === Division.HEIGHT)
+    const disabledFixHeight = !fasad || !fasad.Parent || (fasad.Level === 1 && fasad.Parent.Division === Division.WIDTH)
     disabledWidth = disabledWidth || !!(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.HEIGHT)
     disabledHeight = disabledHeight || !!(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.WIDTH)
     return { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth }

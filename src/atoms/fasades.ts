@@ -32,7 +32,7 @@ export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const newActiveFasad = newRootFasad.getActiveFasad()
     if (trySetHeight(newActiveFasad, height)) {
         appData.rootFasades[rootFasadIndex] = newRootFasad
-        set(appDataAtom, { ...appData })
+        set(appDataAtom, { ...appData }, true)
     }
 })
 
@@ -47,7 +47,7 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
     const newActiveFasad = newRootFasad.getActiveFasad()
     if (trySetWidth(newActiveFasad, width)) {
         appData.rootFasades[rootFasadIndex] = newRootFasad
-        set(appDataAtom, { ...appData })
+        set(appDataAtom, { ...appData }, true)
     }
 })
 export const divideFasadAtom = atom(null, (get, set, count: number) => {
@@ -55,7 +55,7 @@ export const divideFasadAtom = atom(null, (get, set, count: number) => {
     if (!activeFasad) return
     const appData = get(appDataAtom)
     activeFasad.divideFasad(count)
-    set(appDataAtom, { ...appData })
+    set(appDataAtom, { ...appData }, true)
 })
 
 export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {
@@ -64,7 +64,7 @@ export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {
     const appData = get(appDataAtom)
     //if (fixed && (activeFasad.Parent?.Division === Division.WIDTH)) activeFasad.Parent.fixHeight(fixed);
     activeFasad.fixHeight(fixed)
-    set(appDataAtom, { ...appData })
+    set(appDataAtom, { ...appData }, true)
 })
 export const setFixedWidthAtom = atom(null, (get, set, fixed: boolean) => {
     const activeFasad = get(activeFasadAtom)
@@ -72,7 +72,7 @@ export const setFixedWidthAtom = atom(null, (get, set, fixed: boolean) => {
     const appData = get(appDataAtom)
     //if (fixed && (activeFasad.Parent?.Division === Division.HEIGHT)) activeFasad.Parent.fixWidth(fixed);
     activeFasad.fixWidth(fixed)
-    set(appDataAtom, { ...appData })
+    set(appDataAtom, { ...appData }, true)
 })
 
 export const setExtMaterialAtom = atom(null, (get, set, extMaterial: string) => {
@@ -80,9 +80,9 @@ export const setExtMaterialAtom = atom(null, (get, set, extMaterial: string) => 
     if (!activeFasad) return
     const appData = get(appDataAtom)
     activeFasad.setExtMaterial(extMaterial)
-    set(appDataAtom, { ...appData })
+    set(appDataAtom, { ...appData }, true)
 })
-export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial, useHistory = true) => {
+export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial, useHistory: boolean = true) => {
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
@@ -97,7 +97,7 @@ export const setSandBaseAtom = atom(null, (get, set, sandBase: SandBase) => {
     if (!activeFasad) return
     const appData = get(appDataAtom)
     activeFasad.setSandBase(sandBase)
-    set(appDataAtom, { ...appData })
+    set(appDataAtom, { ...appData }, true)
 })
 
 export const setProfileDirectionAtom = atom(null, (get, set, direction: string) => {
@@ -106,6 +106,6 @@ export const setProfileDirectionAtom = atom(null, (get, set, direction: string) 
     const appData = get(appDataAtom)
     activeFasad.Division = getProfileDirection(direction)
     activeFasad.divideFasad(activeFasad.Children.length)
-    set(appDataAtom, { ...appData })
+    set(appDataAtom, { ...appData }, true)
 })
 

@@ -1,15 +1,11 @@
-import { atom } from "jotai"
+import { atom, Setter, Getter } from "jotai"
+import { jwtDecode } from 'jwt-decode'
 import { fetchData } from "../functions/fetch"
-
-export enum UserRoles {
-    SUPERADMIN = 'SUPERADMIN',
-    ADMIN = 'ADMIN',
-    MANAGER = 'MANAGER',
-    GUEST = "GUEST"
-}
+import { UserRoles } from "../types/server"
 
 export const UserRolesCaptions = {
-    [UserRoles.GUEST]: "",
+    [UserRoles.ANONYM]: "",
+    [UserRoles.CLIENT]: "КЛИЕНТ",
     [UserRoles.MANAGER]: "МЕНЕДЖЕР",
     [UserRoles.ADMIN]: "АДМИН",
     [UserRoles.SUPERADMIN]: "СУПЕРАДМИН",
@@ -21,14 +17,14 @@ export type UserState = {
     token: string
 }
 
-export const userAtom = atom(getInitialUser())
-export const setUserAtom = atom(null, (get, set, user: UserState) => {
-    localStorage.setItem('user', JSON.stringify(user))
-    const role = user.role || UserRoles.GUEST
+export const userAtom = atom<UserState>(getInitialUser())
+export const setUserAtom = atom(null, (get: Getter, set: Setter, user: UserState) => {
+    localStorage.setItem('token', user.token)
+    const role = user.role || UserRoles.ANONYM
     set(userAtom, { ...user, role })
 })
-export const logoutUserAtom = atom(null, async (get, set) => {
-    localStorage.removeItem("user")
+export const logoutUserAtom = atom(null, async (get: Getter, set: Setter) => {
+    localStorage.removeItem("token")
     const user = get(userAtom)
     try {
         fetchData('api/users/logout', "POST", JSON.stringify({ token: user.token }))
@@ -37,16 +33,26 @@ export const logoutUserAtom = atom(null, async (get, set) => {
 })
 
 export const testAtom = atom("")
-export const setTestAtom = atom(null, (get, set, message: string) => {
+export const setTestAtom = atom(null, (get: Getter, set: Setter, message: string) => {
     set(testAtom, message)
 })
 
 export function getInitialUser(): UserState {
-    const storeUser = localStorage.getItem("user")
-    const user = storeUser ? JSON.parse(storeUser) : {
-        name: UserRolesCaptions[UserRoles.GUEST],
-        role: UserRoles.GUEST,
-        token: ""
+    const token = localStorage.getItem("token") || ""
+    let storeUser: UserState
+    try {
+        storeUser = jwtDecode(token) as UserState
+    } catch (e) {
+        storeUser = {
+            name: UserRoles.ANONYM,
+            role: UserRoles.ANONYM,
+            token
+        }
+    }
+    const user = {
+        name: UserRolesCaptions[storeUser.role as UserRoles],
+        role: storeUser.role as UserRoles,
+        token
     }
     return user
 }

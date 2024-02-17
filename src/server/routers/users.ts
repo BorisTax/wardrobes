@@ -2,10 +2,10 @@ import messages from '../messages.js'
 import express from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { userServiceProvider } from '../options.js';
 import { UserService } from '../services/userService.js';
 import { checkPermissions } from '../functions.js';
 import { ActiveUser, Token, User, UserRoles } from '../../types/server.js';
+import { JWT_SECRET, userServiceProvider } from '../options.js';
 
 const router = express.Router();
 export default router
@@ -73,7 +73,7 @@ async function loginUser(user: User) {
   const foundUser = (userList as User[]).find(u => (user.name === u.name))
   if (!foundUser) return { success: false, message: messages.INVALID_USER_DATA };
   if (!bcrypt.compareSync(user.password, foundUser.password)) return { success: false, message: messages.INVALID_USER_DATA };
-  const token = jwt.sign({ name: foundUser.name, role: foundUser.role }, "secretkey", { expiresIn: 1440 });
+  const token = jwt.sign({ name: foundUser.name, role: foundUser.role }, JWT_SECRET, { expiresIn: 1440 });
   return { success: true, message, token, name: foundUser.name, role: foundUser.role };
 }
 

@@ -11,7 +11,7 @@ import { TableFields } from "../types/server";
 
 export const materialListAtom = atom(new Map())
 
-export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial: boolean = false) => {
+export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
     try {
         const data = await fetchData('api/materials/list', "POST", "")
         const mList = getMaterialList(data)
@@ -19,9 +19,9 @@ export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial: bo
         const { rootFasades } = get(appDataAtom)
         const material = [...mList.keys()][0] as FasadMaterial
         if (setAsInitial) {
-            rootFasades.forEach((f: Fasad) => {
+            rootFasades.filter((f: Fasad) => f.Material === FasadMaterial.EMPTY).forEach((f: Fasad) => {
                 set(setActiveFasadAtom, f)
-                set(setMaterialAtom, material)
+                set(setMaterialAtom, material, false)
             })
             set(setActiveFasadAtom, null)
         }

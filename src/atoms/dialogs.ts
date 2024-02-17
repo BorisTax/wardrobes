@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { Getter, Setter, atom } from "jotai";
 import React from "react";
 
 type MessageAtom = {
@@ -11,8 +11,10 @@ type ConfirmAtom = {
     onYesAction: () => void
     onNoAction?: () => void
 }
-
-export const loginDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+const loginDialog = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const loginDialogAtom = atom((get: Getter) => get(loginDialog), (get: Getter, set: Setter, loginDialogRef: React.RefObject<HTMLDialogElement> | null) => {
+    set(loginDialog, loginDialogRef)
+})
 export const editMaterialDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 const messageAtom = atom<MessageAtom>({ dialogRef: null, message: "" })
 export const messageDialogAtom = atom((get) => get(messageAtom), (get, set, message: string) => {

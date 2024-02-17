@@ -1,7 +1,7 @@
 .header {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  padding: 0.5rem;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.2rem;
   background: linear-gradient(45deg, #88dffa, #96e0f3);
 }
 
@@ -18,7 +18,7 @@
   gap: 0.5rem;
 }
 .main-container {
- padding: 0.2rem;
+ padding: 0.5rem;
 }
 
 .rootfasades-container {
@@ -45,7 +45,6 @@
   .main-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    margin-top: 1em;
   }
 
   @media (min-width: 1240px) {
@@ -109,8 +108,8 @@
 }
 
 .properties-bar {
-  border: 2px solid black;
-  padding: 1em;
+  border: 1px solid black;
+  padding: 0.5rem;
 }
 
 .fasad-section:hover {

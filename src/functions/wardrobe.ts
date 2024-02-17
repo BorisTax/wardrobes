@@ -3,6 +3,7 @@ import { Profile, ProfileType } from "../types/materials"
 import FasadState from "../classes/FasadState"
 import { getFasadState, newFasadFromState } from "./fasades"
 import { Division, FasadMaterial } from "../types/enums"
+import Fasad from "../classes/Fasad"
 
 export const WardTypes: Map<string, string> = new Map()
 WardTypes.set("ШКАФ", WardType.WARDROBE)
@@ -46,10 +47,10 @@ export function getInitialAppState(): AppState {
     const fasadCount = 2
     const profile: Profile = { type: ProfileType.STANDART, name: "", code: "" }
     const wardType: WardType = WardType.WARDROBE
-    return getAppState(wardWidth, wardHeight, fasadCount, profile, wardType)
+    return createAppState(wardWidth, wardHeight, fasadCount, profile, wardType)
 }
 
-export function getAppState(wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WardType): AppState {
+export function createAppState(wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WardType): AppState {
     const fasadHeight = getFasadHeight(wardHeight, wardType, profile.type)
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardType, profile.type)
     const state: AppState = {
@@ -58,7 +59,19 @@ export function getAppState(wardWidth: number, wardHeight: number, fasadCount: n
         fasadCount,
         profile,
         type: wardType,
-        rootFasadesState: new Array(fasadCount).fill(null).map(() => getFasadState(fasadWidth, fasadHeight, Division.HEIGHT, FasadMaterial.DSP))
+        rootFasadesState: new Array(fasadCount).fill(null).map(() => getFasadState(fasadWidth, fasadHeight, Division.HEIGHT, FasadMaterial.EMPTY))
+    }
+    return state
+}
+
+export function getAppState(data: AppData): AppState {
+    const state: AppState = {
+        wardHeight: data.wardHeight,
+        wardWidth: data.wardWidth,
+        fasadCount: data.fasadCount,
+        profile: { ...data.profile },
+        type: data.type,
+        rootFasadesState: data.rootFasades.map((f: Fasad) => f.getState())
     }
     return state
 }

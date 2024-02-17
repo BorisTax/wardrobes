@@ -23,6 +23,8 @@ export enum UserRoles {
     SUPERADMIN = 'SUPERADMIN',
     ADMIN = 'ADMIN',
     MANAGER = 'MANAGER',
+    CLIENT = 'CLIENT',
+    ANONYM = 'ANONYM'
 }
 export type ActiveUser = {
     name: string

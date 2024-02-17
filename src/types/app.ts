@@ -23,4 +23,10 @@ export enum WardType {
     SYSTEM = "SYSTEM"
 }
 
+export type HistoryState = {
+    state: AppState
+    next: HistoryState | null | undefined
+    previous: HistoryState | null | undefined
+}
+
 export type SetAtomComfirm<T> = [T, () => Promise<boolean>]

@@ -5,10 +5,10 @@ import { getRootFasad, trySetHeight, trySetWidth } from '../functions/fasades'
 import { getProfileDirection } from '../functions/materials'
 import { materialListAtom } from './materials'
 import { appDataAtom } from './app'
+import { AppData } from '../types/app'
 
-export const activeRootFasadIndexAtom = atom(0)
 export const activeFasadAtom = atom<Fasad | null>((get) => {
-    const appData = get(appDataAtom)
+    const appData: AppData = get(appDataAtom)
     let activeFasad: Fasad | null = null
     appData.rootFasades.forEach((f: Fasad) => {
         const active = f.getActiveFasad()
@@ -19,7 +19,7 @@ export const activeFasadAtom = atom<Fasad | null>((get) => {
 export const setActiveFasadAtom = atom(null, (get, set, activeFasad: Fasad | null) => {
     const appData = get(appDataAtom)
     appData.rootFasades.forEach((f: Fasad) => f.setActiveFasad(activeFasad))
-    set(appDataAtom, { ...appData })
+    set(appDataAtom, { ...appData }, false)
 })
 export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const activeFasad = get(activeFasadAtom)
@@ -82,14 +82,14 @@ export const setExtMaterialAtom = atom(null, (get, set, extMaterial: string) => 
     activeFasad.setExtMaterial(extMaterial)
     set(appDataAtom, { ...appData })
 })
-export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial) => {
+export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial, useHistory = true) => {
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
     activeFasad.setMaterial(material)
     const matList = get(materialListAtom)
     activeFasad.setExtMaterial(matList.get(activeFasad.Material)[0]?.name)
-    set(appDataAtom, { ...appData })
+    set(appDataAtom, { ...appData }, useHistory)
 })
 
 export const setSandBaseAtom = atom(null, (get, set, sandBase: SandBase) => {

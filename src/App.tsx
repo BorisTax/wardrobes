@@ -13,11 +13,12 @@ import { useAtom, useSetAtom } from 'jotai'
 import { setActiveFasadAtom } from './atoms/fasades'
 import { loadMaterialListAtom } from './atoms/materials'
 import EditMaterialDialog from './components/EditMaterialDialog'
-import { UserRoles, userAtom } from './atoms/users'
+import { userAtom } from './atoms/users'
 import MessageDialog from './components/MessageDialog'
 import ConfirmDialog from './components/ConfirmDialog'
 import { loadProfileListAtom } from './atoms/profiles'
 import RootFasadesContainer from './components/RootFasadesContainer'
+import { UserRoles } from './types/server'
 
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)

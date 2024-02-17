@@ -9,18 +9,15 @@ import ToggleButton from "./ToggleButton"
 import { ExtMaterial } from "../types/materials"
 import ImageButton from "./ImageButton"
 import { useAtom, useSetAtom } from "jotai"
-import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
+import { activeFasadAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
 import { materialListAtom } from "../atoms/materials"
 import { Materials, SandBases } from "../functions/materials"
-import { appDataAtom } from "../atoms/app"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const [fasad] = useAtom(activeFasadAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
     const [materialList] = useAtom(materialListAtom)
-    const [activeRootFasadIndex] = useAtom(activeRootFasadIndexAtom)
-    const [{ rootFasades }] = useAtom(appDataAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)
     const setFixedWidth = useSetAtom(setFixedWidthAtom)
@@ -33,7 +30,7 @@ export default function PropertiesBar() {
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}>
-        <div>Параметры фасада<span>{` (${activeRootFasadIndex + 1} из ${rootFasades.length})`}</span></div>
+        <div>Параметры фасада</div>
         <hr />
         <PropertyGrid>
             <div className="text-end">Высота: </div>

@@ -3,12 +3,10 @@ import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
 import { checkPermissions, moveFile } from '../functions.js';
-import MaterialServiceSQLite from "../services/materialServiceSQLite.js";
 import { MaterialService } from '../services/materialService.js';
 import { MyRequest, UserRoles } from '../../types/server.js';
 import { ExtMaterial, ExtNewMaterial } from '../../types/materials.js';
-
-const materialServiceProvider = new MaterialServiceSQLite('./database/database.db')
+import { materialServiceProvider } from '../options.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

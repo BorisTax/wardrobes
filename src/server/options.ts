@@ -1,10 +1,12 @@
 import fs from 'fs'
-import UserServiceSQLite from './services/userServiceSQLite.js'
 import { UserService } from './services/userService.js'
-import { MyRequest, RequestBody, Result, Results, Token } from '../types/server.js'
+import { MyRequest, RequestBody, Results, Token } from '../types/server.js'
 import { Response, NextFunction } from "express"
-
-export const userServiceProvider = new UserServiceSQLite('./database/database.db')
+import UserServiceSQLite from './services/userServiceSQLite.js'
+import MaterialServiceSQLite from './services/materialServiceSQLite.js'
+export const JWT_SECRET = "secretkey"
+export const userServiceProvider = new UserServiceSQLite('./database/users.db')
+export const materialServiceProvider = new MaterialServiceSQLite('./database/database.db')
 
 const expiredInterval = 3600 * 1000
 const clearExpiredTokens = () => {

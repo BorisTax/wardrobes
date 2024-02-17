@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import { appDataAtom } from "../atoms/app";
 import FasadContainer from "./FasadContainer";
 import Fasad from "../classes/Fasad";
+import { isLandscape } from "../functions/functions";
 
 
 export default function RootFasadesContainer(): ReactElement {
@@ -33,7 +34,7 @@ const resize = (ratio: number, rootFasades: Fasad[], rootFasadesContainerRef: Re
     if (rootFasadesContainerRef.current) {
         const propertiesContainer = document.querySelector('.properties-container') as HTMLDivElement
         const mainContainer = document.querySelector('.main-container') as HTMLDivElement
-        const landscape = getComputedStyle(mainContainer).display === 'grid'
+        const landscape = isLandscape()
         const gapWidth = parseFloat(getComputedStyle(rootFasadesContainerRef.current).gap)
         if (landscape) {
             const height = propertiesContainer.offsetHeight

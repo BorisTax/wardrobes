@@ -1,25 +1,26 @@
+import { newFasadFromState } from "../functions/fasades"
 import { FasadOuterEdges } from "../types/edges"
 import { Division, FasadMaterial, SandBase } from "../types/enums"
 import { FasadBackup, FasadProps } from "../types/fasadProps"
 import FasadState from "./FasadState"
 
 export default class Fasad {
-    private active: boolean = false
-    private material: FasadMaterial = FasadMaterial.DSP
-    private extMaterial: string = ''
-    private sandBase: SandBase = SandBase.MIRROR
-    private division: Division = Division.HEIGHT
-    private outerRightEdge: boolean = false
-    private outerLeftEdge: boolean = false
-    private outerTopEdge: boolean = false
-    private outerBottomEdge: boolean = false
+    private active = false
+    private material: FasadMaterial
+    private extMaterial = ''
+    private sandBase = SandBase.MIRROR
+    private division = Division.HEIGHT
+    private outerRightEdge = false
+    private outerLeftEdge = false
+    private outerTopEdge = false
+    private outerBottomEdge = false
     public Children: Fasad[]
-    private width: number = 0
-    private height: number = 0
-    private fixedWidth: boolean = false
-    private fixedHeight: boolean = false
+    private width = 0
+    private height = 0
+    private fixedWidth = false
+    private fixedHeight = false
     public Parent: Fasad | null = null
-    private level: number = 0
+    private level = 0
     private minSize: number
     private backup: FasadBackup = {}
     constructor(props: FasadProps = {}) {
@@ -35,7 +36,9 @@ export default class Fasad {
     }
 
     public getState(): FasadState {
-        const state = new FasadState()
+        const state: FasadState = new FasadState()
+        state.active = this.active
+        state.level = this.level
         state.division = this.division
         state.width = this.width
         state.height = this.height
@@ -44,11 +47,14 @@ export default class Fasad {
         state.material = this.material
         state.extMaterial = this.extMaterial
         state.sandBase = this.sandBase
+        state.minSize = this.minSize
         state.children = []
         for (const c of this.Children) state.children.push(c.getState())
         return state
     }
     public setState(state: FasadState) {
+        this.level = state.level
+        this.active = state.active
         this.width = state.width
         this.height = state.height
         this.fixedWidth = state.fixedWidth
@@ -57,16 +63,21 @@ export default class Fasad {
         this.extMaterial = state.extMaterial
         this.sandBase = state.sandBase
         this.division = state.division
-        this.Children = []
-        if (state.children.length !== 0) {
-            if (this.division === Division.HEIGHT) this.divideOnHeight(state.children.length); else this.divideOnWidth(state.children.length)
-            let i = 0
-            for (const c of state.children) {
-                this.Children[i].setState(c)
-                i = i + 1
-            }
-            if (this.division === Division.HEIGHT) this.DistributePartsOnHeight(null, 0, true); else this.DistributePartsOnWidth(null, 0, true)
-        }
+        this.minSize = state.minSize
+        this.Children = state.children.map((s: FasadState) => {
+            const f: Fasad = newFasadFromState(s)
+            f.Parent = this
+            return f
+        })
+        // if (state.children.length !== 0) {
+        //     if (this.division === Division.HEIGHT) this.divideOnHeight(state.children.length); else this.divideOnWidth(state.children.length)
+        //     let i = 0
+        //     for (const c of state.children) {
+        //         this.Children[i].setState(c)
+        //         i = i + 1
+        //     }
+        //     if (this.division === Division.HEIGHT) this.DistributePartsOnHeight(null, 0, true); else this.DistributePartsOnWidth(null, 0, true)
+        // }
     }
     public get Material() {
         return this.material
@@ -169,27 +180,6 @@ export default class Fasad {
     public setActiveFasad(fasad: Fasad | null) {
         this.Children.forEach((c: Fasad) => { c.setActiveFasad(fasad) })
         this.active = (this === fasad)
-    }
-    public makeBackup() {
-        if (this.Children.length > 1) {
-            for (const c of this.Children) c.makeBackup
-        }
-        this.backup = {
-            width: this.width,
-            height: this.height,
-            material: this.material,
-            hasBackup: true
-        }
-    }
-    public restore() {
-        if (this.Children.length > 1) {
-            for (const c of this.Children) c.restore()
-        }
-        if (!this.backup.hasBackup) return
-        if (this.backup.width) this.width = this.backup.width
-        if (this.backup.height) this.height = this.backup.height
-        if (this.backup.material) this.material = this.backup.material
-        this.backup.hasBackup = false
     }
 
     public divideFasad(count: number) {

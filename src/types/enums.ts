@@ -4,6 +4,7 @@ export enum Division {
     WIDTH = "WIDTH"
 }
 export enum FasadMaterial {
+    EMPTY = '',
     DSP = 'DSP',
     MIRROR = 'MIRROR',
     LACOBEL = 'LACOBEL',

@@ -14,3 +14,8 @@ export function createToolTip() {
     toolTip.style.display = "none"
     return toolTip
 }
+export function isLandscape(): boolean {
+    const mainContainer = document.querySelector('.main-container') as HTMLDivElement
+    if(!mainContainer) return false
+    return getComputedStyle(mainContainer).display === 'grid'
+}

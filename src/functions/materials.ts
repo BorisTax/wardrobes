@@ -45,6 +45,13 @@ ProfilesCaptions.set(ProfileType.BAVARIA, "БАВАРИЯ")
 export type MaterialList = Map<string, ExtMaterial[]>
 export type ProfileList = Map<string, Profile[]>
 
+export const UnitCaptions: Map<string, string> = new Map()
+UnitCaptions.set("meters", "м")
+UnitCaptions.set("meters2", "м2")
+UnitCaptions.set("litres", "литр")
+UnitCaptions.set("sheets", "лист")
+UnitCaptions.set("piece", "шт")
+
 export function getMaterialList(materials: ExtMaterial[]): MaterialList {
     const list = new Map<string, ExtMaterial[]>()
     if (!materials) return list

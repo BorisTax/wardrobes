@@ -12,7 +12,7 @@ export default function User() {
     const showConfirm = useConfirm()
     const login = <button className="btn btn-primary" onClick={() => { dialogRef?.current?.showModal() }}>Вход</button>
     const logout = <button className="btn btn-secondary" onClick={() => {
-        showConfirm("Выйти из аккаунта?", () => { logoutUser() })
+        showConfirm("Завершить сеанс пользователя?", () => { logoutUser() })
     }
     }>Выход</button>
     return <div className="user">

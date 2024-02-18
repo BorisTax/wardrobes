@@ -40,7 +40,20 @@ export enum TableFields {
     CODE = 'code',
     TOKEN = 'token',
     NEWNAME = 'newName',
-    TYPE = 'type'
+    TYPE = 'type',
+    CAPTION = 'caption',
+    ID = 'id',
+    PRICE = 'price',
+}
+
+export type PriceListItem = {
+    position?: string
+    name: string
+    caption?: string
+    units?: string
+    price?: number
+    id?: string
+    code?: string
 }
 
 export type Result<T> = {
@@ -57,4 +70,5 @@ export type Results = Result<null> |
     Result<Profile[]> |
     Result<User[]> |
     Result<Token[]> |
+    Result<PriceListItem[]> |
     Result<string>

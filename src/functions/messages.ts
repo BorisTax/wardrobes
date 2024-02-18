@@ -21,4 +21,13 @@ export const rusMessages = {
     [messages.REG_SUCCEED]:"Регистрация прошла успешно",
     [messages.SERVER_ERROR]: "Ошибка сервера",
     [messages.USER_NAME_EXIST]: "Пользователь существует",
+
+    [messages.PRICELIST_NAME_NO_EXIST]: "Материал не существует в базе",
+    [messages.PRICELIST_PRICE_INCORRECT]: "Цена - не числовое значение",
+    [messages.PRICELIST_CAPTION_EXIST]: "Наименование уже существует",
+    [messages.PRICELIST_CODE_EXIST]: "Код уже существует",
+    [messages.PRICELIST_ID_EXIST]: "Идентификатор уже существует",
+
+    [messages.PRICELIST_UPDATED]: "Данные обновлены",
+
   }

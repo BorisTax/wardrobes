@@ -6,16 +6,19 @@ import UserServiceSQLite from './services/userServiceSQLite.js'
 import MaterialServiceSQLite from './services/materialServiceSQLite.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import PriceServiceSQLite from './services/priceServiceSQLite.js'
 
 export const JWT_SECRET = "secretkey"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const usersPath = path.resolve(__dirname, 'database/users.db')
 const databasePath = path.resolve(__dirname, 'database/database.db')
+const pricePath = path.resolve(__dirname, 'database/prices.db')
 export const userServiceProvider = new UserServiceSQLite(usersPath)
 export const materialServiceProvider = new MaterialServiceSQLite(databasePath)
+export const priceServiceProvider = new PriceServiceSQLite(pricePath)
 
-const expiredInterval = 3600 * 1000
+const expiredInterval = 3600 * 24 * 1000
 const clearExpiredTokens = () => {
   const userService = new UserService(userServiceProvider)
   const tokens = userService.getTokens()
@@ -33,7 +36,8 @@ setInterval(clearExpiredTokens, 60000)
 
 export const userRoleParser = async (req: MyRequest, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)
-  const token = (req.body as RequestBody).token || ""
+  let token = req.query.token as string
+  token = (req.body as RequestBody).token || token || ""
   const user = await userService.getUser(token)
   if (user) {
     req.userRole = user.role

@@ -17,6 +17,7 @@ export const loginDialogAtom = atom((get: Getter) => get(loginDialog), (get: Get
 })
 export const editMaterialDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const editProfileDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const editPriceDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 const messageAtom = atom<MessageAtom>({ dialogRef: null, message: "" })
 export const messageDialogAtom = atom((get) => get(messageAtom), (get, set, message: string) => {
     const state = get(messageAtom)

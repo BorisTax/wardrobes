@@ -120,3 +120,30 @@
 .fasad-section:hover {
   box-shadow: inset 0px 0px 10px green;
 }
+table {
+  text-align: left;
+  position: relative;
+  border-collapse: collapse; 
+}
+tr:hover{
+  background-color: #88dffa;
+  cursor: pointer;
+}
+.pricelist{
+  -display: grid;
+  -grid-template-columns: auto auto auto auto auto;
+  overflow: scroll;
+  max-height: 50svh;
+}
+.pricelist-cell{
+border: 1px solid black;
+padding: 0.1em 0.5rem;
+}
+.priceheader{
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  border: 1px solid black;
+  text-align: center;
+  }

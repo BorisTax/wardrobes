@@ -134,6 +134,10 @@ $header_button_height: 48px;
   background-image: url($icon-url+'editProfiles.png');
   @include header_button();
 }
+.editPrice {
+  background-image: url($icon-url+'editPrice.png');
+  @include header_button();
+}
 .new {
   background-image: url($icon-url+'new.png');
   @include instruments_button();

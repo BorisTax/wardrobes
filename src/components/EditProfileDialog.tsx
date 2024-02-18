@@ -118,7 +118,7 @@ function checkFields({ nameChecked = true, codeChecked = true, newName, newCode 
 }
 
 function getMessage({ nameChecked, codeChecked, name, code, newName, newCode }: { nameChecked: boolean, codeChecked: boolean, name: string, code: string, newName: string, newCode: string }): string {
-    const changeName = nameChecked ? `профлль: "${name}"` : ""
+    const changeName = nameChecked ? `профиль: "${name}"` : ""
     const changeCode = codeChecked ? `код:"${code}"` : ""
     const changeName2 = nameChecked ? `"${newName}"` : ""
     const changeCode2 = codeChecked ? `код:"${newCode}"` : ""

@@ -24,8 +24,7 @@ export default function LoginDialog(props: DialogProps) {
     useEffect(() => {
         setLoginDialogRef(props.dialogRef)
     }, [setLoginDialogRef, props.dialogRef])
-    useEffect(() => { setPassword("") }, [props.dialogRef?.current?.open])
-    return <dialog ref={props.dialogRef}>
+    return <dialog ref={props.dialogRef} onClose={() => { setPassword("") }}>
         <form id="loginForm" onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(document.getElementById("loginForm") as HTMLFormElement)

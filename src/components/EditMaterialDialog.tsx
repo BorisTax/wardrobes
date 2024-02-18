@@ -11,6 +11,7 @@ import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAt
 import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
 import Button from "./Button"
+import { rusMessages } from "../functions/messages"
 
 type DialogProps = {
     dialogRef: React.RefObject<HTMLDialogElement>
@@ -83,8 +84,7 @@ export default function EditMaterialDialog(props: DialogProps) {
                     const message = `Удалить материал: "${MaterialCaptions.get(baseMaterial)} - ${name}" ?`
                     showConfirm(message, () => {
                         deleteMaterial(extMaterials[extMaterialIndex], (result) => {
-                            const message = result.success ? "Материал удален" : "Доступ запрещен. Перезайдите в систему"
-                            showMessage(message)
+                            showMessage(rusMessages[result.message])
                         });
                         setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
                     })
@@ -98,8 +98,7 @@ export default function EditMaterialDialog(props: DialogProps) {
                     const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode })
                     showConfirm(message, () => {
                         addMaterial({ name, material: baseMaterial, code, image: "" }, file, (result) => {
-                            const message = result.success ? "Материал добавлен" : "Доступ запрещен. Перезайдите в систему"
-                            showMessage(message)
+                            showMessage(rusMessages[result.message])
                         });
                     })
                 }} />
@@ -114,8 +113,7 @@ export default function EditMaterialDialog(props: DialogProps) {
                         const usedCode = codeChecked ? newCode : ""
                         const usedFile = imageChecked ? file : null
                         updateMaterial({ name, material, newName: usedName, newCode: usedCode, image: usedFile }, (result) => {
-                            const message = result.success ? "Материал изменен" : "Доступ запрещен. Перезайдите в систему"
-                            showMessage(message)
+                            showMessage(rusMessages[result.message])
                         })
                     })
                 }} />

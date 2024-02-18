@@ -39,11 +39,13 @@ export enum TableFields {
     IMAGE = 'image',
     CODE = 'code',
     TOKEN = 'token',
-    NEWNAME = 'newName'
+    NEWNAME = 'newName',
+    TYPE = 'type'
 }
 
 export type Result<T> = {
     success: boolean
+    status: number
     token?: string
     message?: string
     data?: T

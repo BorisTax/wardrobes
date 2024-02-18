@@ -1,5 +1,5 @@
 import { Division, FasadMaterial, SandBase } from "../types/enums";
-import { ExtMaterial, Profile } from "../types/materials";
+import { ExtMaterial, Profile, ProfileType } from "../types/materials";
 
 export const colors = {
     [FasadMaterial.DSP]: "#ff7b00",
@@ -22,7 +22,6 @@ export const SandBases: Map<string, string> = new Map()
 SandBases.set("ЗЕРКАЛО", SandBase.MIRROR)
 SandBases.set("ПЕСКОСТРУЙ", SandBase.SAND)
 
-
 export const SandBasesCaptions: Map<string, string> = new Map()
 SandBasesCaptions.set(SandBase.MIRROR, "ЗЕРКАЛО")
 SandBasesCaptions.set(SandBase.SAND, "ПЕСКОСТРУЙ")
@@ -34,6 +33,14 @@ MaterialCaptions.set(FasadMaterial.LACOBEL, "ЛАКОБЕЛЬ")
 MaterialCaptions.set(FasadMaterial.LACOBELGLASS, "ЛАКОБЕЛЬ(СТЕКЛО)")
 MaterialCaptions.set(FasadMaterial.FMP, "ФМП")
 MaterialCaptions.set(FasadMaterial.SAND, "ПЕСКОСТРУЙ")
+
+export const Profiles: Map<string, string> = new Map()
+Profiles.set("СТАНДАРТ", ProfileType.STANDART)
+Profiles.set("БАВАРИЯ", ProfileType.BAVARIA)
+
+export const ProfilesCaptions: Map<string, string> = new Map()
+ProfilesCaptions.set(ProfileType.STANDART, "СТАНДАРТ")
+ProfilesCaptions.set(ProfileType.BAVARIA, "БАВАРИЯ")
 
 export type MaterialList = Map<string, ExtMaterial[]>
 export type ProfileList = Map<string, Profile[]>

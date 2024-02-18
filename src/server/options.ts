@@ -4,16 +4,29 @@ import { MyRequest, RequestBody, Results, Token } from '../types/server.js'
 import { Response, NextFunction } from "express"
 import UserServiceSQLite from './services/userServiceSQLite.js'
 import MaterialServiceSQLite from './services/materialServiceSQLite.js'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
 export const JWT_SECRET = "secretkey"
-export const userServiceProvider = new UserServiceSQLite('./database/users.db')
-export const materialServiceProvider = new MaterialServiceSQLite('./database/database.db')
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const usersPath = path.resolve(__dirname, 'database/users.db')
+const databasePath = path.resolve(__dirname, 'database/database.db')
+export const userServiceProvider = new UserServiceSQLite(usersPath)
+export const materialServiceProvider = new MaterialServiceSQLite(databasePath)
 
 const expiredInterval = 3600 * 1000
 const clearExpiredTokens = () => {
   const userService = new UserService(userServiceProvider)
-  userService.getTokens().then((tokenList: Results) => {
-    (tokenList.data as Token[]).forEach((t: Token) => { 
-      if (Date.now() - t.time > expiredInterval) userService.deleteToken(t.token) })
+  const tokens = userService.getTokens()
+  tokens.then((tokenList: Results) => {
+    if (!tokenList.success) {
+      console.error(tokenList)
+      return
+    }
+    (tokenList.data as Token[]).forEach((t: Token) => {
+      if (Date.now() - t.time > expiredInterval) userService.deleteToken(t.token)
+    })
   })
 }
 setInterval(clearExpiredTokens, 60000)

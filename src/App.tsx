@@ -19,6 +19,7 @@ import ConfirmDialog from './components/ConfirmDialog'
 import { loadProfileListAtom } from './atoms/profiles'
 import RootFasadesContainer from './components/RootFasadesContainer'
 import { UserRoles } from './types/server'
+import EditProfileDialog from './components/EditProfileDialog'
 
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
@@ -26,6 +27,7 @@ function App() {
   const loadProfileList = useSetAtom(loadProfileListAtom)
   const loginDialogRef = useRef<HTMLDialogElement>(null)
   const editMaterialDialogRef = useRef<HTMLDialogElement>(null)
+  const editProfileDialogRef = useRef<HTMLDialogElement>(null)
   const messageDialogRef = useRef<HTMLDialogElement>(null)
   const confirmDialogRef = useRef<HTMLDialogElement>(null)
   const [user] = useAtom(userAtom)
@@ -52,10 +54,11 @@ function App() {
           <WardrobePropertiesBar />
           <PropertiesBar />
         </div>
-        <RootFasadesContainer/>
+        <RootFasadesContainer />
       </div>
       <LoginDialog dialogRef={loginDialogRef} />
       {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditMaterialDialog dialogRef={editMaterialDialogRef} /> : <></>}
+      {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditProfileDialog dialogRef={editProfileDialogRef} /> : <></>}
       <MessageDialog dialogRef={messageDialogRef} />
       <ConfirmDialog dialogRef={confirmDialogRef} />
     </>

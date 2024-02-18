@@ -19,9 +19,15 @@ export type UserState = {
 
 export const userAtom = atom<UserState>(getInitialUser())
 export const setUserAtom = atom(null, (get: Getter, set: Setter, user: UserState) => {
-    localStorage.setItem('token', user.token)
-    const role = user.role || UserRoles.ANONYM
-    set(userAtom, { ...user, role })
+    let storeUser: UserState
+    try {
+        const { name, role } = jwtDecode(user.token) as UserState
+        storeUser = { name, role, token: user.token }
+        localStorage.setItem('token', user.token)
+    } catch (e) {
+        storeUser = { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" }
+    }
+    set(userAtom, storeUser)
 })
 export const logoutUserAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")

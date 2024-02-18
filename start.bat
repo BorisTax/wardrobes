@@ -1,0 +1,1 @@
+nodemon --ignore /database --ext "ts,json" --exec "ts-node --esm src/server/index.ts"

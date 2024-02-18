@@ -7,6 +7,7 @@ import { appDataAtom } from "./app";
 import Fasad from "../classes/Fasad";
 import { FasadMaterial } from "../types/enums";
 import { TableFields } from "../types/server";
+import { AtomCallbackResult } from "../types/atoms";
 
 export const materialListAtom = atom(new Map())
 
@@ -27,7 +28,7 @@ export const imageUrlAtom = atom((get) => {
     get(materialListAtom)
 })
 
-export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial, callback: (result: { success: boolean }) => void) => {
+export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     try {
         const result = await fetchData("api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
@@ -36,7 +37,7 @@ export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMater
     } catch (e) { console.error(e) }
 })
 
-export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: File | null, callback: (result: { success: boolean }) => void) => {
+export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: File | null, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     const formData = new FormData()
     if (image) formData.append(TableFields.IMAGE, image)
@@ -51,7 +52,7 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
     } catch (e) { console.error(e) }
 })
 
-export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image }, callback: (result: { success: boolean }) => void) => {
+export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image }, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     const formData = new FormData()
     if (image) formData.append(TableFields.IMAGE, image)

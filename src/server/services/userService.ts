@@ -13,9 +13,9 @@ export class UserService implements IUserService {
   }
   async getUser(token: string): Promise<User | undefined> {
     const tokenList = await this.getTokens()
-    if(!tokenList.success) return undefined
+    if (!tokenList.success) return undefined
     const userList = await this.getUsers()
-    if(!userList.success) return undefined
+    if (!userList.success) return undefined
     const foundToken = (tokenList.data as Token[]).find(t => t.token === token)
     const userName = foundToken && foundToken.username
     const user = (userList.data as User[]).find(u => u.name === userName)
@@ -33,19 +33,19 @@ export class UserService implements IUserService {
   async clearAllTokens() {
     return await this.provider.clearAllTokens()
   }
-  async registerUser(newUser: User) {
-    let result = await this.isUserNameExist(newUser.name)
+  async registerUser(user: User) {
+    let result = await this.isUserNameExist(user.name)
     if (!result.success) return result
-    return this.provider.registerUser(newUser)
+    return this.provider.registerUser(user)
   }
   async isUserNameExist(name: string) {
-    if (!name) return { success: false, message: messages.INVALID_USER_DATA }
+    if (!name) return { success: false, status: 400, message: messages.INVALID_USER_DATA }
     const result = await this.getUsers()
-    if(!result.success) return {success: false}
+    if (!result.success) return result
     const userList = result.data || []
     const user = (userList as User[]).find(u => u.name === name)
-    if (user) return { success: false, message: messages.USER_NAME_EXIST }
-    return { success: true, message: messages.USER_NAME_ALLOWED }
+    if (user) return { success: false, status: 409, message: messages.USER_NAME_EXIST }
+    return { success: true, status: 200, message: messages.USER_NAME_ALLOWED }
   }
 }
 

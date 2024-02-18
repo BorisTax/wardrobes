@@ -74,7 +74,7 @@ async function loginUser(user: User) {
   if (!foundUser) return { success: false, message: messages.INVALID_USER_DATA };
   if (!bcrypt.compareSync(user.password, foundUser.password)) return { success: false, message: messages.INVALID_USER_DATA };
   const token = jwt.sign({ name: foundUser.name, role: foundUser.role }, JWT_SECRET, { expiresIn: 1440 });
-  return { success: true, message, token, name: foundUser.name, role: foundUser.role };
+  return { success: true, message: messages.LOGIN_SUCCEED, token };
 }
 
 async function isUserNameExist(name: string) {

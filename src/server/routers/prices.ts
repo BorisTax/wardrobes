@@ -14,7 +14,7 @@ const router = express.Router();
 export default router
 
 router.get("/pricelist", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN, UserRoles.MANAGER])) return
   const result = await getPriceList();
   res.json(result);
 });

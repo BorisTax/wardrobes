@@ -48,6 +48,7 @@ export default class Fasad {
         state.extMaterial = this.extMaterial
         state.sandBase = this.sandBase
         state.minSize = this.minSize
+        state.outerEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
         state.children = []
         for (const c of this.Children) state.children.push(c.getState())
         return state
@@ -64,6 +65,7 @@ export default class Fasad {
         this.sandBase = state.sandBase
         this.division = state.division
         this.minSize = state.minSize
+        this.OuterEdges = { ...state.outerEdges }
         this.Children = state.children.map((s: FasadState) => {
             const f: Fasad = newFasadFromState(s)
             f.Parent = this

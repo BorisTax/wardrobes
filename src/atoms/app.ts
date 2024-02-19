@@ -7,11 +7,11 @@ import { trySetHeight, trySetWidth } from "../functions/fasades";
 import { openFile, saveState } from '../functions/file';
 import { materialListAtom, setInitialMaterials } from './materials';
 import { FasadMaterial } from '../types/enums';
+import { calculateSpecificationsAtom } from './specification';
 
-const storage = localStorage.getItem('appState')
-const initialAppState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
 
-const appAtom = atom<HistoryState>({ state: initialAppState, next: null, previous: null })
+
+const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
 export const historyAppAtom = atom((get: Getter) => { const data = get(appAtom); return { next: data.next, previous: data.previous } })
 export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state), (get, set, appData: AppData, useHistory: boolean) => {
     const app = get(appAtom)
@@ -19,6 +19,7 @@ export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state)
     localStorage.setItem('appState', JSON.stringify(state))
     if (useHistory) set(appAtom, { previous: app, state, next: null });
     else set(appAtom, { ...app, state })
+    set(calculateSpecificationsAtom)
 })
 export const undoAtom = atom(null, (get: Getter, set: Setter) => {
     const app = get(appAtom)

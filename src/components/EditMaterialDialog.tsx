@@ -13,14 +13,11 @@ import useConfirm from "../custom-hooks/useConfirm"
 import Button from "./Button"
 import { rusMessages } from "../functions/messages"
 
-type DialogProps = {
-    dialogRef: React.RefObject<HTMLDialogElement>
-}
-
-export default function EditMaterialDialog(props: DialogProps) {
+export default function EditMaterialDialog() {
+    const dialogRef = useRef<HTMLDialogElement>(null)
     const [materialList] = useAtom(materialListAtom)
     const [{ baseMaterial, extMaterialIndex }, setState] = useState({ baseMaterial: FasadMaterial.DSP, extMaterialIndex: 0 })
-    const closeDialog = () => { props.dialogRef.current?.close() }
+    const closeDialog = () => { dialogRef.current?.close() }
     const [, setMaterialDialogRef] = useAtom(editMaterialDialogAtom)
     const deleteMaterial = useSetAtom(deleteMaterialAtom)
     const addMaterial = useSetAtom(addMaterialAtom)
@@ -39,9 +36,9 @@ export default function EditMaterialDialog(props: DialogProps) {
     const showMessage = useMessage()
     const showConfirm = useConfirm()
     useEffect(() => {
-        setMaterialDialogRef(props.dialogRef)
-    }, [setMaterialDialogRef, props.dialogRef])
-    return <dialog ref={props.dialogRef}>
+        setMaterialDialogRef(dialogRef)
+    }, [setMaterialDialogRef, dialogRef])
+    return <dialog ref={dialogRef}>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">

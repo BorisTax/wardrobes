@@ -1,19 +1,16 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useSetAtom } from "jotai"
 import { UserState, setUserAtom } from "../atoms/users"
 import { loginDialogAtom } from "../atoms/dialogs"
 import onFetch from "../functions/fetch"
 import { Results } from "../types/server"
 
-type DialogProps = {
-    dialogRef: React.RefObject<HTMLDialogElement>
-}
-
-export default function LoginDialog(props: DialogProps) {
+export default function LoginDialog() {
+    const dialogRef = useRef<HTMLDialogElement>(null)
     const [password, setPassword] = useState("")
     const setUser = useSetAtom(setUserAtom)
     const [state, setState] = useState({ loading: false, message: "" })
-    const closeDialog = () => { props.dialogRef.current?.close() }
+    const closeDialog = () => { dialogRef.current?.close() }
     const setLoginDialogRef = useSetAtom(loginDialogAtom)
     const login = (name: string, password: string) => {
         setState({ loading: true, message: "" })
@@ -23,9 +20,9 @@ export default function LoginDialog(props: DialogProps) {
         onFetch('api/users/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)
     }
     useEffect(() => {
-        setLoginDialogRef(props.dialogRef)
-    }, [setLoginDialogRef, props.dialogRef])
-    return <dialog ref={props.dialogRef} onClose={() => { setPassword("") }}>
+        setLoginDialogRef(dialogRef)
+    }, [setLoginDialogRef, dialogRef])
+    return <dialog ref={dialogRef} onClose={() => { setPassword("") }}>
         <form id="loginForm" onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(document.getElementById("loginForm") as HTMLFormElement)

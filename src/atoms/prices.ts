@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { Profile } from "../types/materials";
-import { fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
+import { fetchFormData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { PriceListItem, TableFields } from "../types/server";
 import { AtomCallbackResult } from "../types/atoms";

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/App.scss'
 import './styles/buttons.scss'
@@ -19,24 +19,28 @@ import MessageDialog from './components/MessageDialog'
 import ConfirmDialog from './components/ConfirmDialog'
 import { loadProfileListAtom } from './atoms/profiles'
 import RootFasadesContainer from './components/RootFasadesContainer'
-import { UserRoles } from './types/server'
 import EditProfileDialog from './components/EditProfileDialog'
 import EditPriceDialog from './components/EditPriceDialog'
+import SpecificationDialog from './components/SpecificationDialog'
+import { isAdminAtLeast, isManagerAtLeast } from './functions/user'
+import { AppState } from './types/app'
+import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
+import { appDataAtom } from './atoms/app'
 
 function App() {
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
-  const loginDialogRef = useRef<HTMLDialogElement>(null)
-  const editMaterialDialogRef = useRef<HTMLDialogElement>(null)
-  const editProfileDialogRef = useRef<HTMLDialogElement>(null)
-  
-  const messageDialogRef = useRef<HTMLDialogElement>(null)
-  const confirmDialogRef = useRef<HTMLDialogElement>(null)
+  const setAppData = useSetAtom(appDataAtom)
   const [user] = useAtom(userAtom)
   useEffect(() => {
-    loadMaterialList(true)
+    const storage = localStorage.getItem('appState')
+    const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
+    loadMaterialList(!storage)
+    setAppData(getAppDataFromState(appState), false)
     loadProfileList()
+  }, [])
+  useEffect(() => {
     //const onClick = (e: Event) => { setActiveFasad(null); }
     const onContextMenu = (e: Event) => { e.preventDefault() }
     document.addEventListener("contextmenu", onContextMenu)
@@ -48,7 +52,7 @@ function App() {
       //document.removeEventListener("click", onClick)
       document.body.removeChild(toolTip)
     }
-  }, [loadMaterialList, loadProfileList])
+  }, [])
   return (
     <>
       <Header />
@@ -59,12 +63,13 @@ function App() {
         </div>
         <RootFasadesContainer />
       </div>
-      <LoginDialog dialogRef={loginDialogRef} />
-      {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditMaterialDialog dialogRef={editMaterialDialogRef} /> : <></>}
-      {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditProfileDialog dialogRef={editProfileDialogRef} /> : <></>}
-      {user.role === UserRoles.ADMIN || user.role === UserRoles.SUPERADMIN ? <EditPriceDialog/> : <></>}
-      <MessageDialog dialogRef={messageDialogRef} />
-      <ConfirmDialog dialogRef={confirmDialogRef} />
+      <LoginDialog />
+      {isAdminAtLeast(user.role) ? <EditMaterialDialog /> : <></>}
+      {isAdminAtLeast(user.role) ? <EditProfileDialog /> : <></>}
+      {isAdminAtLeast(user.role) ? <EditPriceDialog /> : <></>}
+      {isManagerAtLeast(user.role) ? <SpecificationDialog /> : <></>}
+      <MessageDialog />
+      <ConfirmDialog />
     </>
   )
 }

@@ -1,5 +1,7 @@
 import { Getter, Setter, atom } from "jotai";
 import React from "react";
+import { calculateSpecificationsAtom } from "./specification";
+import { loadPriceListAtom } from "./prices";
 
 type MessageAtom = {
     dialogRef: React.RefObject<HTMLDialogElement> | null
@@ -18,6 +20,14 @@ export const loginDialogAtom = atom((get: Getter) => get(loginDialog), (get: Get
 export const editMaterialDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const editProfileDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const editPriceDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const specificationDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const showSpecificationDialogAtom = atom(null, (get, set) => {
+    const dialogRef = get(specificationDialogAtom)
+    set(loadPriceListAtom)
+    set(calculateSpecificationsAtom)
+    dialogRef?.current?.showModal()
+})
+
 const messageAtom = atom<MessageAtom>({ dialogRef: null, message: "" })
 export const messageDialogAtom = atom((get) => get(messageAtom), (get, set, message: string) => {
     const state = get(messageAtom)

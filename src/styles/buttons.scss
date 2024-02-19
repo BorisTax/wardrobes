@@ -89,8 +89,8 @@ $statusBarIconWidth : 20px;
 
 $instruments_button_width: 32px;
 $instruments_button_height: 32px;
-$header_button_width: 48px;
-$header_button_height: 48px;
+$header_button_width: 32px;
+$header_button_height: 32px;
 
 @mixin instruments_button {
   width: $instruments_button_width;

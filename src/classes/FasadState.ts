@@ -7,6 +7,7 @@ export default class FasadState {
     public height: number = 0
     public fixedWidth: boolean = false
     public fixedHeight: boolean = false
+    public outerEdges: {left: boolean, right: boolean, top: boolean, bottom: boolean} = {left: false, right: false, top: false, bottom: false}
     public material: FasadMaterial = FasadMaterial.EMPTY
     public extMaterial: string = ''
     public sandBase: SandBase = SandBase.MIRROR

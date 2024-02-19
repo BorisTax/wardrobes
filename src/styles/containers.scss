@@ -125,11 +125,19 @@ table {
   position: relative;
   border-collapse: collapse; 
 }
-tr:hover{
+.pricelist tr:hover{
   background-color: #88dffa;
   cursor: pointer;
 }
+.tr-attention{
+  font-weight: bold;
+  background-color: #88dffa;
+}
+.tr-noattention{
+  color: #818181;
+}
 .pricelist{
+  font-size: 0.8rem;
   -display: grid;
   -grid-template-columns: auto auto auto auto auto;
   overflow: scroll;

@@ -11,15 +11,12 @@ import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom }
 import { rusMessages } from "../functions/messages"
 import messages from "../server/messages"
 
-type DialogProps = {
-    dialogRef: React.RefObject<HTMLDialogElement>
-}
-
-export default function EditProfileDialog(props: DialogProps) {
+export default function EditProfileDialog() {
+    const dialogRef = useRef<HTMLDialogElement>(null)
     const [profileList] = useAtom(profileListAtom)
     const [{ name: profileName, type, code }, setState] = useState({ ...profileList[0] })
     useMemo(() => { setState({ ...profileList[0] }) }, [profileList])
-    const closeDialog = () => { props.dialogRef.current?.close() }
+    const closeDialog = () => { dialogRef.current?.close() }
     const [, setProfileDialogRef] = useAtom(editProfileDialogAtom)
     const deleteProfile = useSetAtom(deleteProfileAtom)
     const addProfile = useSetAtom(addProfileAtom)
@@ -33,9 +30,9 @@ export default function EditProfileDialog(props: DialogProps) {
     const showConfirm = useConfirm()
     const profiles = profileList.filter((p: Profile) => p.type === type).map((p: Profile) => p.name)
     useEffect(() => {
-        setProfileDialogRef(props.dialogRef)
-    }, [setProfileDialogRef, props.dialogRef])
-    return <dialog ref={props.dialogRef}>
+        setProfileDialogRef(dialogRef)
+    }, [setProfileDialogRef, dialogRef])
+    return <dialog ref={dialogRef}>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">

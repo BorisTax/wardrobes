@@ -8,16 +8,22 @@ import PropertyRow from "./PropertyRow"
 import ToggleButton from "./ToggleButton"
 import { ExtMaterial } from "../types/materials"
 import ImageButton from "./ImageButton"
-import { useAtom, useSetAtom } from "jotai"
-import { activeFasadAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
+import { useAtomValue, useSetAtom } from "jotai"
+import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
 import { materialListAtom } from "../atoms/materials"
 import { Materials, SandBases } from "../functions/materials"
+import { totalPriceAtom } from "../atoms/specification"
+import { isClientAtLeast } from "../functions/user"
+import { userAtom } from "../atoms/users"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
-    const [fasad] = useAtom(activeFasadAtom)
+    const { role } = useAtomValue(userAtom)
+    const fasad = useAtomValue(activeFasadAtom)
+    const rootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
-    const [materialList] = useAtom(materialListAtom)
+    const materialList = useAtomValue(materialListAtom)
+    const totalPrice = useAtomValue(totalPriceAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)
     const setFixedWidth = useSetAtom(setFixedWidthAtom)
@@ -29,6 +35,7 @@ export default function PropertiesBar() {
     const divideFasad = useSetAtom(divideFasadAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
+    const fasadPrice = fasad && isClientAtLeast(role) ? <div>Стоимость фасада:{` ${totalPrice[rootFasadIndex].toFixed(2)}`}</div> : <></>
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}>
         <div className="property-bar-header">
             Параметры фасада
@@ -52,6 +59,7 @@ export default function PropertiesBar() {
             <ComboBox title="Направление профиля:" value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
             <ComboBox title="Кол-во секций:" value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
         </PropertyGrid>
+        {fasadPrice}
     </div>
 }
 

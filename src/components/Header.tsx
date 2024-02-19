@@ -42,7 +42,7 @@ export default function Header() {
       {isManagerAtLeast(user.role) ?
         <>
           <MenuSeparator />
-          <ImageButton title="Cпецификация" icon="editPrice" onClick={() => { showSpecificationDialog()  }} />
+          <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog()  }} />
         </>
         : <></>}
     </div>

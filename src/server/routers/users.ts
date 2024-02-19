@@ -3,12 +3,17 @@ import express from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../services/userService.js';
-import { checkPermissions } from '../functions.js';
-import { ActiveUser, Token, User, UserRoles } from '../../types/server.js';
+import { checkPermissions, hashData, incorrectData } from '../functions.js';
+import { ActiveUser, Results, Token, User, UserRoles } from '../../types/server.js';
 import { JWT_SECRET, userServiceProvider } from '../options.js';
 
 const router = express.Router();
 export default router
+
+router.get("/hash", async (req, res) => {
+  const result = await hashData(req.query.data as string);
+  res.json(result);
+});
 
 router.post("/login", async (req, res) => {
   const user = req.body;
@@ -16,7 +21,7 @@ router.post("/login", async (req, res) => {
   if (!user.password) user.password = "";
   const userService = new UserService(userServiceProvider)
   const result = await loginUser(user);
-  if (result.success) userService.addToken({ token: result.token || "", userName: user.name })
+  if (result.success) userService.addToken({ token: result.data as string, userName: user.name })
   res.json(result);
 });
 
@@ -59,22 +64,21 @@ router.post("/all", async (req, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
   const userService = new UserService(userServiceProvider)
   let result = await userService.getUsers()
-  if(!result.success) return res.json(result)
+  if (!result.success) return res.json(result)
   const users = result.data
   res.json((users as User[]).map(u => ({ name: u.name, role: u.role })));
 });
 
-async function loginUser(user: User) {
-  let message = messages.LOGIN_SUCCEED
+async function loginUser(user: User): Promise<Results> {
   const userService = new UserService(userServiceProvider)
   const result = await userService.getUsers()
-  if(!result.success) return result;
+  if (!result.success) return result;
   const userList = result.data
   const foundUser = (userList as User[]).find(u => (user.name === u.name))
-  if (!foundUser) return { success: false, message: messages.INVALID_USER_DATA };
-  if (!bcrypt.compareSync(user.password, foundUser.password)) return { success: false, message: messages.INVALID_USER_DATA };
+  if (!foundUser) return incorrectData(messages.INVALID_USER_DATA)
+  if (!bcrypt.compareSync(user.password, foundUser.password)) return incorrectData(messages.INVALID_USER_DATA)
   const token = jwt.sign({ name: foundUser.name, role: foundUser.role }, JWT_SECRET, { expiresIn: 1440 });
-  return { success: true, message: messages.LOGIN_SUCCEED, token };
+  return { success: true, status: 200, message: messages.LOGIN_SUCCEED, data: token };
 }
 
 async function isUserNameExist(name: string) {

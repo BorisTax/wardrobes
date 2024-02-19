@@ -18,12 +18,13 @@ export const loadPriceListAtom = atom(null, async (get, set) => {
 })
 
 
-export const updatePriceListAtom = atom(null, async (get, set, { name, caption, price, code, id }: PriceListItem, callback: AtomCallbackResult) => {
+export const updatePriceListAtom = atom(null, async (get, set, { name, caption, price, code, id,markup }: PriceListItem, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     const formData = new FormData()
     formData.append(TableFields.NAME, name)
     if(caption)formData.append(TableFields.CAPTION, caption)
     if(price)formData.append(TableFields.PRICE, `${price}`)
+    if(markup)formData.append(TableFields.MARKUP, `${markup}`)
     if(code)formData.append(TableFields.CODE, code)
     if(id)formData.append(TableFields.ID, id) 
     formData.append(TableFields.TOKEN, user.token)

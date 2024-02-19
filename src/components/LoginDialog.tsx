@@ -3,6 +3,7 @@ import { useSetAtom } from "jotai"
 import { UserState, setUserAtom } from "../atoms/users"
 import { loginDialogAtom } from "../atoms/dialogs"
 import onFetch from "../functions/fetch"
+import { Results } from "../types/server"
 
 type DialogProps = {
     dialogRef: React.RefObject<HTMLDialogElement>
@@ -16,7 +17,7 @@ export default function LoginDialog(props: DialogProps) {
     const setLoginDialogRef = useSetAtom(loginDialogAtom)
     const login = (name: string, password: string) => {
         setState({ loading: true, message: "" })
-        const onResolve = (r: UserState) => { setUser({ name: r.name, role: r.role, token: r.token }); closeDialog() }
+        const onResolve = (r: Results) => { setUser(r.data as string); closeDialog() }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }
         const onCatch = () => { setState({ loading: false, message: "Ошибка сервера" }) }
         onFetch('api/users/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)
@@ -30,7 +31,7 @@ export default function LoginDialog(props: DialogProps) {
             const formData = new FormData(document.getElementById("loginForm") as HTMLFormElement)
             login(formData.get("name") as string, formData.get("password") as string)
         }}>
-            <div className="property-grid">
+            <div className="property-grid"> 
                 <label htmlFor="name">Логин</label>
                 <input id="name" name="name" required />
                 <label htmlFor="pass">Пароль</label>

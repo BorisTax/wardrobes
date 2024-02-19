@@ -44,6 +44,7 @@ export enum TableFields {
     CAPTION = 'caption',
     ID = 'id',
     PRICE = 'price',
+    MARKUP = 'markup',
 }
 
 export type PriceListItem = {
@@ -54,6 +55,7 @@ export type PriceListItem = {
     price?: number
     id?: string
     code?: string
+    markup?: number
 }
 
 export type Result<T> = {

@@ -21,7 +21,7 @@ export default function InputField(props: InputFieldProps) {
         let { value, correct } = test(v, props.type, props.max, props.min)
         if (correct) setState({ ...state, value })
     }
-    const className = ((state.value !== state.prevValue) ? "input-cell-incorrect" : "input-cell")
+    const className = ((state.value !== state.prevValue) ? "inputfield-incorrect" : "inputfield")
 
     return <form
         onSubmit={(e) => {

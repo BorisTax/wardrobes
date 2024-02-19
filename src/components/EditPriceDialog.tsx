@@ -16,19 +16,20 @@ export default function EditPriceDialog() {
     const loadPriceList = useSetAtom(loadPriceListAtom)
     const [priceList] = useAtom(priceListAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name, caption, price, code, id } = (priceList && priceList[selectedIndex]) ? { ...priceList[selectedIndex] } : { name: "", caption: "", price: "", code: "", id: "" }
+    const { name, caption, price, code, id, markup } = (priceList && priceList[selectedIndex]) ? { ...priceList[selectedIndex] } : { name: "", caption: "", price: "", code: "", id: "", markup: "" }
     const closeDialog = () => { dialogRef.current?.close() }
     const [, setPriceDialogRef] = useAtom(editPriceDialogAtom)
     const updatePriceList = useSetAtom(updatePriceListAtom)
-    const [{ newCaption, newPrice, newCode, newId }, setNewValues] = useState({ newCaption: caption || "", newPrice: `${price}`, newCode: code || "", newId: id || "" })
-    useMemo(() => { setNewValues({ newCaption: caption || "", newPrice: `${price}`, newCode: code || "", newId: id || "" }) }, [selectedIndex, priceList])
-    const [{ captionChecked, priceChecked, codeChecked, idChecked }, setChecked] = useState({ captionChecked: false, priceChecked: false, codeChecked: false, idChecked: false })
+    const [{ newCaption, newPrice, newCode, newId, newMarkup }, setNewValues] = useState({ newCaption: caption || "", newPrice: `${price}`, newCode: code || "", newId: id || "", newMarkup: `${markup}` })
+    useMemo(() => { setNewValues({ newCaption: caption || "", newPrice: `${price}`, newCode: code || "", newId: id || "", newMarkup: `${markup}` || "" }) }, [selectedIndex, priceList])
+    const [{ captionChecked, priceChecked, codeChecked, idChecked, markupChecked }, setChecked] = useState({ captionChecked: false, priceChecked: false, codeChecked: false, idChecked: false, markupChecked: false })
     const showMessage = useMessage()
     const showConfirm = useConfirm()
     const contents = priceList?.map((i: PriceListItem, index) => <tr key={index} onClick={() => setSelectedIndex(index)}>
         <td className="pricelist-cell">{i.caption}</td>
         <td className="pricelist-cell">{UnitCaptions.get(i.units || "")}</td>
         <td className="pricelist-cell">{i.price}</td>
+        <td className="pricelist-cell">{i.markup}</td>
         <td className="pricelist-cell">{i.code || ""}</td>
         <td className="pricelist-cell">{i.id || ""}</td>
     </tr>)
@@ -43,6 +44,7 @@ export default function EditPriceDialog() {
                     <th className="priceheader">Наименование</th>
                     <th className="priceheader">Ед</th>
                     <th className="priceheader">Цена</th>
+                    <th className="priceheader">Наценка</th>
                     <th className="priceheader">Код</th>
                     <th className="priceheader">Идентификатор</th>
                 </thead>
@@ -62,6 +64,11 @@ export default function EditPriceDialog() {
                     <input type="checkbox" checked={priceChecked} onChange={() => { setChecked(prev => ({ ...prev, priceChecked: !priceChecked })) }} />
                     <InputField value={newPrice} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newPrice: `${value}` })) }} />
                 </div>
+                <span className="text-end text-nowrap">Наценка:</span>
+                <div className="d-flex justify-content-start gap-2">
+                    <input type="checkbox" checked={markupChecked} onChange={() => { setChecked(prev => ({ ...prev, markupChecked: !markupChecked })) }} />
+                    <InputField value={newMarkup} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newMarkup: `${value}` })) }} />
+                </div>
                 <span className="text-end text-nowrap">Код:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
@@ -74,13 +81,14 @@ export default function EditPriceDialog() {
                 </div>
             </div>
             <div className="editmaterial-buttons-container">
-                <input type="button" value="Обновить" disabled={!(captionChecked || priceChecked || codeChecked || idChecked)} onClick={() => {
-                    if (!checkFields({ captionChecked, priceChecked, codeChecked, idChecked, newCaption, newPrice, newCode, newId }, showMessage)) return
-                    const message = getMessage({ captionChecked, codeChecked, priceChecked, idChecked, caption: caption || "", newCaption, newCode, newId, newPrice })
+                <input type="button" value="Обновить" disabled={!(captionChecked || priceChecked || codeChecked || idChecked|| markupChecked)} onClick={() => {
+                    if (!checkFields({ captionChecked, priceChecked, codeChecked, idChecked, markupChecked, newCaption, newPrice, newCode, newId, newMarkup }, showMessage)) return
+                    const message = getMessage({ captionChecked, codeChecked, priceChecked, idChecked, markupChecked, caption: caption || "", newCaption, newCode, newId, newPrice, newMarkup })
                     const data: PriceListItem = { name }
                     if (codeChecked) data.code = newCode
                     if (idChecked) data.id = newId
                     if (priceChecked) data.price = +newPrice
+                    if (markupChecked) data.markup = +newMarkup
                     if (captionChecked) data.caption = newCaption
                     showConfirm(message, () => {
                         updatePriceList(data, (result) => {
@@ -97,7 +105,7 @@ export default function EditPriceDialog() {
     </dialog>
 }
 
-function checkFields({ captionChecked = true, priceChecked = true, codeChecked = true, idChecked = true, newCaption = "", newPrice = "", newCode = "", newId = "" }: { captionChecked: boolean, priceChecked: boolean, codeChecked: boolean, idChecked: boolean, newCaption: string, newPrice: string, newCode: string, newId: string }, showMessage: (message: string) => void) {
+function checkFields({ captionChecked = true, priceChecked = true, codeChecked = true, idChecked = true, markupChecked = true, newCaption = "", newPrice = "", newCode = "", newId = "", newMarkup = "" }: { captionChecked: boolean, priceChecked: boolean, codeChecked: boolean, idChecked: boolean, markupChecked: boolean, newCaption: string, newPrice: string, newCode: string, newId: string, newMarkup: string }, showMessage: (message: string) => void) {
     if (captionChecked && newCaption.trim() === "") {
         showMessage("Введите наименование")
         return false
@@ -114,15 +122,20 @@ function checkFields({ captionChecked = true, priceChecked = true, codeChecked =
         showMessage("Введите идентификатор")
         return false
     }
+    if (markupChecked && newMarkup.trim() === "") {
+        showMessage("Введите наценку")
+        return false
+    }
     return true
 }
 
-function getMessage({ captionChecked, priceChecked, codeChecked, idChecked, caption, newCaption, newPrice, newCode, newId }: { captionChecked: boolean, priceChecked: boolean, codeChecked: boolean, idChecked: boolean, caption: string, newCaption: string, newPrice: string, newCode: string, newId: string }): string {
+function getMessage({ captionChecked, priceChecked, codeChecked, idChecked, markupChecked, caption, newCaption, newPrice, newCode, newId, newMarkup }: { captionChecked: boolean, priceChecked: boolean, codeChecked: boolean, idChecked: boolean, markupChecked: boolean, caption: string, newCaption: string, newPrice: string, newCode: string, newId: string, newMarkup: string }): string {
     const changeCaption = captionChecked ? `наименование: "${newCaption}"` : ""
     const changePrice = priceChecked ? `цена:"${newPrice}"` : ""
+    const changeMarkup = markupChecked ? `наценка:"${newMarkup}"` : ""
     const changeCode = codeChecked ? `код:"${newCode}"` : ""
     const changeId = idChecked ? `идентификатор:"${newId}"` : ""
-    const message = `Обновить в материале ${caption}: ${changeCaption} ${changePrice} ${changeCode} ${changeId}?`
+    const message = `Обновить в материале ${caption}: ${changeCaption} ${changePrice}${changeMarkup} ${changeCode} ${changeId}?`
     return message
 }
 

@@ -23,7 +23,8 @@ export const rusMessages = {
     [messages.USER_NAME_EXIST]: "Пользователь существует",
 
     [messages.PRICELIST_NAME_NO_EXIST]: "Материал не существует в базе",
-    [messages.PRICELIST_PRICE_INCORRECT]: "Цена - не числовое значение",
+    [messages.PRICELIST_PRICE_INCORRECT]: "Некорректная цена",
+    [messages.PRICELIST_MARKUP_INCORRECT]: "Некорректная наценка",
     [messages.PRICELIST_CAPTION_EXIST]: "Наименование уже существует",
     [messages.PRICELIST_CODE_EXIST]: "Код уже существует",
     [messages.PRICELIST_ID_EXIST]: "Идентификатор уже существует",

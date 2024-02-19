@@ -5,7 +5,7 @@ import messages from './messages.js';
 import { Response } from "express"
 import { MyRequest, Results, UserRoles } from '../types/server.js';
 
-export function dataBaseQuery(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR,  }): Promise<Results> {
+export function dataBaseQuery(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Results> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
@@ -46,10 +46,17 @@ export const checkPermissions = (req: MyRequest, res: Response, roles: UserRoles
 }
 
 export function hashData(data: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         bcrypt.hash(data, 10, (err, hash) => {
-            if (err) reject(err);
-            else resolve(hash);
+            if (err) resolve({success: false, err});
+            else resolve({success: true, data: hash});
         });
     });
+}
+
+export function incorrectData(message: string) {
+    return { success: false, status: 400, message }
+}
+export function noExistData(message: string) {
+    return { success: false, status: 404, message }
 }

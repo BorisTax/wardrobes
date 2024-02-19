@@ -2,7 +2,7 @@ import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { checkPermissions } from '../functions.js';
+import { checkPermissions, incorrectData, noExistData } from '../functions.js';
 import { MyRequest, PriceListItem, UserRoles } from '../../types/server.js';
 import { priceServiceProvider } from '../options.js';
 import { PriceService } from '../services/priceService.js';
@@ -21,8 +21,8 @@ router.get("/pricelist", async (req, res) => {
 
 router.put("/pricelist", async (req: MyRequest, res) => {
   if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
-  const { name, caption, price, code, id } = req.body
-  const result = await updatePriceList({ name, caption, price, code, id });
+  const { name, caption, price, code, id, markup } = req.body
+  const result = await updatePriceList({ name, caption, price, code, id, markup });
   res.status(result.status).json(result);
 });
 
@@ -31,13 +31,13 @@ export async function getPriceList() {
   return await priceService.getPriceList()
 }
 
-export async function updatePriceList({ name, caption, price, code, id }: PriceListItem) {
+export async function updatePriceList({ name, caption, price, code, id, markup }: PriceListItem) {
   const priceService = new PriceService(priceServiceProvider)
   const result = await priceService.getPriceList()
   if (!result.success) return result
   const priceList = result.data
-  
-  if (price && isNaN(+price)) return { success: false, status: 400, message: messages.PRICELIST_PRICE_INCORRECT }
-  if (!(priceList as PriceListItem[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.PRICELIST_NAME_NO_EXIST }
-  return await priceService.updatePriceList({ name, caption, price, code, id })
+  if (markup && isNaN(+markup)) return incorrectData(messages.PRICELIST_MARKUP_INCORRECT)
+  if (price && isNaN(+price)) return incorrectData(messages.PRICELIST_PRICE_INCORRECT)
+  if (!(priceList as PriceListItem[]).find(m => m.name === name)) return noExistData(messages.PRICELIST_NAME_NO_EXIST)
+  return await priceService.updatePriceList({ name, caption, price, code, id, markup })
 }

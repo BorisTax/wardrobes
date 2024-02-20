@@ -42,6 +42,14 @@
   width: auto;
 }
 
+.fasad-section:hover {
+  box-shadow: inset 0px 0px 10px green;
+}
+.fasad-schema-section {
+  border: 1px solid black;
+  box-sizing: border-box;
+  
+}
 @media (orientation: landscape) {
   .main-container {
     display: grid;
@@ -116,9 +124,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.fasad-section:hover {
-  box-shadow: inset 0px 0px 10px green;
 }
 table {
   text-align: left;

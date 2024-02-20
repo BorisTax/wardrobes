@@ -2,11 +2,12 @@ import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { checkPermissions, moveFile } from '../functions.js';
+import { accessDenied, checkPermissions, moveFile } from '../functions.js';
 import { MaterialService } from '../services/materialService.js';
 import { MyRequest, Results, UserRoles } from '../../types/server.js';
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../../types/materials.js';
 import { materialServiceProvider } from '../options.js';
+import { isAdminAtLeast } from '../../functions/user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,8 +20,8 @@ router.get("/profiles", async (req, res) => {
   if (!result.success) return res.json(result)
   res.json(result.data);
 });
-router.delete("/profile", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+router.delete("/profile", async (req: MyRequest, res) => {
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, type } = req.body
   let result
   result = await deleteProfile(name, type);
@@ -29,7 +30,7 @@ router.delete("/profile", async (req, res) => {
 });
 
 router.post("/profile", async (req: MyRequest, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, type, code } = req.body
   const result = await addProfile({ name, type, code });
   const status = result.success ? 201 : 409
@@ -37,7 +38,7 @@ router.post("/profile", async (req: MyRequest, res) => {
 });
 
 router.put("/profile", async (req: MyRequest, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, type, newName, code } = req.body
   const result = await updateProfile({ name, type, newName, code });
   res.status(result.status).json(result);
@@ -50,15 +51,15 @@ router.get("/materials", async (req, res) => {
   res.status(result.status).json(result.data);
 });
 
-router.delete("/material", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+router.delete("/material", async (req: MyRequest, res) => {
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, material } = req.body
   const result = await deleteExtMaterial(name, material);
   res.status(result.status).json(result)
 });
 
 router.post("/material", async (req: MyRequest, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, material, code } = req.body
   const image = req.files?.image
   let imageurl = material + " " + name + ".jpg"
@@ -69,9 +70,9 @@ router.post("/material", async (req: MyRequest, res) => {
   const result = await addExtMaterial({ name, material, image: imageurl, code });
   res.sendStatus(result.status)
 });
-
+ 
 router.put("/material", async (req: MyRequest, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, material, newName, code } = req.body
   const image = req.files?.image
 

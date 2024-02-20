@@ -1,24 +1,32 @@
 import { AppState } from "../types/app";
 export async function openFile() {
-    return new Promise<{ result: boolean, content?: { state: object } }>((resolve) => {
+    return new Promise<{ result: boolean, filename?: string, file?: Blob }>((resolve) => {
         var input: HTMLInputElement = document.createElement('input');
         input.type = 'file';
         input.accept = ".json";
         input.onchange = (e: Event) => {
-            const file = input.files && input.files[0];
-            if (!file) return resolve({ result: false })
-            var reader = new FileReader();
-            reader.readAsText(file as Blob, 'UTF-8');
-            reader.onload = readerEvent => {
-                try {
-                    var content = JSON.parse(reader.result as string);
-                } catch (e) {
-                    content = {}
-                }
-                resolve({ result: true, content });
-            }
+            const file = input.files && input.files[0]
+            const filename = file?.name
+            if (!filename) return resolve({ result: false })
+            resolve({ result: true, filename, file });
         }
         input.click();
+    })
+}
+
+export async function readFile(file: Blob) {
+    return new Promise<{ result: boolean, content?: { state: object } }>((resolve) => {
+        if (!file) return resolve({ result: false })
+        var reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = () => {
+            try {
+                var content = JSON.parse(reader.result as string);
+            } catch (e) {
+                content = {}
+            }
+            resolve({ result: true, content });
+        }
     })
 }
 
@@ -30,6 +38,7 @@ export function saveState(state: AppState) {
     link.href = makeTextFile(contents);
     link.click()
 }
+
 
 const makeTextFile = function (text: string) {
     var data = new Blob([text], { type: 'application/json' });

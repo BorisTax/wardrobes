@@ -3,6 +3,7 @@ import FasadState from "../classes/FasadState"
 import { Profile } from "./materials"
 
 export type AppState = {
+    order: string
     type: WardType
     wardHeight: number
     wardWidth: number
@@ -11,6 +12,7 @@ export type AppState = {
     rootFasadesState: FasadState[]
 }
 export type AppData = {
+    order: string
     type: WardType
     wardHeight: number
     wardWidth: number

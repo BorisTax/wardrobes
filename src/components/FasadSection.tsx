@@ -59,7 +59,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     return <div className={classes} style={{
         display: "grid",
         ...gridTemplate,
-        gap: "1px",
+        gap: "2px",
         ...styles,
     }}
         {...events}>

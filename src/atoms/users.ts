@@ -2,6 +2,8 @@ import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData } from "../functions/fetch"
 import { UserRoles } from "../types/server"
+import { isClientAtLeast } from "../functions/user"
+import { loadPriceListAtom } from "./prices"
 
 export const UserRolesCaptions = {
     [UserRoles.ANONYM]: "",
@@ -27,6 +29,7 @@ export const setUserAtom = atom(null, (get: Getter, set: Setter, token: string) 
     } catch (e) {
         storeUser = { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" }
     }
+    if (isClientAtLeast(storeUser.role)) set(loadPriceListAtom)
     set(userAtom, storeUser)
 })
 export const logoutUserAtom = atom(null, async (get: Getter, set: Setter) => {

@@ -23,12 +23,12 @@ export default function EditMaterialDialog() {
     const addMaterial = useSetAtom(addMaterialAtom)
     const updateMaterial = useSetAtom(updateMaterialAtom)
     const extMaterials: ExtMaterial[] = useMemo(() => materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }], [materialList, baseMaterial]);
-    const imageSrc = `${imagesSrcUrl}${extMaterials[extMaterialIndex].image}`
-    const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc })
+    const imageSrc = `${imagesSrcUrl}${extMaterials[extMaterialIndex].image || ""}`
+    const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc })
     const [{ nameChecked, codeChecked, imageChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false })
     const [imageFileName, setImageFileName] = useState("???")
     useMemo(() => {
-        setNewValues({ newName: extMaterials[extMaterialIndex].name, newCode: extMaterials[extMaterialIndex].code, newImageSrc: imageSrc })
+        setNewValues({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc })
     }, [extMaterials, extMaterialIndex, imageSrc])
     const nameRef = useRef<HTMLInputElement>(null)
     const codeRef = useRef<HTMLInputElement>(null)

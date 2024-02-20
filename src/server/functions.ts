@@ -48,8 +48,8 @@ export const checkPermissions = (req: MyRequest, res: Response, roles: UserRoles
 export function hashData(data: string) {
     return new Promise((resolve) => {
         bcrypt.hash(data, 10, (err, hash) => {
-            if (err) resolve({success: false, err});
-            else resolve({success: true, data: hash});
+            if (err) resolve({ success: false, err });
+            else resolve({ success: true, data: hash });
         });
     });
 }
@@ -59,4 +59,7 @@ export function incorrectData(message: string) {
 }
 export function noExistData(message: string) {
     return { success: false, status: 404, message }
+}
+export function accessDenied(res: Response) {
+    res.status(403).json({ success: false, message: messages.ACCESS_DENIED })
 }

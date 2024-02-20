@@ -1,0 +1,40 @@
+.schema-container {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 4fr 1fr;
+    overflow: scroll;
+    max-height: 80svh;
+    font-size: 0.8rem;
+}
+
+.schema-left {
+    display: flex;
+    flex-direction: column;
+}
+.schema-order {
+    border: 1px solid black;
+    text-align: center;
+}
+.schema-view-container {
+    flex: 1;
+    border: 1px solid black;
+    justify-self: stretch;
+    padding: 1em;
+}
+
+.schema-view {
+    justify-self: center;
+    margin: auto;
+}
+
+.schema-table {
+    display: flex;
+    flex-direction: column;
+    align-self: self-start;
+
+}
+
+.schema-table>div {
+    border: 1px solid black;
+    padding-left: 0.5rem;
+}

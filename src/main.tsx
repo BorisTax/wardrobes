@@ -11,7 +11,7 @@ root.render(
   <React.StrictMode>
     <Provider>
       <QueryClientProvider client={queryClient}>
-        <ErrorBoundary fallback={<div>Произошла ошибка! Обновите страницу</div>}>
+        <ErrorBoundary fallback={<h1>Произошла ошибка! Обновите страницу</h1>}>
           <App />
         </ErrorBoundary>
       </QueryClientProvider>

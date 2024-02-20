@@ -31,6 +31,7 @@ export function getFasadHeight(wardHeight: number, wardType: WardType, profileTy
 
 export function getAppDataFromState(state: AppState): AppData {
     const data: AppData = {
+        order: state.order,
         wardHeight: state.wardHeight,
         wardWidth: state.wardWidth,
         fasadCount: state.fasadCount,
@@ -47,13 +48,14 @@ export function getInitialAppState(): AppState {
     const fasadCount = 2
     const profile: Profile = { type: ProfileType.STANDART, name: "", code: "" }
     const wardType: WardType = WardType.WARDROBE
-    return createAppState(wardWidth, wardHeight, fasadCount, profile, wardType)
+    return createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType)
 }
 
-export function createAppState(wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WardType): AppState {
+export function createAppState(order:string, wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WardType): AppState {
     const fasadHeight = getFasadHeight(wardHeight, wardType, profile.type)
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardType, profile.type)
     const state: AppState = {
+        order,
         wardWidth,
         wardHeight,
         fasadCount,
@@ -66,6 +68,7 @@ export function createAppState(wardWidth: number, wardHeight: number, fasadCount
 
 export function getAppState(data: AppData): AppState {
     const state: AppState = {
+        order: data.order,
         wardHeight: data.wardHeight,
         wardWidth: data.wardWidth,
         fasadCount: data.fasadCount,

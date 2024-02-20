@@ -41,12 +41,14 @@ export default function EditPriceDialog() {
         <div className="pricelist">
             <table>
                 <thead>
-                    <th className="priceheader">Наименование</th>
-                    <th className="priceheader">Ед</th>
-                    <th className="priceheader">Цена</th>
-                    <th className="priceheader">Наценка</th>
-                    <th className="priceheader">Код</th>
-                    <th className="priceheader">Идентификатор</th>
+                    <tr>
+                        <th className="priceheader">Наименование</th>
+                        <th className="priceheader">Ед</th>
+                        <th className="priceheader">Цена</th>
+                        <th className="priceheader">Наценка</th>
+                        <th className="priceheader">Код</th>
+                        <th className="priceheader">Идентификатор</th>
+                    </tr>
                 </thead>
                 <tbody>{contents}</tbody>
             </table>
@@ -81,7 +83,7 @@ export default function EditPriceDialog() {
                 </div>
             </div>
             <div className="editmaterial-buttons-container">
-                <input type="button" value="Обновить" disabled={!(captionChecked || priceChecked || codeChecked || idChecked|| markupChecked)} onClick={() => {
+                <input type="button" value="Обновить" disabled={!(captionChecked || priceChecked || codeChecked || idChecked || markupChecked)} onClick={() => {
                     if (!checkFields({ captionChecked, priceChecked, codeChecked, idChecked, markupChecked, newCaption, newPrice, newCode, newId, newMarkup }, showMessage)) return
                     const message = getMessage({ captionChecked, codeChecked, priceChecked, idChecked, markupChecked, caption: caption || "", newCaption, newCode, newId, newPrice, newMarkup })
                     const data: PriceListItem = { name }

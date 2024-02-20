@@ -13,6 +13,8 @@ type ConfirmAtom = {
     onYesAction: () => void
     onNoAction?: () => void
 }
+export const rerenderDialogAtom = atom(0)
+
 const loginDialog = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const loginDialogAtom = atom((get: Getter) => get(loginDialog), (get: Getter, set: Setter, loginDialogRef: React.RefObject<HTMLDialogElement> | null) => {
     set(loginDialog, loginDialogRef)
@@ -27,7 +29,12 @@ export const showSpecificationDialogAtom = atom(null, (get, set) => {
     set(calculateSpecificationsAtom)
     dialogRef?.current?.showModal()
 })
-
+export const schemaDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const showSchemaDialogAtom = atom(null, (get, set) => {
+    const dialogRef = get(schemaDialogAtom)
+    dialogRef?.current?.showModal()
+    set(rerenderDialogAtom, Math.random())
+})
 const messageAtom = atom<MessageAtom>({ dialogRef: null, message: "" })
 export const messageDialogAtom = atom((get) => get(messageAtom), (get, set, message: string) => {
     const state = get(messageAtom)

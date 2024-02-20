@@ -3,9 +3,10 @@ import express from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../services/userService.js';
-import { checkPermissions, hashData, incorrectData } from '../functions.js';
-import { ActiveUser, Results, Token, User, UserRoles } from '../../types/server.js';
+import { accessDenied, hashData, incorrectData } from '../functions.js';
+import { ActiveUser, MyRequest, Results, Token, User, UserRoles } from '../../types/server.js';
 import { JWT_SECRET, userServiceProvider } from '../options.js';
+import { isSuperAdminAtLeast } from '../../functions/user.js';
 
 const router = express.Router();
 export default router
@@ -32,8 +33,8 @@ router.post("/logout", async (req, res) => {
   res.json({ success: true });
 });
 
-router.post("/active", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
+router.post("/active", async (req: MyRequest, res) => {
+  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const result: ActiveUser[] = []
   const tokens = await userService.getTokens();
@@ -45,23 +46,23 @@ router.post("/active", async (req, res) => {
   res.json(result);
 });
 
-router.post("/logoutall", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
+router.post("/logoutall", async (req: MyRequest, res) => {
+  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   userService.clearAllTokens()
   res.json({ success: true });
 });
 
-router.post("/register", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
+router.post("/register", async (req: MyRequest, res) => {
+  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const user = req.body;
   if (!user.name || !user.password) return res.json({ success: false, errCode: messages.INVALID_USER_DATA });
   const result = await registerUser(user);
   res.json(result);
 });
 
-router.post("/all", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN])) return
+router.post("/all", async (req:MyRequest, res) => {
+  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   let result = await userService.getUsers()
   if (!result.success) return res.json(result)

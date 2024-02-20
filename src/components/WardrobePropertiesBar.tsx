@@ -6,7 +6,7 @@ import { useAtom, useSetAtom } from "jotai"
 import { profileListAtom } from "../atoms/profiles"
 import { Profile } from "../types/materials"
 import ComboBox from "./ComboBox"
-import { appDataAtom, setFasadCountAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom } from "../atoms/app"
+import { appDataAtom, setFasadCountAtom, setOrderAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom } from "../atoms/app"
 import { WardType } from "../types/app"
 import { WardTypes } from "../functions/wardrobe"
 import useConfirm from "../custom-hooks/useConfirm"
@@ -14,7 +14,8 @@ const fasades = ["2", "3", "4", "5", "6"]
 export default function WardrobePropertiesBar() {
     //const [activeProfileIndex, setActiveProfileIndex] = useAtom(activeProfileIndexAtom)
     const [profileList] = useAtom(profileListAtom)
-    const [{ profile, fasadCount, type, wardHeight, wardWidth }] = useAtom(appDataAtom)
+    const [{ order, profile, fasadCount, type, wardHeight, wardWidth }] = useAtom(appDataAtom)
+    const setOrder = useSetAtom(setOrderAtom)
     const setProfile = useSetAtom(setProfileAtom)
     const setFasadCount = useSetAtom(setFasadCountAtom)
     const setWardWidth = useSetAtom(setWardWidthAtom)
@@ -40,6 +41,10 @@ export default function WardrobePropertiesBar() {
         <div>Параметры шкафа</div>
         <hr />
         <PropertyGrid>
+            <div className="text-end">Заказ: </div>
+            <PropertyRow>
+                <InputField value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
+            </PropertyRow>
             <ComboBox title="Тип:" value={type} items={WardTypes} onChange={(_, value) => { setWardType([value as WardType, wardTypeChangeConfirm]) }} />
             <div className="text-end">Высота: </div>
             <PropertyRow>

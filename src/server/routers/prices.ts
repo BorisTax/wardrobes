@@ -2,10 +2,11 @@ import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { checkPermissions, incorrectData, noExistData } from '../functions.js';
+import { accessDenied, checkPermissions, incorrectData, noExistData } from '../functions.js';
 import { MyRequest, PriceListItem, UserRoles } from '../../types/server.js';
 import { priceServiceProvider } from '../options.js';
 import { PriceService } from '../services/priceService.js';
+import { isAdminAtLeast, isClientAtLeast } from '../../functions/user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,14 +14,14 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 export default router
 
-router.get("/pricelist", async (req, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN, UserRoles.MANAGER])) return
+router.get("/pricelist", async (req: MyRequest, res) => {
+  if (!isClientAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const result = await getPriceList();
   res.json(result);
 });
 
 router.put("/pricelist", async (req: MyRequest, res) => {
-  if (!checkPermissions(req, res, [UserRoles.SUPERADMIN, UserRoles.ADMIN])) return
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, caption, price, code, id, markup } = req.body
   const result = await updatePriceList({ name, caption, price, code, id, markup });
   res.status(result.status).json(result);

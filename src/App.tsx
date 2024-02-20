@@ -10,7 +10,7 @@ import PropertiesBar from './components/PropertiesBar'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/LoginDialog'
 import WardrobePropertiesBar from './components/WardrobePropertiesBar'
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { setActiveFasadAtom } from './atoms/fasades'
 import { loadMaterialListAtom } from './atoms/materials'
 import EditMaterialDialog from './components/EditMaterialDialog'
@@ -22,17 +22,24 @@ import RootFasadesContainer from './components/RootFasadesContainer'
 import EditProfileDialog from './components/EditProfileDialog'
 import EditPriceDialog from './components/EditPriceDialog'
 import SpecificationDialog from './components/SpecificationDialog'
-import { isAdminAtLeast, isManagerAtLeast } from './functions/user'
+import { isAdminAtLeast, isClientAtLeast } from './functions/user'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom } from './atoms/app'
+import { loadPriceListAtom } from './atoms/prices'
+import SchemaDialog from './components/SchemaDialog'
 
 function App() {
+  const { role } = useAtomValue(userAtom)
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
   const setAppData = useSetAtom(appDataAtom)
   const [user] = useAtom(userAtom)
+  const loadPriceList = useSetAtom(loadPriceListAtom)
+  useEffect(() => {
+    if (isClientAtLeast(role)) loadPriceList()
+  }, [role])
   useEffect(() => {
     const storage = localStorage.getItem('appState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
@@ -41,15 +48,12 @@ function App() {
     loadProfileList()
   }, [])
   useEffect(() => {
-    //const onClick = (e: Event) => { setActiveFasad(null); }
     const onContextMenu = (e: Event) => { e.preventDefault() }
     document.addEventListener("contextmenu", onContextMenu)
-    //document.addEventListener("click", onClick)
     const toolTip = createToolTip()
     document.body.appendChild(toolTip)
     return () => {
       document.removeEventListener("contextmenu", onContextMenu)
-      //document.removeEventListener("click", onClick)
       document.body.removeChild(toolTip)
     }
   }, [])
@@ -67,7 +71,8 @@ function App() {
       {isAdminAtLeast(user.role) ? <EditMaterialDialog /> : <></>}
       {isAdminAtLeast(user.role) ? <EditProfileDialog /> : <></>}
       {isAdminAtLeast(user.role) ? <EditPriceDialog /> : <></>}
-      {isManagerAtLeast(user.role) ? <SpecificationDialog /> : <></>}
+      {isClientAtLeast(user.role) ? <SpecificationDialog /> : <></>}
+      {isClientAtLeast(user.role) ? <SchemaDialog /> : <></>}
       <MessageDialog />
       <ConfirmDialog />
     </>

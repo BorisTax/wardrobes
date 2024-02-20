@@ -43,16 +43,16 @@ export default function WardrobePropertiesBar() {
         <PropertyGrid>
             <div className="text-end">Заказ: </div>
             <PropertyRow>
-                <InputField value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
+                <InputField name="order" value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
             </PropertyRow>
             <ComboBox title="Тип:" value={type} items={WardTypes} onChange={(_, value) => { setWardType([value as WardType, wardTypeChangeConfirm]) }} />
             <div className="text-end">Высота: </div>
             <PropertyRow>
-                <InputField value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1900} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} />
+                <InputField name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1900} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} />
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <InputField value={wardWidth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setWardWidth([+value, wardWidthConfirm]) }} />
+                <InputField name="width" value={wardWidth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setWardWidth([+value, wardWidthConfirm]) }} />
             </PropertyRow>
             <ComboBox title="Кол-во фасадов:" value={`${fasadCount}`} items={fasades} onChange={(_, value) => { setFasadCount([+value, wardFasadCountConfirm]) }} />
             <ComboBox title="Профиль:" value={profile?.name || ""} items={profileList.map((p: Profile) => p.name)} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />

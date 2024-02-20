@@ -44,7 +44,7 @@ export default function SchemaDialog() {
         <div className="schema-container">
             <div className='schema-left'>
                 <div ref={orderRef} className='schema-order'>
-                    {order}
+                    {order || " "}
                 </div>
                 <div ref={containerRef} className={`schema-view-container`}>
                     <div ref={viewRef} className='schema-view' style={viewStyle}>
@@ -55,33 +55,33 @@ export default function SchemaDialog() {
             <div ref={tableRef} className="schema-table">
                 <div>{`Заказ принят:`}</div>
                 <div>{`1. Габариты изделия (общий)`}</div>
-                <div className='ps-3'>{`1. Ширина: ${wardWidth}`}</div>
+                <div className='schema-table-row'>{`1. Ширина:`}<span className='schema-table-data'>{wardWidth}</span></div>
                 <div>{`1.1 Цельный или из двух шкафов:`}</div>
-                <div className='ps-3'>{`2. Глубина:`}</div>
-                <div className='ps-3'>{`3. Высота: ${wardHeight}`}</div>
+                <div className='schema-table-row'>{`2. Глубина:`}</div>
+                <div className='schema-table-row'>{`3. Высота:`}<span className='schema-table-data'>{wardHeight}</span></div>
                 <div>{`2. Цвет ДСП`}</div>
-                <div className='ps-3'>{`1. ДСП корпус:`}</div>
-                <div className='ps-3'>{`2. ДСП дополн:`}</div>
+                <div className='schema-table-row'>{`1. ДСП корпус:`}</div>
+                <div className='schema-table-row'>{`2. ДСП дополн:`}</div>
                 <div>{`3. Кромка ПВХ(стандарт):`}</div>
                 <div>{`4. Дополнительно`}</div>
-                <div className='ps-3'>{`1. Консоль:`}</div>
-                <div className='ps-3'>{`2. Козырек:`}</div>
-                <div className='ps-3'>{`3. Освещение:`}</div>
-                <div className='ps-3'>{`4. Ящичный блок:`}</div>
-                <div className='ps-3'>{`5. Полки (плательный отдел):`}</div>
-                <div className='ps-3'>{`6. Полки (полочный отдел):`}</div>
-                <div className='ps-3'>{`7. Пантограф:`}</div>
-                <div className='ps-3'>{`8. Труба:`}</div>
-                <div className='ps-3'>{`9. Тремпеледержатель:`}</div>
-                <div className='ps-3'>{`10. Стойка:`}</div>
-                <div>{`5. Фасад (кол-во): ${fasadCount}`}</div>
-                <div className='ps-3'>{`1. Цвет профиля: ${profile.name}`}</div>
-                <div className='ps-3'>{`2. Цвет зеркала: ${mirrorColors}`}</div>
-                <div className='ps-3'>{`3. Основа: ${sandBases}`}</div>
-                <div className='ps-3'>{`4. Рисунок: ${sandColors}`}</div>
-                <div className='ps-3'>{`5. ДСП: ${DSPColors}`}</div>
-                <div className='ps-3'>{`6. Лакобель: ${lacobelColors}`}</div>
-                <div className='ps-3'>{`7. ФМП: ${FMPColors}`}</div>
+                <div className='schema-table-row'>{`1. Консоль:`}</div>
+                <div className='schema-table-row'>{`2. Козырек:`}</div>
+                <div className='schema-table-row'>{`3. Освещение:`}</div>
+                <div className='schema-table-row'>{`4. Ящичный блок:`}</div>
+                <div className='schema-table-row'>{`5. Полки (плательный отдел):`}</div>
+                <div className='schema-table-row'>{`6. Полки (полочный отдел):`}</div>
+                <div className='schema-table-row'>{`7. Пантограф:`}</div>
+                <div className='schema-table-row'>{`8. Труба:`}</div>
+                <div className='schema-table-row'>{`9. Тремпеледержатель:`}</div>
+                <div className='schema-table-row'>{`10. Стойка:`}</div>
+                <div>{`5. Фасад (кол-во):`}<span className='schema-table-data'>{fasadCount}</span></div>
+                <div className='schema-table-row'>{`1. Цвет профиля:`}<span className='schema-table-data'>{profile.name}</span></div>
+                <div className='schema-table-row'>{`2. Цвет зеркала:`}<span className='schema-table-data'>{mirrorColors}</span></div>
+                <div className='schema-table-row'>{`3. Основа:`}<span className='schema-table-data'>{sandBases}</span></div>
+                <div className='schema-table-row'>{`4. Рисунок:`}<span className='schema-table-data'>{sandColors}</span></div>
+                <div className='schema-table-row'>{`5. ДСП:`}<span className='schema-table-data'>{DSPColors}</span></div>
+                <div className='schema-table-row'>{`6. Лакобель:`}<span className='schema-table-data'>{lacobelColors}</span></div>
+                <div className='schema-table-row'>{`7. ФМП:`}<span className='schema-table-data'>{FMPColors}</span></div>
             </div>
         </div>
         <div className="d-flex flex-column gap-1 align-items-start">

@@ -6,6 +6,7 @@ export type InputFieldProps = {
     setValue: (value: string | number) => void
     value: string | number
     type: PropertyType
+    name?: string
     disabled?: boolean
     max?: number
     min?: number
@@ -23,31 +24,38 @@ export default function InputField(props: InputFieldProps) {
     }
     const className = ((state.value !== state.prevValue) ? "inputfield-incorrect" : "inputfield")
 
-    return <form
+    return (
+      <form
         onSubmit={(e) => {
-            e.preventDefault()
-            const formData = new FormData(e.target as HTMLFormElement)
-            const input = formData.get("input") || ""
-            if (minMaxTest(state.value, props.max, props.min))
-                props.setValue(input?.toString());
-            else setState({ ...state, value: state.prevValue });
+          e.preventDefault();
+          const formData = new FormData(e.target as HTMLFormElement);
+          const input = formData.get(props.name || "input") || "";
+          if (minMaxTest(state.value, props.max, props.min))
+            props.setValue(input?.toString());
+          else setState({ ...state, value: state.prevValue });
         }}
-        onClick={(e) => { e.stopPropagation() }}>
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
         <input
-            type="text"
-            className={className}
-            disabled={props.disabled}
-            value={state.value}
-            name="input"
-            onKeyDown={(e) => {
-                e.stopPropagation()
-            }}
-            onBlur={() => {
-                setState({ ...state, value: state.prevValue });
-            }}
-            onChange={(e) => { onChange(e.target.value) }}
+          type="text"
+          className={className}
+          disabled={props.disabled}
+          value={state.value}
+          name={props.name || "input"}
+          onKeyDown={(e) => {
+            e.stopPropagation();
+          }}
+          onBlur={() => {
+            setState({ ...state, value: state.prevValue });
+          }}
+          onChange={(e) => {
+            onChange(e.target.value);
+          }}
         />
-    </form>
+      </form>
+    );
 }
 
 function test(value: string | number, type: PropertyType, max?: number, min?: number) {

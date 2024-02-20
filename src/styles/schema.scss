@@ -4,6 +4,7 @@
     grid-template-columns: 4fr 1fr;
     overflow: scroll;
     max-height: 80svh;
+    aspect-ratio: 297/210;
     font-size: 0.8rem;
 }
 
@@ -14,6 +15,7 @@
 .schema-order {
     border: 1px solid black;
     text-align: center;
+    white-space: pre;
 }
 .schema-view-container {
     flex: 1;
@@ -31,10 +33,17 @@
     display: flex;
     flex-direction: column;
     align-self: self-start;
-
+    min-width: 70mm;
 }
 
+.schema-table-row{
+    padding-left: 1em !important;
+}
 .schema-table>div {
     border: 1px solid black;
-    padding-left: 0.5rem;
+    padding-left: 0.5em;
+}
+.schema-table-data{
+    font-weight: bold;
+    padding-left: 0.5em;
 }

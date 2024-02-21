@@ -6,6 +6,7 @@ import config from 'config'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+// @ts-ignore
 import multipart from 'connect-multiparty';
 const multipartMiddleware = multipart();
 //import _debug from 'debug'

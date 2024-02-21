@@ -33,12 +33,15 @@ export async function readFile(file: Blob) {
 export function saveState(state: AppState) {
     const project = { version: 1.0, state }
     var contents = JSON.stringify(project);
-    var link = document.createElement('a');
-    link.setAttribute('download', "project.json");
-    link.href = makeTextFile(contents);
-    link.click()
+    saveFile(contents, "project.json")
 }
 
+export function saveFile(data: string, filename: string) {
+    var link = document.createElement('a');
+    link.setAttribute('download', filename);
+    link.href = makeTextFile(data);
+    link.click()
+}
 
 const makeTextFile = function (text: string) {
     var data = new Blob([text], { type: 'application/json' });

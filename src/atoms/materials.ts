@@ -20,7 +20,8 @@ export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = f
         const material = [...mList.keys()][0] as FasadMaterial
         const extMaterials = mList.get(material);
         const extMaterial = extMaterials && extMaterials[0].name
-        if (setAsInitial) setInitialMaterials(rootFasades, material, extMaterial || "")
+        //if (setAsInitial) 
+        setInitialMaterials(rootFasades, material, extMaterial || "")
     } catch (e) { console.error(e) }
 })
 
@@ -69,7 +70,7 @@ export const updateMaterialAtom = atom(null, async (get, set, { name, material, 
 })
 
 export function setInitialMaterials(rootFasades: Fasad[], material: FasadMaterial, extMaterial: string) {
-    rootFasades.forEach((f: Fasad) => {
+    rootFasades.filter(f => f.ExtMaterial === "").forEach((f: Fasad) => {
         f.setMaterial(material)
         f.setExtMaterial(extMaterial)
     })

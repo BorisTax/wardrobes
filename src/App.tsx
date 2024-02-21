@@ -43,8 +43,8 @@ function App() {
   useEffect(() => {
     const storage = localStorage.getItem('appState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
-    loadMaterialList(!storage)
     setAppData(getAppDataFromState(appState), false)
+    loadMaterialList(!storage)
     loadProfileList()
   }, [])
   useEffect(() => {

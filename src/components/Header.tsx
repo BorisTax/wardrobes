@@ -44,7 +44,7 @@ export default function Header() {
         <>
           <MenuSeparator />
           <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
-          <ImageButton title="Cхема" icon="specButton" onClick={() => { showSchemaDialog() }} />
+          <ImageButton title="Cхема" icon="schemaButton" onClick={() => { showSchemaDialog() }} />
         </>
         : <></>}
     </div>

@@ -24,8 +24,8 @@ SandBases.set("ЗЕРКАЛО", SandBase.MIRROR)
 SandBases.set("ПЕСКОСТРУЙ", SandBase.SAND)
 
 export const SandBasesCaptions: Map<string, string> = new Map()
-SandBasesCaptions.set(SandBase.MIRROR, "ЗЕРКАЛО")
-SandBasesCaptions.set(SandBase.SAND, "ПЕСКОСТРУЙ")
+SandBasesCaptions.set(SandBase.MIRROR, "ОЗ")
+SandBasesCaptions.set(SandBase.SAND, "ОП")
 
 export const MaterialCaptions: Map<string, string> = new Map()
 MaterialCaptions.set(FasadMaterial.DSP, "ДСП")

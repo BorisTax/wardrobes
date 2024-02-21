@@ -9,7 +9,7 @@ export const specificationAtom = atom<Map<SpecificationItem, number>[]>([])
 
 export const calculateSpecificationsAtom = atom(null, (get, set) => {
     const { rootFasades, profile } = get(appDataAtom)
-    const spec = rootFasades.map((f: Fasad) => getTotalSpecification(f.getState(), profile.type))
+    const spec = rootFasades.map((f: Fasad) => getTotalSpecification(f, profile.type))
     set(specificationAtom, spec)
 })
 

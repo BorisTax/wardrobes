@@ -10,7 +10,6 @@ import { FasadMaterial } from '../types/enums';
 import { calculateSpecificationsAtom } from './specification';
 
 
-
 const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
 export const historyAppAtom = atom((get: Getter) => { const data = get(appAtom); return { next: data.next, previous: data.previous } })
 export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state), (get, set, appData: AppData, useHistory: boolean) => {

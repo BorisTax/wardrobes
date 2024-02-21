@@ -1,10 +1,11 @@
 import Fasad from "../classes/Fasad";
 import { FasadMaterial } from "../types/enums";
+import { SandBasesCaptions } from "./materials";
 
 function combineFasadColors(fasad: Fasad, material: FasadMaterial, base = false): Set<string> {
     let colors = new Set<string>()
     if (fasad.Children.length === 0) {
-        if (fasad.Material === material) colors.add(base ? fasad.SandBase : fasad.ExtMaterial)
+        if (fasad.Material === material) colors.add(base ? SandBasesCaptions.get(fasad.SandBase) || "" : fasad.ExtMaterial)
         return colors
     }
     fasad.Children.forEach((c: Fasad) => {

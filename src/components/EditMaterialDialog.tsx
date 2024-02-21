@@ -10,7 +10,7 @@ import { imagesSrcUrl } from "../options"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../atoms/materials"
 import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
-import Button from "./Button"
+import Button from "./ImageTextButton"
 import { rusMessages } from "../functions/messages"
 
 export default function EditMaterialDialog() {

@@ -48,7 +48,7 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
         padding: "0px",
     }
     const caption = <div style={captionStyle}>
-        {`${MaterialCaptions.get(fasad.Material)} ${fasad.ExtMaterial} ${fasad.Material === FasadMaterial.SAND ? SandBasesCaptions.get(fasad.SandBase) : ""} (${fasad.cutHeight}x${fasad.cutWidth})`}
+        {`${MaterialCaptions.get(fasad.Material)} ${fasad.ExtMaterial} ${fasad.Material === FasadMaterial.SAND ? SandBasesCaptions.get(fasad.SandBase) : ""} (${Math.floor(fasad.cutHeight)}x${Math.floor(fasad.cutWidth)})`}
     </div>
     const contents = !lastFasad ? fasad.Children.map((f: Fasad, i: number) => <FasadSchemaSection key={i} fasad={f} />) : caption
     useEffect(() => {

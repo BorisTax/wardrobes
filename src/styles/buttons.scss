@@ -23,6 +23,19 @@
   mix-blend-mode: hard-light;
 }
 
+.image-text-button {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem;
+  cursor: pointer;
+}
+
+.image-text-button:hover {
+  background-color: aquamarine;
+}
+
 .horizontal-separator {
   position: relative;
   bottom: 1px;
@@ -30,7 +43,8 @@
   width: 1px;
   border: inset;
 }
-.vertical-separator{
+
+.vertical-separator {
   height: 100%;
   width: 1px;
   box-sizing: border-box;
@@ -130,22 +144,27 @@ $header_button_height: 32px;
   background-image: url($icon-url+'editMaterials.png');
   @include header_button();
 }
+
 .editProfiles {
   background-image: url($icon-url+'editProfiles.png');
   @include header_button();
 }
+
 .editPrice {
   background-image: url($icon-url+'editPrice.png');
   @include header_button();
 }
+
 .specButton {
   background-image: url($icon-url+'specButton.png');
   @include header_button();
 }
+
 .schemaButton {
   background-image: url($icon-url+'schema.png');
   @include header_button();
 }
+
 .new {
   background-image: url($icon-url+'new.png');
   @include instruments_button();
@@ -158,6 +177,23 @@ $header_button_height: 32px;
 
 .save {
   background-image: url($icon-url+'save.png');
+  @include instruments_button();
+}
+.close {
+  background-image: url($icon-url+'close.png');
+  @include instruments_button();
+}
+.pdf {
+  background-image: url($icon-url+'pdf.png');
+  @include instruments_button();
+}
+
+.png {
+  background-image: url($icon-url+'png.png');
+  @include instruments_button();
+}
+.excel {
+  background-image: url($icon-url+'excel.png');
   @include instruments_button();
 }
 

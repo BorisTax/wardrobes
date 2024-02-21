@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useToolTip } from '../custom-hooks/useToolTip';
 
 type ImageButtonProps = {
-        title: string
         onClick: () => void
         icon: string
+        title?: string
         disabled?: boolean
         visible?: boolean
         classes?: string

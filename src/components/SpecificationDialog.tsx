@@ -41,6 +41,10 @@ export default function SpecificationDialog() {
         setSpecificationDialogRef(dialogRef)
     }, [setSpecificationDialogRef, dialogRef])
     return <dialog ref={dialogRef}>
+        <div className="dialog-header-bar">
+            <ImageButton icon="excel" title="Сохранить в Excel" onClick={() => saveToExcel(fasadIndex)} />
+            <ImageButton icon="close" title="Закрыть" onClick={() => closeDialog()} />
+        </div>
         <div className="d-flex flex-row flex-nowrap justify-content-center align-items-center gap-1">
             <ImageButton title="Предыдущая спецификация" icon="prevFasad" visible={fasadIndex > 0} disabled={fasadIndex === 0} onClick={() => { setFasadIndex((prev) => prev - 1) }} />
             <div>Фасад{` ${fasadIndex + 1}`}</div>
@@ -64,9 +68,5 @@ export default function SpecificationDialog() {
             </table>
         </div>
         <hr />
-        <div className="d-flex flex-column gap-1 align-items-start">
-            <input type="button" value="Сохранить в Excel" onClick={() => saveToExcel(fasadIndex)} />
-            <input type="button" value="Закрыть" onClick={() => closeDialog()} />
-        </div>
     </dialog>
 }

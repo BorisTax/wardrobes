@@ -12,6 +12,9 @@ import { FasadMaterial } from "../types/enums"
 import Fasad from '../classes/Fasad'
 import FasadSchemaSection from './FasadSchemaSection'
 import { SandBasesCaptions } from '../functions/materials'
+import Button from './ImageTextButton'
+import ImageTextButton from './ImageTextButton'
+import ImageButton from './ImageButton'
 
 export default function SchemaDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -47,6 +50,25 @@ export default function SchemaDialog() {
         setSchemaDialogRef(dialogRef)
     }, [dialogRef])
     return <dialog ref={dialogRef}>
+        <div className="dialog-header-bar">
+            <div>
+                <ImageButton icon="pdf" title="Сохранить в PDF" onClick={() => {
+                    html2image.toPng(sheetRef.current as HTMLDivElement)
+                        .then(function (dataUrl) {
+                            const doc = new jsPDF({ orientation: "landscape" });
+                            doc.addImage(dataUrl, 'PNG', 0, 0, 297, 210);
+                            doc.save('Схема.pdf');
+                        });
+                }} />
+                <ImageButton icon="png" title="Сохранить как изображение" onClick={() => {
+                    html2image.toPng(sheetRef.current as HTMLDivElement)
+                        .then(function (dataUrl) {
+                            download(dataUrl, 'Схема.png');
+                        });
+                }} />
+            </div>
+            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
+        </div>
         <div className='schema-background'>
             <div ref={sheetRef} className='schema-sheet'>
                 <div className="schema-container">
@@ -94,22 +116,6 @@ export default function SchemaDialog() {
                 </div>
             </div>
         </div>
-        <div className="d-flex flex-column gap-1 align-items-start">
-            <input type="button" value="Сохранить в PDF" onClick={() => {
-                html2image.toPng(sheetRef.current as HTMLDivElement)
-                    .then(function (dataUrl) {
-                        const doc = new jsPDF({ orientation: "landscape" });
-                        doc.addImage(dataUrl, 'PNG', 0, 0, 297, 210);
-                        doc.save('Схема.pdf');
-                    });
-            }} />
-            <input type="button" value="Сохранить как изображение" onClick={() => {
-                html2image.toPng(sheetRef.current as HTMLDivElement)
-                    .then(function (dataUrl) {
-                        download(dataUrl, 'Схема.png');
-                    });
-            }} />
-            <input type="button" value="Закрыть" onClick={() => closeDialog()} />
-        </div>
+
     </dialog>
 }

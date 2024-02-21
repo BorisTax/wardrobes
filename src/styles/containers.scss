@@ -1,3 +1,5 @@
+@import "./App.scss";
+
 .header {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -42,21 +44,12 @@
   width: auto;
 }
 .fasad-section {
-  position: relative;
+  background-image: url($icon-url+'noimage.png');
 }
 .fasad-section:hover {
   box-shadow: inset 0px 0px 10px green;
 }
-.fasad-section::before { 
-  content: "Нет изображения"; 
-  position: absolute; 
-  top: 0; 
-  left: 0; 
-  width: 100%; 
-  height: 100%; 
-  background: rgba(255, 255, 255, 0.5); 
-  /* Additional styling for the visually hidden text */ 
-} 
+
 .fasad-schema-section {
   border: 1px solid black;
   box-sizing: border-box;

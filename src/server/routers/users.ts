@@ -16,6 +16,13 @@ router.get("/hash", async (req, res) => {
   res.json(result);
 });
 
+router.get("/verify", async (req: MyRequest, res) => {
+  const userService = new UserService(userServiceProvider)
+  const tokens = await userService.getTokens();
+  const result = (tokens.data as Token[]).find((t: Token) => t.token === req.query.token)
+  res.json({ success: !!result });
+});
+
 router.post("/login", async (req, res) => {
   const user = req.body;
   if (!user.name) user.name = "";
@@ -31,6 +38,14 @@ router.post("/logout", async (req, res) => {
   const userService = new UserService(userServiceProvider)
   userService.deleteToken(user.token)
   res.json({ success: true });
+});
+
+router.post("/logoutuser", async (req: MyRequest, res) => {
+  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const user = req.body;
+  const userService = new UserService(userServiceProvider)
+  const result = userService.deleteToken(user.usertoken)
+  res.json(result);
 });
 
 router.post("/active", async (req: MyRequest, res) => {

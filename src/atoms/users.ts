@@ -1,6 +1,6 @@
 import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
-import { fetchData } from "../functions/fetch"
+import { fetchData, fetchGetData } from "../functions/fetch"
 import { UserRoles } from "../types/server"
 import { isClientAtLeast } from "../functions/user"
 import { loadPriceListAtom } from "./prices"
@@ -19,8 +19,15 @@ export type UserState = {
     token: string
 }
 
-export const userAtom = atom<UserState>(getInitialUser())
-export const setUserAtom = atom(null, (get: Getter, set: Setter, token: string) => {
+export const userAtom = atom<UserState>({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: string, verify = false) => {
+    if (verify) {
+        const result = await fetchGetData(`api/users/verify?token=${token}`)
+        if(!result.success){
+            set(userAtom, { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+            return
+        }
+    }
     let storeUser: UserState
     try {
         const { name, role } = jwtDecode(token) as UserState

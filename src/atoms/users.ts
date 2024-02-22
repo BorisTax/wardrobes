@@ -19,6 +19,23 @@ export type UserState = {
     token: string
 }
 
+export const allUsersAtom = atom<UserState[]>([])
+export const activeUsersAtom = atom<UserState[]>([])
+export const loadUsersAtom = atom(null, async (get,set)=>{
+    const {token} = get(userAtom)
+    const result = await fetchGetData(`api/users/users?token=${token}`)
+    if(result.success){
+        set(allUsersAtom, result.data)
+    }
+})
+export const loadActiveUsersAtom = atom(null, async (get,set)=>{
+    const {token} = get(userAtom)
+    const result = await fetchGetData(`api/users/active?token=${token}`)
+    if(result.success){
+        set(allUsersAtom, result.data)
+    }
+})
+
 export const userAtom = atom<UserState>({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
 export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: string, verify = false) => {
     if (verify) {
@@ -39,7 +56,7 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
     if (isClientAtLeast(storeUser.role)) set(loadPriceListAtom)
     set(userAtom, storeUser)
 })
-export const logoutUserAtom = atom(null, async (get: Getter, set: Setter) => {
+export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")
     const user = get(userAtom)
     try {
@@ -47,11 +64,17 @@ export const logoutUserAtom = atom(null, async (get: Getter, set: Setter) => {
     } catch (e) { console.error(e) }
     set(userAtom, getInitialUser())
 })
+export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, usertoken:string) => {
+    const user = get(userAtom)
+    try {
+        await fetchData('api/users/logoutUser', "POST", JSON.stringify({ token: user.token, usertoken }))
+        set(loadActiveUsersAtom)
+    } catch (e) { console.error(e) }
 
-export const testAtom = atom("")
-export const setTestAtom = atom(null, (get: Getter, set: Setter, message: string) => {
-    set(testAtom, message)
 })
+
+
+
 
 export function getInitialUser(): UserState {
     const token = localStorage.getItem("token") || ""

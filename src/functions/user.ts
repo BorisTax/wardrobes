@@ -14,8 +14,10 @@ export function isSuperAdminAtLeast(role: UserRoles): boolean {
     return role === UserRoles.SUPERADMIN
 }
 
-export async function waitForMessageFromServer(onMessage: (message: string) => void) {
+export async function waitForMessageFromServer(onMessage: (message: string) => boolean) {
     const result: FetchResult = await fetchGetData(`api/users/events`)
-    if (result.success) onMessage(result.data as string)
+    if (result.success) {
+        if(onMessage(result.data as string)) return
+    }
     await waitForMessageFromServer(onMessage)
 }

@@ -35,6 +35,7 @@ export const showSchemaDialogAtom = atom(null, (get, set) => {
     dialogRef?.current?.showModal()
     set(rerenderDialogAtom, Math.random())
 })
+export const editUsersDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 const messageAtom = atom<MessageAtom>({ dialogRef: null, message: "" })
 export const messageDialogAtom = atom((get) => get(messageAtom), (get, set, message: string) => {
     const state = get(messageAtom)

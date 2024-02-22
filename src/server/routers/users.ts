@@ -57,7 +57,7 @@ router.post("/logoutuser", async (req: MyRequest, res) => {
   res.json(result);
 });
 
-router.post("/active", async (req: MyRequest, res) => {
+router.get("/active", async (req: MyRequest, res) => {
   if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const result: ActiveUser[] = []
@@ -85,7 +85,7 @@ router.post("/register", async (req: MyRequest, res) => {
   res.json(result);
 });
 
-router.post("/all", async (req: MyRequest, res) => {
+router.get("/users", async (req: MyRequest, res) => {
   if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   let result = await userService.getUsers()

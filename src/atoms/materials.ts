@@ -1,6 +1,6 @@
 import { atom, useAtom } from "jotai";
 import { ExtMaterial } from "../types/materials";
-import { fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
+import { FetchResult, fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { getMaterialList } from "../functions/materials";
 import { appDataAtom } from "./app";
@@ -13,8 +13,9 @@ export const materialListAtom = atom(new Map())
 
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
     try {
-        const data = await fetchGetData('api/materials/materials')
-        const mList = getMaterialList(data)
+        const { success, data }: FetchResult = await fetchGetData('api/materials/materials')
+        if (!success) return
+        const mList = getMaterialList(data as ExtMaterial[])
         set(materialListAtom, mList)
         const { rootFasades } = get(appDataAtom)
         const material = [...mList.keys()][0] as FasadMaterial

@@ -1,7 +1,24 @@
 import { Results, Token, User } from '../../types/server.js'
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
+import { userServiceProvider } from '../options.js'
 
+export const activeTokens: { tokenList: Token[] } = { tokenList: [] }
+export async function getTokens(): Promise<Token[]> {
+  const userService = new UserService(userServiceProvider);
+  const result = await userService.getTokens()
+  if (result.success) return result.data as Token[]
+  return []
+}
+
+const expiredInterval = 3600 * 24 * 1000
+const clearExpiredTokens = () => {
+  const userService = new UserService(userServiceProvider);
+  activeTokens.tokenList.forEach((t: Token) => {
+    if (Date.now() - t.time > expiredInterval) userService.deleteToken(t.token)
+  })
+}
+setInterval(clearExpiredTokens, 60000)
 
 export class UserService implements IUserService {
   provider: IUserServiceProvider
@@ -25,13 +42,20 @@ export class UserService implements IUserService {
     return await this.provider.getTokens()
   }
   async addToken({ token, userName }: { token: string, userName: string }) {
-    return await this.provider.addToken({ token, userName })
+    const time = Date.now()
+    const result = await this.provider.addToken({ token, userName, time })
+    if (result.success) activeTokens.tokenList.push({ token, username: userName, time })
+    return result
   }
   async deleteToken(token: string) {
-    return await this.provider.deleteToken(token)
+    const result = await this.provider.deleteToken(token)
+    if (result.success) activeTokens.tokenList = activeTokens.tokenList.filter(t => t.token !== token)
+    return result
   }
   async clearAllTokens() {
-    return await this.provider.clearAllTokens()
+    const result = await this.provider.clearAllTokens()
+    if (result.success) activeTokens.tokenList = []
+    return result
   }
   async registerUser(user: User) {
     let result = await this.isUserNameExist(user.name)
@@ -48,5 +72,7 @@ export class UserService implements IUserService {
     return { success: true, status: 200, message: messages.USER_NAME_ALLOWED }
   }
 }
+
+getTokens().then(r => activeTokens.tokenList = r)
 
 

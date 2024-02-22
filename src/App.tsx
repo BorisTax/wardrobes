@@ -10,11 +10,11 @@ import PropertiesBar from './components/PropertiesBar'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/LoginDialog'
 import WardrobePropertiesBar from './components/WardrobePropertiesBar'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { setActiveFasadAtom } from './atoms/fasades'
 import { loadMaterialListAtom } from './atoms/materials'
 import EditMaterialDialog from './components/EditMaterialDialog'
-import { userAtom } from './atoms/users'
+import {  userAtom } from './atoms/users'
 import MessageDialog from './components/MessageDialog'
 import ConfirmDialog from './components/ConfirmDialog'
 import { loadProfileListAtom } from './atoms/profiles'
@@ -22,25 +22,19 @@ import RootFasadesContainer from './components/RootFasadesContainer'
 import EditProfileDialog from './components/EditProfileDialog'
 import EditPriceDialog from './components/EditPriceDialog'
 import SpecificationDialog from './components/SpecificationDialog'
-import { isAdminAtLeast, isClientAtLeast } from './functions/user'
+import { isAdminAtLeast, isClientAtLeast} from './functions/user'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom } from './atoms/app'
-import { loadPriceListAtom } from './atoms/prices'
 import SchemaDialog from './components/SchemaDialog'
 
 function App() {
-  const { role } = useAtomValue(userAtom)
+  const user = useAtomValue(userAtom)
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
   const setAppData = useSetAtom(appDataAtom)
-  const [user] = useAtom(userAtom)
-  const loadPriceList = useSetAtom(loadPriceListAtom)
-  useEffect(() => {
-    if (isClientAtLeast(role)) loadPriceList()
-  }, [role])
-  useEffect(() => {
+    useEffect(() => {
     const storage = localStorage.getItem('appState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
     setAppData(getAppDataFromState(appState), false)

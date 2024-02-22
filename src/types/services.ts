@@ -3,7 +3,7 @@ import { PriceListItem, Results, User } from "./server"
 interface IUserAbstractService {
     getUsers: () => Promise<Results>
     getTokens: () => Promise<Results>
-    addToken: ({ token, userName }: { token: string, userName: string }) => Promise<Results>
+    addToken: ({ token, userName, time }: { token: string, userName: string, time: number }) => Promise<Results>
     deleteToken: (token: string) => Promise<Results>
     clearAllTokens: () => Promise<Results>
     registerUser: (user: User) => Promise<Results>

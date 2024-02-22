@@ -18,22 +18,6 @@ export const userServiceProvider = new UserServiceSQLite(usersPath)
 export const materialServiceProvider = new MaterialServiceSQLite(databasePath)
 export const priceServiceProvider = new PriceServiceSQLite(pricePath)
 
-const expiredInterval = 3600 * 24 * 1000
-const clearExpiredTokens = () => {
-  const userService = new UserService(userServiceProvider)
-  const tokens = userService.getTokens()
-  tokens.then((tokenList: Results) => {
-    if (!tokenList.success) {
-      console.error(tokenList)
-      return
-    }
-    (tokenList.data as Token[]).forEach((t: Token) => {
-      if (Date.now() - t.time > expiredInterval) userService.deleteToken(t.token)
-    })
-  })
-}
-setInterval(clearExpiredTokens, 60000)
-
 export const userRoleParser = async (req: MyRequest, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)
   let token = req.query.token as string
@@ -44,8 +28,6 @@ export const userRoleParser = async (req: MyRequest, res: Response, next: NextFu
   }
   next()
 }
-
-
 
 function readFile(file: string) {
   return new Promise((resolve, reject) => {

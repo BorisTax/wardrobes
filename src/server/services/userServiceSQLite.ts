@@ -14,8 +14,8 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     async getTokens(): Promise<Results> {
         return dataBaseQuery(this.dbFile, "select * from 'tokens'", {successStatusCode: 200})
     }
-    async addToken({ token, userName }: { token: string, userName: string }): Promise<Results> {
-        const time = Date.now()
+    async addToken({ token, userName, time }: { token: string, userName: string, time: number }): Promise<Results> {
+        
         return dataBaseQuery(this.dbFile, `INSERT INTO tokens (token, username, time) VALUES('${token}', '${userName}', ${time})`, {successStatusCode: 201})
     }
 

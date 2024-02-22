@@ -1,5 +1,17 @@
+export type FetchResult = {
+    success?: boolean
+    status?: number
+    data?: object | string
+}
 export async function fetchGetData(url: string) {
-    return fetch(url, { method: "GET" }).then(r => r.json())
+    try {
+        let status: number
+        const result = await fetch(url, { method: "GET" }).then(r => { status = r.status; return r.json() })
+        if (result.success) return result
+        return { success: false }
+    } catch (e) {
+        return { success: false }
+    }
 }
 export async function fetchData(url: string, method: string, body: string) {
     return fetch(url, { method, headers: { "Content-Type": "application/json" }, body }).then(r => r.json())

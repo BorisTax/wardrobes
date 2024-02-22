@@ -18,7 +18,7 @@ export default router
 router.get("/profiles", async (req, res) => {
   const result = await getProfiles();
   if (!result.success) return res.json(result)
-  res.json(result.data);
+  res.status(result.status).json(result);
 });
 router.delete("/profile", async (req: MyRequest, res) => {
   if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
@@ -26,7 +26,7 @@ router.delete("/profile", async (req: MyRequest, res) => {
   let result
   result = await deleteProfile(name, type);
   const status = result.success ? 200 : 404
-  res.status(status).json(result);
+  res.status(status).json(result);  
 });
 
 router.post("/profile", async (req: MyRequest, res) => {
@@ -48,7 +48,7 @@ router.put("/profile", async (req: MyRequest, res) => {
 router.get("/materials", async (req, res) => {
   const result = await getExtMaterials();
   if (!result.success) return res.sendStatus(result.status)
-  res.status(result.status).json(result.data);
+  res.status(result.status).json(result);
 });
 
 router.delete("/material", async (req: MyRequest, res) => {
@@ -70,7 +70,7 @@ router.post("/material", async (req: MyRequest, res) => {
   const result = await addExtMaterial({ name, material, image: imageurl, code });
   res.sendStatus(result.status)
 });
- 
+
 router.put("/material", async (req: MyRequest, res) => {
   if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, material, newName, code } = req.body

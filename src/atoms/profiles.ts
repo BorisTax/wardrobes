@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { Profile } from "../types/materials";
-import { fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
+import { FetchResult, fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { TableFields } from "../types/server";
 import { AtomCallbackResult } from "../types/atoms";
@@ -10,12 +10,12 @@ export const activeProfileIndexAtom = atom(0)
 
 export const loadProfileListAtom = atom(null, async (get, set) => {
     try {
-        const data = await fetchGetData('api/materials/profiles')
-        set(profileListAtom, data)
+        const { success, data }: FetchResult = await fetchGetData('api/materials/profiles')
+        if(success) set(profileListAtom, data as Profile[]);
     } catch (e) { console.error(e) }
 })
 
-export const deleteProfileAtom = atom(null, async (get, set, profile: Profile, callback:AtomCallbackResult) => {
+export const deleteProfileAtom = atom(null, async (get, set, profile: Profile, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     try {
         const result = await fetchData("api/materials/profile", "DELETE", JSON.stringify({ name: profile.name, type: profile.type, token: user.token }))

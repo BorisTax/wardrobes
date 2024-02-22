@@ -1,4 +1,5 @@
 import { UserRoles } from "../types/server.js";
+import { FetchResult, fetchGetData } from "./fetch.js";
 
 export function isClientAtLeast(role: UserRoles): boolean {
     return isManagerAtLeast(role) || role === UserRoles.CLIENT
@@ -11,4 +12,10 @@ export function isAdminAtLeast(role: UserRoles): boolean {
 }
 export function isSuperAdminAtLeast(role: UserRoles): boolean {
     return role === UserRoles.SUPERADMIN
+}
+
+export async function waitForMessageFromServer(onMessage: (message: string) => void) {
+    const result: FetchResult = await fetchGetData(`api/users/events`)
+    if (result.success) onMessage(result.data as string)
+    await waitForMessageFromServer(onMessage)
 }

@@ -2,6 +2,7 @@ import { Getter, Setter, atom } from "jotai";
 import React from "react";
 import { calculateSpecificationsAtom } from "./specification";
 import { loadPriceListAtom } from "./prices";
+import { loadActiveUsersAtom, loadUsersAtom } from "./users";
 
 type MessageAtom = {
     dialogRef: React.RefObject<HTMLDialogElement> | null
@@ -36,6 +37,14 @@ export const showSchemaDialogAtom = atom(null, (get, set) => {
     set(rerenderDialogAtom, Math.random())
 })
 export const editUsersDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const showEditUsersDialogAtom = atom(null, (get, set) => {
+    const dialogRef = get(editUsersDialogAtom)
+    set(loadUsersAtom)
+    set(loadActiveUsersAtom)
+    dialogRef?.current?.showModal()
+})
+
+
 const messageAtom = atom<MessageAtom>({ dialogRef: null, message: "" })
 export const messageDialogAtom = atom((get) => get(messageAtom), (get, set, message: string) => {
     const state = get(messageAtom)

@@ -22,23 +22,26 @@ export default function User() {
         showConfirm("Завершить сеанс пользователя?", () => { logout() })
     }
     }>Выход</button>
-    useEffect(() => {
-      if (isClientAtLeast(user.role)) loadPriceList()
-      if (user.role !== UserRoles.ANONYM) waitForMessageFromServer((token) => {
-        if (token === user.token) {
-          setUserDirectly({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
-          showMessage("Сеанс завершен администратором")
-          return true
-        }
-        return false
-      })
-      }, [user.role])
+    // useEffect(() => {
+    //   if (isClientAtLeast(user.role)) loadPriceList()
+    //   if (user.role !== UserRoles.ANONYM) waitForMessageFromServer((token) => {
+    //     if (token === user.token) {
+    //       setUserDirectly({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+    //       showMessage("Сеанс завершен администратором")
+    //       return true
+    //     }
+    //     return false
+    //   })
+    //   }, [user.role])
     useEffect(() => {
       const { token } = getInitialUser();
       setUser(token, true);
     }, []);
     return <div className="user">
-        <span>{role}</span>
+        <div className="d-flex flex-column align-items-center p-0">
+            <div>{user.name}</div>
+            <div>{role}</div>
+        </div>
         {user.role === UserRoles.ANONYM ? loginButton : logoutButton}
     </div>
 }

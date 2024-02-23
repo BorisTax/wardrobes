@@ -1,9 +1,11 @@
 @import "./App.scss";
 
 .header {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
   padding: 0.2rem;
+  height: auto;
   background: linear-gradient(45deg, #88dffa, #96e0f3);
 }
 
@@ -22,12 +24,15 @@
 }
 
 .file-buttons-bar {
-  justify-self: start;
   display: flex;
+  align-self: center;
   align-items: center;
+  flex-wrap: wrap;
+  height: 100%;
   margin-left: 1rem;
   gap: 0.5rem;
 }
+
 .main-container {
  padding: 0.5rem;
 }
@@ -63,7 +68,19 @@
   box-sizing: border-box;
   
 }
+
+.users-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+
+}
+.activeusers-list{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
 @media (orientation: landscape) {
+  
   .main-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -94,6 +111,7 @@
 }
 
 @media (orientation: portrait) {
+  
   .main-container {
     display: flex;
     width: 100%;

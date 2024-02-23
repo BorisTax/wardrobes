@@ -54,10 +54,10 @@ export function hashData(data: string) {
     });
 }
 
-export function incorrectData(message: string) {
+export function incorrectData(message: string): Results {
     return { success: false, status: 400, message }
 }
-export function noExistData(message: string) {
+export function noExistData(message: string): Results {
     return { success: false, status: 404, message }
 }
 export function accessDenied(res: Response) {

@@ -22,11 +22,13 @@ import RootFasadesContainer from './components/RootFasadesContainer'
 import EditProfileDialog from './components/EditProfileDialog'
 import EditPriceDialog from './components/EditPriceDialog'
 import SpecificationDialog from './components/SpecificationDialog'
-import { isAdminAtLeast, isClientAtLeast} from './functions/user'
+import { isAdminAtLeast, isClientAtLeast, isSuperAdminAtLeast} from './functions/user'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom } from './atoms/app'
 import SchemaDialog from './components/SchemaDialog'
+import EditUsersDialog from './components/EditUsersDialog'
+import EventListener from './components/EventListener'
 
 function App() {
   const user = useAtomValue(userAtom)
@@ -67,8 +69,10 @@ function App() {
       {isAdminAtLeast(user.role) ? <EditPriceDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SpecificationDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SchemaDialog /> : <></>}
+      {isSuperAdminAtLeast(user.role) ? <EditUsersDialog /> : <></>}
       <MessageDialog />
       <ConfirmDialog />
+      <EventListener />
     </>
   )
 }

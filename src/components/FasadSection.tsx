@@ -41,6 +41,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         styles = {
             ...styles,
             display: "flex",
+            border: "1px solid black",
             overflow: "hidden",
             flexShrink: "0",
             justifyContent: "center",
@@ -66,13 +67,13 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         image.src = imageSrc
         if (fasadRef.current) fasadRef.current.style.backgroundImage = backgroundBackupImage
         image.onload = () => {
-            if (fasadRef.current) fasadRef.current.style.backgroundImage = backImage
+            if (fasadRef.current && onlyFasad) fasadRef.current.style.backgroundImage = backImage
         }
-    }, [imagesSrcUrl, imageUrl])
+    }, [imagesSrcUrl, imageUrl, onlyFasad])
     return <div ref={onlyFasad ? fasadRef : nullRef} className={classes} style={{
         display: "grid",
         ...gridTemplate,
-        gap: "2px",
+        gap: "1px",
         ...styles,
     }}
         {...events}>

@@ -4,10 +4,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService, getTokens } from '../services/userService.js';
 import { accessDenied, hashData, incorrectData } from '../functions.js';
-import { ActiveUser, MyRequest, Results, Token, User, UserRoles } from '../../types/server.js';
+import { ActiveUser, MyRequest, Result, Results, Token, User, UserRoles } from '../../types/server.js';
 import { JWT_SECRET, userServiceProvider } from '../options.js';
 import { isSuperAdminAtLeast } from '../../functions/user.js';
 import EventEmitter from 'events';
+import { SERVER_EVENTS } from '../../types/enums.js';
 
 const router = express.Router();
 export default router
@@ -19,8 +20,10 @@ router.get("/hash", async (req, res) => {
 });
 
 router.get("/events", async (req: MyRequest, res) => {
-  events.on('logout', (token) => {
-    res.status(200).json({ success: true, data: token })
+  events.on("message", (message: SERVER_EVENTS, data: string) => {
+    try{
+      if (!res.headersSent) res.status(200).json({ success: true, message, data })
+    } catch (e) { console.error(e)}
   })
 });
 
@@ -38,14 +41,16 @@ router.post("/login", async (req, res) => {
   const userService = new UserService(userServiceProvider)
   const result = await loginUser(user);
   if (result.success) userService.addToken({ token: result.data as string, userName: user.name })
+  if (result.success) events.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   res.json(result);
 });
 
 router.post("/logout", async (req, res) => {
   const user = req.body;
   const userService = new UserService(userServiceProvider)
-  userService.deleteToken(user.token)
-  res.json({ success: true });
+  const result = await userService.deleteToken(user.token)
+  if (result.success) events.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS)
+  res.json(result);
 });
 
 router.post("/logoutuser", async (req: MyRequest, res) => {
@@ -53,27 +58,28 @@ router.post("/logoutuser", async (req: MyRequest, res) => {
   const user = req.body;
   const userService = new UserService(userServiceProvider)
   const result = await userService.deleteToken(user.usertoken)
-  if (result.success) events.emit('logout', user.usertoken)
+  if (result.success) events.emit('message', SERVER_EVENTS.LOGOUT, user.usertoken)
   res.json(result);
 });
 
 router.get("/active", async (req: MyRequest, res) => {
   if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const result: ActiveUser[] = []
+  const result: Result<ActiveUser[]> = { success: true, status: 200, data: [] }
   const tokens = await getTokens();
   const users = await userService.getUsers();
   tokens.forEach((t: Token) => {
     const user = (users.data as User[]).find((u: User) => u.name === t.username)
-    if (user) result.push({ token: t.token, name: user.name, role: user.role, time: t.time })
+    if (user) result.data?.push({ token: t.token, name: user.name, role: user.role, time: t.time })
   })
-  res.json(result);
+  res.status(result.status).json(result);
 });
 
 router.post("/logoutall", async (req: MyRequest, res) => {
   if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   userService.clearAllTokens()
+  events.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   res.json({ success: true });
 });
 
@@ -89,9 +95,7 @@ router.get("/users", async (req: MyRequest, res) => {
   if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   let result = await userService.getUsers()
-  if (!result.success) return res.json(result)
-  const users = result.data
-  res.json((users as User[]).map(u => ({ name: u.name, role: u.role })));
+  res.status(result.status).json(result)
 });
 
 async function loginUser(user: User): Promise<Results> {

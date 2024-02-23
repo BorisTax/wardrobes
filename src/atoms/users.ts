@@ -18,9 +18,12 @@ export type UserState = {
     role: UserRoles
     token: string
 }
+export type ActiveUserState = UserState & {
+    time: number
+}
 
 export const allUsersAtom = atom<UserState[]>([])
-export const activeUsersAtom = atom<UserState[]>([])
+export const activeUsersAtom = atom<ActiveUserState[]>([])
 export const loadUsersAtom = atom(null, async (get,set)=>{
     const {token} = get(userAtom)
     const result = await fetchGetData(`api/users/users?token=${token}`)
@@ -28,11 +31,11 @@ export const loadUsersAtom = atom(null, async (get,set)=>{
         set(allUsersAtom, result.data)
     }
 })
-export const loadActiveUsersAtom = atom(null, async (get,set)=>{
+export const loadActiveUsersAtom = atom(null, async (get, set) => {
     const {token} = get(userAtom)
     const result = await fetchGetData(`api/users/active?token=${token}`)
     if(result.success){
-        set(allUsersAtom, result.data)
+        set(activeUsersAtom, result.data)
     }
 })
 

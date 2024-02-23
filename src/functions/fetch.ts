@@ -1,6 +1,7 @@
 export type FetchResult = {
     success?: boolean
     status?: number
+    message?: string
     data?: object | string
 }
 export async function fetchGetData(url: string) {

@@ -1,5 +1,10 @@
 @import "./App.scss";
 
+.user-logout-button:hover{
+  color: blue;
+  cursor: pointer;
+}
+
 .button {
   display: inline-block;
   position: relative;
@@ -36,19 +41,13 @@
   background-color: aquamarine;
 }
 
-.horizontal-separator {
-  position: relative;
-  bottom: 1px;
-  margin: 0;
-  width: 1px;
-  border: inset;
-}
 
-.vertical-separator {
-  height: 100%;
+
+.separator {
+  align-self: stretch;
   width: 1px;
   box-sizing: border-box;
-  border: inset;
+  border: 1px solid black;
 }
 
 @mixin fixed {
@@ -140,6 +139,11 @@ $header_button_height: 32px;
   @include instruments_button();
 }
 
+.menu {
+  background-image: url($icon-url+'menu.png');
+  @include header_button();
+}
+
 .editMaterials {
   background-image: url($icon-url+'editMaterials.png');
   @include header_button();
@@ -162,6 +166,11 @@ $header_button_height: 32px;
 
 .schemaButton {
   background-image: url($icon-url+'schema.png');
+  @include header_button();
+}
+
+.userlistButton {
+  background-image: url($icon-url+'editUsers.png');
   @include header_button();
 }
 

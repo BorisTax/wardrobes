@@ -1,16 +1,34 @@
-import { useEffect, useRef } from "react"
-import { useAtom, useSetAtom } from "jotai"
+import { useEffect, useRef, useState } from "react"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { editUsersDialogAtom } from "../atoms/dialogs"
 import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
 import ImageButton from "./ImageButton"
+import { UserRolesCaptions, activeUsersAtom, allUsersAtom, logoutUserAtom, userAtom } from "../atoms/users"
+import { dateToString, timeToString } from "../functions/user"
 
 export default function EditUsersDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const closeDialog = () => { dialogRef.current?.close() }
     const setEditUsersDialogRef = useSetAtom(editUsersDialogAtom)
+    const { token } = useAtomValue(userAtom)
+    const users = useAtomValue(allUsersAtom)
+    const activeUsers = useAtomValue(activeUsersAtom)
+    const logoutUser = useSetAtom(logoutUserAtom)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
+    const userListHeader = <><div className="text-center">Имя</div><div className="text-center">Права</div><div></div></>
+    const activeUserListHeader = <><div className="text-center">Имя</div><div className="text-center">Права</div><div className="text-center">Время</div><div></div></>
+    const userlist = users.map(u => <><div>{u.name}</div><div>{UserRolesCaptions[u.role]}</div><div>{}</div></>)
+    const activeuserlist = activeUsers.map(u => {
+        const you = u.token === token
+        return <><div>{u.name}</div>
+        <div>{UserRolesCaptions[u.role]}</div>
+        <TimeField time={u.time}/>
+        <div className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>
+        </>
+    }
+        )
     useEffect(() => {
         setEditUsersDialogRef(dialogRef)
     }, [setEditUsersDialogRef, dialogRef])
@@ -22,8 +40,26 @@ export default function EditUsersDialog() {
             <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
         </div>
         <hr/>
-    
+        <div className="users-list">
+            {userListHeader}
+            {userlist}
+        </div>
+        <hr/>
+        <div>Активные пользователи</div>
+        <div className="activeusers-list">
+            {activeUserListHeader}
+            {activeuserlist}
+        </div>
     </dialog>
+}
+
+function TimeField({ time }: { time: number }) {
+    const [, rerender] = useState(0)
+    useEffect(() => {
+        const timeout = setTimeout(() => rerender(Math.random()))
+        return () => clearTimeout(timeout)
+    })
+    return <div className="text-center">{timeToString(Date.now() - time)}</div>
 }
 
 function checkFields({ nameChecked = true, codeChecked = true, newName, newCode }: { nameChecked?: boolean, codeChecked?: boolean, newName: string, newCode: string }, showMessage: (message: string) => void) {

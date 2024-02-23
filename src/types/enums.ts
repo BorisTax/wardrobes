@@ -44,4 +44,9 @@ export enum SpecificationItem {
     Karton = "Karton",
     Skotch = "Skotch"
 }
-["DSP", "Mirror", "Arakal", "Hydro", "Lacobel", "Ritrama", "Armirovka", "FMPPaper", "FMPGlass", "Paint", "EVA", "Uplot", "UplotSoed", "ProfileSoedStandart", "ProfileVertStandart", "ProfileHorTopStandart", "ProfileHorBottomStandart", "ProfileSoedBavaria", "ProfileVertBavaria", "ProfileHorTopBavaria", "ProfileHorBottomBavaria", "Streich", "Roliki", "RolikiBavaria", "Karton", "Skotch"]
+
+
+export enum SERVER_EVENTS {
+    LOGOUT = "LOGOUT",
+    UPDATE_ACTIVE_USERS = "UPDATE_ACTIVE_USERS"
+}

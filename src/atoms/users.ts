@@ -52,10 +52,10 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
     try {
         const { name, role } = jwtDecode(token) as UserState
         storeUser = { name, role, token }
-        localStorage.setItem('token', token)
     } catch (e) {
         storeUser = { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" }
     }
+    localStorage.setItem('token', storeUser.token)
     if (isClientAtLeast(storeUser.role)) set(loadPriceListAtom)
     set(userAtom, storeUser)
 })

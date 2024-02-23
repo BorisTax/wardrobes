@@ -1,9 +1,12 @@
+import EventEmitter from 'events'
 import { Results, Token, User } from '../../types/server.js'
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
+import { SERVER_EVENTS } from '../../types/enums.js'
 
 export const activeTokens: { tokenList: Token[] } = { tokenList: [] }
+export const events: Map<string, EventEmitter> = new Map()
 export async function getTokens(): Promise<Token[]> {
   const userService = new UserService(userServiceProvider);
   const result = await userService.getTokens()
@@ -49,7 +52,11 @@ export class UserService implements IUserService {
   }
   async deleteToken(token: string) {
     const result = await this.provider.deleteToken(token)
-    if (result.success) activeTokens.tokenList = activeTokens.tokenList.filter(t => t.token !== token)
+    if (result.success) {
+      activeTokens.tokenList = activeTokens.tokenList.filter(t => t.token !== token)
+      events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.LOGOUT, token))
+      events.delete(token)
+    }
     return result
   }
   async clearAllTokens() {

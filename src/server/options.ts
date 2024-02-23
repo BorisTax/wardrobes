@@ -22,6 +22,7 @@ export const userRoleParser = async (req: MyRequest, res: Response, next: NextFu
   const userService = new UserService(userServiceProvider)
   let token = req.query.token as string
   token = (req.body as RequestBody).token || token || ""
+  req.token = token
   const user = await userService.getUser(token)
   if (user) {
     req.userRole = user.role

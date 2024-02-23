@@ -13,6 +13,7 @@ export type RequestBody = {
 export interface MyRequest extends Request {
     userRole?: string
     files?: { image: { path: string } }
+    token?: string
 }
 export type User = {
     name: string

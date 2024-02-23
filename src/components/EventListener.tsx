@@ -11,7 +11,7 @@ export default function EventListener() {
     const loadActiveUsers = useSetAtom(loadActiveUsersAtom)
     const showMessage = useMessage()
     useEffect(() => {
-      if (user.role !== UserRoles.ANONYM) waitForMessageFromServer((message, data) => {
+      if (user.role !== UserRoles.ANONYM) waitForMessageFromServer(user.token, (message, data) => {
         switch(message){
           case SERVER_EVENTS.LOGOUT:
             if (data === user.token) {

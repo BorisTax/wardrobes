@@ -14,12 +14,12 @@ export function isSuperAdminAtLeast(role: UserRoles): boolean {
     return role === UserRoles.SUPERADMIN
 }
 
-export async function waitForMessageFromServer(onMessage: (message: string, data: string) => boolean) {
-    const result: FetchResult = await fetchGetData(`api/users/events`)
+export async function waitForMessageFromServer(token:string, onMessage: (message: string, data: string) => boolean) {
+    const result: FetchResult = await fetchGetData(`api/users/events?token=${token}`)
     if (result.success) {
         if (onMessage(result.message as string, result.data as string)) return
     }
-    await waitForMessageFromServer(onMessage)
+    await waitForMessageFromServer(token, onMessage)
 }
 
 export function timeToString(time: number): string{

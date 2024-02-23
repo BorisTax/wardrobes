@@ -20,6 +20,7 @@ router.get("/hash", async (req, res) => {
 });
 
 router.get("/events", async (req: MyRequest, res) => {
+  events.removeAllListeners("message")
   events.on("message", (message: SERVER_EVENTS, data: string) => {
     try{
       if (!res.headersSent) res.status(200).json({ success: true, message, data })

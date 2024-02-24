@@ -7,11 +7,11 @@ export function isClientAtLeast(role: UserRoles): boolean {
 export function isManagerAtLeast(role: UserRoles): boolean {
     return isAdminAtLeast(role) || role === UserRoles.MANAGER
 }
-export function isAdminAtLeast(role: UserRoles): boolean {
-    return isSuperAdminAtLeast(role) || role === UserRoles.ADMIN
+export function isEditorAtLeast(role: UserRoles): boolean {
+    return isAdminAtLeast(role) || role === UserRoles.EDITOR
 }
-export function isSuperAdminAtLeast(role: UserRoles): boolean {
-    return role === UserRoles.SUPERADMIN
+export function isAdminAtLeast(role: UserRoles): boolean {
+    return role === UserRoles.ADMIN
 }
 
 export async function waitForMessageFromServer(token:string, onMessage: (message: string, data: string) => boolean) {

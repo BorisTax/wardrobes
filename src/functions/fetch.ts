@@ -4,18 +4,23 @@ export type FetchResult = {
     message?: string
     data?: object | string
 }
-export async function fetchGetData(url: string) {
+export async function fetchGetData(url: string): Promise<FetchResult> {
     try {
         let status: number
         const result = await fetch(url, { method: "GET" }).then(r => { status = r.status; return r.json() })
-        if (result.success) return result
-        return { success: false }
+        return result
     } catch (e) {
         return { success: false }
     }
 }
-export async function fetchData(url: string, method: string, body: string) {
-    return fetch(url, { method, headers: { "Content-Type": "application/json" }, body }).then(r => r.json())
+export async function fetchData(url: string, method: string, body: string): Promise<FetchResult> {
+    try {
+        let status: number
+        const result = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body }).then(r => { status = r.status; return r.json() })
+        return result
+    } catch (e) {
+        return { success: false }
+    }
 }
 export async function fetchFormData(url: string, method: string, body: FormData) {
     return fetch(url, { method, body }).then(r => r.json())

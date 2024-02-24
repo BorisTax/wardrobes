@@ -21,8 +21,8 @@ export type User = {
     password: string
 }
 export enum UserRoles {
-    SUPERADMIN = 'SUPERADMIN',
     ADMIN = 'ADMIN',
+    EDITOR = 'EDITOR',
     MANAGER = 'MANAGER',
     CLIENT = 'CLIENT',
     ANONYM = 'ANONYM'

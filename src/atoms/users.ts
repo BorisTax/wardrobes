@@ -4,13 +4,14 @@ import { fetchData, fetchGetData } from "../functions/fetch"
 import { UserRoles } from "../types/server"
 import { isClientAtLeast } from "../functions/user"
 import { loadPriceListAtom } from "./prices"
+import { AtomCallbackResult } from "../types/atoms"
 
 export const UserRolesCaptions = {
     [UserRoles.ANONYM]: "",
     [UserRoles.CLIENT]: "КЛИЕНТ",
     [UserRoles.MANAGER]: "МЕНЕДЖЕР",
+    [UserRoles.EDITOR]: "РЕДАКТОР",
     [UserRoles.ADMIN]: "АДМИН",
-    [UserRoles.SUPERADMIN]: "СУПЕРАДМИН",
 }
 
 export type UserState = {
@@ -28,14 +29,14 @@ export const loadUsersAtom = atom(null, async (get,set)=>{
     const {token} = get(userAtom)
     const result = await fetchGetData(`api/users/users?token=${token}`)
     if(result.success){
-        set(allUsersAtom, result.data)
+        set(allUsersAtom, result.data as UserState[])
     }
 })
 export const loadActiveUsersAtom = atom(null, async (get, set) => {
     const {token} = get(userAtom)
     const result = await fetchGetData(`api/users/active?token=${token}`)
     if(result.success){
-        set(activeUsersAtom, result.data)
+        set(activeUsersAtom, result.data as ActiveUserState[])
     }
 })
 
@@ -62,23 +63,30 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")
     const user = get(userAtom)
-    try {
-        fetchData('api/users/logout', "POST", JSON.stringify({ token: user.token }))
-    } catch (e) { console.error(e) }
+    fetchData('api/users/logout', "POST", JSON.stringify({ token: user.token }))
     set(userAtom, getInitialUser())
 })
-export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, usertoken:string) => {
+export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, usertoken: string) => {
     const user = get(userAtom)
-    try {
-        await fetchData('api/users/logoutUser', "POST", JSON.stringify({ token: user.token, usertoken }))
-        set(loadActiveUsersAtom)
-    } catch (e) { console.error(e) }
-
+    await fetchData('api/users/logoutUser', "POST", JSON.stringify({ token: user.token, usertoken }))
+    set(loadActiveUsersAtom)
 })
 
-
-
-
+export const createUserAtom = atom(null, async (get: Getter, set: Setter, { name, password, role }: { name: string, password: string, role: UserRoles }, callback: AtomCallbackResult) => {
+    const {token} = get(userAtom)
+    const result = await fetchData('api/users/add', "POST", JSON.stringify({ name, password, role, token }))
+    if (result.success) set(loadUsersAtom)
+    callback({ success: result.success as boolean, message: result.message  as string })
+})
+export const deleteUserAtom = atom(null, async (get: Getter, set: Setter, { name }: { name: string}, callback: AtomCallbackResult) => {
+    const {token} = get(userAtom)
+    const result = await fetchData('api/users/delete', "DELETE", JSON.stringify({ name, token }))
+    if (result.success) {
+        set(loadUsersAtom)
+        set(loadActiveUsersAtom)
+    }
+    callback({ success: result.success as boolean, message: result.message  as string })
+})
 export function getInitialUser(): UserState {
     const token = localStorage.getItem("token") || ""
     let storeUser: UserState

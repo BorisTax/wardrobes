@@ -28,8 +28,11 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     }
 
     async registerUser(user: User): Promise<Results> {
-        const hash = await hashData(user.password);
-        return dataBaseQuery(this.dbFile, `INSERT INTO users (name, role, password) VALUES('${user.name}', '${user.role}', '${hash}')`, {successStatusCode: 201, successMessage: messages.REG_SUCCEED})
+        const result = await hashData(user.password);
+        return dataBaseQuery(this.dbFile, `INSERT INTO users (name, role, password) VALUES('${user.name}', '${user.role}', '${result.data}')`, {successStatusCode: 201, successMessage: messages.USER_ADDED})
     }
 
+    async deleteUser(user: User): Promise<Results> {
+        return dataBaseQuery(this.dbFile, `DELETE FROM users where name='${user.name}';`, {successStatusCode: 200, successMessage: messages.USER_DELETED})
+    }
 }

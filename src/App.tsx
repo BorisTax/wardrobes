@@ -22,7 +22,7 @@ import RootFasadesContainer from './components/RootFasadesContainer'
 import EditProfileDialog from './components/EditProfileDialog'
 import EditPriceDialog from './components/EditPriceDialog'
 import SpecificationDialog from './components/SpecificationDialog'
-import { isAdminAtLeast, isClientAtLeast, isSuperAdminAtLeast} from './functions/user'
+import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast} from './functions/user'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom } from './atoms/app'
@@ -64,12 +64,12 @@ function App() {
         <RootFasadesContainer />
       </div>
       <LoginDialog />
-      {isAdminAtLeast(user.role) ? <EditMaterialDialog /> : <></>}
-      {isAdminAtLeast(user.role) ? <EditProfileDialog /> : <></>}
-      {isAdminAtLeast(user.role) ? <EditPriceDialog /> : <></>}
+      {isEditorAtLeast(user.role) ? <EditMaterialDialog /> : <></>}
+      {isEditorAtLeast(user.role) ? <EditProfileDialog /> : <></>}
+      {isEditorAtLeast(user.role) ? <EditPriceDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SpecificationDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SchemaDialog /> : <></>}
-      {isSuperAdminAtLeast(user.role) ? <EditUsersDialog /> : <></>}
+      {isAdminAtLeast(user.role) ? <EditUsersDialog /> : <></>}
       <MessageDialog />
       <ConfirmDialog />
       <EventListener />

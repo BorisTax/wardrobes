@@ -7,6 +7,7 @@ interface IUserAbstractService {
     deleteToken: (token: string) => Promise<Results>
     clearAllTokens: () => Promise<Results>
     registerUser: (user: User) => Promise<Results>
+    deleteUser: (user: User) => Promise<Results>
 }
 interface IMaterialAbstractService {
     getExtMaterials: () => Promise<Results>

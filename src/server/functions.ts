@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import sqlite3 from "sqlite3";
 import messages from './messages.js';
 import { Response } from "express"
-import { MyRequest, Results, UserRoles } from '../types/server.js';
+import { MyRequest, Result, Results, UserRoles } from '../types/server.js';
 
 export function dataBaseQuery(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Results> {
     return new Promise((resolve) => {
@@ -45,11 +45,11 @@ export const checkPermissions = (req: MyRequest, res: Response, roles: UserRoles
     return true
 }
 
-export function hashData(data: string) {
+export function hashData(data: string): Promise<Result<string>> {
     return new Promise((resolve) => {
         bcrypt.hash(data, 10, (err, hash) => {
-            if (err) resolve({ success: false, err });
-            else resolve({ success: true, data: hash });
+            if (err) resolve({ success: false, status: 500, error: err });
+            else resolve({ success: true, status: 200, data: hash });
         });
     });
 }

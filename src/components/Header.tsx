@@ -5,7 +5,7 @@ import ImageButton from "./ImageButton"
 import { editMaterialDialogAtom, editPriceDialogAtom, editProfileDialogAtom, showEditUsersDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom } from "../atoms/dialogs"
 import useConfirm from "../custom-hooks/useConfirm"
 import MenuSeparator from "./MenuSeparator"
-import { isAdminAtLeast, isClientAtLeast, isSuperAdminAtLeast } from "../functions/user"
+import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../functions/user"
 export default function Header() {
   const user = useAtomValue(userAtom)
   const editMaterialDialog = useAtomValue(editMaterialDialogAtom)
@@ -18,7 +18,7 @@ export default function Header() {
 
   return <div className="header">
     <div className="file-buttons-bar">
-      {isAdminAtLeast(user.role) ?
+      {isEditorAtLeast(user.role) ?
         <>
           <MenuSeparator />
           <ImageButton title="Редактор материалов" icon="editMaterials" onClick={() => { editMaterialDialog?.current?.showModal() }} />
@@ -33,7 +33,7 @@ export default function Header() {
           <ImageButton title="Cхема" icon="schemaButton" onClick={() => { showSchemaDialog() }} />
         </>
         : <></>}
-      {isSuperAdminAtLeast(user.role) ?
+      {isAdminAtLeast(user.role) ?
         <>
           <MenuSeparator />
           <ImageButton title="Список пользователей" icon="userlistButton" onClick={() => { showUserListDialog() }} />

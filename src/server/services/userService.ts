@@ -3,6 +3,7 @@ import { Results, Token, User } from '../../types/server.js'
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
+import { SERVER_EVENTS } from '../../types/enums.js'
 
 export const activeTokens: { tokenList: Token[] } = { tokenList: [] }
 export const events: Map<string, EventEmitter> = new Map()
@@ -12,6 +13,7 @@ export async function getTokens(): Promise<Token[]> {
   if (result.success) return result.data as Token[]
   return []
 }
+Promise.resolve().then(() => getTokens().then(r => activeTokens.tokenList = r))
 
 const expiredInterval = 3600 * 24 * 1000
 const clearExpiredTokens = () => {
@@ -22,6 +24,12 @@ const clearExpiredTokens = () => {
 }
 setInterval(clearExpiredTokens, 60000)
 
+export function notifyActiveUsers(){
+  events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS))
+}
+export function logoutUser(token: string){
+  events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.LOGOUT,  token)) 
+}
 export class UserService implements IUserService {
   provider: IUserServiceProvider
   constructor(provider: IUserServiceProvider) {
@@ -49,7 +57,7 @@ export class UserService implements IUserService {
     if (result.success) activeTokens.tokenList.push({ token, username: userName, time })
     return result
   }
-  async deleteToken(token: string, extAction = () => {})  {
+  async deleteToken(token: string, extAction = () => { notifyActiveUsers() }) {
     const result = await this.provider.deleteToken(token)
     if (result.success) {
       activeTokens.tokenList = activeTokens.tokenList.filter(t => t.token !== token)
@@ -64,9 +72,17 @@ export class UserService implements IUserService {
     return result
   }
   async registerUser(user: User) {
-    let result = await this.isUserNameExist(user.name)
+    const result = await this.isUserNameExist(user.name)
     if (!result.success) return result
     return this.provider.registerUser(user)
+  }
+  async deleteUser(user: User) {
+    const result = await this.provider.deleteUser(user)
+    if (result.success) {
+      const t = activeTokens.tokenList.find(t => t.username === user.name)
+      if (t) await this.deleteToken(t.token, () => { logoutUser(t.token) })
+    }
+    return result
   }
   async isUserNameExist(name: string) {
     if (!name) return { success: false, status: 400, message: messages.INVALID_USER_DATA }
@@ -79,6 +95,6 @@ export class UserService implements IUserService {
   }
 }
 
-getTokens().then(r => activeTokens.tokenList = r)
+
 
 

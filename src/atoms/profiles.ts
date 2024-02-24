@@ -17,11 +17,9 @@ export const loadProfileListAtom = atom(null, async (get, set) => {
 
 export const deleteProfileAtom = atom(null, async (get, set, profile: Profile, callback: AtomCallbackResult) => {
     const user = get(userAtom)
-    try {
-        const result = await fetchData("api/materials/profile", "DELETE", JSON.stringify({ name: profile.name, type: profile.type, token: user.token }))
-        await set(loadProfileListAtom)
-        callback(result)
-    } catch (e) { console.error(e) }
+    const result = await fetchData("api/materials/profile", "DELETE", JSON.stringify({ name: profile.name, type: profile.type, token: user.token }))
+    await set(loadProfileListAtom)
+    callback({ success: result.success as boolean, message: result.message as string })
 })
 
 export const addProfileAtom = atom(null, async (get, set, profile: Profile, callback: AtomCallbackResult) => {

@@ -32,11 +32,9 @@ export const imageUrlAtom = atom((get) => {
 
 export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial, callback: AtomCallbackResult) => {
     const user = get(userAtom)
-    try {
-        const result = await fetchData("api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
-        await set(loadMaterialListAtom)
-        callback(result)
-    } catch (e) { console.error(e) }
+    const result = await fetchData("api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
+    await set(loadMaterialListAtom)
+    callback({ success: result.success as boolean, message: result.message as string })
 })
 
 export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: File | null, callback: AtomCallbackResult) => {

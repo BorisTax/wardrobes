@@ -2,11 +2,11 @@ import messages from '../messages.js'
 import express from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserService, events, getTokens } from '../services/userService.js';
+import { UserService, events, getTokens, logoutUser, notifyActiveUsers } from '../services/userService.js';
 import { accessDenied, hashData, incorrectData } from '../functions.js';
 import { ActiveUser, MyRequest, Result, Results, Token, User, UserRoles } from '../../types/server.js';
 import { JWT_SECRET, userServiceProvider } from '../options.js';
-import { isSuperAdminAtLeast } from '../../functions/user.js';
+import { isAdminAtLeast } from '../../functions/user.js';
 import { SERVER_EVENTS } from '../../types/enums.js';
 import EventEmitter from 'events';
 
@@ -42,27 +42,27 @@ router.post("/login", async (req, res) => {
   const userService = new UserService(userServiceProvider)
   const result = await loginUser(user);
   if (result.success) userService.addToken({ token: result.data as string, userName: user.name })
-  if (result.success) events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS))
+  if (result.success) notifyActiveUsers()
   res.json(result);
 });
 
 router.post("/logout", async (req, res) => {
   const user = req.body;
   const userService = new UserService(userServiceProvider)
-  const result = await userService.deleteToken(user.token, () => { events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS)) })
+  const result = await userService.deleteToken(user.token)
   res.json(result);
 });
 
 router.post("/logoutuser", async (req: MyRequest, res) => {
-  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const user = req.body;
   const userService = new UserService(userServiceProvider)
-  const result = await userService.deleteToken(user.usertoken, () => { events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.LOGOUT,  user.usertoken)) })
+  const result = await userService.deleteToken(user.usertoken, () => { logoutUser(user.usertoken) })
   res.json(result);
 });
 
 router.get("/active", async (req: MyRequest, res) => {
-  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const result: Result<ActiveUser[]> = { success: true, status: 200, data: [] }
   const tokens = await getTokens();
@@ -75,24 +75,33 @@ router.get("/active", async (req: MyRequest, res) => {
 });
 
 router.post("/logoutall", async (req: MyRequest, res) => {
-  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   userService.clearAllTokens()
-  events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS))
+  notifyActiveUsers()
   events.clear()
   res.json({ success: true });
 });
 
-router.post("/register", async (req: MyRequest, res) => {
-  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+router.post("/add", async (req: MyRequest, res) => {
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const user = req.body;
-  if (!user.name || !user.password) return res.json({ success: false, errCode: messages.INVALID_USER_DATA });
-  const result = await registerUser(user);
+  if (!user.name || !user.password || !user.role) return res.json({ success: false, errCode: messages.INVALID_USER_DATA });
+  const userService = new UserService(userServiceProvider)
+  const result = await userService.registerUser(user);
+  res.json(result);
+});
+router.delete("/delete", async (req: MyRequest, res) => {
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const user = req.body;
+  if (!user.name) return res.json({ success: false, errCode: messages.INVALID_USER_DATA });
+  const userService = new UserService(userServiceProvider)
+  const result = await userService.deleteUser(user);
   res.json(result);
 });
 
 router.get("/users", async (req: MyRequest, res) => {
-  if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   let result = await userService.getUsers()
   res.status(result.status).json(result)
@@ -110,21 +119,4 @@ async function loginUser(user: User): Promise<Results> {
   return { success: true, status: 200, message: messages.LOGIN_SUCCEED, data: token };
 }
 
-async function isUserNameExist(name: string) {
-  const userService = new UserService(userServiceProvider)
-  try {
-    return userService.isUserNameExist(name)
-  } catch (e) {
-    return { success: false, message: messages.SERVER_ERROR };
-  }
-}
 
-async function registerUser(user: User) {
-  const userService = new UserService(userServiceProvider)
-  try {
-    var result = await userService.registerUser(user)
-  } catch (e) {
-    return { success: false, message: messages.SERVER_ERROR };
-  }
-  return result
-}

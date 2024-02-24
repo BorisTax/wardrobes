@@ -40,12 +40,13 @@ export default function EditUsersDialog() {
             <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
         </div>
         <hr/>
+        <div className="text-center">Зарегистрированные пользователи</div>
         <div className="users-list">
             {userListHeader}
             {userlist}
         </div>
         <hr/>
-        <div>Активные пользователи</div>
+        <div className="text-center">Активные пользователи</div>
         <div className="activeusers-list">
             {activeUserListHeader}
             {activeuserlist}

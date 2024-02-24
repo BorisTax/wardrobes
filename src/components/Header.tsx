@@ -1,41 +1,23 @@
 import User from "./User"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { userAtom } from "../atoms/users"
-import { UserRoles } from "../types/server"
 import ImageButton from "./ImageButton"
-import { editMaterialDialogAtom, editPriceDialogAtom, editProfileDialogAtom, schemaDialogAtom, showEditUsersDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom, specificationDialogAtom } from "../atoms/dialogs"
+import { editMaterialDialogAtom, editPriceDialogAtom, editProfileDialogAtom, showEditUsersDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom } from "../atoms/dialogs"
 import useConfirm from "../custom-hooks/useConfirm"
-import { historyAppAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, undoAtom } from "../atoms/app"
 import MenuSeparator from "./MenuSeparator"
-import { isAdminAtLeast, isClientAtLeast, isManagerAtLeast, isSuperAdminAtLeast } from "../functions/user"
-import { useRef } from "react"
+import { isAdminAtLeast, isClientAtLeast, isSuperAdminAtLeast } from "../functions/user"
 export default function Header() {
   const user = useAtomValue(userAtom)
   const editMaterialDialog = useAtomValue(editMaterialDialogAtom)
   const editProfileDialog = useAtomValue(editProfileDialogAtom)
   const editPriceDialog = useAtomValue(editPriceDialogAtom)
-  const specificationDialog = useAtomValue(specificationDialogAtom)
   const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
   const showSchemaDialog = useSetAtom(showSchemaDialogAtom)
   const showUserListDialog = useSetAtom(showEditUsersDialogAtom)
   const showConfirm = useConfirm()
-  const resetAppData = useSetAtom(resetAppDataAtom)
-  const saveState = useSetAtom(saveStateAtom)
-  const openState = useSetAtom(openStateAtom)
-  const { next, previous } = useAtomValue(historyAppAtom)
-  const undo = useSetAtom(undoAtom)
-  const redo = useSetAtom(redoAtom)
-  const headerButtons = useRef<HTMLDivElement>(null)
-  const disabledFiles = !isClientAtLeast(user.role)
+
   return <div className="header">
     <div className="file-buttons-bar">
-      <div className="d-flex flex-nowrap gap-2 h-100">
-        <ImageButton title="Новый" icon="new" onClick={() => { showConfirm("Сбросить в первоначальное состояние?", () => resetAppData()) }} />
-        <ImageButton title="Открыть" icon="open" disabled={disabledFiles} onClick={() => { openState() }} />
-        <ImageButton title="Сохранить" icon="save" disabled={disabledFiles} onClick={() => { saveState() }} />
-        <ImageButton title="Отменить" icon="undo" disabled={!previous} onClick={() => { undo() }} />
-        <ImageButton title="Повторить" icon="redo" disabled={!next} onClick={() => { redo() }} />
-      </div>
       {isAdminAtLeast(user.role) ?
         <>
           <MenuSeparator />

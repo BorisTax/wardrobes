@@ -2,17 +2,20 @@ import InputField from "./InputField"
 import { PropertyType } from "../types/property"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { profileListAtom } from "../atoms/profiles"
 import { Profile } from "../types/materials"
 import ComboBox from "./ComboBox"
-import { appDataAtom, setFasadCountAtom, setOrderAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom } from "../atoms/app"
+import { appDataAtom, historyAppAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setOrderAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"
 import { WardType } from "../types/app"
 import { WardTypes } from "../functions/wardrobe"
 import useConfirm from "../custom-hooks/useConfirm"
+import ImageButton from "./ImageButton"
+import { isClientAtLeast } from "../functions/user"
+import { userAtom } from "../atoms/users"
 const fasades = ["2", "3", "4", "5", "6"]
 export default function WardrobePropertiesBar() {
-    //const [activeProfileIndex, setActiveProfileIndex] = useAtom(activeProfileIndexAtom)
+    const user = useAtomValue(userAtom)
     const [profileList] = useAtom(profileListAtom)
     const [{ order, profile, fasadCount, type, wardHeight, wardWidth }] = useAtom(appDataAtom)
     const setOrder = useSetAtom(setOrderAtom)
@@ -22,6 +25,13 @@ export default function WardrobePropertiesBar() {
     const setWardHeight = useSetAtom(setWardHeightAtom)
     const setWardType = useSetAtom(setWardTypeAtom)
     const showConfirm = useConfirm()
+    const resetAppData = useSetAtom(resetAppDataAtom)
+    const saveState = useSetAtom(saveStateAtom)
+    const openState = useSetAtom(openStateAtom)
+    const { next, previous } = useAtomValue(historyAppAtom)
+    const undo = useSetAtom(undoAtom)
+    const redo = useSetAtom(redoAtom)
+    const disabledFiles = !isClientAtLeast(user.role)
     const wardTypeChangeConfirm = () => new Promise<boolean>((resolve) => {
         showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
     })
@@ -38,7 +48,16 @@ export default function WardrobePropertiesBar() {
         showConfirm("При данном кол-ве фасадов не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
     })
     return <div className="properties-bar">
-        <div>Параметры шкафа</div>
+        <div className="d-flex flex-nowrap justify-content-between">
+            <div>Параметры шкафа</div>
+            <div className="d-flex flex-nowrap gap-2 h-100">
+                <ImageButton title="Новый" icon="new" onClick={() => { showConfirm("Сбросить в первоначальное состояние?", () => resetAppData()) }} />
+                <ImageButton title="Открыть" icon="open" disabled={disabledFiles} onClick={() => { openState() }} />
+                <ImageButton title="Сохранить" icon="save" disabled={disabledFiles} onClick={() => { saveState() }} />
+                <ImageButton title="Отменить" icon="undo" disabled={!previous} onClick={() => { undo() }} />
+                <ImageButton title="Повторить" icon="redo" disabled={!next} onClick={() => { redo() }} />
+            </div>
+        </div>
         <hr />
         <PropertyGrid>
             <div className="text-end">Заказ: </div>

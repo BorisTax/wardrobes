@@ -1,13 +1,16 @@
 import { ReactElement, useEffect, useRef, useState } from "react";
+import Hammer from "hammerjs"
 import Fasad from "../classes/Fasad";
 import { Division, FasadMaterial } from "../types/enums";
 import { MaterialCaptions, SandBasesCaptions } from "../functions/materials";
+import useDoubleClick from "../custom-hooks/useDoubleClick";
 type FasadSectionProps = {
     fasad: Fasad
 }
 export default function FasadSchemaSection(props: FasadSectionProps): ReactElement {
     const [{ vertical, fontSize }, setState] = useState({ vertical: false, fontSize: "1rem" })
     const sectionRef = useRef<HTMLDivElement>(null)
+    const captionRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
     const fasad = props.fasad
     const lastFasad = fasad.Children.length === 0
@@ -24,6 +27,15 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
     let styles: object = fasad.Parent === null ? { height: "100%" } : {}
     let events = {}
     let classes = ""
+    const onZoom = (zoom: number, scale = 0.1) => {
+        setState(prev => {
+            let newFontSize = parseFloat(prev.fontSize)
+            const font = newFontSize - scale * Math.sign(zoom)
+            if (font > 0.1) newFontSize = font
+            return { ...prev, fontSize: newFontSize + "rem" }
+        })
+    }
+    const doubleClick = useDoubleClick((e: Event) => { setState(prev => ({ ...prev, vertical: !prev.vertical })); e.stopPropagation() })
     if (lastFasad) {
         styles = {
             ...styles,
@@ -35,7 +47,7 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
             boxSizing: "border-box"
         }
         events = {
-            onClick: (e: Event) => { e.stopPropagation(); },
+            onClick: doubleClick,
         }
         classes = "fasad-schema-section"
     }
@@ -47,20 +59,29 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
         textAlign: "center",
         padding: "0px",
     }
-    const caption = <div style={captionStyle}>
+    const caption = <div ref={captionRef} style={captionStyle}>
         {`${MaterialCaptions.get(fasad.Material)} ${fasad.ExtMaterial} ${fasad.Material === FasadMaterial.SAND ? SandBasesCaptions.get(fasad.SandBase) : ""} (${Math.floor(fasad.cutHeight)}x${Math.floor(fasad.cutWidth)})`}
     </div>
     const contents = !lastFasad ? fasad.Children.map((f: Fasad, i: number) => <FasadSchemaSection key={i} fasad={f} />) : caption
+    const [, setHammer] = useState<HammerManager | null>(null)
+    
+    useEffect(() => {
+        if (captionRef.current) {
+            const hammer = new Hammer(captionRef.current)
+            hammer.get("pan").set({ enable: false })
+            hammer.get("pinch").set({ enable: true })
+            hammer.on("pinch", (e: HammerInput) => {
+                console.log(e.scale)
+                onZoom(1 - e.scale, 0.005)
+            })
+            setHammer(hammer)
+        }
+    }, [captionRef.current])
     useEffect(() => {
         const onWhell = (e: WheelEvent) => {
             e.preventDefault();
             if (!e.shiftKey) {
-                setState(prev => {
-                    let newFontSize = parseFloat(prev.fontSize)
-                    const font = newFontSize + 0.1 * Math.sign(e.deltaY)
-                    if (font > 0.1) newFontSize = font
-                    return { ...prev, fontSize: newFontSize + "rem" }
-                })
+                onZoom(e.deltaY)
                 return
             }
             setState(prev => ({ ...prev, vertical: !prev.vertical }))
@@ -75,7 +96,8 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
         ...gridTemplate,
         gap: "1px",
         ...styles,
-    }}
+        
+    }} 
         {...events}>
         {contents}
     </div>

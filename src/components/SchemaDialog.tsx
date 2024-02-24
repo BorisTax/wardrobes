@@ -11,9 +11,6 @@ import { combineColors } from "../functions/schema"
 import { FasadMaterial } from "../types/enums"
 import Fasad from '../classes/Fasad'
 import FasadSchemaSection from './FasadSchemaSection'
-import { SandBasesCaptions } from '../functions/materials'
-import Button from './ImageTextButton'
-import ImageTextButton from './ImageTextButton'
 import ImageButton from './ImageButton'
 
 export default function SchemaDialog() {

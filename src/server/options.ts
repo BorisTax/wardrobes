@@ -12,10 +12,10 @@ export const JWT_SECRET = "secretkey"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const usersPath = path.resolve(__dirname, 'database/users.db')
-const databasePath = path.resolve(__dirname, 'database/database.db')
+const materialsPath = path.resolve(__dirname, 'database/materials.db')
 const pricePath = path.resolve(__dirname, 'database/prices.db')
 export const userServiceProvider = new UserServiceSQLite(usersPath)
-export const materialServiceProvider = new MaterialServiceSQLite(databasePath)
+export const materialServiceProvider = new MaterialServiceSQLite(materialsPath)
 export const priceServiceProvider = new PriceServiceSQLite(pricePath)
 
 export const userRoleParser = async (req: MyRequest, res: Response, next: NextFunction) => {

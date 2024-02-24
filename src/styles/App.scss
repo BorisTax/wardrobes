@@ -4,6 +4,9 @@ $image-url: '../images/';
 body{
   background-color: rgb(233, 233, 233) !important;
 }
+body:has(dialog[open]) {
+  overflow: hidden;
+}
 input, select{
   width: 100%;
 }

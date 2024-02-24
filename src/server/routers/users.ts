@@ -49,7 +49,7 @@ router.post("/login", async (req, res) => {
 router.post("/logout", async (req, res) => {
   const user = req.body;
   const userService = new UserService(userServiceProvider)
-  const result = await userService.deleteToken(user.token)
+  const result = await userService.deleteToken(user.token, () => { events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS)) })
   res.json(result);
 });
 
@@ -57,7 +57,7 @@ router.post("/logoutuser", async (req: MyRequest, res) => {
   if (!isSuperAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const user = req.body;
   const userService = new UserService(userServiceProvider)
-  const result = await userService.deleteToken(user.usertoken)
+  const result = await userService.deleteToken(user.usertoken, () => { events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.LOGOUT,  user.usertoken)) })
   res.json(result);
 });
 
@@ -79,6 +79,7 @@ router.post("/logoutall", async (req: MyRequest, res) => {
   const userService = new UserService(userServiceProvider)
   userService.clearAllTokens()
   events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS))
+  events.clear()
   res.json({ success: true });
 });
 

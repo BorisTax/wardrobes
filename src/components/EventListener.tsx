@@ -14,6 +14,7 @@ export default function EventListener() {
       if (user.role !== UserRoles.ANONYM) waitForMessageFromServer(user.token, (message, data) => {
         switch(message){
           case SERVER_EVENTS.LOGOUT:
+            if(user.role===UserRoles.ANONYM) return true
             if (data === user.token) {
               setUserDirectly({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
               showMessage("Сеанс завершен администратором")

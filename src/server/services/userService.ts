@@ -3,7 +3,6 @@ import { Results, Token, User } from '../../types/server.js'
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
-import { SERVER_EVENTS } from '../../types/enums.js'
 
 export const activeTokens: { tokenList: Token[] } = { tokenList: [] }
 export const events: Map<string, EventEmitter> = new Map()
@@ -50,11 +49,11 @@ export class UserService implements IUserService {
     if (result.success) activeTokens.tokenList.push({ token, username: userName, time })
     return result
   }
-  async deleteToken(token: string) {
+  async deleteToken(token: string, extAction = () => {})  {
     const result = await this.provider.deleteToken(token)
     if (result.success) {
       activeTokens.tokenList = activeTokens.tokenList.filter(t => t.token !== token)
-      events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.LOGOUT, token))
+      extAction()
       events.delete(token)
     }
     return result

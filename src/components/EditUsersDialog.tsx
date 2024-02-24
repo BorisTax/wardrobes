@@ -19,16 +19,16 @@ export default function EditUsersDialog() {
     const showConfirm = useConfirm()
     const userListHeader = <><div className="text-center">Имя</div><div className="text-center">Права</div><div></div></>
     const activeUserListHeader = <><div className="text-center">Имя</div><div className="text-center">Права</div><div className="text-center">Время</div><div></div></>
-    const userlist = users.map(u => <><div>{u.name}</div><div>{UserRolesCaptions[u.role]}</div><div>{}</div></>)
+    const userlist = users.map(u => <><div>{u.name}</div><div>{UserRolesCaptions[u.role]}</div><div>{ }</div></>)
     const activeuserlist = activeUsers.map(u => {
         const you = u.token === token
         return <><div>{u.name}</div>
-        <div>{UserRolesCaptions[u.role]}</div>
-        <TimeField time={u.time}/>
-        <div className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>
+            <div>{UserRolesCaptions[u.role]}</div>
+            <TimeField time={u.time} />
+            <div className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>
         </>
     }
-        )
+    )
     useEffect(() => {
         setEditUsersDialogRef(dialogRef)
     }, [setEditUsersDialogRef, dialogRef])
@@ -39,17 +39,19 @@ export default function EditUsersDialog() {
             </div>
             <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
         </div>
-        <hr/>
-        <div className="text-center">Зарегистрированные пользователи</div>
-        <div className="users-list">
-            {userListHeader}
-            {userlist}
-        </div>
-        <hr/>
-        <div className="text-center">Активные пользователи</div>
-        <div className="activeusers-list">
-            {activeUserListHeader}
-            {activeuserlist}
+            <hr />
+        <div className="userlist-container">
+            <div className="text-center">Зарегистрированные пользователи</div>
+            <div className="users-list">
+                {userListHeader}
+                {userlist}
+            </div>
+            <hr />
+            <div className="text-center">Активные пользователи</div>
+            <div className="activeusers-list">
+                {activeUserListHeader}
+                {activeuserlist}
+            </div>
         </div>
     </dialog>
 }

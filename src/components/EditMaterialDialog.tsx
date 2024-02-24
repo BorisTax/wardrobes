@@ -12,6 +12,7 @@ import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
 import Button from "./Button"
 import { rusMessages } from "../functions/messages"
+import ImageButton from "./ImageButton"
 
 export default function EditMaterialDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -39,6 +40,12 @@ export default function EditMaterialDialog() {
         setMaterialDialogRef(dialogRef)
     }, [setMaterialDialogRef, dialogRef])
     return <dialog ref={dialogRef}>
+        <div className="dialog-header-bar">
+            <div>
+            </div>
+            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
+        </div>
+        <hr />
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">
@@ -115,10 +122,6 @@ export default function EditMaterialDialog() {
                     })
                 }} />
             </div>
-        </div>
-        <hr />
-        <div className="d-flex flex-column gap-1 align-items-start">
-            <input type="button" value="Закрыть" onClick={() => closeDialog()} />
         </div>
     </dialog>
 }

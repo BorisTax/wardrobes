@@ -10,6 +10,7 @@ import Button from "./Button"
 import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../atoms/profiles"
 import { rusMessages } from "../functions/messages"
 import messages from "../server/messages"
+import ImageButton from "./ImageButton"
 
 export default function EditProfileDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -33,6 +34,12 @@ export default function EditProfileDialog() {
         setProfileDialogRef(dialogRef)
     }, [setProfileDialogRef, dialogRef])
     return <dialog ref={dialogRef}>
+        <div className="dialog-header-bar">
+            <div>
+            </div>
+            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
+        </div>
+        <hr />
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">
@@ -94,10 +101,6 @@ export default function EditProfileDialog() {
                     })
                 }} />
             </div>
-        </div>
-        <hr />
-        <div className="d-flex flex-column gap-1 align-items-start">
-            <input type="button" value="Закрыть" onClick={() => closeDialog()} />
         </div>
     </dialog>
 }

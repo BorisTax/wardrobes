@@ -69,11 +69,13 @@
   touch-action: manipulation;
   user-select: text !important;
 }
-
+.userlist-container{
+  overflow: scroll;
+  max-height: 80svh;
+}
 .users-list {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  overflow: scroll;
 }
 .users-list > div{
   border: 1px solid black;
@@ -82,7 +84,6 @@
 .activeusers-list{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  overflow: scroll;
 }
 .activeusers-list > div{
   border: 1px solid black;

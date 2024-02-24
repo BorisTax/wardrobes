@@ -9,6 +9,7 @@ import { PriceListItem } from "../types/server"
 import { UnitCaptions } from "../functions/materials"
 import InputField from "./InputField"
 import { PropertyType } from "../types/property"
+import ImageButton from "./ImageButton"
 
 
 export default function EditPriceDialog() {
@@ -38,71 +39,75 @@ export default function EditPriceDialog() {
         setPriceDialogRef(dialogRef)
     }, [setPriceDialogRef, dialogRef])
     return <dialog ref={dialogRef}>
-        <div className="pricelist">
-            <table>
-                <thead>
-                    <tr>
-                        <th className="priceheader">Наименование</th>
-                        <th className="priceheader">Ед</th>
-                        <th className="priceheader">Цена</th>
-                        <th className="priceheader">Наценка</th>
-                        <th className="priceheader">Код</th>
-                        <th className="priceheader">Идентификатор</th>
-                    </tr>
-                </thead>
-                <tbody>{contents}</tbody>
-            </table>
-        </div>
-        <div className="editmaterial-container">
-            <hr />
-            <div className="property-grid">
-                <span className="text-end text-nowrap">Наименование:</span>
-                <div className="d-flex justify-content-start gap-2">
-                    <input type="checkbox" checked={captionChecked} onChange={() => { setChecked(prev => ({ ...prev, captionChecked: !captionChecked })) }} />
-                    <input type="text" value={newCaption} onChange={(e) => { setNewValues(prev => ({ ...prev, newCaption: e.target.value })) }} />
-                </div>
-                <span className="text-end text-nowrap">Цена:</span>
-                <div className="d-flex justify-content-start gap-2">
-                    <input type="checkbox" checked={priceChecked} onChange={() => { setChecked(prev => ({ ...prev, priceChecked: !priceChecked })) }} />
-                    <InputField value={newPrice} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newPrice: `${value}` })) }} />
-                </div>
-                <span className="text-end text-nowrap">Наценка:</span>
-                <div className="d-flex justify-content-start gap-2">
-                    <input type="checkbox" checked={markupChecked} onChange={() => { setChecked(prev => ({ ...prev, markupChecked: !markupChecked })) }} />
-                    <InputField value={newMarkup} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newMarkup: `${value}` })) }} />
-                </div>
-                <span className="text-end text-nowrap">Код:</span>
-                <div className="d-flex justify-content-start gap-2">
-                    <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
-                    <input type="text" value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} />
-                </div>
-                <span className="text-end text-nowrap">Идентификатор:</span>
-                <div className="d-flex justify-content-start gap-2">
-                    <input type="checkbox" checked={idChecked} onChange={() => { setChecked(prev => ({ ...prev, idChecked: !idChecked })) }} />
-                    <input type="text" value={newId} onChange={(e) => { setNewValues(prev => ({ ...prev, newId: e.target.value })) }} />
-                </div>
+        <div className="dialog-header-bar">
+            <div>
             </div>
-            <div className="editmaterial-buttons-container">
-                <input type="button" value="Обновить" disabled={!(captionChecked || priceChecked || codeChecked || idChecked || markupChecked)} onClick={() => {
-                    if (!checkFields({ captionChecked, priceChecked, codeChecked, idChecked, markupChecked, newCaption, newPrice, newCode, newId, newMarkup }, showMessage)) return
-                    const message = getMessage({ captionChecked, codeChecked, priceChecked, idChecked, markupChecked, caption: caption || "", newCaption, newCode, newId, newPrice, newMarkup })
-                    const data: PriceListItem = { name }
-                    if (codeChecked) data.code = newCode
-                    if (idChecked) data.id = newId
-                    if (priceChecked) data.price = +newPrice
-                    if (markupChecked) data.markup = +newMarkup
-                    if (captionChecked) data.caption = newCaption
-                    showConfirm(message, () => {
-                        updatePriceList(data, (result) => {
-                            showMessage(rusMessages[result.message])
-                        })
-                    })
-                }} />
-            </div>
+            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
         </div>
         <hr />
-        <div className="d-flex flex-column gap-1 align-items-start">
-            <input type="button" value="Закрыть" onClick={() => closeDialog()} />
+        <div className="overflow-scroll">
+            <div className="pricelist">
+                <table>
+                    <thead>
+                        <tr>
+                            <th className="priceheader">Наименование</th>
+                            <th className="priceheader">Ед</th>
+                            <th className="priceheader">Цена</th>
+                            <th className="priceheader">Наценка</th>
+                            <th className="priceheader">Код</th>
+                            <th className="priceheader">Идентификатор</th>
+                        </tr>
+                    </thead>
+                    <tbody>{contents}</tbody>
+                </table>
+            </div>
+            <div className="editmaterial-container">
+                <hr />
+                <div className="property-grid">
+                    <span className="text-end text-nowrap">Наименование:</span>
+                    <div className="d-flex justify-content-start gap-2">
+                        <input type="checkbox" checked={captionChecked} onChange={() => { setChecked(prev => ({ ...prev, captionChecked: !captionChecked })) }} />
+                        <input type="text" value={newCaption} onChange={(e) => { setNewValues(prev => ({ ...prev, newCaption: e.target.value })) }} />
+                    </div>
+                    <span className="text-end text-nowrap">Цена:</span>
+                    <div className="d-flex justify-content-start gap-2">
+                        <input type="checkbox" checked={priceChecked} onChange={() => { setChecked(prev => ({ ...prev, priceChecked: !priceChecked })) }} />
+                        <InputField value={newPrice} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newPrice: `${value}` })) }} />
+                    </div>
+                    <span className="text-end text-nowrap">Наценка:</span>
+                    <div className="d-flex justify-content-start gap-2">
+                        <input type="checkbox" checked={markupChecked} onChange={() => { setChecked(prev => ({ ...prev, markupChecked: !markupChecked })) }} />
+                        <InputField value={newMarkup} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newMarkup: `${value}` })) }} />
+                    </div>
+                    <span className="text-end text-nowrap">Код:</span>
+                    <div className="d-flex justify-content-start gap-2">
+                        <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
+                        <input type="text" value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} />
+                    </div>
+                    <span className="text-end text-nowrap">Идентификатор:</span>
+                    <div className="d-flex justify-content-start gap-2">
+                        <input type="checkbox" checked={idChecked} onChange={() => { setChecked(prev => ({ ...prev, idChecked: !idChecked })) }} />
+                        <input type="text" value={newId} onChange={(e) => { setNewValues(prev => ({ ...prev, newId: e.target.value })) }} />
+                    </div>
+                </div>
+                <div className="editmaterial-buttons-container">
+                    <input type="button" value="Обновить" disabled={!(captionChecked || priceChecked || codeChecked || idChecked || markupChecked)} onClick={() => {
+                        if (!checkFields({ captionChecked, priceChecked, codeChecked, idChecked, markupChecked, newCaption, newPrice, newCode, newId, newMarkup }, showMessage)) return
+                        const message = getMessage({ captionChecked, codeChecked, priceChecked, idChecked, markupChecked, caption: caption || "", newCaption, newCode, newId, newPrice, newMarkup })
+                        const data: PriceListItem = { name }
+                        if (codeChecked) data.code = newCode
+                        if (idChecked) data.id = newId
+                        if (priceChecked) data.price = +newPrice
+                        if (markupChecked) data.markup = +newMarkup
+                        if (captionChecked) data.caption = newCaption
+                        showConfirm(message, () => {
+                            updatePriceList(data, (result) => {
+                                showMessage(rusMessages[result.message])
+                            })
+                        })
+                    }} />
+                </div>
+            </div>
         </div>
     </dialog>
 }

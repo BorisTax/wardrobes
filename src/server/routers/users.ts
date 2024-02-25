@@ -3,12 +3,12 @@ import express from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService, events, getTokens, logoutUser, notifyActiveUsers } from '../services/userService.js';
-import { accessDenied, hashData, incorrectData } from '../functions.js';
-import { ActiveUser, MyRequest, Result, Results, Token, User, UserRoles } from '../../types/server.js';
+import { accessDenied, hashData, incorrectData } from '../functions/other.js';
+import { ActiveUser, MyRequest, Result, Results, Token, User, UserRoles } from '../types/server.js';
 import { JWT_SECRET, userServiceProvider } from '../options.js';
-import { isAdminAtLeast } from '../../functions/user.js';
-import { SERVER_EVENTS } from '../../types/enums.js';
 import EventEmitter from 'events';
+import { SERVER_EVENTS } from '../types/enums.js';
+import { isAdminAtLeast } from '../functions/user.js';
 
 const router = express.Router();
 export default router

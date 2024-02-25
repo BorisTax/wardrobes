@@ -1,5 +1,5 @@
 import { Division, FasadMaterial, SandBase } from "../types/enums";
-import { ExtMaterial, Profile, ProfileType } from "../types/materials";
+import { ExtMaterial, Profile, ProfileType } from "../server/types/materials";
 
 export const colors = {
     [FasadMaterial.EMPTY]: "#ff7b00",

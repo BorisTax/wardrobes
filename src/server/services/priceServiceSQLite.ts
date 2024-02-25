@@ -1,6 +1,6 @@
-import { dataBaseQuery } from '../functions.js'
-import { IPriceServiceProvider } from '../../types/services.js';
-import { PriceListItem, Results } from '../../types/server.js';
+import { dataBaseQuery } from '../functions/other.js'
+import { IPriceServiceProvider } from '../types/services.js';
+import { PriceListItem, Results } from '../types/server.js';
 import messages from '../messages.js';
 
 export default class PriceServiceSQLite implements IPriceServiceProvider {

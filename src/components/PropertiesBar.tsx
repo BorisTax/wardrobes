@@ -6,15 +6,15 @@ import { PropertyType } from "../types/property"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 import ToggleButton from "./ToggleButton"
-import { ExtMaterial } from "../types/materials"
+import { ExtMaterial } from "../server/types/materials"
 import ImageButton from "./ImageButton"
 import { useAtomValue, useSetAtom } from "jotai"
 import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
 import { materialListAtom } from "../atoms/materials"
 import { Materials, SandBases } from "../functions/materials"
 import { totalPriceAtom } from "../atoms/specification"
-import { isClientAtLeast } from "../functions/user"
 import { userAtom } from "../atoms/users"
+import { isClientAtLeast } from "../server/functions/user"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const { role } = useAtomValue(userAtom)

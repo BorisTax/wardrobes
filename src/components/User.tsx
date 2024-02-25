@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { UserRolesCaptions, getInitialUser, logoutAtom, setUserAtom, userAtom } from "../atoms/users";
 import { loginDialogAtom } from "../atoms/dialogs";
 import useConfirm from "../custom-hooks/useConfirm";
-import { UserRoles } from "../types/server";
+import { UserRoles } from "../server/types/server";
 
 export default function User() {
     const [user] = useAtom(userAtom)

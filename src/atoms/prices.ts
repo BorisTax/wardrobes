@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { FetchResult, fetchFormData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
-import { PriceListItem, TableFields } from "../types/server";
+import { PriceListItem, TableFields } from "../server/types/server";
 import { AtomCallbackResult } from "../types/atoms";
 
 export const priceListAtom = atom<PriceListItem[]>([])

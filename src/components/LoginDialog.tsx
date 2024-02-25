@@ -3,7 +3,7 @@ import { useSetAtom } from "jotai"
 import { UserState, setUserAtom } from "../atoms/users"
 import { loginDialogAtom } from "../atoms/dialogs"
 import onFetch from "../functions/fetch"
-import { Results } from "../types/server"
+import { Results } from "../server/types/server"
 
 export default function LoginDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)

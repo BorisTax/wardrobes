@@ -1,9 +1,9 @@
 import EventEmitter from 'events'
-import { Results, Token, User } from '../../types/server.js'
-import { IUserService, IUserServiceProvider } from '../../types/services.js'
+import { Results, Token, User } from '../types/server.js'
+import { IUserService, IUserServiceProvider } from '../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
-import { SERVER_EVENTS } from '../../types/enums.js'
+import { SERVER_EVENTS } from '../types/enums.js'
 
 export const activeTokens: { tokenList: Token[] } = { tokenList: [] }
 export const events: Map<string, EventEmitter> = new Map()

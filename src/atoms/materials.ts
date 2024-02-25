@@ -1,12 +1,12 @@
 import { atom, useAtom } from "jotai";
-import { ExtMaterial } from "../types/materials";
+import { ExtMaterial } from "../server/types/materials";
 import { FetchResult, fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { getMaterialList } from "../functions/materials";
 import { appDataAtom } from "./app";
 import Fasad from "../classes/Fasad";
 import { FasadMaterial } from "../types/enums";
-import { TableFields } from "../types/server";
+import { TableFields } from "../server/types/server";
 import { AtomCallbackResult } from "../types/atoms";
 
 export const materialListAtom = atom(new Map())

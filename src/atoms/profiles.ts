@@ -1,8 +1,8 @@
 import { atom } from "jotai";
-import { Profile } from "../types/materials";
+import { Profile } from "../server/types/materials";
 import { FetchResult, fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
-import { TableFields } from "../types/server";
+import { TableFields } from "../server/types/server";
 import { AtomCallbackResult } from "../types/atoms";
 
 export const profileListAtom = atom<Profile[]>([])

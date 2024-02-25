@@ -1,18 +1,4 @@
-import { UserRoles } from "../types/server.js";
 import { FetchResult, fetchGetData } from "./fetch.js";
-
-export function isClientAtLeast(role: UserRoles): boolean {
-    return isManagerAtLeast(role) || role === UserRoles.CLIENT
-}
-export function isManagerAtLeast(role: UserRoles): boolean {
-    return isAdminAtLeast(role) || role === UserRoles.MANAGER
-}
-export function isEditorAtLeast(role: UserRoles): boolean {
-    return isAdminAtLeast(role) || role === UserRoles.EDITOR
-}
-export function isAdminAtLeast(role: UserRoles): boolean {
-    return role === UserRoles.ADMIN
-}
 
 export async function waitForMessageFromServer(token:string, onMessage: (message: string, data: string) => boolean) {
     const result: FetchResult = await fetchGetData(`api/users/events?token=${token}`)

@@ -1,6 +1,6 @@
 import Fasad from "../classes/Fasad";
 import { Division, FasadMaterial, SpecificationItem } from "../types/enums";
-import { ProfileType } from "../types/materials";
+import { ProfileType } from "../server/types/materials";
 
 export function getSpecificationPattern(): Map<SpecificationItem, number> {
     const spec = new Map<SpecificationItem, number>()

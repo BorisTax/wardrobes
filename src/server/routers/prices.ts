@@ -2,11 +2,11 @@ import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { accessDenied, checkPermissions, incorrectData, noExistData } from '../functions.js';
-import { MyRequest, PriceListItem, UserRoles } from '../../types/server.js';
+import { accessDenied, checkPermissions, incorrectData, noExistData } from '../functions/other.js';
+import { MyRequest, PriceListItem, UserRoles } from '../types/server.js';
 import { priceServiceProvider } from '../options.js';
 import { PriceService } from '../services/priceService.js';
-import { isAdminAtLeast, isClientAtLeast } from '../../functions/user.js';
+import { isAdminAtLeast, isClientAtLeast } from '../functions/user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

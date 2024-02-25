@@ -1,6 +1,6 @@
-import { dataBaseQuery, hashData } from '../functions.js'
-import { IUserServiceProvider } from '../../types/services.js';
-import { Results, User } from '../../types/server.js';
+import { dataBaseQuery, hashData } from '../functions/other.js'
+import { IUserServiceProvider } from '../types/services.js';
+import { Results, User } from '../types/server.js';
 import messages from '../messages.js';
 
 export default class UserServiceSQLite implements IUserServiceProvider {

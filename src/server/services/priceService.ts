@@ -1,5 +1,5 @@
-import { PriceListItem, Results } from '../../types/server.js'
-import { IPriceService, IPriceServiceProvider, IUserService, IUserServiceProvider } from '../../types/services.js'
+import { PriceListItem, Results } from '../types/server.js'
+import { IPriceService, IPriceServiceProvider} from '../types/services.js'
 
 
 export class PriceService implements IPriceService {

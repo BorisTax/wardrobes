@@ -4,7 +4,7 @@ import { settingsDialogAtom } from "../atoms/dialogs"
 import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
 import ImageButton from "./ImageButton"
-import { UserRoles } from "../types/server"
+import { UserRoles } from "../server/types/server"
 import { setShowFixIconsAtom, settingsAtom } from "../atoms/settings"
 
 export default function SettingsDialog() {

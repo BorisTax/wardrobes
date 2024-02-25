@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from "react"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { specificationDialogAtom } from "../atoms/dialogs"
 import { priceListAtom } from "../atoms/prices"
-import { PriceListItem } from "../types/server"
+import { PriceListItem } from "../server/types/server"
 import { UnitCaptions } from "../functions/materials"
 import { specificationAtom } from "../atoms/specification"
 import { SpecificationItem } from "../types/enums"
 import ImageButton from "./ImageButton"
 import { saveToExcelAtom } from "../atoms/export"
-import { isManagerAtLeast } from "../functions/user"
 import { userAtom } from "../atoms/users"
+import { isManagerAtLeast } from "../server/functions/user"
 
 export default function SpecificationDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)

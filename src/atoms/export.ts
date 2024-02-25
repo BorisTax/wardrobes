@@ -4,7 +4,7 @@ import writeToExcel from 'write-excel-file';
 import { priceListAtom } from "./prices";
 import { SpecificationItem } from "../types/enums";
 import { UnitCaptions } from "../functions/materials";
-import { PriceListItem } from "../types/server";
+import { PriceListItem } from "../server/types/server";
 import { appDataAtom } from "./app";
 
 export const saveToExcelAtom = atom(null, async (get, set, index: number) => {

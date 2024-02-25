@@ -2,12 +2,12 @@ import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { accessDenied, checkPermissions, moveFile } from '../functions.js';
+import { accessDenied, checkPermissions, moveFile } from '../functions/other.js';
 import { MaterialService } from '../services/materialService.js';
-import { MyRequest, Results, UserRoles } from '../../types/server.js';
-import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../../types/materials.js';
+import { MyRequest, Results, UserRoles } from '../types/server.js';
+import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../types/materials.js';
 import { materialServiceProvider } from '../options.js';
-import { isAdminAtLeast } from '../../functions/user.js';
+import { isAdminAtLeast } from '../functions/user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

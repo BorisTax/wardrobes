@@ -5,7 +5,7 @@ import ImageButton from "./ImageButton"
 import { editMaterialDialogAtom, editPriceDialogAtom, editProfileDialogAtom, settingsDialogAtom, showEditUsersDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom } from "../atoms/dialogs"
 import useConfirm from "../custom-hooks/useConfirm"
 import MenuSeparator from "./MenuSeparator"
-import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../functions/user"
+import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 export default function Header() {
   const user = useAtomValue(userAtom)
   const editMaterialDialog = useAtomValue(editMaterialDialogAtom)

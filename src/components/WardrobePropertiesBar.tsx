@@ -4,15 +4,15 @@ import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { profileListAtom } from "../atoms/profiles"
-import { Profile } from "../types/materials"
+import { Profile } from "../server/types/materials"
 import ComboBox from "./ComboBox"
 import { appDataAtom, historyAppAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setOrderAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"
 import { WardType } from "../types/app"
 import { WardTypes } from "../functions/wardrobe"
 import useConfirm from "../custom-hooks/useConfirm"
 import ImageButton from "./ImageButton"
-import { isClientAtLeast } from "../functions/user"
 import { userAtom } from "../atoms/users"
+import { isClientAtLeast } from "../server/functions/user"
 const fasades = ["2", "3", "4", "5", "6"]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)

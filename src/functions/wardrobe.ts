@@ -1,5 +1,5 @@
 import { AppData, AppState, WardType } from "../types/app"
-import { Profile, ProfileType } from "../types/materials"
+import { Profile, ProfileType } from "../server/types/materials"
 import FasadState from "../classes/FasadState"
 import { getFasadState, newFasadFromState } from "./fasades"
 import { Division, FasadMaterial } from "../types/enums"

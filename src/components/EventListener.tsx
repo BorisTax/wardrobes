@@ -1,10 +1,10 @@
 import { useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { loadActiveUsersAtom, userAtom } from "../atoms/users";
-import { UserRoles } from "../types/server";
+import { UserRoles } from "../server/types/server";
 import { waitForMessageFromServer } from "../functions/user";
 import useMessage from "../custom-hooks/useMessage";
-import { SERVER_EVENTS } from "../types/enums";
+import { SERVER_EVENTS } from "../server/types/enums";
 
 export default function EventListener() {
     const [user, setUserDirectly] = useAtom(userAtom)

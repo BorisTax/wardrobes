@@ -1,10 +1,10 @@
 import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { UserRoles } from "../types/server"
-import { isClientAtLeast } from "../functions/user"
+import { UserRoles } from "../server/types/server"
 import { loadPriceListAtom } from "./prices"
 import { AtomCallbackResult } from "../types/atoms"
+import { isClientAtLeast } from "../server/functions/user"
 
 export const UserRolesCaptions = {
     [UserRoles.ANONYM]: "",

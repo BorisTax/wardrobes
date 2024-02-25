@@ -1,7 +1,7 @@
 import { Getter, Setter, atom } from 'jotai';
 import { AppData, AppState, HistoryState, SetAtomComfirm, WardType } from "../types/app";
 import { createAppState, getAppDataFromState, getAppState, getFasadHeight, getFasadWidth, getInitialAppState } from "../functions/wardrobe";
-import { Profile } from "../types/materials";
+import { Profile } from "../server/types/materials";
 import Fasad from "../classes/Fasad";
 import { trySetHeight, trySetWidth } from "../functions/fasades";
 import { openFile, readFile, saveState } from '../functions/file';

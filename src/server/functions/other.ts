@@ -1,7 +1,7 @@
 import fs from 'fs'
 import bcrypt from "bcrypt";
 import sqlite3 from "sqlite3";
-import messages from './messages.js';
+import messages from '../messages.js';
 import { Response } from "express"
 import { MyRequest, Result, Results, UserRoles } from '../types/server.js';
 

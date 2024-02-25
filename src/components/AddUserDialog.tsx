@@ -7,7 +7,7 @@ import ImageButton from "./ImageButton"
 import ComboBox from "./ComboBox"
 import InputField from "./InputField"
 import { UserRolesCaptions, allUsersAtom, createUserAtom } from "../atoms/users"
-import { UserRoles } from "../types/server"
+import { UserRoles } from "../server/types/server"
 import messages from "../server/messages"
 import { rusMessages } from "../functions/messages"
 type DialogProps = {

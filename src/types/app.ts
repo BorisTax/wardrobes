@@ -1,6 +1,6 @@
 import Fasad from "../classes/Fasad"
 import FasadState from "../classes/FasadState"
-import { Profile } from "./materials"
+import { Profile } from "../server/types/materials"
 
 export type AppState = {
     order: string

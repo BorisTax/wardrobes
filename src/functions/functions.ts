@@ -6,6 +6,7 @@ export function isMobile(): boolean {
 export function createToolTip() {
     const toolTip = document.createElement("span")
     toolTip.id = "tooltip"
+    toolTip.setAttribute("popover", "")
     toolTip.style.position = "absolute"
     toolTip.style.border = "1px solid black"
     toolTip.setAttribute("popover", "")

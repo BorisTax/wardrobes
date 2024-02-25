@@ -1,7 +1,7 @@
-import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../../types/materials.js';
-import { Results } from '../../types/server.js';
-import { IMaterialServiceProvider } from '../../types/services.js';
-import { dataBaseQuery } from '../functions.js';
+import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../types/materials.js';
+import { Results } from '../types/server.js';
+import { IMaterialServiceProvider } from '../types/services.js';
+import { dataBaseQuery } from '../functions/other.js';
 import messages from '../messages.js';
 export default class MaterialServiceSQLite implements IMaterialServiceProvider {
     dbFile: string;

@@ -44,9 +44,3 @@ export enum SpecificationItem {
     Karton = "Karton",
     Skotch = "Skotch"
 }
-
-
-export enum SERVER_EVENTS {
-    LOGOUT = "LOGOUT",
-    UPDATE_ACTIVE_USERS = "UPDATE_ACTIVE_USERS"
-}

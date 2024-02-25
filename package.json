@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "archiver": "^6.0.1",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.2",
@@ -33,6 +34,7 @@
     "write-excel-file": "^1.4.29"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.2",
     "@types/bcrypt": "^5.0.2",
     "@types/config": "^3.3.3",
     "@types/cookie-parser": "^1.4.6",

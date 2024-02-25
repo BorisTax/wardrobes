@@ -11,6 +11,8 @@ import PriceServiceSQLite from './services/priceServiceSQLite.js'
 export const JWT_SECRET = "secretkey"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+export const databaseZipFile = path.resolve(__dirname, 'database.zip')
+export const databaseFolder = path.resolve(__dirname, 'database')
 const usersPath = path.resolve(__dirname, 'database/users.db')
 const materialsPath = path.resolve(__dirname, 'database/materials.db')
 const pricePath = path.resolve(__dirname, 'database/prices.db')

@@ -188,6 +188,12 @@ $header_button_height: 32px;
   background-image: url($icon-url+'settings.png');
   @include header_button();
 }
+.downloadButton {
+  background-image: url($icon-url+'download.png');
+  @include header_button();
+}
+
+
 .new {
   background-image: url($icon-url+'new.png');
   @include instruments_button();

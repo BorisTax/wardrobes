@@ -6,6 +6,7 @@ import { editMaterialDialogAtom, editPriceDialogAtom, editProfileDialogAtom, set
 import useConfirm from "../custom-hooks/useConfirm"
 import MenuSeparator from "./MenuSeparator"
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
+import { downloadDatabaseAtom } from "../atoms/database"
 export default function Header() {
   const user = useAtomValue(userAtom)
   const editMaterialDialog = useAtomValue(editMaterialDialogAtom)
@@ -14,6 +15,7 @@ export default function Header() {
   const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
   const showSchemaDialog = useSetAtom(showSchemaDialogAtom)
   const showUserListDialog = useSetAtom(showEditUsersDialogAtom)
+  const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   const settingsDialog = useAtomValue(settingsDialogAtom)
   const showConfirm = useConfirm()
 
@@ -39,6 +41,7 @@ export default function Header() {
         <>
           <MenuSeparator />
           <ImageButton title="Список пользователей" icon="userlistButton" onClick={() => { showUserListDialog() }} />
+          <ImageButton title="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
         </>
         : <></>}
     </div>

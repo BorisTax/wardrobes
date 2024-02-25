@@ -2,7 +2,7 @@ import User from "./User"
 import { useAtomValue, useSetAtom } from "jotai"
 import { userAtom } from "../atoms/users"
 import ImageButton from "./ImageButton"
-import { editMaterialDialogAtom, editPriceDialogAtom, editProfileDialogAtom, showEditUsersDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom } from "../atoms/dialogs"
+import { editMaterialDialogAtom, editPriceDialogAtom, editProfileDialogAtom, settingsDialogAtom, showEditUsersDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom } from "../atoms/dialogs"
 import useConfirm from "../custom-hooks/useConfirm"
 import MenuSeparator from "./MenuSeparator"
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../functions/user"
@@ -14,10 +14,12 @@ export default function Header() {
   const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
   const showSchemaDialog = useSetAtom(showSchemaDialogAtom)
   const showUserListDialog = useSetAtom(showEditUsersDialogAtom)
+  const settingsDialog = useAtomValue(settingsDialogAtom)
   const showConfirm = useConfirm()
 
   return <div className="header">
     <div className="file-buttons-bar">
+      <ImageButton title="Настройки" icon="settingsButton" onClick={() => { settingsDialog?.current?.showModal() }} />
       {isEditorAtLeast(user.role) ?
         <>
           <MenuSeparator />

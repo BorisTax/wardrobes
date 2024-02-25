@@ -26,6 +26,16 @@ export default function AddUserDialog({ dialogRef }: DialogProps) {
     const createUser = useSetAtom(createUserAtom)
     const rolesCaptions = roles.map(r => UserRolesCaptions[r])
     const passwordCorrect = checkPassword(password)
+    const create = () => {
+        if (password.length < 6) return showMessage("Пароль слишком короткий")
+        if (name.length < 3) return showMessage("Логин слишком короткий")
+        if (!passwordCorrect) return showMessage("Пароль должен содержать только цифры и/или латинские буквы")
+        showConfirm(`Создать пользователя ${name} с правами ${rolesCaptions[roleIndex]}?`, () => {
+            createUser({ name, password, role: roles[roleIndex] }, (result) => {
+                showMessage(rusMessages[result.message])
+            })
+        })
+    }
     return <dialog ref={dialogRef} onClose={() => { setState(prev => ({ ...prev, password: "" })) }}>
         <div className="dialog-header-bar">
             <div className="d-flex gap-2">
@@ -33,24 +43,17 @@ export default function AddUserDialog({ dialogRef }: DialogProps) {
             <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
         </div>
         <hr />
-        <div className="property-grid">
-            <div>{`Логин (мин. ${minNameLen} символов):`}</div>
-            <input value={name} onChange={(e) => { setState((prev) => ({ ...prev, name: e.target.value })); }} />
-            <div>{`Пароль (мин. ${minPassLen} символов):`}</div>
-            <input style={{ color: passwordCorrect ? "black" : "red" }} value={password} onChange={(e) => { setState((prev) => ({ ...prev, password: e.target.value })); }} />
-            <ComboBox title="Права:" value={rolesCaptions[roleIndex]} items={rolesCaptions} onChange={(index) => { setRoleIndex(index) }} />
-        </div>
-        <hr />
-        <input type="button" value="Создать" onClick={()=>{
-            if (password.length < 6) return showMessage("Пароль слишком короткий")
-            if (name.length < 3) return showMessage("Логин слишком короткий")
-            if (!passwordCorrect) return showMessage("Пароль должен содержать только цифры и/или латинские буквы")
-            showConfirm(`Создать пользователя ${name} с правами ${rolesCaptions[roleIndex]}?`, ()=>{
-                createUser({name, password, role: roles[roleIndex]}, (result)=>{
-                    showMessage(rusMessages[result.message])
-                })
-            })
-        }}/>
+        <form onSubmit={(e) => { e.preventDefault(); create() }}>
+            <div className="property-grid">
+                <div>{`Логин (мин. ${minNameLen} символов):`}</div>
+                <input required value={name} onChange={(e) => { setState((prev) => ({ ...prev, name: e.target.value })); }} />
+                <div>{`Пароль (мин. ${minPassLen} символов):`}</div>
+                <input required style={{ color: passwordCorrect ? "black" : "red" }} value={password} onChange={(e) => { setState((prev) => ({ ...prev, password: e.target.value })); }} />
+                <ComboBox title="Права:" value={rolesCaptions[roleIndex]} items={rolesCaptions} onChange={(index) => { setRoleIndex(index) }} />
+            </div>
+            <hr />
+            <input type="submit" value="Создать" />
+        </form>
     </dialog>
 }
 

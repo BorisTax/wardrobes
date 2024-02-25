@@ -10,8 +10,6 @@ import ImageButton from "./ImageButton"
 import { saveToExcelAtom } from "../atoms/export"
 import { isManagerAtLeast } from "../functions/user"
 import { userAtom } from "../atoms/users"
-import CheckBox from "./CheckBox"
-
 
 export default function SpecificationDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)

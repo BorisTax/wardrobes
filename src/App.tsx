@@ -29,6 +29,7 @@ import { appDataAtom } from './atoms/app'
 import SchemaDialog from './components/SchemaDialog'
 import EditUsersDialog from './components/EditUsersDialog'
 import EventListener from './components/EventListener'
+import SettingsDialog from './components/SettingsDialog'
 
 function App() {
   const user = useAtomValue(userAtom)
@@ -63,6 +64,7 @@ function App() {
         </div>
         <RootFasadesContainer />
       </div>
+      <SettingsDialog />
       <LoginDialog />
       {isEditorAtLeast(user.role) ? <EditMaterialDialog /> : <></>}
       {isEditorAtLeast(user.role) ? <EditProfileDialog /> : <></>}

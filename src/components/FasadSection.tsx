@@ -4,10 +4,11 @@ import { Division } from "../types/enums";
 import FixedHeight from "./FixedHeight";
 import FixedWidth from "./FixedWidth";
 import FixedBoth from "./FixedBoth";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { setActiveFasadAtom } from "../atoms/fasades";
 import { useImageUrl } from "../atoms/materials";
 import { imagesSrcUrl } from "../options";
+import { settingsAtom } from "../atoms/settings";
 type FasadSectionProps = {
     fasad: Fasad
     rootFasad: Fasad
@@ -16,8 +17,8 @@ type FasadSectionProps = {
 export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fasad = props.fasad
     const onlyFasad = fasad.Children.length === 0
-    const rootFasad = props.rootFasad
     const activeFasad = props.activeFasad
+    const { showFixIcons } = useAtomValue(settingsAtom)
     const [backgroundBackupImage, setBackgroundBackupImage] = useState("")
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const imageUrl = useImageUrl(fasad.ExtMaterial)
@@ -52,10 +53,10 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         events = { onClick: (e: Event) => { e.stopPropagation(); setActiveFasad(fasad) } }
         classes = "fasad-section"
     }
-    const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight()
-    const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth()
+    const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight() && showFixIcons
+    const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth() && showFixIcons
     const fixedBoth = fixedHeight && fixedWidth
-    const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} activeFasad={activeFasad} rootFasad={rootFasad} />) : ""
+    const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} activeFasad={props.activeFasad} rootFasad={props.rootFasad}/>) : ""
     const fixed = fixedBoth ? <FixedBoth /> : fixedHeight ? <FixedHeight /> : fixedWidth ? <FixedWidth /> : <></>
     useEffect(() => {
         if (fasadRef.current) setBackgroundBackupImage(fasadRef.current.style.backgroundImage)
@@ -69,7 +70,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         image.onload = () => {
             if (fasadRef.current && onlyFasad) fasadRef.current.style.backgroundImage = backImage
         }
-    }, [imagesSrcUrl, imageUrl, onlyFasad])
+    }, [imageUrl, onlyFasad, backgroundBackupImage])
     return <div ref={onlyFasad ? fasadRef : nullRef} className={classes} style={{
         display: "grid",
         ...gridTemplate,

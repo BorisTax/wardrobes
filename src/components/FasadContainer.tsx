@@ -3,6 +3,7 @@ import FasadSection from "./FasadSection";
 import { useAtom, useAtomValue } from "jotai";
 import { appDataAtom } from "../atoms/app";
 import { activeFasadAtom, activeRootFasadIndexAtom } from "../atoms/fasades";
+import { settingsAtom } from "../atoms/settings";
 
 type FasadContainerProps = {
     index: number

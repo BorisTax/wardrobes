@@ -10,6 +10,7 @@ import ImageButton from "./ImageButton"
 import { saveToExcelAtom } from "../atoms/export"
 import { isManagerAtLeast } from "../functions/user"
 import { userAtom } from "../atoms/users"
+import CheckBox from "./CheckBox"
 
 
 export default function SpecificationDialog() {
@@ -19,13 +20,14 @@ export default function SpecificationDialog() {
     const [priceList] = useAtom(priceListAtom)
     const [specifications] = useAtom(specificationAtom)
     const [fasadIndex, setFasadIndex] = useState(0)
+    const [showAll, setShowAll] = useState(false)
     const closeDialog = () => { dialogRef.current?.close() }
     const [, setSpecificationDialogRef] = useAtom(specificationDialogAtom)
     const specification = specifications[fasadIndex]
-    const contents = priceList?.map((i: PriceListItem, index: number) => {
+    const contents = priceList?.filter(i => specification.get(i.name as SpecificationItem) || showAll).map((i: PriceListItem, index: number) => {
         const amount = specification.get(i.name as SpecificationItem) || 0
         const price = i.price || 0
-        const className = amount > 0 ? "tr-attention" : "tr-noattention"
+        const className = (amount > 0) ? "tr-attention" : "tr-noattention"
         return <tr key={index} className={className}>
             <td className="pricelist-cell">{i.caption}</td>
             <td className="pricelist-cell">{amount.toFixed(3)}</td>
@@ -69,5 +71,9 @@ export default function SpecificationDialog() {
             </table>
         </div>
         <hr />
+        <div className="d-flex justify-content-start gap-2">
+            <input id="showAll" type="checkbox" checked={showAll} onChange={() => { setShowAll(!showAll) }} />
+            <label htmlFor="showAll" >Показать все позиции</label>
+        </div>
     </dialog>
 }

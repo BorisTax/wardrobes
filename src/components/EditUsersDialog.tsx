@@ -11,6 +11,11 @@ import { UserRoles } from "../types/server"
 import { AtomCallbackResult } from "../types/atoms"
 import { rusMessages } from "../functions/messages"
 
+enum ListType {
+    REGISTERED = "REGISTERED",
+    ACTIVE = "ACTIVE"
+}
+
 export default function EditUsersDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const addUserDialogRef = useRef<HTMLDialogElement>(null)
@@ -25,6 +30,7 @@ export default function EditUsersDialog() {
     const deleteUser = useSetAtom(deleteUserAtom)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
+    const [listType, setListType] = useState(ListType.REGISTERED)
     const userListHeader = <><div className="text-center">Имя</div><div className="text-center">Права</div><div></div></>
     const activeUserListHeader = <><div className="text-center">Имя</div><div className="text-center">Права</div><div className="text-center">Время</div><div></div></>
     const onDelete: AtomCallbackResult = (result) => { showMessage(rusMessages[result.message]) }
@@ -56,19 +62,20 @@ export default function EditUsersDialog() {
             </div>
             <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
         </div>
-            <hr />
+        <hr />
+        <div className="d-flex jistify-content-around">
+            <div className={`tab-button ${listType === ListType.REGISTERED ? "tab-button-active" : ""}`} onClick={()=>{setListType(ListType.REGISTERED)}}>Зарегистрированные</div>
+            <div className={`tab-button ${listType === ListType.ACTIVE ? "tab-button-active" : ""}`} onClick={()=>{setListType(ListType.ACTIVE)}}>Активные ({activeUsers.length})</div>
+        </div>
         <div className="userlist-container">
-            <div className="text-center">Зарегистрированные пользователи</div>
-            <div className="users-list">
+            {listType === ListType.REGISTERED ? <div className="users-list">
                 {userListHeader}
                 {userlist}
-            </div>
-            <hr />
-            <div className="text-center">Активные пользователи</div>
-            <div className="activeusers-list">
-                {activeUserListHeader}
-                {activeuserlist}
-            </div>
+            </div> :
+                <div className="activeusers-list">
+                    {activeUserListHeader}
+                    {activeuserlist}
+                </div>}
         </div>
         <AddUserDialog dialogRef={addUserDialogRef} />
     </dialog>

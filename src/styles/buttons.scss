@@ -41,7 +41,18 @@
   background-color: aquamarine;
 }
 
-
+.tab-button{
+  text-align: center;
+  border-radius: 2px;
+  padding: 0.2em;
+  cursor: pointer;
+  &.tab-button-active{
+    background-color: aqua;
+  }
+}
+.tab-button:hover{
+  color: blue;
+}
 
 .separator {
   align-self: stretch;

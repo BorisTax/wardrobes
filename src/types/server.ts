@@ -49,7 +49,6 @@ export enum TableFields {
 }
 
 export type PriceListItem = {
-    position?: string
     name: string
     caption?: string
     units?: string

@@ -26,14 +26,16 @@ export type ActiveUserState = UserState & {
 export const allUsersAtom = atom<UserState[]>([])
 export const activeUsersAtom = atom<ActiveUserState[]>([])
 export const loadUsersAtom = atom(null, async (get,set)=>{
-    const {token} = get(userAtom)
+    const { token, role } = get(userAtom)
+    if (role !== UserRoles.ADMIN) return
     const result = await fetchGetData(`api/users/users?token=${token}`)
     if(result.success){
         set(allUsersAtom, result.data as UserState[])
     }
 })
 export const loadActiveUsersAtom = atom(null, async (get, set) => {
-    const {token} = get(userAtom)
+    const { token, role } = get(userAtom)
+    if (role !== UserRoles.ADMIN) return
     const result = await fetchGetData(`api/users/active?token=${token}`)
     if(result.success){
         set(activeUsersAtom, result.data as ActiveUserState[])
@@ -57,8 +59,8 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
         storeUser = { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" }
     }
     localStorage.setItem('token', storeUser.token)
-    if (isClientAtLeast(storeUser.role)) set(loadPriceListAtom)
     set(userAtom, storeUser)
+    if (isClientAtLeast(storeUser.role)) set(loadPriceListAtom)
 })
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")

@@ -19,10 +19,10 @@ export default function EventListener() {
               setUserDirectly({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
               showMessage("Сеанс завершен администратором")
               return true
-            } else loadActiveUsers()
+            } else if (user.role === UserRoles.ADMIN) loadActiveUsers()
             break;
           case SERVER_EVENTS.UPDATE_ACTIVE_USERS:
-            loadActiveUsers()
+            if (user.role === UserRoles.ADMIN) loadActiveUsers()
             break;
           }
         return false

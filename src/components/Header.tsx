@@ -46,7 +46,7 @@ export default function Header() {
         : <></>}
     </div>
     <div className="version">
-      v0.1.1
+      v0.1.2
     </div>
     <User />
   </div>

@@ -2,11 +2,11 @@ import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { accessDenied, checkPermissions, incorrectData, noExistData } from '../functions/other.js';
+import { accessDenied, incorrectData, noExistData } from '../functions/other.js';
 import { MyRequest, PriceListItem, UserRoles } from '../types/server.js';
 import { priceServiceProvider } from '../options.js';
 import { PriceService } from '../services/priceService.js';
-import { isAdminAtLeast, isClientAtLeast } from '../functions/user.js';
+import { isClientAtLeast, isEditorAtLeast } from '../functions/user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +21,7 @@ router.get("/pricelist", async (req: MyRequest, res) => {
 });
 
 router.put("/pricelist", async (req: MyRequest, res) => {
-  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, caption, price, code, id, markup } = req.body
   const result = await updatePriceList({ name, caption, price, code, id, markup });
   res.status(result.status).json(result);

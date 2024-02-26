@@ -25,7 +25,7 @@ import SpecificationDialog from './components/SpecificationDialog'
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast} from './server/functions/user'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
-import { appDataAtom } from './atoms/app'
+import { appDataAtom, loadVersionAtom } from './atoms/app'
 import SchemaDialog from './components/SchemaDialog'
 import EditUsersDialog from './components/EditUsersDialog'
 import EventListener from './components/EventListener'
@@ -37,12 +37,14 @@ function App() {
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
   const setAppData = useSetAtom(appDataAtom)
-    useEffect(() => {
+  const loadVersion = useSetAtom(loadVersionAtom)
+  useEffect(() => {
     const storage = localStorage.getItem('appState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
     setAppData(getAppDataFromState(appState), false)
     loadMaterialList(!storage)
     loadProfileList()
+    loadVersion()
   }, [])
   useEffect(() => {
     const onContextMenu = (e: Event) => { e.preventDefault() }

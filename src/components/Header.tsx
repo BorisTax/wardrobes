@@ -7,6 +7,7 @@ import useConfirm from "../custom-hooks/useConfirm"
 import MenuSeparator from "./MenuSeparator"
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { downloadDatabaseAtom } from "../atoms/database"
+import { versionAtom } from "../atoms/app"
 export default function Header() {
   const user = useAtomValue(userAtom)
   const editMaterialDialog = useAtomValue(editMaterialDialogAtom)
@@ -17,6 +18,7 @@ export default function Header() {
   const showUserListDialog = useSetAtom(showEditUsersDialogAtom)
   const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   const settingsDialog = useAtomValue(settingsDialogAtom)
+  const version = useAtomValue(versionAtom) 
   const showConfirm = useConfirm()
 
   return <div className="header">
@@ -46,7 +48,7 @@ export default function Header() {
         : <></>}
     </div>
     <div className="version">
-      v0.1.2
+      {`v${version}`}
     </div>
     <User />
   </div>

@@ -3,12 +3,21 @@ $image-url: '../images/';
 *{
   user-select: none;
 }
+.version{
+  display: flex;
+  align-items: center;
+  
+}
 dialog{
   overflow: hidden;
   padding: 0.5rem;
 }
+html{
+  height: 100%;
+}
 body{
   background-color: rgb(233, 233, 233) !important;
+  height: 100%;
 }
 body:has(dialog[open]) {
   overflow: hidden;

@@ -45,6 +45,9 @@ export default function Header() {
         </>
         : <></>}
     </div>
+    <div className="version">
+      v0.1.1
+    </div>
     <User />
   </div>
 }

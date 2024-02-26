@@ -2,7 +2,6 @@ import express from 'express'
 import http from 'http'
 import path from 'path'
 import { fileURLToPath } from 'url';
-import config from 'config'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'

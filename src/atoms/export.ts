@@ -28,6 +28,6 @@ export const saveToExcelAtom = atom(null, async (get, set, index: number) => {
         headerStyle: {
             fontWeight: 'bold',
             align: 'center'
-        }, fileName: `${orderCaption}Фасад (${index + 1} из ${specifications.length}).xls`
+        }, fileName: `${orderCaption}Фасад (${index + 1} из ${specifications.length}).xlsx`
     })
 })

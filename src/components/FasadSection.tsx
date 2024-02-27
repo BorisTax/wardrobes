@@ -35,14 +35,13 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
     let styles: object = fasad.Parent === null ? { height: "100%" } : {}
-    styles = { ...styles, border: (fasad === activeFasad ? "3px solid red" : "") }
+    styles = { ...styles, border: (fasad === activeFasad) ? "3px solid red" : "1px solid black" }
     let events = {}
     let classes = ""
     if (onlyFasad) {
         styles = {
             ...styles,
             display: "flex",
-            border: "1px solid black",
             overflow: "hidden",
             flexShrink: "0",
             justifyContent: "center",
@@ -52,6 +51,11 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         }
         events = { onClick: (e: Event) => { e.stopPropagation(); setActiveFasad(fasad) } }
         classes = "fasad-section"
+    }else{
+        styles = {
+            ...styles,
+            backgroundImage: ""
+        }
     }
     const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight() && showFixIcons
     const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth() && showFixIcons
@@ -66,11 +70,11 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         const imageSrc = `${imagesSrcUrl}${imageUrl}`
         const backImage = `url("${imageSrc}")`
         image.src = imageSrc
-        if (fasadRef.current) fasadRef.current.style.backgroundImage = backgroundBackupImage
+        if (fasadRef.current) fasadRef.current.style.backgroundImage = getComputedStyle(fasadRef.current).getPropertyValue('--default-image')
         image.onload = () => {
             if (fasadRef.current && onlyFasad) fasadRef.current.style.backgroundImage = backImage
         }
-    }, [imageUrl, onlyFasad, backgroundBackupImage])
+    }, [imageUrl, onlyFasad])
     return <div ref={onlyFasad ? fasadRef : nullRef} className={classes} style={{
         display: "grid",
         ...gridTemplate,

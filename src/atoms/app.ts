@@ -25,6 +25,11 @@ export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state)
     else set(appAtom, { ...app, state })
     set(calculateSpecificationsAtom)
 })
+export const saveToStorageAtom = atom(null, (get, set) => {
+    const app = get(appAtom)
+    const state = app.state
+    localStorage.setItem('appState', JSON.stringify(state))
+})
 export const undoAtom = atom(null, (get: Getter, set: Setter) => {
     const app = get(appAtom)
     if (!app.previous) return

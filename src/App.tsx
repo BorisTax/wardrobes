@@ -25,7 +25,7 @@ import SpecificationDialog from './components/SpecificationDialog'
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast} from './server/functions/user'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
-import { appDataAtom, loadVersionAtom } from './atoms/app'
+import { appDataAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import SchemaDialog from './components/SchemaDialog'
 import EditUsersDialog from './components/EditUsersDialog'
 import EventListener from './components/EventListener'
@@ -38,6 +38,7 @@ function App() {
   const loadProfileList = useSetAtom(loadProfileListAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
+  const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
     const storage = localStorage.getItem('appState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
@@ -48,11 +49,14 @@ function App() {
   }, [])
   useEffect(() => {
     const onContextMenu = (e: Event) => { e.preventDefault() }
+    const onBeforeUnload = (e: Event) => { saveToStorage() }
     document.addEventListener("contextmenu", onContextMenu)
+    window.addEventListener("beforeunload", onBeforeUnload)
     const toolTip = createToolTip()
     document.body.appendChild(toolTip)
     return () => {
       document.removeEventListener("contextmenu", onContextMenu)
+      window.removeEventListener("beforeunload", onBeforeUnload)
       document.body.removeChild(toolTip)
     }
   }, [])

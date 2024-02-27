@@ -2,7 +2,7 @@ import { newFasadFromState } from "../functions/fasades"
 import { FasadOuterEdges } from "../types/edges"
 import { Division, FasadMaterial, SandBase } from "../types/enums"
 import { FasadBackup, FasadProps } from "../types/fasadProps"
-import FasadState from "./FasadState"
+import FasadState, { FasadBackImageProps } from "./FasadState"
 
 export default class Fasad {
     private active = false
@@ -23,6 +23,7 @@ export default class Fasad {
     private level = 0
     private minSize: number
     private backup: FasadBackup = {}
+    private backImageProps: FasadBackImageProps = { top: 0, left: 0, size: 100 }
     constructor(props: FasadProps = {}) {
         this.width = props?.width || 0
         this.height = props?.height || 0
@@ -48,6 +49,7 @@ export default class Fasad {
         state.extMaterial = this.extMaterial
         state.sandBase = this.sandBase
         state.minSize = this.minSize
+        state.backImageProps = { ...this.backImageProps }
         state.outerEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
         state.children = []
         for (const c of this.Children) state.children.push(c.getState())
@@ -66,11 +68,18 @@ export default class Fasad {
         this.division = state.division
         this.minSize = state.minSize
         this.OuterEdges = { ...state.outerEdges }
+        this.backImageProps = { ...state.backImageProps }
         this.Children = state.children.map((s: FasadState) => {
             const f: Fasad = newFasadFromState(s)
             f.Parent = this
             return f
         })
+    }
+    public set BackImageProps(value: FasadBackImageProps){
+        this.backImageProps = { ...value }
+    }
+    public get BackImageProps(): FasadBackImageProps {
+        return this.backImageProps
     }
     public get Material() {
         return this.material

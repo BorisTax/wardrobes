@@ -1,5 +1,10 @@
 import { Division, FasadMaterial, SandBase } from "../types/enums"
 
+export type FasadBackImageProps = {
+    top: number
+    left: number
+    size: number
+}
 export default class FasadState {
     public active: boolean = false
     public level: number = 0
@@ -14,4 +19,5 @@ export default class FasadState {
     public division: Division = Division.HEIGHT
     public children: FasadState[] = []
     public minSize: number = 100
+    public backImageProps: FasadBackImageProps = { top: 0, left: 0, size: 100 }
 }

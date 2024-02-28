@@ -65,6 +65,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
                     return
                 }
                 if (e.button !== 0) return
+                if (!e.shiftKey) return
                 if (!hasImage) return;
                 setBackImagePosition(prev => ({ ...prev, drag: true, x0: e.clientX, y0: e.clientY })) 
             },

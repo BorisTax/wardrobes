@@ -13,12 +13,12 @@ import useConfirm from "../custom-hooks/useConfirm"
 import Button from "./Button"
 import { rusMessages } from "../functions/messages"
 import ImageButton from "./ImageButton"
+import DialogWindow from "./DialogWindow"
 
 export default function EditMaterialDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const [materialList] = useAtom(materialListAtom)
     const [{ baseMaterial, extMaterialIndex }, setState] = useState({ baseMaterial: FasadMaterial.DSP, extMaterialIndex: 0 })
-    const closeDialog = () => { dialogRef.current?.close() }
     const [, setMaterialDialogRef] = useAtom(editMaterialDialogAtom)
     const deleteMaterial = useSetAtom(deleteMaterialAtom)
     const addMaterial = useSetAtom(addMaterialAtom)
@@ -39,13 +39,7 @@ export default function EditMaterialDialog() {
     useEffect(() => {
         setMaterialDialogRef(dialogRef)
     }, [setMaterialDialogRef, dialogRef])
-    return <dialog ref={dialogRef}>
-        <div className="dialog-header-bar">
-            <div>
-            </div>
-            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
-        </div>
-        <hr />
+    return <DialogWindow dialogRef={dialogRef}>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">
@@ -123,7 +117,7 @@ export default function EditMaterialDialog() {
                 }} />
             </div>
         </div>
-    </dialog>
+        </DialogWindow>        
 }
 
 function checkFields({ nameChecked = true, codeChecked = true, imageChecked, newName, newCode, file }: { nameChecked?: boolean, codeChecked?: boolean, imageChecked: boolean, newName: string, newCode: string, file: File | null }, showMessage: (message: string) => void) {

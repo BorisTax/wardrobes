@@ -10,6 +10,7 @@ import AddUserDialog from "./AddUserDialog"
 import { UserRoles } from "../server/types/server"
 import { AtomCallbackResult } from "../types/atoms"
 import { rusMessages } from "../functions/messages"
+import DialogWindow from "./DialogWindow"
 
 enum ListType {
     REGISTERED = "REGISTERED",
@@ -19,7 +20,6 @@ enum ListType {
 export default function EditUsersDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const addUserDialogRef = useRef<HTMLDialogElement>(null)
-    const closeDialog = () => { dialogRef.current?.close() }
     const setEditUsersDialogRef = useSetAtom(editUsersDialogAtom)
     const { token } = useAtomValue(userAtom)
     const users = useAtomValue(allUsersAtom)
@@ -54,15 +54,12 @@ export default function EditUsersDialog() {
     useEffect(() => {
         setEditUsersDialogRef(dialogRef)
     }, [setEditUsersDialogRef, dialogRef])
-    return <dialog ref={dialogRef}>
-        <div className="dialog-header-bar">
+    return <DialogWindow dialogRef={dialogRef} menuButtons={
             <div className="d-flex gap-2">
                 <ImageButton title="Обновить" icon='update' onClick={() => { loadUsers(); loadActiveUsers() }} />
                 <ImageButton title="Добавить" icon='add' onClick={() => { addUserDialogRef.current?.showModal() }} />
             </div>
-            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
-        </div>
-        <hr />
+    }>
         <div className="d-flex jistify-content-around">
             <div className={`tab-button ${listType === ListType.REGISTERED ? "tab-button-active" : ""}`} onClick={()=>{setListType(ListType.REGISTERED)}}>Зарегистрированные</div>
             <div className={`tab-button ${listType === ListType.ACTIVE ? "tab-button-active" : ""}`} onClick={()=>{setListType(ListType.ACTIVE)}}>Активные ({activeUsers.length})</div>
@@ -78,7 +75,7 @@ export default function EditUsersDialog() {
                 </div>}
         </div>
         <AddUserDialog dialogRef={addUserDialogRef} />
-    </dialog>
+    </DialogWindow>
 }
 
 function TimeField({ time }: { time: number }) {

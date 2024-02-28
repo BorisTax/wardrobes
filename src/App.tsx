@@ -7,7 +7,7 @@ import './styles/messages.scss'
 import './styles/inputs.scss'
 import Header from './components/Header'
 import PropertiesBar from './components/PropertiesBar'
-import { createToolTip } from './functions/functions'
+import { createToolTip, isMobile } from './functions/functions'
 import LoginDialog from './components/LoginDialog'
 import WardrobePropertiesBar from './components/WardrobePropertiesBar'
 import { useAtomValue, useSetAtom } from 'jotai'
@@ -30,6 +30,7 @@ import SchemaDialog from './components/SchemaDialog'
 import EditUsersDialog from './components/EditUsersDialog'
 import EventListener from './components/EventListener'
 import SettingsDialog from './components/SettingsDialog'
+import StatusBar from './components/StatusBar'
 
 function App() {
   const user = useAtomValue(userAtom)
@@ -63,6 +64,7 @@ function App() {
   return (
     <>
       <Header />
+      {!isMobile() ? <StatusBar /> : <></>}
       <div className="main-container" onClick={() => { setActiveFasad(null); }}>
         <div className='properties-container'>
           <WardrobePropertiesBar />

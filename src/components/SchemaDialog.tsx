@@ -12,6 +12,7 @@ import { FasadMaterial } from "../types/enums"
 import Fasad from '../classes/Fasad'
 import FasadSchemaSection from './FasadSchemaSection'
 import ImageButton from './ImageButton'
+import DialogWindow from './DialogWindow'
 
 export default function SchemaDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -24,7 +25,6 @@ export default function SchemaDialog() {
     const { rootFasades, fasadCount, order, profile, type, wardHeight, wardWidth } = useAtomValue(appDataAtom)
     const totalWidth = rootFasades.reduce((prev, r: Fasad) => r.Width + prev, 0) + 5
     const ratio = totalWidth / rootFasades[0].Height
-    const closeDialog = () => { dialogRef.current?.close() }
     const setSchemaDialogRef = useSetAtom(schemaDialogAtom)
     const DSPColors = [...combineColors(rootFasades, FasadMaterial.DSP)].join(", ")
     const mirrorColors = [...combineColors(rootFasades, FasadMaterial.MIRROR)].join(", ")
@@ -46,8 +46,7 @@ export default function SchemaDialog() {
     useEffect(() => {
         setSchemaDialogRef(dialogRef)
     }, [dialogRef])
-    return <dialog ref={dialogRef}>
-        <div className="dialog-header-bar">
+    return <DialogWindow dialogRef={dialogRef} menuButtons={
             <div>
                 <ImageButton icon="pdf" title="Сохранить в PDF" onClick={() => {
                     html2image.toPng(sheetRef.current as HTMLDivElement)
@@ -64,9 +63,7 @@ export default function SchemaDialog() {
                         });
                 }} />
             </div>
-            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
-        </div>
-        <hr/>
+    }>
             <div className='schema-background'>
                 <div ref={sheetRef} className='schema-sheet'>
                     <div className="schema-container">
@@ -114,5 +111,5 @@ export default function SchemaDialog() {
                     </div>
                 </div>
             </div>
-    </dialog>
+    </DialogWindow>
 }

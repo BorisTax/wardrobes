@@ -9,7 +9,7 @@ import { PriceListItem } from "../server/types/server"
 import { UnitCaptions } from "../functions/materials"
 import InputField from "./InputField"
 import { PropertyType } from "../types/property"
-import ImageButton from "./ImageButton"
+import DialogWindow from "./DialogWindow"
 
 
 export default function EditPriceDialog() {
@@ -18,7 +18,6 @@ export default function EditPriceDialog() {
     const [priceList] = useAtom(priceListAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const { name, caption, price, code, id, markup } = (priceList && priceList[selectedIndex]) ? { ...priceList[selectedIndex] } : { name: "", caption: "", price: "", code: "", id: "", markup: "" }
-    const closeDialog = () => { dialogRef.current?.close() }
     const [, setPriceDialogRef] = useAtom(editPriceDialogAtom)
     const updatePriceList = useSetAtom(updatePriceListAtom)
     const [{ newCaption, newPrice, newCode, newId, newMarkup }, setNewValues] = useState({ newCaption: caption || "", newPrice: `${price}`, newCode: code || "", newId: id || "", newMarkup: `${markup}` })
@@ -38,13 +37,7 @@ export default function EditPriceDialog() {
         loadPriceList()
         setPriceDialogRef(dialogRef)
     }, [setPriceDialogRef, dialogRef])
-    return <dialog ref={dialogRef}>
-        <div className="dialog-header-bar">
-            <div>
-            </div>
-            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
-        </div>
-        <hr />
+    return <DialogWindow dialogRef={dialogRef}>
         <div className="overflow-scroll">
             <div className="pricelist">
                 <table>
@@ -109,7 +102,7 @@ export default function EditPriceDialog() {
                 </div>
             </div>
         </div>
-    </dialog>
+    </DialogWindow>
 }
 
 function checkFields({ captionChecked = true, priceChecked = true, codeChecked = true, idChecked = true, markupChecked = true, newCaption = "", newPrice = "", newCode = "", newId = "", newMarkup = "" }: { captionChecked: boolean, priceChecked: boolean, codeChecked: boolean, idChecked: boolean, markupChecked: boolean, newCaption: string, newPrice: string, newCode: string, newId: string, newMarkup: string }, showMessage: (message: string) => void) {

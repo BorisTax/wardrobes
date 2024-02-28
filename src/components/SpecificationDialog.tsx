@@ -10,6 +10,7 @@ import ImageButton from "./ImageButton"
 import { saveToExcelAtom } from "../atoms/export"
 import { userAtom } from "../atoms/users"
 import { isManagerAtLeast } from "../server/functions/user"
+import DialogWindow from "./DialogWindow"
 
 export default function SpecificationDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -19,7 +20,6 @@ export default function SpecificationDialog() {
     const [specifications] = useAtom(specificationAtom)
     const [fasadIndex, setFasadIndex] = useState(0)
     const [showAll, setShowAll] = useState(false)
-    const closeDialog = () => { dialogRef.current?.close() }
     const [, setSpecificationDialogRef] = useAtom(specificationDialogAtom)
     const specification = specifications[fasadIndex]
     const contents = priceList?.filter(i => specification.get(i.name as SpecificationItem) || showAll).map((i: PriceListItem, index: number) => {
@@ -40,12 +40,9 @@ export default function SpecificationDialog() {
     useEffect(() => {
         setSpecificationDialogRef(dialogRef)
     }, [setSpecificationDialogRef, dialogRef])
-    return <dialog ref={dialogRef}>
-        <div className="dialog-header-bar">
-            <ImageButton icon="excel" title="Сохранить в Excel" onClick={() => saveToExcel(fasadIndex)} />
-            <ImageButton icon="close" title="Закрыть" onClick={() => closeDialog()} />
-        </div>
-        <hr/>
+    return <DialogWindow dialogRef={dialogRef} menuButtons={
+        <ImageButton icon="excel" title="Сохранить в Excel" onClick={() => saveToExcel(fasadIndex)} />
+    }>
         <div className="d-flex flex-row flex-nowrap justify-content-center align-items-center gap-1">
             <ImageButton title="Предыдущая спецификация" icon="prevFasad" visible={fasadIndex > 0} disabled={fasadIndex === 0} onClick={() => { setFasadIndex((prev) => prev - 1) }} />
             <div>Фасад{` ${fasadIndex + 1}`}</div>
@@ -73,5 +70,5 @@ export default function SpecificationDialog() {
             <input id="showAll" type="checkbox" checked={showAll} onChange={() => { setShowAll(!showAll) }} />
             <label htmlFor="showAll" >Показать все позиции</label>
         </div>
-    </dialog>
+    </DialogWindow>
 }

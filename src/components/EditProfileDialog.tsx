@@ -10,14 +10,13 @@ import Button from "./Button"
 import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../atoms/profiles"
 import { rusMessages } from "../functions/messages"
 import messages from "../server/messages"
-import ImageButton from "./ImageButton"
+import DialogWindow from "./DialogWindow"
 
 export default function EditProfileDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const [profileList] = useAtom(profileListAtom)
     const [{ name: profileName, type, code }, setState] = useState({ ...profileList[0] })
     useMemo(() => { setState({ ...profileList[0] }) }, [profileList])
-    const closeDialog = () => { dialogRef.current?.close() }
     const [, setProfileDialogRef] = useAtom(editProfileDialogAtom)
     const deleteProfile = useSetAtom(deleteProfileAtom)
     const addProfile = useSetAtom(addProfileAtom)
@@ -33,13 +32,7 @@ export default function EditProfileDialog() {
     useEffect(() => {
         setProfileDialogRef(dialogRef)
     }, [setProfileDialogRef, dialogRef])
-    return <dialog ref={dialogRef}>
-        <div className="dialog-header-bar">
-            <div>
-            </div>
-            <ImageButton title="Закрыть" icon='close' onClick={() => closeDialog()} />
-        </div>
-        <hr />
+    return <DialogWindow dialogRef={dialogRef}>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">
@@ -102,7 +95,7 @@ export default function EditProfileDialog() {
                 }} />
             </div>
         </div>
-    </dialog>
+    </DialogWindow>
 }
 
 function checkFields({ nameChecked = true, codeChecked = true, newName, newCode }: { nameChecked?: boolean, codeChecked?: boolean, newName: string, newCode: string }, showMessage: (message: string) => void) {

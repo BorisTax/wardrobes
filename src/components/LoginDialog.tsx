@@ -24,7 +24,7 @@ export default function LoginDialog() {
     }, [setLoginDialogRef, dialogRef])
     return <dialog ref={dialogRef} onClose={() => { setPassword("") }}>
         <form id="loginForm" onSubmit={(e) => {
-            e.preventDefault();
+            e.preventDefault(); 
             const formData = new FormData(document.getElementById("loginForm") as HTMLFormElement)
             login(formData.get("name") as string, formData.get("password") as string)
         }}>

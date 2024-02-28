@@ -1,7 +1,7 @@
 import { newFasadFromState } from "../functions/fasades"
 import { FasadOuterEdges } from "../types/edges"
 import { Division, FasadMaterial, SandBase } from "../types/enums"
-import { FasadBackup, FasadProps } from "../types/fasadProps"
+import { FasadProps } from "../types/fasadProps"
 import FasadState, { FasadBackImageProps } from "./FasadState"
 
 export default class Fasad {
@@ -22,8 +22,7 @@ export default class Fasad {
     public Parent: Fasad | null = null
     private level = 0
     private minSize: number
-    private backup: FasadBackup = {}
-    private backImageProps: FasadBackImageProps = { top: 0, left: 0, size: 100 }
+    private backImageProps: FasadBackImageProps = { top: 0, left: 0, size: 100, repeat: false }
     constructor(props: FasadProps = {}) {
         this.width = props?.width || 0
         this.height = props?.height || 0
@@ -31,7 +30,6 @@ export default class Fasad {
         this.material = props?.material || FasadMaterial.DSP
         this.extMaterial = props?.extMaterial || ""
         this.sandBase = props?.sandBase || SandBase.MIRROR
-        this.backup.hasBackup = false
         this.Children = []
         this.OuterEdges = { left: true, right: true, top: true, bottom: true }
     }
@@ -264,7 +262,6 @@ export default class Fasad {
             if (c === initiator) part = newWidth
             if (!c.FixedWidth() && !(c === initiator)) part = lastFreeIndex === i ? partLastWidth : partFreeWidth
             if (useSameWidth) part = c.width
-            if (!useSameWidth) c.backup
             c.width = part
             c.height = this.height
             if (c.Children.length > 1) {
@@ -313,7 +310,6 @@ export default class Fasad {
             if (c === initiator) part = newHeight
             if (!c.FixedHeight() && !(c === initiator)) part = lastFreeIndex === i ? partLastHeight : partFreeHeight
             if (useSameHeight) part = c.height
-            if (!useSameHeight) c.backup
             c.height = part
             c.width = this.width
             if (c.Children.length > 1) {

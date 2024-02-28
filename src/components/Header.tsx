@@ -3,11 +3,9 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { userAtom } from "../atoms/users"
 import ImageButton from "./ImageButton"
 import { editMaterialDialogAtom, editPriceDialogAtom, editProfileDialogAtom, settingsDialogAtom, showEditUsersDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom } from "../atoms/dialogs"
-import useConfirm from "../custom-hooks/useConfirm"
 import MenuSeparator from "./MenuSeparator"
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { downloadDatabaseAtom } from "../atoms/database"
-import { versionAtom } from "../atoms/app"
 export default function Header() {
   const user = useAtomValue(userAtom)
   const editMaterialDialog = useAtomValue(editMaterialDialogAtom)
@@ -18,8 +16,7 @@ export default function Header() {
   const showUserListDialog = useSetAtom(showEditUsersDialogAtom)
   const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   const settingsDialog = useAtomValue(settingsDialogAtom)
-  const version = useAtomValue(versionAtom) 
-  const showConfirm = useConfirm()
+ 
 
   return <div className="header">
     <div className="file-buttons-bar">
@@ -46,9 +43,6 @@ export default function Header() {
           <ImageButton title="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
         </>
         : <></>}
-    </div>
-    <div className="version">
-      {`v${version}`}
     </div>
     <User />
   </div>

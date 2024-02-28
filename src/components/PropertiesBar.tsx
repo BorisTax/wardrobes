@@ -15,6 +15,7 @@ import { Materials, SandBases } from "../functions/materials"
 import { totalPriceAtom } from "../atoms/specification"
 import { userAtom } from "../atoms/users"
 import { isClientAtLeast } from "../server/functions/user"
+import { getInitialBackImageProps } from "../classes/FasadState"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const { role } = useAtomValue(userAtom)
@@ -37,10 +38,23 @@ export default function PropertiesBar() {
     const extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
     const fasadValue=fasad && totalPrice[rootFasadIndex].toFixed(2)
     const fasadPrice = isClientAtLeast(role) ? <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div> : <></>
-    return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}>
+    const onlyFasad = !!fasad && fasad.Children.length === 0
+    const stretchImage = fasad?.BackImageProps.size === "100% 100%"
+    return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}> 
         <div className="property-bar-header">
             Параметры фасада
-            <ImageButton title="Выбрать секцию" icon="selectParent" visible={!((fasad === null) || (fasad.Parent === null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
+            <div>
+                <ToggleButton
+                    title={stretchImage ? "Сбросить масштабирование" : "Подогнать изображение под размер"}
+                    visible={onlyFasad}
+                    iconPressed="resetImage" iconUnPressed="stretchImage" pressed={stretchImage}
+                    onClick={() => {
+                        if (!fasad) return
+                        if (stretchImage) fasad.BackImageProps = getInitialBackImageProps(); else fasad.BackImageProps = { ...getInitialBackImageProps(), size: "100% 100%" }
+                        setActiveFasad(fasad)
+                    }} />
+                <ImageButton title="Выбрать секцию" icon="selectParent" visible={!((fasad === null) || (fasad.Parent === null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
+            </div>
         </div>
         <hr />
         <PropertyGrid>

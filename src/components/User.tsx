@@ -4,6 +4,7 @@ import { UserRolesCaptions, getInitialUser, logoutAtom, setUserAtom, userAtom } 
 import { loginDialogAtom } from "../atoms/dialogs";
 import useConfirm from "../custom-hooks/useConfirm";
 import { UserRoles } from "../server/types/server";
+import { versionAtom } from "../atoms/app";
 
 export default function User() {
     const [user] = useAtom(userAtom)
@@ -12,6 +13,7 @@ export default function User() {
     const role = UserRolesCaptions[user.role as UserRoles]
     const dialogRef = useAtomValue(loginDialogAtom)
     const showConfirm = useConfirm()
+    const version = useAtomValue(versionAtom)
     const loginButton = <button className="btn btn-primary" onClick={() => { dialogRef?.current?.showModal() }}>Вход</button>
     const logoutButton = <button className="btn btn-secondary" onClick={() => {
         showConfirm("Завершить сеанс пользователя?", () => { logout() })
@@ -29,5 +31,8 @@ export default function User() {
             </div>
              {logoutButton}
         </>}
+        <div className="version">
+            {`v${version}`}
+        </div>
     </div>
 }

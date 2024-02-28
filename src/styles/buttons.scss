@@ -150,6 +150,16 @@ $header_button_height: 32px;
   @include instruments_button();
 }
 
+.stretchImage {
+  background-image: url($icon-url+'stretchImage.png');
+  @include instruments_button();
+}
+
+.resetImage {
+  background-image: url($icon-url+'resetImage.png');
+  @include instruments_button();
+}
+
 .menu {
   background-image: url($icon-url+'menu.png');
   @include header_button();

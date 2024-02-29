@@ -129,6 +129,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
                 fasadRef.current.style.backgroundImage = backImage
                 setBackgroundStyle(fasadRef.current, {top, left, size, repeat})
                 setBackImagePosition(prev => ({ ...prev, hasImage: true }))
+                setActiveFasad(fasad)
             }
         }
     }, [imageUrl, onlyFasad])

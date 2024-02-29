@@ -36,7 +36,7 @@ export default function PropertiesBar() {
     const divideFasad = useSetAtom(divideFasadAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
-    const fasadValue=fasad && totalPrice[rootFasadIndex].toFixed(2)
+    const fasadValue = fasad && totalPrice[rootFasadIndex].toFixed(2)
     const fasadPrice = isClientAtLeast(role) ? <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div> : <></>
     const onlyFasad = !!fasad && fasad.Children.length === 0
     const stretchImage = fasad?.BackImageProps.size === "100% 100%"

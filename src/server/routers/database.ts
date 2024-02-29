@@ -1,4 +1,3 @@
-import messages from '../messages.js'
 import path from 'path'
 import fs from 'fs'
 import archiver from 'archiver'

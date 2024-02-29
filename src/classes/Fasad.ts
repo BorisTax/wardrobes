@@ -2,7 +2,7 @@ import { newFasadFromState } from "../functions/fasades"
 import { FasadOuterEdges } from "../types/edges"
 import { Division, FasadMaterial, SandBase } from "../types/enums"
 import { FasadProps } from "../types/fasadProps"
-import FasadState, { FasadBackImageProps } from "./FasadState"
+import FasadState, { FasadBackImageProps, getInitialBackImageProps } from "./FasadState"
 
 export default class Fasad {
     private active = false
@@ -90,6 +90,7 @@ export default class Fasad {
         }
     }
     public setExtMaterial(value: string, toChildren = true) {
+        if (this.extMaterial !== value) this.backImageProps = getInitialBackImageProps()
         this.extMaterial = value
         if (!toChildren) return
         for (const f of this.Children) {

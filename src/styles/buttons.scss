@@ -160,6 +160,12 @@ $header_button_height: 32px;
   @include instruments_button();
 }
 
+.copy {
+  background-image: url($icon-url+'copy.png');
+  @include instruments_button();
+}
+
+
 .menu {
   background-image: url($icon-url+'menu.png');
   @include header_button();

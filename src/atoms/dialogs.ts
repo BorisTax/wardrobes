@@ -44,6 +44,7 @@ export const showEditUsersDialogAtom = atom(null, (get, set) => {
     dialogRef?.current?.showModal()
 })
 export const settingsDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const copyFasadDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 
 const messageAtom = atom<MessageAtom>({ dialogRef: null, message: "" })
 export const messageDialogAtom = atom((get) => get(messageAtom), (get, set, message: string) => {

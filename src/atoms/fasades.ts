@@ -8,6 +8,12 @@ import { appDataAtom } from './app'
 import { AppData } from '../types/app'
 import { settingsAtom } from './settings'
 
+export const copyFasadAtom = atom(null, (get, set, dest: number, source: number) => {
+    const appData = get(appDataAtom)
+    appData.rootFasades[dest].setState(appData.rootFasades[source].getState())
+    set(appDataAtom, { ...appData }, true)
+})
+
 export const activeFasadAtom = atom<Fasad | null>((get) => {
     const appData: AppData = get(appDataAtom)
     let activeFasad: Fasad | null = null

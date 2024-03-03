@@ -16,11 +16,13 @@ import { totalPriceAtom } from "../atoms/specification"
 import { userAtom } from "../atoms/users"
 import { isClientAtLeast } from "../server/functions/user"
 import { getInitialBackImageProps } from "../classes/FasadState"
+import { settingsAtom } from "../atoms/settings"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const { role } = useAtomValue(userAtom)
     const fasad = useAtomValue(activeFasadAtom)
     const rootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
+    const { minSize } = useAtomValue(settingsAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
     const materialList = useAtomValue(materialListAtom)
@@ -60,12 +62,12 @@ export default function PropertiesBar() {
         <PropertyGrid>
             <div className="text-end">Высота: </div>
             <PropertyRow>
-                <InputField value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
+                <InputField value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minSize} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
                 <ToggleButton pressed={fixHeight} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать высоту" visible={!disabledFixHeight} onClick={() => { setFixedHeight(!fixHeight) }} />
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <InputField value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={100} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
+                <InputField value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minSize} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" visible={!disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
             <ComboBox title="Материал:" value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value as FasadMaterial) }} />

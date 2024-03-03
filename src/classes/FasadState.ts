@@ -23,6 +23,5 @@ export default class FasadState {
     public sandBase: SandBase = SandBase.MIRROR
     public division: Division = Division.HEIGHT
     public children: FasadState[] = []
-    public minSize: number = 100
     public backImageProps: FasadBackImageProps = getInitialBackImageProps()
 }

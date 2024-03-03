@@ -1,10 +1,11 @@
 import { atom } from "jotai";
 export type AppSettings = {
     showFixIcons: boolean
+    minSize: number
 }
 
 export function getDefaultSettings(): AppSettings {
-    return { showFixIcons: true }
+    return { showFixIcons: true, minSize: 0 }
 }
 export function getStoredSettings(): AppSettings {
     const settings = localStorage.getItem("settings")
@@ -18,9 +19,8 @@ export function getStoredSettings(): AppSettings {
 
 export const settingsAtom = atom<AppSettings>(getStoredSettings())
 
-export const setShowFixIconsAtom = atom(null, (get, set, show: boolean) => {
-    const settings = get(settingsAtom)
-    const newSettings= { ...settings, showFixIcons: show }
+export const setSettingsAtom = atom(null, (get, set, settings: AppSettings) => {
+    const newSettings = { ...settings }
     set(settingsAtom, newSettings)
     localStorage.setItem("settings", JSON.stringify(newSettings))
 })

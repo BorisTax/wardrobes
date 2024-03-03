@@ -6,6 +6,7 @@ import { getProfileDirection } from '../functions/materials'
 import { materialListAtom } from './materials'
 import { appDataAtom } from './app'
 import { AppData } from '../types/app'
+import { settingsAtom } from './settings'
 
 export const activeFasadAtom = atom<Fasad | null>((get) => {
     const appData: AppData = get(appDataAtom)
@@ -28,13 +29,14 @@ export const activeRootFasadIndexAtom = atom((get) => {
 export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
+    const { minSize } = get(settingsAtom)
     const appData = get(appDataAtom)
     const rootFasad = getRootFasad(activeFasad)
     const rootFasadIndex = appData.rootFasades.findIndex((f: Fasad) => f === rootFasad)
     const height = activeFasad.Material === FasadMaterial.DSP ? newHeight : newHeight + 3
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
-    if (trySetHeight(newActiveFasad, height)) {
+    if (trySetHeight(newActiveFasad, height, minSize)) {
         appData.rootFasades[rootFasadIndex] = newRootFasad
         set(appDataAtom, { ...appData }, true)
     }
@@ -44,21 +46,23 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
+    const { minSize } = get(settingsAtom)
     const rootFasad = getRootFasad(activeFasad)
     const rootFasadIndex = appData.rootFasades.findIndex((f: Fasad) => f === rootFasad)
     const width = activeFasad.Material === FasadMaterial.DSP ? newWidth : newWidth + 3
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
-    if (trySetWidth(newActiveFasad, width)) {
+    if (trySetWidth(newActiveFasad, width, minSize)) {
         appData.rootFasades[rootFasadIndex] = newRootFasad
         set(appDataAtom, { ...appData }, true)
     }
 })
 export const divideFasadAtom = atom(null, (get, set, count: number) => {
     const activeFasad = get(activeFasadAtom)
+    const { minSize } = get(settingsAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
-    activeFasad.divideFasad(count)
+    activeFasad.divideFasad(count, minSize)
     set(appDataAtom, { ...appData }, true)
 })
 
@@ -106,10 +110,11 @@ export const setSandBaseAtom = atom(null, (get, set, sandBase: SandBase) => {
 
 export const setProfileDirectionAtom = atom(null, (get, set, direction: string) => {
     const activeFasad = get(activeFasadAtom)
+    const { minSize } = get(settingsAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
     activeFasad.Division = getProfileDirection(direction)
-    activeFasad.divideFasad(activeFasad.Children.length)
+    activeFasad.divideFasad(activeFasad.Children.length, minSize)
     set(appDataAtom, { ...appData }, true)
 })
 

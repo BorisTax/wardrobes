@@ -21,12 +21,10 @@ export default class Fasad {
     private fHeight = false
     public Parent: Fasad | null = null
     private level = 0
-    private minSize: number
     private backImageProps: FasadBackImageProps = { top: 0, left: 0, size: 100, repeat: false }
     constructor(props: FasadProps = {}) {
         this.width = props?.width || 0
         this.height = props?.height || 0
-        this.minSize = props?.minSize || 100
         this.material = props?.material || FasadMaterial.DSP
         this.extMaterial = props?.extMaterial || ""
         this.sandBase = props?.sandBase || SandBase.MIRROR
@@ -46,7 +44,6 @@ export default class Fasad {
         state.material = this.material
         state.extMaterial = this.extMaterial
         state.sandBase = this.sandBase
-        state.minSize = this.minSize
         state.backImageProps = { ...this.backImageProps }
         state.outerEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
         state.children = []
@@ -64,7 +61,6 @@ export default class Fasad {
         this.extMaterial = state.extMaterial
         this.sandBase = state.sandBase
         this.division = state.division
-        this.minSize = state.minSize
         this.OuterEdges = { ...state.outerEdges }
         this.backImageProps = { ...state.backImageProps }
         this.Children = state.children.map((s: FasadState) => {
@@ -160,12 +156,6 @@ export default class Fasad {
         if (top !== undefined) this.outerTopEdge = top
         if (bottom !== undefined) this.outerBottomEdge = bottom
     }
-    public get MinSize() {
-        return this.minSize
-    }
-    public set MinSize(value: number) {
-        this.minSize = value
-    }
     public get Active() {
         return this.active
     }
@@ -183,20 +173,20 @@ export default class Fasad {
         this.active = (this === fasad)
     }
 
-    public divideFasad(count: number) {
-        if (this.Division === Division.HEIGHT) return this.divideOnHeight(count); else return this.divideOnWidth(count)
+    public divideFasad(count: number, minSize: number) {
+        if (this.Division === Division.HEIGHT) return this.divideOnHeight(count, minSize); else return this.divideOnWidth(count, minSize)
     }
-    public divideOnHeight(count: number): boolean {
+    public divideOnHeight(count: number, minSize: number): boolean {
         const profileTotal = (count - 1)
         if (this.Children.length > 1) this.setMaterial(this.Children[0].Material)
         const partHeight = +((this.Height - profileTotal) / count).toFixed(1)
-        if (partHeight < this.minSize) return false
+        if (partHeight < minSize) return false
         const partLast = +(this.height - partHeight * (count - 1) - profileTotal).toFixed(1)
         this.Children = []
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
             const part = i < count ? partHeight : partLast
-            const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize: this.minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) //fasadManager.CreateFasad(sContainer, FasadWidth, part)
+            const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) 
             const topEdge = i === 1 ? this.outerTopEdge : false
             const bottomEdge = i === count ? this.outerBottomEdge : false
             fasad.OuterEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: topEdge, bottom: bottomEdge }
@@ -207,15 +197,15 @@ export default class Fasad {
         }
         return true
     }
-    public divideOnWidth(count: number): boolean {
+    public divideOnWidth(count: number, minSize: number): boolean {
         const profileTotal = (count - 1)
         if (this.Children.length > 1) this.setMaterial(this.Children[0].Material)
         const partWidth = +((this.width - profileTotal) / count).toFixed(1)
-        if (partWidth < this.minSize) return false
+        if (partWidth < minSize) return false
         this.Children = []
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
-            const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize: this.minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) //fasadManager.CreateFasad(sContainer, FasadWidth, part)
+            const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) 
             const leftEdge = i === 1 ? this.outerLeftEdge : false
             const rightEdge = i === count ? this.outerRightEdge : false
             fasad.OuterEdges = { left: leftEdge, right: rightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
@@ -226,7 +216,7 @@ export default class Fasad {
         }
         return true
     }
-    public DistributePartsOnWidth(initiator: Fasad | null, newWidth: number, useSameWidth: boolean): boolean {
+    public DistributePartsOnWidth(initiator: Fasad | null, newWidth: number, useSameWidth: boolean, minSize: number): boolean {
         if (this.Children.length === 0) return true
         let totalFixedWidth = 0
         let totalFreeWidth = 0
@@ -253,7 +243,7 @@ export default class Fasad {
             totalFreeWidth = this.width - totalFixedWidth
             partFreeWidth = +((totalFreeWidth / totalFreeCount).toFixed(1))
             partLastWidth = +(totalFreeWidth - partFreeWidth * (totalFreeCount - 1)).toFixed(1)
-            if (partFreeWidth < this.minSize || partLastWidth < this.minSize) return false
+            if (partFreeWidth < minSize || partLastWidth < minSize) return false
         }
         let part = 0
         i = 0
@@ -267,14 +257,14 @@ export default class Fasad {
             c.height = this.height
             if (c.Children.length > 1) {
                 let res: boolean
-                if (c.Division === Division.HEIGHT) res = c.DistributePartsOnHeight(null, 0, useSameWidth); else res = c.DistributePartsOnWidth(null, 0, useSameWidth)
+                if (c.Division === Division.HEIGHT) res = c.DistributePartsOnHeight(null, 0, useSameWidth, minSize); else res = c.DistributePartsOnWidth(null, 0, useSameWidth, minSize)
                 if (!res) return false
             }
         }
         return true
     }
 
-    public DistributePartsOnHeight(initiator: Fasad | null, newHeight: number, useSameHeight: boolean): boolean {
+    public DistributePartsOnHeight(initiator: Fasad | null, newHeight: number, useSameHeight: boolean, minSize: number): boolean {
         if (this.Children.length === 0) return true
         let totalFixedHeight = 0
         let totalFreeHeight = 0
@@ -301,7 +291,7 @@ export default class Fasad {
             totalFreeHeight = this.height - totalFixedHeight
             partFreeHeight = +((totalFreeHeight / totalFreeCount).toFixed(1))
             partLastHeight = +(totalFreeHeight - partFreeHeight * (totalFreeCount - 1)).toFixed(1)
-            if (partFreeHeight < this.minSize || partLastHeight < this.minSize) return false
+            if (partFreeHeight < minSize || partLastHeight < minSize) return false
         }
         let part = 0
         i = 0
@@ -315,7 +305,7 @@ export default class Fasad {
             c.width = this.width
             if (c.Children.length > 1) {
                 let res: boolean
-                if (c.Division === Division.WIDTH) res = c.DistributePartsOnWidth(null, 0, useSameHeight); else res = c.DistributePartsOnHeight(null, 0, useSameHeight)
+                if (c.Division === Division.WIDTH) res = c.DistributePartsOnWidth(null, 0, useSameHeight, minSize); else res = c.DistributePartsOnHeight(null, 0, useSameHeight, minSize)
                 if (!res) return false
             }
         }
@@ -342,7 +332,6 @@ export default class Fasad {
         fasad.OuterEdges = { ...this.OuterEdges }
         fasad.Parent = parent
         fasad.setSandBase(this.sandBase, false)
-        fasad.MinSize = this.minSize
         return fasad
     }
 }

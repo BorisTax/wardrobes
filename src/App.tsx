@@ -31,6 +31,7 @@ import EditUsersDialog from './components/EditUsersDialog'
 import EventListener from './components/EventListener'
 import SettingsDialog from './components/SettingsDialog'
 import StatusBar from './components/StatusBar'
+import CopyFasadDialog from './components/CopyFasadDialog'
 
 function App() {
   const user = useAtomValue(userAtom)
@@ -72,6 +73,7 @@ function App() {
         </div>
         <RootFasadesContainer />
       </div>
+      <CopyFasadDialog />
       <SettingsDialog />
       <LoginDialog />
       {isEditorAtLeast(user.role) ? <EditMaterialDialog /> : <></>}

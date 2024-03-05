@@ -17,6 +17,7 @@ import { userAtom } from "../atoms/users"
 import { isClientAtLeast } from "../server/functions/user"
 import { getInitialBackImageProps } from "../classes/FasadState"
 import { settingsAtom } from "../atoms/settings"
+import { copyFasadDialogAtom } from "../atoms/dialogs"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const { role } = useAtomValue(userAtom)
@@ -37,6 +38,7 @@ export default function PropertiesBar() {
     const setProfileDirection = useSetAtom(setProfileDirectionAtom)
     const divideFasad = useSetAtom(divideFasadAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
+    const copyFasadDialogRef =  useAtomValue(copyFasadDialogAtom)
     const extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
     const fasadValue = fasad && totalPrice[rootFasadIndex].toFixed(2)
     const fasadPrice = isClientAtLeast(role) ? <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div> : <></>
@@ -45,7 +47,8 @@ export default function PropertiesBar() {
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}> 
         <div className="property-bar-header">
             Параметры фасада
-            <div>
+            <div className="d-flex gap-1">
+                <ImageButton title="Скопировать фасад" icon="copy" visible={fasad !== null} onClick={() => { copyFasadDialogRef?.current?.showModal() }} />
                 <ToggleButton
                     title={stretchImage ? "Сбросить масштабирование" : "Подогнать изображение под размер"}
                     visible={onlyFasad}

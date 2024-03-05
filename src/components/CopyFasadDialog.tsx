@@ -1,27 +1,24 @@
 import { useEffect, useRef } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { copyFasadDialogAtom } from "../atoms/dialogs"
-import { setSettingsAtom, settingsAtom } from "../atoms/settings"
 import DialogWindow from "./DialogWindow"
-import InputField from "./InputField"
-import { PropertyType } from "../types/property"
+import { activeRootFasadIndexAtom, copyFasadAtom } from "../atoms/fasades"
+import { appDataAtom } from "../atoms/app"
 
 export default function CopyFasadDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const setCopyFasadDialogRef = useSetAtom(copyFasadDialogAtom)
-    const settings = useAtomValue(settingsAtom)
-    const setSettings = useSetAtom(setSettingsAtom)
+    const activeRootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
+    const { fasadCount } = useAtomValue(appDataAtom)
+    const copyFasad = useSetAtom(copyFasadAtom)
+    const contents = (new Array(fasadCount)).fill(0)
+        .map((_, index) => index + 1)
+        .filter(i => i !== (activeRootFasadIndex + 1))
+        .map(i => <div className="copyFasadIndex" onClick={() => { copyFasad(activeRootFasadIndex, i - 1); dialogRef.current?.close() }}>{i}</div>)
     useEffect(() => {
         setCopyFasadDialogRef(dialogRef)
     }, [setCopyFasadDialogRef, dialogRef])
-    return <DialogWindow dialogRef={dialogRef}>
-        <div className="d-flex gap-2">
-            <input id="showFix" type="checkbox" checked={settings.showFixIcons} onChange={(e) => { setSettings({ ...settings, showFixIcons: !settings.showFixIcons }) }} />
-            <label htmlFor="showFix">{`Отображать значок фиксации на фасаде`}</label>
-        </div>
-        <div className="d-flex gap-2">
-        <div>Мин. размер секции:</div>
-        <InputField type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} value={settings.minSize} setValue={(value) => { setSettings({ ...settings, minSize: +value }) }} />
-        </div>
+    return <DialogWindow dialogRef={dialogRef} title="Выберите фасад">
+        {contents}
     </DialogWindow>
 }

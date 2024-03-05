@@ -67,6 +67,7 @@
   --default-image: url('../images/noimage.png');
   background-image: var(--default-image);
   background-origin: border-box;
+  background-repeat: repeat;
 }
 
 .fasad-section:hover {

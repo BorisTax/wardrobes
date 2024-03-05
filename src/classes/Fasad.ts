@@ -21,7 +21,7 @@ export default class Fasad {
     private fHeight = false
     public Parent: Fasad | null = null
     private level = 0
-    private backImageProps: FasadBackImageProps = { top: 0, left: 0, size: 100, repeat: false }
+    private backImageProps: FasadBackImageProps
     constructor(props: FasadProps = {}) {
         this.width = props?.width || 0
         this.height = props?.height || 0
@@ -30,6 +30,7 @@ export default class Fasad {
         this.sandBase = props?.sandBase || SandBase.MIRROR
         this.Children = []
         this.OuterEdges = { left: true, right: true, top: true, bottom: true }
+        this.backImageProps = getInitialBackImageProps()
     }
 
     public getState(): FasadState {

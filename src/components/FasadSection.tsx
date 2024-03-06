@@ -89,17 +89,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
                 setBackImagePosition(prev => ({ ...prev, drag: false }))
                 fasad.BackImageProps = {top, left, size, repeat}
             },
-            onWheel: (e: WheelEvent) => { 
-                if (!hasImage) return;
-                const dx = e.clientX - (e.target as HTMLDivElement).offsetLeft - left
-                const dy = e.clientY - (e.target as HTMLDivElement).offsetTop - top
-                const scale = Math.sign(e.deltaY) >= 0 ? e.shiftKey ? 0.99 : 0.9 : e.shiftKey ? 1.01 : 1.1; 
-                setBackImagePosition(prev => {
-                    const pSize = typeof prev.size === "string" ? 100 : prev.size;
-                    return ({ ...prev, size: pSize * scale, top: top + dy * (1 - scale), left: left + dx * (1 - scale) })
-                    })
-                fasad.BackImageProps = {top, left, size, repeat}
-             }
+
         }
         classes = "fasad-section"
     }else{
@@ -134,6 +124,26 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             }
         }
     }, [imageUrl, onlyFasad])
+    useEffect(() => {
+        const onWheel = (e: WheelEvent) => { 
+            e.preventDefault()
+            if (!hasImage) return;
+            const dx = e.clientX - (e.target as HTMLDivElement).offsetLeft - left
+            const dy = e.clientY - (e.target as HTMLDivElement).offsetTop - top
+            const scale = Math.sign(e.deltaY) >= 0 ? e.shiftKey ? 0.99 : 0.9 : e.shiftKey ? 1.01 : 1.1; 
+            setBackImagePosition(prev => {
+                const pSize = typeof prev.size === "string" ? 100 : prev.size;
+                return ({ ...prev, size: pSize * scale, top: top + dy * (1 - scale), left: left + dx * (1 - scale) })
+                })
+            fasad.BackImageProps = {top, left, size, repeat}
+         }
+         // @ts-ignore
+        fasadRef.current?.addEventListener("wheel", onWheel, {passive:false})
+        return ()=>{
+            // @ts-ignore
+            fasadRef.current?.removeEventListener("wheel", onWheel)
+        }
+    }, [hasImage, left, top])
     return <div ref={onlyFasad ? fasadRef : nullRef} className={classes} style={{
         display: "grid",
         ...gridTemplate,

@@ -38,7 +38,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
     let styles: object = fasad.Parent === null ? { height: "100%" } : {}
-    styles = { ...styles, border: (fasad === activeFasad) ? "3px solid red" : "1px solid black" }
+    styles = { ...styles, boxShadow: (fasad === activeFasad) ? "inset 0px 0px 10px red" : "" }
     let events = {}
     let classes = ""
     if (onlyFasad) {

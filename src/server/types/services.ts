@@ -1,5 +1,6 @@
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
 import { PriceListItem, Results, User } from "./server"
+import { NewTemplate, Template } from "./templates"
 interface IUserAbstractService {
     getUsers: () => Promise<Results>
     getTokens: () => Promise<Results>
@@ -19,6 +20,12 @@ interface IMaterialAbstractService {
     deleteProfile: (name: string, type: string) => Promise<Results>
     updateProfile: ({ }: NewProfile) => Promise<Results>
 }
+interface ITemplateAbstractService {
+    getTemplates: () => Promise<Results>
+    addTemplate: ({ }: Template) => Promise<Results>
+    deleteTemplate: (name: string) => Promise<Results>
+    updateTemplate: ({ }: NewTemplate) => Promise<Results>
+}
 interface IPriceAbstractService {
     getPriceList: () => Promise<Results>
     updatePriceList: (item: PriceListItem) => Promise<Results>
@@ -31,7 +38,12 @@ export interface IMaterialServiceProvider extends IMaterialAbstractService {
 export interface IMaterialService extends IMaterialAbstractService {
     provider: IMaterialServiceProvider
 }
-
+export interface ITemplateServiceProvider extends ITemplateAbstractService {
+    dbFile: string
+}
+export interface ITemplateService extends ITemplateAbstractService {
+    provider: ITemplateServiceProvider
+}
 export interface IUserServiceProvider extends IUserAbstractService {
     dbFile: string
 }

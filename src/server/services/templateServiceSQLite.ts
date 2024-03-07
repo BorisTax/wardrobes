@@ -9,25 +9,25 @@ export default class TemplateServiceSQLite implements ITemplateServiceProvider {
         this.dbFile = dbFile
     }
 
-    async getTemplates(): Promise<Results> {
-        return dataBaseQuery(this.dbFile, `select * from 'state'`, {successStatusCode: 200})
+    async getTemplates(table: string): Promise<Results> {
+        return dataBaseQuery(this.dbFile, `select * from ${table}`, {successStatusCode: 200})
     }
-    async addTemplate({ name, data }: Template) {
-        return dataBaseQuery(this.dbFile, `insert into state (name, data) values('${name}', '${data}');`, {successStatusCode: 201, successMessage: messages.TEMPLATE_ADDED})
+    async addTemplate(table: string, { name, data }: Template) {
+        return dataBaseQuery(this.dbFile, `insert into ${table} (name, data) values('${name}', '${data}');`, {successStatusCode: 201, successMessage: messages.TEMPLATE_ADDED})
     }
-    async deleteTemplate(name: string) {
-        return dataBaseQuery(this.dbFile, `DELETE FROM state WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.TEMPLATE_DELETED})
+    async deleteTemplate(table: string, name: string) {
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${table} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.TEMPLATE_DELETED})
     }
-    async updateTemplate({ newName, name, data }: NewTemplate) {
-        return dataBaseQuery(this.dbFile, getQuery({ newName, name, data }), {successStatusCode: 200, successMessage: messages.TEMPLATE_UPDATED})
+    async updateTemplate(table: string, { newName, name, data }: NewTemplate) {
+        return dataBaseQuery(this.dbFile, getQuery(table, { newName, name, data }), {successStatusCode: 200, successMessage: messages.TEMPLATE_UPDATED})
     }
 }
 
-function getQuery({ newName, name, data }: NewTemplate) {
+function getQuery(table: string, { newName, name, data }: NewTemplate) {
     const parts = []
     if (newName) parts.push(`name='${newName}'`)
     if (data) parts.push(`data='${data}'`)
-    const query = parts.length > 0 ? `update state set ${parts.join(', ')} where name='${name}';` : ""
+    const query = parts.length > 0 ? `update ${table} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }
 

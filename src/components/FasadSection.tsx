@@ -51,6 +51,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             alignItems: "center",
             objectFit: "contain",
             cursor: "pointer",
+            border: "1px solid black",
             backgroundPosition: `top ${top}px left ${left}px`,
             backgroundSize: typeof size === "number" ? `${size}%` : size,
             backgroundRepeat: repeat ? "repeat" : "no-repeat",

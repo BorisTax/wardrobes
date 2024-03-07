@@ -7,17 +7,17 @@ export class TemplateService implements ITemplateService {
         this.provider = provider
     }
 
-    async getTemplates() {
-        return await this.provider.getTemplates()
+    async getTemplates(table: string) {
+        return await this.provider.getTemplates(table)
     }
-    async addTemplate(template: Template) {
-        return await this.provider.addTemplate(template)
+    async addTemplate(table: string, template: Template) {
+        return await this.provider.addTemplate(table, template)
     }
-    async deleteTemplate(name: string) {
-        return await this.provider.deleteTemplate(name)
+    async deleteTemplate(table: string, name: string) {
+        return await this.provider.deleteTemplate(table, name)
     }
-    async updateTemplate(template: NewTemplate) {
-        return await this.provider.updateTemplate(template)
+    async updateTemplate(table: string, template: NewTemplate) {
+        return await this.provider.updateTemplate(table, template)
     }
 }
 

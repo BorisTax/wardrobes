@@ -22,6 +22,8 @@ export const rusMessages = {
   [messages.TEMPLATE_ADDED]: "Шаблон добавлен",
   [messages.TEMPLATE_DELETED]: "Шаблон удален",
   [messages.TEMPLATE_UPDATED]: "Шаблон обновлен",
+  [messages.TEMPLATE_APPLY_ERROR]: "Невозможно применить данный шаблон",
+
   [messages.PASSWORDS_NOT_MATCH]: "Пароли не совпадают",
   [messages.USER_ADDED]: "Пользователь добавлен",
   [messages.USER_DELETED]: "Пользователь удален",

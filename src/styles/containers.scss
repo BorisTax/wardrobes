@@ -63,6 +63,7 @@
   height: 100%;
   width: auto;
 }
+
 .fasad-section {
   --default-image: url('../images/noimage.png');
   background-image: var(--default-image);
@@ -72,6 +73,13 @@
 
 .fasad-section:hover {
   box-shadow: inset 0px 0px 10px green;
+}
+
+.fasad-section-preview {
+  --default-image: url('../images/noimage.png');
+  background-image: var(--default-image);
+  background-origin: border-box;
+  background-repeat: repeat;
 }
 
 .fasad-schema-section {

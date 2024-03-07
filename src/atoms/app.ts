@@ -16,7 +16,7 @@ export const loadVersionAtom = atom(null, async (get, set) => {
     const result = await fetchGetData(`api/version`)
     if (result.success) set(versionAtom, result.data as string)
 })
-const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
+export const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
 export const historyAppAtom = atom((get: Getter) => { const data = get(appAtom); return { next: data.next, previous: data.previous } })
 export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state), (get, set, appData: AppData, useHistory: boolean) => {
     const app = get(appAtom)

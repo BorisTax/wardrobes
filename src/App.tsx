@@ -5,6 +5,7 @@ import './styles/buttons.scss'
 import './styles/containers.scss'
 import './styles/messages.scss'
 import './styles/inputs.scss'
+import './styles/templates.scss'
 import Header from './components/Header'
 import PropertiesBar from './components/PropertiesBar'
 import { createToolTip, isMobile } from './functions/functions'
@@ -32,6 +33,7 @@ import EventListener from './components/EventListener'
 import SettingsDialog from './components/SettingsDialog'
 import StatusBar from './components/StatusBar'
 import CopyFasadDialog from './components/CopyFasadDialog'
+import FasadTemplatesDialog from './components/FasadTemplatesDialog'
 
 function App() {
   const user = useAtomValue(userAtom)
@@ -74,6 +76,7 @@ function App() {
         <RootFasadesContainer />
       </div>
       <CopyFasadDialog />
+      <FasadTemplatesDialog />
       <SettingsDialog />
       <LoginDialog />
       {isEditorAtLeast(user.role) ? <EditMaterialDialog /> : <></>}

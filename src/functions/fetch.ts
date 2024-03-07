@@ -1,3 +1,5 @@
+import messages from "../server/messages"
+
 export type FetchResult = {
     success?: boolean
     status?: number
@@ -23,7 +25,16 @@ export async function fetchData(url: string, method: string, body: string): Prom
     }
 }
 export async function fetchFormData(url: string, method: string, body: FormData) {
-    return fetch(url, { method, body }).then(r => r.json())
+    try {
+        let status: number
+        const result = await fetch(url, { method, body }).then(r => { 
+            status = r.status; 
+            return r.json() 
+        })
+        return result
+    } catch (e) {
+        return { success: false }
+    }
 }
 
 export default function onFetch(url: string, body: string, onResolve: (r: any) => void, onReject = () => { }, onCatch = () => { }) {

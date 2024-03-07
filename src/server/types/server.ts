@@ -36,6 +36,7 @@ export type ActiveUser = {
 
 export enum TableFields {
     NAME = 'name',
+    DATA = 'data',
     MATERIAL = 'material',
     IMAGE = 'image',
     CODE = 'code',
@@ -46,6 +47,7 @@ export enum TableFields {
     ID = 'id',
     PRICE = 'price',
     MARKUP = 'markup',
+    TABLE = 'table',
 }
 
 export type PriceListItem = {

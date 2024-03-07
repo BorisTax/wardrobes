@@ -3,6 +3,7 @@ import React from "react";
 import { calculateSpecificationsAtom } from "./specification";
 import { loadPriceListAtom } from "./prices";
 import { loadActiveUsersAtom, loadUsersAtom } from "./users";
+import { loadTemplateListAtom } from "./templates";
 
 type MessageAtom = {
     dialogRef: React.RefObject<HTMLDialogElement> | null
@@ -23,6 +24,14 @@ export const loginDialogAtom = atom((get: Getter) => get(loginDialog), (get: Get
 export const editMaterialDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const editProfileDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const editPriceDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const templatesDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const templatesDialogPropsAtom = atom(false)
+export const showTemplatesDialogAtom = atom(null, (get, set, table: string, edit: boolean) => {
+    const dialogRef = get(templatesDialogAtom)
+    set(loadTemplateListAtom, table)
+    set(templatesDialogPropsAtom, edit)
+    dialogRef?.current?.showModal()
+})
 export const specificationDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const showSpecificationDialogAtom = atom(null, (get, set) => {
     const dialogRef = get(specificationDialogAtom)

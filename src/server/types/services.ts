@@ -21,10 +21,10 @@ interface IMaterialAbstractService {
     updateProfile: ({ }: NewProfile) => Promise<Results>
 }
 interface ITemplateAbstractService {
-    getTemplates: () => Promise<Results>
-    addTemplate: ({ }: Template) => Promise<Results>
-    deleteTemplate: (name: string) => Promise<Results>
-    updateTemplate: ({ }: NewTemplate) => Promise<Results>
+    getTemplates: (table: string) => Promise<Results>
+    addTemplate: (table: string, { }: Template) => Promise<Results>
+    deleteTemplate: (table: string, name: string) => Promise<Results>
+    updateTemplate: (table: string, { }: NewTemplate) => Promise<Results>
 }
 interface IPriceAbstractService {
     getPriceList: () => Promise<Results>

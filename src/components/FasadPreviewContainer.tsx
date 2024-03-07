@@ -4,6 +4,7 @@ import FasadSectionPreview from "./FasadSectionPreview";
 
 type FasadContainerProps = {
     fasad: Fasad
+    refObject: React.RefObject<HTMLDivElement>
 }
 
 export default function FasadPreviewContainer(props: FasadContainerProps): ReactElement {
@@ -11,17 +12,16 @@ export default function FasadPreviewContainer(props: FasadContainerProps): React
     const rootFasad = props.fasad
     const ratio = rootFasad.Width / rootFasad.Height
     const aspectRatio = `${rootFasad.Width}/${rootFasad.Height}`
-    const sectionRef = useRef<HTMLDivElement>(null)
     const resize = (ratio: number) => {
-        if (sectionRef.current) {
-            sectionRef.current.style.width = sectionRef.current.offsetHeight * ratio + "px"
+        if (props.refObject.current) {
+            props.refObject.current.style.width = props.refObject.current.offsetHeight * ratio + "px"
         }
     }
     useLayoutEffect(() => {
         resize(ratio)
     }, [ratio, innerWidth])
     return <div className="fasad-container">
-        <div ref={sectionRef} className='fasad-section-container' style={{ aspectRatio, height: "300px", width: "auto" }}>
+        <div ref={props.refObject} className='fasad-section-container' style={{ aspectRatio, height: "300px", width: "auto" }}>
             <FasadSectionPreview fasad={rootFasad}/>
         </div>
     </div>

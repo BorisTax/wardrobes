@@ -5,7 +5,7 @@ import express from "express";
 import { accessDenied } from '../functions/other.js';
 import { MyRequest, UserRoles } from '../types/server.js';
 import { templateServiceProvider } from '../options.js';
-import { isEditorAtLeast } from '../functions/user.js';
+import { isClientAtLeast, isEditorAtLeast } from '../functions/user.js';
 import { TemplateService } from '../services/templateService.js';
 import { NewTemplate, Template } from '../types/templates.js';
 
@@ -15,7 +15,8 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 export default router
 
-router.get("/", async (req, res) => {
+router.get("/", async (req: MyRequest, res) => {
+  if (!isClientAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const result = await getTemplates(req.query.table as string);
   if (!result.success) return res.json(result)
   res.status(result.status).json(result);

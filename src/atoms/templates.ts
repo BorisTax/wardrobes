@@ -20,8 +20,9 @@ export const setTemplateTableAtom = atom(null, (get, set, table: TEMPLATE_TABLES
 })
 
 export const loadTemplateListAtom = atom(null, async (get, set, table: string) => {
+    const { token } = get(userAtom)
     try {
-        const { success, data }: FetchResult = await fetchGetData(`api/templates?table=${table}`)
+        const { success, data }: FetchResult = await fetchGetData(`api/templates?table=${table}&token=${token}`)
         if (!success) return
         set(templateListAtom, data as Template[])
     } catch (e) { console.error(e) }
@@ -82,5 +83,6 @@ export const applyTemplateAtom = atom(null, (get, set, state: FasadState, callba
         rootFasades[index] = newFasad
         const appData = get(appDataAtom)
         set(appDataAtom, { ...appData }, true)
+        callback({ success: true, message: "" })
     } else callback({ success: false, message: messages.TEMPLATE_APPLY_ERROR })
 })

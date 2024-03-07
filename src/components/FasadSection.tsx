@@ -112,8 +112,8 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight() && showFixIcons
     const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth() && showFixIcons
     const fixedBoth = fixedHeight && fixedWidth
-    const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} activeFasad={props.activeFasad} rootFasad={props.rootFasad}/>) : ""
     const fixed = fixedBoth ? <FixedBoth /> : fixedHeight ? <FixedHeight /> : fixedWidth ? <FixedWidth /> : <></>
+    const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} activeFasad={props.activeFasad} rootFasad={props.rootFasad}/>) : ""
 
     useEffect(() => {
         const image = new Image()

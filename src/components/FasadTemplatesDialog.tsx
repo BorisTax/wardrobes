@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { templatesDialogAtom, templatesDialogPropsAtom } from "../atoms/dialogs"
 import useMessage from "../custom-hooks/useMessage"
@@ -19,10 +19,11 @@ import { userAtom } from "../atoms/users"
 export default function FasadTemplatesDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const [, setTemplateDialogRef] = useAtom(templatesDialogAtom)
+    const templatePreviewContainerRef = useRef<HTMLDivElement>(null)
+    const templateListRef = useRef<HTMLDivElement>(null)
     const editMode = useAtomValue(templatesDialogPropsAtom)
     const templates = useAtomValue(templateListAtom)
-    const [templateIndex, setTemplateIndex] = useState(0)
-    const curTemplate = templates[templateIndex]
+    const [curTemplate, setTemplate] = useState(templates[0])
     const data: FasadState = curTemplate ? JSON.parse(curTemplate.data) : null
     const fasad: Fasad | null = data ? newFasadFromState(data) : null
     const [newName, setNewName] = useState((curTemplate && curTemplate.name) || "")
@@ -34,19 +35,30 @@ export default function FasadTemplatesDialog() {
     const editor = isEditorAtLeast(role)
     useMemo(() => {
         setNewName((curTemplate && curTemplate.name) || "")
-    }, [templateIndex])
+    }, [curTemplate])
     const nameRef = useRef<HTMLInputElement>(null)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
+    useLayoutEffect(() => {
+        if(!templatePreviewContainerRef.current) return
+        const height = getComputedStyle(templatePreviewContainerRef.current).height
+        if (templateListRef.current) templateListRef.current.style.maxHeight = height
+    }, [curTemplate])
     useEffect(() => {
         setTemplateDialogRef(dialogRef)
     }, [setTemplateDialogRef, dialogRef])
     return <DialogWindow dialogRef={dialogRef}>
         <div className="d-flex">
-            <div className="template-list">
-                {templates.map((t: Template, index) => <div className={index === templateIndex ? "template-item-selected" : "template-item"} onClick={() => { setTemplateIndex(index) }}>{t.name}</div>)}
+            <div className="d-flex flex-column align-self-stretch">
+                <div className="text-center">Шаблоны</div>
+                <div ref={templateListRef} className="template-list">
+                    {templates.map((t: Template) => <div key={t.name} className={t === curTemplate ? "template-item template-item-selected" : "template-item"} onClick={() => { setTemplate(templates.find(temp => temp.name === t.name) as Template) }}>{t.name}</div>)}
+                </div>
             </div>
-            {fasad && <FasadPreviewContainer fasad={fasad} />}
+            <div className="d-flex flex-column align-items-center">
+                <div>Вид</div>
+                {fasad && <FasadPreviewContainer refObject={templatePreviewContainerRef} fasad={fasad} />}
+            </div>
         </div>
         <hr />
         {editor && editMode ? <div className="editmaterial-container">
@@ -62,7 +74,6 @@ export default function FasadTemplatesDialog() {
                         deleteTemplate({ name: newName, table: TEMPLATE_TABLES.FASAD }, (result) => {
                             showMessage(rusMessages[result.message])
                         });
-                        setTemplateIndex(0)
                     })
                 }} />
                 <Button caption="Добавить" onClick={() => {
@@ -89,7 +100,8 @@ export default function FasadTemplatesDialog() {
                 const message = `Применить шаблон "${newName}" к выбранному фасаду?`
                 showConfirm(message, () => {
                     applyTemplate(data, (result) => {
-                        showMessage(rusMessages[result.message])
+                        if(!result.success) return showMessage(rusMessages[result.message])
+                        dialogRef.current?.close()
                     })
                 })
             }} /></div>}

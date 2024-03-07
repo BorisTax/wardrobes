@@ -14,7 +14,7 @@ export default function CopyFasadDialog() {
     const contents = (new Array(fasadCount)).fill(0)
         .map((_, index) => index + 1)
         .filter(i => i !== (activeRootFasadIndex + 1))
-        .map(i => <div className="copyFasadIndex" onClick={() => { copyFasad(activeRootFasadIndex, i - 1); dialogRef.current?.close() }}>{i}</div>)
+        .map(i => <div key={i} className="copyFasadIndex" onClick={() => { copyFasad(activeRootFasadIndex, i - 1); dialogRef.current?.close() }}>{i}</div>)
     useEffect(() => {
         setCopyFasadDialogRef(dialogRef)
     }, [setCopyFasadDialogRef, dialogRef])

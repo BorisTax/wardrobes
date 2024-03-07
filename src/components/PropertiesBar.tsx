@@ -14,7 +14,7 @@ import { materialListAtom } from "../atoms/materials"
 import { Materials, SandBases } from "../functions/materials"
 import { totalPriceAtom } from "../atoms/specification"
 import { userAtom } from "../atoms/users"
-import { isClientAtLeast } from "../server/functions/user"
+import { isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { getInitialBackImageProps } from "../classes/FasadState"
 import { settingsAtom } from "../atoms/settings"
 import { copyFasadDialogAtom, showTemplatesDialogAtom, templatesDialogAtom } from "../atoms/dialogs"
@@ -51,8 +51,8 @@ export default function PropertiesBar() {
         <div className="property-bar-header">
             Параметры фасада
             <div className="d-flex gap-1">
-                <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />
-                <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />
+                {isEditorAtLeast(role) && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
+                {isClientAtLeast(role) && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
                 <ImageButton title="Скопировать фасад" icon="copy" visible={fasad !== null} onClick={() => { copyFasadDialogRef?.current?.showModal() }} />
                 <ToggleButton
                     title={stretchImage ? "Сбросить масштабирование" : "Подогнать изображение под размер"}

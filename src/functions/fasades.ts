@@ -55,3 +55,6 @@ export function getRootFasad(fasad: Fasad): Fasad {
     if (fasad.Parent) return getRootFasad(fasad.Parent)
     return fasad
 }
+export function hasFasadImage(fasad: Fasad){
+    return fasad.Material === FasadMaterial.FMP || fasad.Material === FasadMaterial.SAND
+}

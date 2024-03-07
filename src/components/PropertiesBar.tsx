@@ -19,6 +19,7 @@ import { getInitialBackImageProps } from "../classes/FasadState"
 import { settingsAtom } from "../atoms/settings"
 import { copyFasadDialogAtom, showTemplatesDialogAtom, templatesDialogAtom } from "../atoms/dialogs"
 import { TEMPLATE_TABLES } from "../server/types/enums"
+import { hasFasadImage } from "../functions/fasades"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const { role } = useAtomValue(userAtom)
@@ -55,7 +56,7 @@ export default function PropertiesBar() {
                 <ImageButton title="Скопировать фасад" icon="copy" visible={fasad !== null} onClick={() => { copyFasadDialogRef?.current?.showModal() }} />
                 <ToggleButton
                     title={stretchImage ? "Сбросить масштабирование" : "Подогнать изображение под размер"}
-                    visible={onlyFasad}
+                    visible={onlyFasad && hasFasadImage(fasad)}
                     iconPressed="resetImage" iconUnPressed="stretchImage" pressed={stretchImage}
                     onClick={() => {
                         if (!fasad) return

@@ -10,6 +10,7 @@ import { useImageUrl } from "../atoms/materials";
 import { imagesSrcUrl } from "../options";
 import { settingsAtom } from "../atoms/settings";
 import { FasadBackImageProps, getInitialBackImageProps } from "../classes/FasadState";
+import { hasFasadImage } from "../functions/fasades";
 type FasadSectionProps = {
     fasad: Fasad
     rootFasad: Fasad
@@ -17,9 +18,15 @@ type FasadSectionProps = {
 }
 export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fasad = props.fasad
+    const adjustImage = hasFasadImage(fasad)
     const onlyFasad = fasad.Children.length === 0
     const activeFasad = props.activeFasad
     const backImageProps = fasad.BackImageProps
+    if (!adjustImage) {
+        backImageProps.top = 0
+        backImageProps.left = 0
+        backImageProps.size = ""
+    }
     const [{ top, left, size, repeat, drag, x0, y0, hasImage }, setBackImagePosition] = useState({ hasImage: false, ...backImageProps, drag: false, x0: 0, y0: 0 })
     useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [fasad, backImageProps.top, backImageProps.left, backImageProps.size, backImageProps.repeat])
     const { showFixIcons } = useAtomValue(settingsAtom)
@@ -49,7 +56,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             flexShrink: "0",
             justifyContent: "center",
             alignItems: "center",
-            objectFit: "contain",
+            objectFit: "cover",
             cursor: "pointer",
             border: "1px solid black",
             backgroundPosition: `top ${top}px left ${left}px`,
@@ -63,6 +70,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
                 setActiveFasad(fasad)
              },
             onMouseDown: (e: MouseEvent) => { 
+                if(!adjustImage) return
                 if (e.button === 1) {
                     const initProps = getInitialBackImageProps()
                     setBackImagePosition(prev => ({ ...prev, ...initProps }))
@@ -82,11 +90,13 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
                 setBackImagePosition(prev => ({ ...prev, top: prev.top + dy, left: prev.left + dx, x0: e.clientX, y0: e.clientY }))
             },
             onMouseUp: (e: MouseEvent) => { 
+                if(!adjustImage) return
                 if (e.button !== 0) return true; 
                 setBackImagePosition(prev => ({ ...prev, drag: false })) 
                 fasad.BackImageProps = {top, left, size, repeat}
             },
             onMouseLeave: () => { 
+                if(!adjustImage) return
                 setBackImagePosition(prev => ({ ...prev, drag: false }))
                 fasad.BackImageProps = {top, left, size, repeat}
             },
@@ -126,21 +136,22 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         }
     }, [imageUrl, onlyFasad])
     useEffect(() => {
-        const onWheel = (e: WheelEvent) => { 
+        if(!adjustImage) return
+        const onWheel = (e: WheelEvent) => {
             e.preventDefault()
             if (!hasImage) return;
             const dx = e.clientX - (e.target as HTMLDivElement).offsetLeft - left
             const dy = e.clientY - (e.target as HTMLDivElement).offsetTop - top
-            const scale = Math.sign(e.deltaY) >= 0 ? e.shiftKey ? 0.99 : 0.9 : e.shiftKey ? 1.01 : 1.1; 
+            const scale = Math.sign(e.deltaY) >= 0 ? e.shiftKey ? 0.99 : 0.9 : e.shiftKey ? 1.01 : 1.1;
             setBackImagePosition(prev => {
                 const pSize = typeof prev.size === "string" ? 100 : prev.size;
                 return ({ ...prev, size: pSize * scale, top: top + dy * (1 - scale), left: left + dx * (1 - scale) })
-                })
-            fasad.BackImageProps = {top, left, size, repeat}
-         }
-         // @ts-ignore
-        fasadRef.current?.addEventListener("wheel", onWheel, {passive:false})
-        return ()=>{
+            })
+            fasad.BackImageProps = { top, left, size, repeat }
+        }
+        // @ts-ignore
+        fasadRef.current?.addEventListener("wheel", onWheel, { passive: false })
+        return () => {
             // @ts-ignore
             fasadRef.current?.removeEventListener("wheel", onWheel)
         }

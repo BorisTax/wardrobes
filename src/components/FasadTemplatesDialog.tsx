@@ -48,26 +48,26 @@ export default function FasadTemplatesDialog() {
         setTemplateDialogRef(dialogRef)
     }, [setTemplateDialogRef, dialogRef])
     return <DialogWindow dialogRef={dialogRef}>
-        <div className="d-flex">
+        <div className="d-flex gap-1">
             <div className="d-flex flex-column align-self-stretch">
                 <div className="text-center">Шаблоны</div>
                 <div ref={templateListRef} className="template-list">
-                    {templates.map((t: Template) => <div key={t.name} className={t === curTemplate ? "template-item template-item-selected" : "template-item"} onClick={() => { setTemplate(templates.find(temp => temp.name === t.name) as Template) }}>{t.name}</div>)}
+                    {templates.map((t: Template) => 
+                    <div key={t.name} className={t.name === curTemplate.name ? "template-item template-item-selected" : "template-item"} onClick={() => { setTemplate(t) }}>{t.name}</div>)}
                 </div>
             </div>
             <div className="d-flex flex-column align-items-center">
-                <div>Вид</div>
+                <div>Предпросмотр</div>
                 {fasad && <FasadPreviewContainer refObject={templatePreviewContainerRef} fasad={fasad} />}
             </div>
         </div>
         <hr />
-        {editor && editMode ? <div className="editmaterial-container">
-            <hr />
-            <div className="property-grid">
-                <span className="text-end text-nowrap">Имя:</span>
+        {editor && editMode ? <div className="d-flex flex-column gap-1">
+            <div className="d-flex gap-1 align-items-baseline">
+                <span className="text-end text-nowrap">Название шаблона:</span>
                 <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewName(e.target.value) }} />
             </div>
-            <div className="editmaterial-buttons-container">
+            <div className="d-flex gap-1">
                 <input type="button" value="Удалить" disabled={!curTemplate} onClick={() => {
                     const message = `Удалить шаблон: "${newName}" ?`
                     showConfirm(message, () => {
@@ -90,6 +90,15 @@ export default function FasadTemplatesDialog() {
                     const message = `Заменить шаблон: "${newName}" ?`
                     showConfirm(message, () => {
                         updateTemplate({ name, newName }, (result) => {
+                            showMessage(rusMessages[result.message])
+                        })
+                    })
+                }} />
+                <input type="button" value="Переименовать" disabled={!curTemplate} onClick={() => {
+                    const name = curTemplate.name
+                    const message = `Переименовать шаблон "${name}" в "${newName}" ?`
+                    showConfirm(message, () => {
+                        updateTemplate({ name, newName, rename: true }, (result) => {
                             showMessage(rusMessages[result.message])
                         })
                     })

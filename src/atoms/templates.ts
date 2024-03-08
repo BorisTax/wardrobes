@@ -52,7 +52,7 @@ export const addFasadTemplateAtom = atom(null, async (get, set, name: string, ca
     } catch (e) { console.error(e) }
 })
 
-export const updateFasadTemplateAtom = atom(null, async (get, set, { name, newName }, callback: AtomCallbackResult) => {
+export const updateFasadTemplateAtom = atom(null, async (get, set, { name, newName, rename = false }, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(appDataAtom)
@@ -61,7 +61,7 @@ export const updateFasadTemplateAtom = atom(null, async (get, set, { name, newNa
     formData.append(TableFields.NAME, name)
     formData.append(TableFields.NEWNAME, newName)
     formData.append(TableFields.TABLE, TEMPLATE_TABLES.FASAD)
-    formData.append(TableFields.DATA, data)
+    if(!rename) formData.append(TableFields.DATA, data)
     formData.append(TableFields.TOKEN, user.token)
     try {
         const result = await fetchFormData("api/templates", "PUT", formData)

@@ -9,7 +9,7 @@
 }
 .template-item{
     min-width: 200px;
-    .template-item-selected{
+    &.template-item-selected{
         font-weight: bold;
         border: 1px solid black;
     }

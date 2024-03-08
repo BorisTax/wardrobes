@@ -53,17 +53,16 @@ export default function PropertiesBar() {
             <div className="d-flex gap-1">
                 {isEditorAtLeast(role) && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
                 {isClientAtLeast(role) && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
-                <ImageButton title="Скопировать фасад" icon="copy" visible={fasad !== null} onClick={() => { copyFasadDialogRef?.current?.showModal() }} />
-                <ToggleButton
+                {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />}
+                {onlyFasad && hasFasadImage(fasad) && <ToggleButton
                     title={stretchImage ? "Сбросить масштабирование" : "Подогнать изображение под размер"}
-                    visible={onlyFasad && hasFasadImage(fasad)}
                     iconPressed="resetImage" iconUnPressed="stretchImage" pressed={stretchImage}
                     onClick={() => {
                         if (!fasad) return
                         if (stretchImage) fasad.BackImageProps = getInitialBackImageProps(); else fasad.BackImageProps = { ...getInitialBackImageProps(), size: "100% 100%" }
                         setActiveFasad(fasad)
-                    }} />
-                <ImageButton title="Выбрать секцию" icon="selectParent" visible={!((fasad === null) || (fasad.Parent === null))} onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />
+                    }} />}
+                {((fasad !== null) && (fasad.Parent !== null)) && <ImageButton title="Выбрать секцию" icon="selectParent" onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} />}
             </div>
         </div>
         <hr />

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useToolTip } from '../custom-hooks/useToolTip';
 
 type ToggleButtonProps = {

@@ -1,4 +1,4 @@
-import { ReactElement, useLayoutEffect, useRef } from "react";
+import { ReactElement, useLayoutEffect } from "react";
 import Fasad from "../classes/Fasad";
 import FasadSectionPreview from "./FasadSectionPreview";
 

@@ -5,7 +5,6 @@ import FasadContainer from "./FasadContainer";
 import Fasad from "../classes/Fasad";
 import { isLandscape } from "../functions/functions";
 
-
 export default function RootFasadesContainer(): ReactElement {
     const [, rerender] = useState(0)
     const [{ rootFasades }] = useAtom(appDataAtom)

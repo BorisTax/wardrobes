@@ -1,4 +1,4 @@
-import { Getter, Setter, atom } from "jotai";
+import { atom } from "jotai";
 import { SpecificationItem } from "../types/enums";
 import { getTotalSpecification } from "../functions/specification";
 import { appDataAtom } from "./app";

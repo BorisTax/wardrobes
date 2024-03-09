@@ -1,5 +1,3 @@
-import messages from "../server/messages"
-
 export type FetchResult = {
     success?: boolean
     status?: number

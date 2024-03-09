@@ -53,7 +53,7 @@ export default function FasadTemplatesDialog() {
                 <div className="text-center">Шаблоны</div>
                 <div ref={templateListRef} className="template-list">
                     {templates.map((t: Template) => 
-                    <div key={t.name} className={t.name === curTemplate.name ? "template-item template-item-selected" : "template-item"} onClick={() => { setTemplate(t) }}>{t.name}</div>)}
+                    <div key={t.name} className={curTemplate && (t.name === curTemplate.name) ? "template-item template-item-selected" : "template-item"} onClick={() => { setTemplate(t) }}>{t.name}</div>)}
                 </div>
             </div>
             <div className="d-flex flex-column align-items-center">

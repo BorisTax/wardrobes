@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react"
 import { useSetAtom } from "jotai"
-import { UserState, setUserAtom } from "../atoms/users"
+import { setUserAtom } from "../atoms/users"
 import { loginDialogAtom } from "../atoms/dialogs"
 import onFetch from "../functions/fetch"
 import { Results } from "../server/types/server"
+import CheckBox from "./CheckBox"
 
 export default function LoginDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const [password, setPassword] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
     const setUser = useSetAtom(setUserAtom)
     const [state, setState] = useState({ loading: false, message: "" })
     const closeDialog = () => { dialogRef.current?.close() }
@@ -32,7 +34,12 @@ export default function LoginDialog() {
                 <label htmlFor="name">Логин</label>
                 <input id="name" name="name" required />
                 <label htmlFor="pass">Пароль</label>
-                <input id="pass" name="password" type="password" value={password} onChange={(e) => { setPassword(e.target.value) }} required />
+                <input id="pass" name="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => { setPassword(e.target.value) }} required />
+                <div></div>
+                <div className="d-flex gap-1 align-items-baseline">
+                    <CheckBox id="showPass" checked={showPassword} onChange={() => { setShowPassword(!showPassword) }} />
+                    <label htmlFor="showPass">показать пароль</label>
+                </div>
             </div>
             <br />
             <div className="d-flex flex-column gap-2">

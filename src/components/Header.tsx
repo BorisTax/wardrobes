@@ -16,8 +16,6 @@ export default function Header() {
   const showUserListDialog = useSetAtom(showEditUsersDialogAtom)
   const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   const settingsDialog = useAtomValue(settingsDialogAtom)
- 
-
   return <div className="header">
     <div className="file-buttons-bar">
       <ImageButton title="Настройки" icon="settingsButton" onClick={() => { settingsDialog?.current?.showModal() }} />

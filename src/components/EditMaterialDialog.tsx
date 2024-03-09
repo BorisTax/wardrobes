@@ -12,7 +12,6 @@ import useMessage from "../custom-hooks/useMessage"
 import useConfirm from "../custom-hooks/useConfirm"
 import Button from "./Button"
 import { rusMessages } from "../functions/messages"
-import ImageButton from "./ImageButton"
 import DialogWindow from "./DialogWindow"
 
 export default function EditMaterialDialog() {

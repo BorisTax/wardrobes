@@ -1,5 +1,3 @@
-import React from 'react';
-
 export type ComboBoxProps = {
     onChange?: (index: number, value: string) => void
     items: string[] | Map<string, string>

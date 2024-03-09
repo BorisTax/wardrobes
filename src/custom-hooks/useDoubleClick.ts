@@ -1,5 +1,3 @@
-import { useRef } from "react";
-
 export default function useDoubleClick(onDoubleClick: (e: Event) => void) {
     let clickCount = 0
     let time = 0

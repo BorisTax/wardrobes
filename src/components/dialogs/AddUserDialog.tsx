@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { useSetAtom } from "jotai"
-import useMessage from "../custom-hooks/useMessage"
-import useConfirm from "../custom-hooks/useConfirm"
-import ImageButton from "./ImageButton"
-import ComboBox from "./ComboBox"
-import { UserRolesCaptions, allUsersAtom, createUserAtom } from "../atoms/users"
-import { UserRoles } from "../server/types/server"
-import { rusMessages } from "../functions/messages"
+import useMessage from "../../custom-hooks/useMessage"
+import useConfirm from "../../custom-hooks/useConfirm"
+import ImageButton from "../ImageButton"
+import ComboBox from "../ComboBox"
+import { UserRolesCaptions, allUsersAtom, createUserAtom } from "../../atoms/users"
+import { UserRoles } from "../../server/types/server"
+import { rusMessages } from "../../functions/messages"
 type DialogProps = {
     dialogRef: React.RefObject<HTMLDialogElement>
 }

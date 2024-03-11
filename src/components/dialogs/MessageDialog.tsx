@@ -1,5 +1,5 @@
 import { useAtom, useSetAtom } from "jotai"
-import { messageDialogAtom, messageDialogRefAtom } from "../atoms/dialogs"
+import { messageDialogAtom, messageDialogRefAtom } from "../../atoms/dialogs"
 import { useEffect, useRef } from "react"
 
 export default function MessageDialog() {

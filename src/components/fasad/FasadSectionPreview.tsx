@@ -1,10 +1,10 @@
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
-import Fasad from "../classes/Fasad";
-import { Division, FasadMaterial, SandBase } from "../types/enums";
-import { useImageUrl } from "../atoms/materials";
-import { imagesSrcUrl } from "../options";
-import { FasadBackImageProps } from "../classes/FasadState";
-import { hasFasadImage } from "../functions/fasades";
+import Fasad from "../../classes/Fasad";
+import { Division, FasadMaterial, SandBase } from "../../types/enums";
+import { useImageUrl } from "../../atoms/materials";
+import { imagesSrcUrl } from "../../options";
+import { FasadBackImageProps } from "../../classes/FasadState";
+import { hasFasadImage } from "../../functions/fasades";
 import FixedBoth from "./FixedBoth";
 import FixedHeight from "./FixedHeight";
 import FixedWidth from "./FixedWidth";

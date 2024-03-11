@@ -1,8 +1,8 @@
 import { ReactElement, useLayoutEffect, useRef } from "react";
 import FasadSection from "./FasadSection";
 import { useAtom, useAtomValue } from "jotai";
-import { appDataAtom } from "../atoms/app";
-import { activeFasadAtom, activeRootFasadIndexAtom } from "../atoms/fasades";
+import { appDataAtom } from "../../atoms/app";
+import { activeFasadAtom, activeRootFasadIndexAtom } from "../../atoms/fasades";
 
 type FasadContainerProps = {
     index: number

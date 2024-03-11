@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 import { useSetAtom } from "jotai"
-import { setUserAtom } from "../atoms/users"
-import { loginDialogAtom } from "../atoms/dialogs"
-import onFetch from "../functions/fetch"
-import { Results } from "../server/types/server"
-import CheckBox from "./CheckBox"
+import { setUserAtom } from "../../atoms/users"
+import { loginDialogAtom } from "../../atoms/dialogs"
+import onFetch from "../../functions/fetch"
+import { Results } from "../../server/types/server"
+import CheckBox from "../CheckBox"
 
 export default function LoginDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)

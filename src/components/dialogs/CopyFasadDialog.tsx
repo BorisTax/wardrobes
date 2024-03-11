@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { copyFasadDialogAtom } from "../atoms/dialogs"
+import { copyFasadDialogAtom } from "../../atoms/dialogs"
 import DialogWindow from "./DialogWindow"
-import { activeRootFasadIndexAtom, copyFasadAtom } from "../atoms/fasades"
-import { appDataAtom } from "../atoms/app"
+import { activeRootFasadIndexAtom, copyFasadAtom } from "../../atoms/fasades"
+import { appDataAtom } from "../../atoms/app"
 
 export default function CopyFasadDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)

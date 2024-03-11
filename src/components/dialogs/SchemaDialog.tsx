@@ -5,13 +5,13 @@ import { useAtomValue, useSetAtom } from "jotai"
 import * as  html2image from 'html-to-image'
 import download from 'downloadjs'
 import jsPDF from 'jspdf'
-import { rerenderDialogAtom, schemaDialogAtom } from "../atoms/dialogs"
-import { appDataAtom } from "../atoms/app"
-import { combineColors } from "../functions/schema"
-import { FasadMaterial } from "../types/enums"
-import Fasad from '../classes/Fasad'
-import FasadSchemaSection from './FasadSchemaSection'
-import ImageButton from './ImageButton'
+import { rerenderDialogAtom, schemaDialogAtom } from "../../atoms/dialogs"
+import { appDataAtom } from "../../atoms/app"
+import { combineColors } from "../../functions/schema"
+import { FasadMaterial } from "../../types/enums"
+import Fasad from '../../classes/Fasad'
+import FasadSchemaSection from '../fasad/FasadSchemaSection'
+import ImageButton from '../ImageButton'
 import DialogWindow from './DialogWindow'
 
 export default function SchemaDialog() {

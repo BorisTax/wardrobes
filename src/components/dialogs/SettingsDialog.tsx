@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { settingsDialogAtom } from "../atoms/dialogs"
-import { setSettingsAtom, settingsAtom } from "../atoms/settings"
+import { settingsDialogAtom } from "../../atoms/dialogs"
+import { setSettingsAtom, settingsAtom } from "../../atoms/settings"
 import DialogWindow from "./DialogWindow"
-import InputField from "./InputField"
-import { PropertyType } from "../types/property"
+import InputField from "../InputField"
+import { PropertyType } from "../../types/property"
 
 export default function SettingsDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)

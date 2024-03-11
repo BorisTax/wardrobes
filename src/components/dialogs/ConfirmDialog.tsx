@@ -1,11 +1,11 @@
-import { useAtom, useSetAtom } from "jotai"
-import { confirmDialogAtom, confirmDialogRefAtom } from "../atoms/dialogs"
+import { useAtomValue, useSetAtom } from "jotai"
+import { confirmDialogAtom, confirmDialogRefAtom } from "../../atoms/dialogs"
 import { useEffect, useRef } from "react"
 
 export default function ConfirmDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const setConfirmDialogRef = useSetAtom(confirmDialogRefAtom)
-    const [{ message, onYesAction, onNoAction = () => { } }] = useAtom(confirmDialogAtom)
+    const { message, onYesAction, onNoAction = () => { } } = useAtomValue(confirmDialogAtom)
     useEffect(() => {
         setConfirmDialogRef(dialogRef)
     }, [])

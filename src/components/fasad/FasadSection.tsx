@@ -1,16 +1,16 @@
 import { MouseEvent, ReactElement, WheelEvent, useEffect, useMemo, useRef, useState } from "react";
-import Fasad from "../classes/Fasad";
-import { Division, FasadMaterial, SandBase } from "../types/enums";
+import Fasad from "../../classes/Fasad";
+import { Division, FasadMaterial, SandBase } from "../../types/enums";
 import FixedHeight from "./FixedHeight";
 import FixedWidth from "./FixedWidth";
 import FixedBoth from "./FixedBoth";
 import { useAtomValue, useSetAtom } from "jotai";
-import { setActiveFasadAtom } from "../atoms/fasades";
-import { useImageUrl } from "../atoms/materials";
-import { imagesSrcUrl } from "../options";
-import { settingsAtom } from "../atoms/settings";
-import { FasadBackImageProps, getInitialBackImageProps } from "../classes/FasadState";
-import { hasFasadImage } from "../functions/fasades";
+import { setActiveFasadAtom } from "../../atoms/fasades";
+import { useImageUrl } from "../../atoms/materials";
+import { imagesSrcUrl } from "../../options";
+import { settingsAtom } from "../../atoms/settings";
+import { FasadBackImageProps, getInitialBackImageProps } from "../../classes/FasadState";
+import { hasFasadImage } from "../../functions/fasades";
 type FasadSectionProps = {
     fasad: Fasad
     rootFasad: Fasad

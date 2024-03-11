@@ -1,9 +1,9 @@
 import { ReactElement, useEffect, useRef, useState } from "react";
 import Hammer from "hammerjs"
-import Fasad from "../classes/Fasad";
-import { Division, FasadMaterial } from "../types/enums";
-import { MaterialCaptions, SandBasesCaptions } from "../functions/materials";
-import useDoubleClick from "../custom-hooks/useDoubleClick";
+import Fasad from "../../classes/Fasad";
+import { Division, FasadMaterial } from "../../types/enums";
+import { MaterialCaptions, SandBasesCaptions } from "../../functions/materials";
+import useDoubleClick from "../../custom-hooks/useDoubleClick";
 type FasadSectionProps = {
     fasad: Fasad
 }

@@ -74,10 +74,8 @@ export function getProfileList(profiles: Profile[]): ProfileList {
 }
 
 export function getInitialMaterialList(): ExtMaterial[] {
-
     const list: ExtMaterial[] = []
-    list.push({ name: "белый", material: "DSP", image: "", code: "" })
-
+    list.push({ name: "белый110", material: "DSP", image: "", code: "" })
     return list
 }
 

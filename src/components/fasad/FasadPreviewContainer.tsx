@@ -1,5 +1,5 @@
 import { ReactElement, useLayoutEffect } from "react";
-import Fasad from "../classes/Fasad";
+import Fasad from "../../classes/Fasad";
 import FasadSectionPreview from "./FasadSectionPreview";
 
 type FasadContainerProps = {

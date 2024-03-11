@@ -1,9 +1,9 @@
 import { ReactElement, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
-import { appDataAtom } from "../atoms/app";
+import { appDataAtom } from "../../atoms/app";
 import FasadContainer from "./FasadContainer";
-import Fasad from "../classes/Fasad";
-import { isLandscape } from "../functions/functions";
+import Fasad from "../../classes/Fasad";
+import { isLandscape } from "../../functions/functions";
 
 export default function RootFasadesContainer(): ReactElement {
     const [, rerender] = useState(0)

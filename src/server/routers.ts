@@ -13,7 +13,7 @@ router.use('/templates', templateRouter)
 router.use('/prices', priceRouter)
 router.use('/database', databaseRouter)
 router.get('/version', (req, res) => {
-    res.status(200).json({ success: true, data: "0.1.11" })
+    res.status(200).json({ success: true, data: "0.1.12" })
 })
 router.get('/dontstop', (req, res) => {
     res.status(200).json({ success: true })

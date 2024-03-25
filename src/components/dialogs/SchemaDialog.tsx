@@ -1,4 +1,4 @@
-import '../styles/schema.scss'
+import '../../styles/schema.scss'
 import { useEffect, useLayoutEffect, useRef } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 // @ts-ignore

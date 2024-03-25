@@ -38,6 +38,7 @@ export class UserService implements IUserService {
   async getUsers(): Promise<Results> {
     return await this.provider.getUsers()
   }
+  
   async getUser(token: string): Promise<User | undefined> {
     const tokenList = await this.getTokens()
     if (!tokenList.success) return undefined

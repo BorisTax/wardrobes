@@ -37,34 +37,36 @@ export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMater
     callback({ success: result.success as boolean, message: result.message as string })
 })
 
-export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: File | null, callback: AtomCallbackResult) => {
+export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: string, callback: AtomCallbackResult) => {
     const user = get(userAtom)
-    const formData = new FormData()
-    if (image) formData.append(TableFields.IMAGE, image)
-    formData.append(TableFields.NAME, material.name)
-    formData.append(TableFields.MATERIAL, material.material)
-    formData.append(TableFields.CODE, material.code)
-    formData.append(TableFields.TOKEN, user.token)
+    const data = {
+        [TableFields.NAME]: material.name,
+        [TableFields.MATERIAL]: material.material,
+        [TableFields.CODE]: material.code,
+        [TableFields.IMAGE]: image,
+        [TableFields.TOKEN]: user.token
+    }
     try {
-        const result = await fetchFormData("api/materials/material", "POST", formData)
+        const result = await fetchData("api/materials/material", "POST", JSON.stringify(data))
         await set(loadMaterialListAtom)
-        callback(result)
+        callback({ success: result.success as boolean, message: result.message as string })
     } catch (e) { console.error(e) }
 })
 
 export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image }, callback: AtomCallbackResult) => {
     const user = get(userAtom)
-    const formData = new FormData()
-    if (image) formData.append(TableFields.IMAGE, image)
-    formData.append(TableFields.NAME, name)
-    formData.append(TableFields.NEWNAME, newName)
-    formData.append(TableFields.MATERIAL, material)
-    formData.append(TableFields.CODE, newCode)
-    formData.append(TableFields.TOKEN, user.token)
+    const data = {
+        [TableFields.NAME]: name,
+        [TableFields.NEWNAME]: newName,
+        [TableFields.MATERIAL]: material,
+        [TableFields.CODE]: newCode,
+        [TableFields.IMAGE]: image,
+        [TableFields.TOKEN]: user.token
+    }
     try {
-        const result = await fetchFormData("api/materials/material", "PUT", formData)
+        const result = await fetchData("api/materials/material", "PUT", JSON.stringify(data))
         await set(loadMaterialListAtom)
-        callback(result)
+        callback({ success: result.success as boolean, message: result.message as string })
     } catch (e) { console.error(e) }
 })
 

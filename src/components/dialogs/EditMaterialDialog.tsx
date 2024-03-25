@@ -23,7 +23,7 @@ export default function EditMaterialDialog() {
     const addMaterial = useSetAtom(addMaterialAtom)
     const updateMaterial = useSetAtom(updateMaterialAtom)
     const extMaterials: ExtMaterial[] = useMemo(() => materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }], [materialList, baseMaterial]);
-    const imageSrc = `${imagesSrcUrl}${extMaterials[extMaterialIndex].image || ""}`
+    const imageSrc = extMaterials[extMaterialIndex].image || ""
     const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc })
     const [{ nameChecked, codeChecked, imageChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false })
     const [imageFileName, setImageFileName] = useState("???")
@@ -68,10 +68,14 @@ export default function EditMaterialDialog() {
                     <input type="checkbox" checked={imageChecked} onChange={() => { setChecked(prev => ({ ...prev, imageChecked: !imageChecked })) }} />
                     <input style={{ display: "none" }} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newImageSrc} onChange={(e) => {
                         const file = e.target.files && e.target.files[0]
-                        const url = file ? URL.createObjectURL(file) : ""
-                        setNewValues(prev => ({ ...prev, newImageSrc: url || "" }))
-                        setImageFileName(file?.name || "")
-                    }} />
+                        let reader = new FileReader();
+                        reader.onload = function () {
+                            setNewValues(prev => ({ ...prev, newImageSrc: reader?.result as string || "" }))
+                            setImageFileName(file?.name || "")
+                        }
+                        reader.readAsDataURL(file as Blob);
+                    }}
+                    />
                     <span className="text-start text-wrap">{imageFileName}</span>
                 </div>
             </div>
@@ -89,7 +93,7 @@ export default function EditMaterialDialog() {
                 <Button caption="Добавить" disabled={!(nameChecked && codeChecked)} onClick={() => {
                     const name = newName
                     const code = newCode
-                    const file = imageRef.current && imageRef.current.files && imageRef.current.files[0]
+                    const file = newImageSrc
                     if (!checkFields({ imageChecked, newName, newCode, file }, showMessage)) return
                     if (existMaterial(name, baseMaterial, materialList)) { showMessage("Материал уже существует"); return }
                     const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode })
@@ -101,7 +105,7 @@ export default function EditMaterialDialog() {
                 }} />
                 <input type="button" value="Заменить" disabled={!(nameChecked || codeChecked || imageChecked)} onClick={() => {
                     const name = extMaterials[extMaterialIndex].name
-                    const file = imageRef.current && imageRef.current.files && imageRef.current.files[0]
+                    const file = newImageSrc
                     if (!checkFields({ nameChecked, codeChecked, imageChecked, newName, newCode, file }, showMessage)) return
                     const material = baseMaterial
                     const message = getMessage({ nameChecked, codeChecked, imageChecked, name, code: extMaterials[extMaterialIndex].code, newName, newCode })
@@ -119,7 +123,7 @@ export default function EditMaterialDialog() {
         </DialogWindow>        
 }
 
-function checkFields({ nameChecked = true, codeChecked = true, imageChecked, newName, newCode, file }: { nameChecked?: boolean, codeChecked?: boolean, imageChecked: boolean, newName: string, newCode: string, file: File | null }, showMessage: (message: string) => void) {
+function checkFields({ nameChecked = true, codeChecked = true, imageChecked, newName, newCode, file }: { nameChecked?: boolean, codeChecked?: boolean, imageChecked: boolean, newName: string, newCode: string, file: string }, showMessage: (message: string) => void) {
     if (nameChecked && newName.trim() === "") {
         showMessage("Введите наименование")
         return false

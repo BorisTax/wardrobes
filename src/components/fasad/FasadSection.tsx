@@ -7,7 +7,6 @@ import FixedBoth from "./FixedBoth";
 import { useAtomValue, useSetAtom } from "jotai";
 import { setActiveFasadAtom } from "../../atoms/fasades";
 import { useImageUrl } from "../../atoms/materials";
-import { imagesSrcUrl } from "../../options";
 import { settingsAtom } from "../../atoms/settings";
 import { FasadBackImageProps, getInitialBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";
@@ -117,23 +116,20 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
 
     useEffect(() => {
         const image = new Image()
-        const imageSrc = `${imagesSrcUrl}${imageUrl}`
-        const backImage = `url("${imageSrc}")`
+        const imageSrc = imageUrl
         image.src = imageSrc
         if (fasadRef.current) {
-            fasadRef.current.style.backgroundImage = getComputedStyle(fasadRef.current).getPropertyValue('--default-image')
+            fasadRef.current.style.backgroundImage = imageSrc || getComputedStyle(fasadRef.current).getPropertyValue('--default-image')
             fasadRef.current.style.backgroundPosition = `top 0px left 0px`
             fasadRef.current.style.backgroundSize = ""
             setBackImagePosition(prev => ({ ...prev, hasImage: false }))
         }
-        image.onload = () => {
-            if (fasadRef.current && onlyFasad) {
-                fasadRef.current.style.backgroundImage = backImage
+        if (fasadRef.current && onlyFasad && imageSrc) {
+                fasadRef.current.style.backgroundImage = `url(${imageSrc})`
                 setBackgroundStyle(fasadRef.current, {top, left, size, repeat})
                 setBackImagePosition(prev => ({ ...prev, hasImage: true }))
                 setActiveFasad(fasad)
             }
-        }
     }, [imageUrl, onlyFasad])
     useEffect(() => {
         if(!adjustImage) return
@@ -155,7 +151,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             // @ts-ignore
             fasadRef.current?.removeEventListener("wheel", onWheel)
         }
-    }, [hasImage, left, top])
+    }, [hasImage, left, top, adjustImage])
     return <div ref={onlyFasad ? fasadRef : nullRef} className={classes} style={{
         display: "grid",
         ...gridTemplate,

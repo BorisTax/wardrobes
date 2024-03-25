@@ -2,7 +2,7 @@ import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { accessDenied, moveFile } from '../functions/other.js';
+import { accessDenied } from '../functions/other.js';
 import { MaterialService } from '../services/materialService.js';
 import { MyRequest, UserRoles } from '../types/server.js';
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../types/materials.js';
@@ -60,28 +60,15 @@ router.delete("/material", async (req: MyRequest, res) => {
 
 router.post("/material", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { name, material, code } = req.body
-  const image = req.files?.image
-  let imageurl = material + " " + name + ".jpg"
-  const sourcefile = image ? image.path : ""
-  const destfile = path.join(__dirname, '../database/images/' + imageurl)
-  const moveResult: { copy: boolean, delete: boolean } = await moveFile(sourcefile, destfile)
-  imageurl = moveResult.copy ? imageurl : ""
-  const result = await addExtMaterial({ name, material, image: imageurl, code });
+  const { name, material, code, image } = req.body
+  const result = await addExtMaterial({ name, material, image, code });
   res.status(result.status).json(result)
 });
 
 router.put("/material", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { name, material, newName, code } = req.body
-  const image = req.files?.image
-
-  let imageurl = material + " " + name + ".jpg"
-  const sourcefile = image ? image.path : ""
-  const destfile = path.join(__dirname, '../database/images/' + imageurl)
-  const moveResult: { copy: boolean, delete: boolean } = await moveFile(sourcefile, destfile)
-  imageurl = moveResult.copy ? imageurl : ""
-  const result = await updateExtMaterial({ name, material, newName, image: imageurl, code });
+  const { name, material, newName, code, image } = req.body
+  const result = await updateExtMaterial({ name, material, newName, image, code });
   res.status(result.status).json(result);
 });
 

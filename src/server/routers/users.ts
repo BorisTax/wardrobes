@@ -86,15 +86,16 @@ router.post("/logoutall", async (req: MyRequest, res) => {
 router.post("/add", async (req: MyRequest, res) => {
   if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const user = req.body;
-  if (!user.name || !user.password || !user.role) return res.json({ success: false, errCode: messages.INVALID_USER_DATA });
+  if (!user.name || !user.password || !user.role) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
   const userService = new UserService(userServiceProvider)
   const result = await userService.registerUser(user);
   res.json(result);
 });
+
 router.delete("/delete", async (req: MyRequest, res) => {
   if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const user = req.body;
-  if (!user.name) return res.json({ success: false, errCode: messages.INVALID_USER_DATA });
+  if (!user.name) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
   const userService = new UserService(userServiceProvider)
   const result = await userService.deleteUser(user);
   res.json(result);

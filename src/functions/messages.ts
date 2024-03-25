@@ -5,6 +5,7 @@ export const rusMessages = {
   [messages.INVALID_NAME]: "Некорректное имя",
   [messages.INVALID_PASSWORD]: "Некорректный пароль",
   [messages.INVALID_USER_DATA]: "Некорректные данные пользователя",
+  [messages.IMAGE_TOO_LARGE]: "Слишком большой размер изображения",
   [messages.LOGIN_SUCCEED]: "Авторизация прошла успешно",
   [messages.ACCESS_DENIED]: "Доступ запрещен",
   [messages.MATERIAL_EXIST]: "Материал уже существует",

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
+    "start": "ts-node --esm src/server/index.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -14,7 +15,6 @@
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.2",
     "config": "^3.3.11",
-    "connect-multiparty": "^2.2.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "downloadjs": "^1.4.7",

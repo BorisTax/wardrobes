@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { FetchResult, fetchFormData, fetchGetData } from "../functions/fetch";
+import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { PriceListItem, TableFields } from "../server/types/server";
 import { AtomCallbackResult } from "../types/atoms";
@@ -19,17 +19,17 @@ export const loadPriceListAtom = atom(null, async (get, set) => {
 
 export const updatePriceListAtom = atom(null, async (get, set, { name, caption, price, code, id, markup }: PriceListItem, callback: AtomCallbackResult) => {
     const user = get(userAtom)
-    const formData = new FormData()
-    formData.append(TableFields.NAME, name)
-    if (caption) formData.append(TableFields.CAPTION, caption)
-    if (price) formData.append(TableFields.PRICE, `${price}`)
-    if (markup) formData.append(TableFields.MARKUP, `${markup}`)
-    if (code) formData.append(TableFields.CODE, code)
-    if (id) formData.append(TableFields.ID, id)
-    formData.append(TableFields.TOKEN, user.token)
+    const formData: any = {}
+    formData[TableFields.NAME] = name
+    if (caption !== undefined) formData[TableFields.CAPTION] = caption
+    if (price !== undefined) formData[TableFields.PRICE] = `${price}`
+    if (markup !== undefined) formData[TableFields.MARKUP] = `${markup}`
+    if (code !== undefined) formData[TableFields.CODE] = code
+    if (id !== undefined) formData[TableFields.ID] = id
+    formData[TableFields.TOKEN] = user.token
     try {
-        const result = await fetchFormData("api/prices/pricelist", "PUT", formData)
+        const result = await fetchData("api/prices/pricelist", "PUT", JSON.stringify(formData))
         await set(loadPriceListAtom)
-        callback(result)
+        callback({success: result.success as boolean, message: result.message as string})
     } catch (e) { console.error(e) }
 })

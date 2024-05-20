@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { FetchResult, fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
+import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { appDataAtom } from "./app";
 import { TableFields } from "../server/types/server";
@@ -40,15 +40,11 @@ export const addFasadTemplateAtom = atom(null, async (get, set, name: string, ca
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(appDataAtom)
     const data = JSON.stringify(rootFasades[index].getState())
-    const formData = new FormData()
-    formData.append(TableFields.NAME, name)
-    formData.append(TableFields.DATA, data)
-    formData.append(TableFields.TABLE, TEMPLATE_TABLES.FASAD)
-    formData.append(TableFields.TOKEN, user.token)
+    const formData = JSON.stringify({[TableFields.NAME]: name, [TableFields.DATA]: data, [TableFields.TABLE]: TEMPLATE_TABLES.FASAD, [TableFields.TOKEN]: user.token})
     try {
-        const result = await fetchFormData("api/templates", "POST", formData)
+        const result = await fetchData("api/templates", "POST", formData)
         await set(loadTemplateListAtom, TEMPLATE_TABLES.FASAD)
-        callback(result)
+        callback({success: result.success as boolean, message: result.message as string})
     } catch (e) { console.error(e) }
 })
 
@@ -57,16 +53,12 @@ export const updateFasadTemplateAtom = atom(null, async (get, set, { name, newNa
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(appDataAtom)
     const data = JSON.stringify(rootFasades[index].getState())
-    const formData = new FormData()
-    formData.append(TableFields.NAME, name)
-    formData.append(TableFields.NEWNAME, newName)
-    formData.append(TableFields.TABLE, TEMPLATE_TABLES.FASAD)
-    if(!rename) formData.append(TableFields.DATA, data)
-    formData.append(TableFields.TOKEN, user.token)
+    const formData = {[TableFields.NAME]: name, [TableFields.NEWNAME]: newName, [TableFields.DATA]: data, [TableFields.TABLE]: TEMPLATE_TABLES.FASAD, [TableFields.TOKEN]: user.token}
+    if(!rename) formData[TableFields.DATA] = data
     try {
-        const result = await fetchFormData("api/templates", "PUT", formData)
+        const result = await fetchData("api/templates", "PUT", JSON.stringify(formData))
         await set(loadTemplateListAtom, TEMPLATE_TABLES.FASAD)
-        callback(result)
+        callback({success: result.success as boolean, message: result.message as string})
     } catch (e) { console.error(e) }
 })
 

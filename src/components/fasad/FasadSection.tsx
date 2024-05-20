@@ -105,6 +105,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     }else{
         styles = {
             ...styles,
+            border: (fasad === activeFasad) ? "1px solid red" : "",
             backgroundImage: ""
         }
     }

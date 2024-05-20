@@ -2,12 +2,8 @@ import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import Fasad from "../../classes/Fasad";
 import { Division, FasadMaterial, SandBase } from "../../types/enums";
 import { useImageUrl } from "../../atoms/materials";
-import { imagesSrcUrl } from "../../options";
 import { FasadBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";
-import FixedBoth from "./FixedBoth";
-import FixedHeight from "./FixedHeight";
-import FixedWidth from "./FixedWidth";
 type FasadSectionProps = {
     fasad: Fasad
 }
@@ -22,7 +18,7 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
         backImageProps.size = ""
     }
     const [{ top, left, size, repeat }, setBackImagePosition] = useState({...backImageProps })
-    useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [fasad, backImageProps.top, backImageProps.left, backImageProps.size, backImageProps.repeat])
+    useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [backImageProps])
     const imageUrl = useImageUrl(fasad.ExtMaterial)
     const fasadRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
@@ -60,15 +56,10 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
             backgroundImage: ""
         }
     }
-    const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight()
-    const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth()
-    const fixedBoth = fixedHeight && fixedWidth
-    const fixed = fixedBoth ? <FixedBoth /> : fixedHeight ? <FixedHeight /> : fixedWidth ? <FixedWidth /> : <></>
     const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSectionPreview key={i} fasad={f} />) : ""
     useEffect(() => {
         const image = new Image()
-        const imageSrc = `${imagesSrcUrl}${imageUrl}`
-        const backImage = `url("${imageSrc}")`
+        const imageSrc = imageUrl
         image.src = imageSrc
         if (fasadRef.current) {
             fasadRef.current.style.backgroundImage = getComputedStyle(fasadRef.current).getPropertyValue('--default-image')
@@ -78,12 +69,12 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
         }
         image.onload = () => {
             if (fasadRef.current && onlyFasad) {
-                fasadRef.current.style.backgroundImage = backImage
+                fasadRef.current.style.backgroundImage = `url(${imageSrc})`
                 setBackgroundStyle(fasadRef.current, {top, left, size, repeat})
                 setBackImagePosition(prev => ({ ...prev, hasImage: true }))
             }
         }
-    }, [imageUrl, onlyFasad])
+    }, [imageUrl, onlyFasad, top, left, size, repeat])
 
     return <div ref={onlyFasad ? fasadRef : nullRef} className={classes} style={{
         display: "grid",
@@ -94,7 +85,6 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
 
     >
         {contents}
-        {fixed}
     </div>
 }
 

@@ -45,9 +45,9 @@ export function getFasadState(width: number, height: number, division: Division,
     return state
 }
 
-export function newFasadFromState(state: FasadState): Fasad {
+export function newFasadFromState(state: FasadState, keepOriginalMaterial: boolean = false): Fasad {
     const f: Fasad = new Fasad()
-    f.setState(state)
+    f.setState(state, keepOriginalMaterial)
     return f
 }
 

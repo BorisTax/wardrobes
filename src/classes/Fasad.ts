@@ -51,21 +51,21 @@ export default class Fasad {
         for (const c of this.Children) state.children.push(c.getState())
         return state
     }
-    public setState(state: FasadState) {
+    public setState(state: FasadState, keepOriginalMaterial: boolean = false) {
         this.level = state.level
         this.active = state.active
         this.width = state.width
         this.height = state.height
         this.fWidth = state.fixedWidth
         this.fHeight = state.fixedHeight
-        this.material = state.material
-        this.extMaterial = state.extMaterial
+        if (!keepOriginalMaterial) this.material = state.material
+        if (!keepOriginalMaterial) this.extMaterial = state.extMaterial
         this.sandBase = state.sandBase
         this.division = state.division
         this.OuterEdges = { ...state.outerEdges }
         this.backImageProps = { ...state.backImageProps }
         this.Children = state.children.map((s: FasadState) => {
-            const f: Fasad = newFasadFromState(s)
+            const f: Fasad = newFasadFromState(s, keepOriginalMaterial)
             f.Parent = this
             return f
         })

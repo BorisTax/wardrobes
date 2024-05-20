@@ -35,6 +35,7 @@ export async function getPriceList() {
 export async function updatePriceList({ name, caption, price, code, id, markup }: PriceListItem) {
   const priceService = new PriceService(priceServiceProvider)
   const result = await priceService.getPriceList()
+  
   if (!result.success) return result
   const priceList = result.data
   if (markup && isNaN(+markup)) return incorrectData(messages.PRICELIST_MARKUP_INCORRECT)

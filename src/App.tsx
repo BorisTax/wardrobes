@@ -24,7 +24,7 @@ import EditProfileDialog from './components/dialogs/EditProfileDialog'
 import EditPriceDialog from './components/dialogs/EditPriceDialog'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast} from './server/functions/user'
-import { AppState } from './types/app'
+import { AppState, Workspace } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import SchemaDialog from './components/dialogs/SchemaDialog'
@@ -34,9 +34,11 @@ import SettingsDialog from './components/dialogs/SettingsDialog'
 import StatusBar from './components/StatusBar'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
+import CorpusContainer from './components/corpus/CorpusContainer'
 
 function App() {
   const user = useAtomValue(userAtom)
+  const workspace = useAtomValue(appDataAtom).workspace
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
@@ -73,7 +75,7 @@ function App() {
           <WardrobePropertiesBar />
           <PropertiesBar />
         </div>
-        <RootFasadesContainer />
+        {workspace === Workspace.FASADES ? <RootFasadesContainer /> : <CorpusContainer />}
       </div>
       <CopyFasadDialog />
       <FasadTemplatesDialog />

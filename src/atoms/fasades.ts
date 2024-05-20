@@ -10,14 +10,14 @@ import { settingsAtom } from './settings'
 
 export const copyFasadAtom = atom(null, (get, set, dest: number, source: number) => {
     const appData = get(appDataAtom)
-    appData.rootFasades[dest].setState(appData.rootFasades[source].getState())
+    appData.fasades.rootFasades[dest].setState(appData.fasades.rootFasades[source].getState())
     set(appDataAtom, { ...appData }, true)
 })
 
 export const activeFasadAtom = atom<Fasad | null>((get) => {
     const appData: AppData = get(appDataAtom)
     let activeFasad: Fasad | null = null
-    appData.rootFasades.forEach((f: Fasad) => {
+    appData.fasades.rootFasades.forEach((f: Fasad) => {
         const active = f.getActiveFasad()
         if (active) activeFasad = active
     })
@@ -25,11 +25,11 @@ export const activeFasadAtom = atom<Fasad | null>((get) => {
 })
 export const setActiveFasadAtom = atom(null, (get, set, activeFasad: Fasad | null) => {
     const appData = get(appDataAtom)
-    appData.rootFasades.forEach((f: Fasad) => f.setActiveFasad(activeFasad))
+    appData.fasades.rootFasades.forEach((f: Fasad) => f.setActiveFasad(activeFasad))
     set(appDataAtom, { ...appData }, false)
 })
 export const activeRootFasadIndexAtom = atom((get) => {
-    const { rootFasades } = get(appDataAtom)
+    const { rootFasades } = get(appDataAtom).fasades
     return rootFasades.findIndex(r => r.getActiveFasad() !== null)
 })
 export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
@@ -38,12 +38,12 @@ export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const { minSize } = get(settingsAtom)
     const appData = get(appDataAtom)
     const rootFasad = getRootFasad(activeFasad)
-    const rootFasadIndex = appData.rootFasades.findIndex((f: Fasad) => f === rootFasad)
+    const rootFasadIndex = appData.fasades.rootFasades.findIndex((f: Fasad) => f === rootFasad)
     const height = activeFasad.Material === FasadMaterial.DSP ? newHeight : newHeight + 3
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
     if (trySetHeight(newActiveFasad, height, minSize)) {
-        appData.rootFasades[rootFasadIndex] = newRootFasad
+        appData.fasades.rootFasades[rootFasadIndex] = newRootFasad
         set(appDataAtom, { ...appData }, true)
     }
 })
@@ -54,12 +54,12 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
     const appData = get(appDataAtom)
     const { minSize } = get(settingsAtom)
     const rootFasad = getRootFasad(activeFasad)
-    const rootFasadIndex = appData.rootFasades.findIndex((f: Fasad) => f === rootFasad)
+    const rootFasadIndex = appData.fasades.rootFasades.findIndex((f: Fasad) => f === rootFasad)
     const width = activeFasad.Material === FasadMaterial.DSP ? newWidth : newWidth + 3
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
     if (trySetWidth(newActiveFasad, width, minSize)) {
-        appData.rootFasades[rootFasadIndex] = newRootFasad
+        appData.fasades.rootFasades[rootFasadIndex] = newRootFasad
         set(appDataAtom, { ...appData }, true)
     }
 })

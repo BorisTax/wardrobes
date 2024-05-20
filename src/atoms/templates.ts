@@ -38,7 +38,7 @@ export const deleteTemplateAtom = atom(null, async (get, set, {name, table}, cal
 export const addFasadTemplateAtom = atom(null, async (get, set, name: string, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     const index = get(activeRootFasadIndexAtom)
-    const { rootFasades } = get(appDataAtom)
+    const { rootFasades } = get(appDataAtom).fasades
     const data = JSON.stringify(rootFasades[index].getState())
     const formData = new FormData()
     formData.append(TableFields.NAME, name)
@@ -55,7 +55,7 @@ export const addFasadTemplateAtom = atom(null, async (get, set, name: string, ca
 export const updateFasadTemplateAtom = atom(null, async (get, set, { name, newName, rename = false }, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     const index = get(activeRootFasadIndexAtom)
-    const { rootFasades } = get(appDataAtom)
+    const { rootFasades } = get(appDataAtom).fasades
     const data = JSON.stringify(rootFasades[index].getState())
     const formData = new FormData()
     formData.append(TableFields.NAME, name)
@@ -72,7 +72,7 @@ export const updateFasadTemplateAtom = atom(null, async (get, set, { name, newNa
 
 export const applyTemplateAtom = atom(null, (get, set, state: FasadState, callback: AtomCallbackResult) => {
     const index = get(activeRootFasadIndexAtom)
-    const { rootFasades } = get(appDataAtom)
+    const { rootFasades } = get(appDataAtom).fasades
     const { minSize } = get(settingsAtom)
     const width = rootFasades[index].Width
     const height = rootFasades[index].Height

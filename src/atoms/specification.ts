@@ -8,7 +8,7 @@ import { priceListAtom } from "./prices";
 export const specificationAtom = atom<Map<SpecificationItem, number>[]>([])
 
 export const calculateSpecificationsAtom = atom(null, (get, set) => {
-    const { rootFasades, profile } = get(appDataAtom)
+    const { rootFasades, profile } = get(appDataAtom).fasades
     const spec = rootFasades.map((f: Fasad) => getTotalSpecification(f, profile.type))
     set(specificationAtom, spec)
 })

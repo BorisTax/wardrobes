@@ -8,9 +8,3 @@ export type FasadProps = {
     sandBase?: SandBase
     minSize?: number
 }
-export type FasadBackup = {
-    height?: number
-    width?: number
-    material?: FasadMaterial
-    hasBackup?: boolean
-}

@@ -17,7 +17,7 @@ export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = f
         if (!success) return
         const mList = getMaterialList(data as ExtMaterial[])
         set(materialListAtom, mList)
-        const { rootFasades } = get(appDataAtom)
+        const { rootFasades } = get(appDataAtom).fasades
         const material = [...mList.keys()][0] as FasadMaterial
         const extMaterials = mList.get(material);
         const extMaterial = extMaterials && extMaterials[0].name

@@ -1,0 +1,13 @@
+version: "1.0"
+services:
+  app:
+    build: .
+    image: boristax/comby-fasades
+    ports:
+      - 5000:5000
+    command: npm run start
+    volumes: 
+      - combi-db:/app/src/server/database
+volumes:
+  combi-db:
+      external: true

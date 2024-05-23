@@ -70,6 +70,7 @@ export const divideFasadAtom = atom(null, (get, set, count: number) => {
     const appData = get(appDataAtom)
     activeFasad.divideFasad(count, minSize)
     set(appDataAtom, { ...appData }, true)
+    set(setActiveFasadAtom, activeFasad)
 })
 
 export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {

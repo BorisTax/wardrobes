@@ -1,1 +1,1 @@
-nodemon --ignore /database --ext "ts,json" --exec "ts-node --esm src/server/index.ts"
+nodemon --ignore /database --ext "ts,json" --exec "node --inspect --loader ts-node/esm ./src/server/index.ts"

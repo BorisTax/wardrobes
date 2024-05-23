@@ -2,6 +2,7 @@ version: "1.0"
 services:
   app:
     build: .
+    restart: always
     image: boristax/comby-fasades
     ports:
       - 5000:5000

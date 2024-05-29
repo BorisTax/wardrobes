@@ -1,4 +1,4 @@
-import { Division, FasadMaterial, SandBase } from "../types/enums";
+import { Division, FasadMaterial, MaterialGroup, SandBase } from "../types/enums";
 import { ExtMaterial, Profile, ProfileType } from "../server/types/materials";
 
 export const colors = {
@@ -10,6 +10,13 @@ export const colors = {
     [FasadMaterial.LACOBELGLASS]: "#fffb00",
     [FasadMaterial.SAND]: "#15ff00"
 }
+
+export const MaterialGroupCaptions: Map<string, string> = new Map()
+MaterialGroupCaptions.set(MaterialGroup.PLATE, "Площадные")
+MaterialGroupCaptions.set(MaterialGroup.EDGE, "Кромка")
+MaterialGroupCaptions.set(MaterialGroup.ZAGLUSHKI, "Заглушки")
+MaterialGroupCaptions.set(MaterialGroup.PROFILE, "Профиля")
+MaterialGroupCaptions.set(MaterialGroup.BRUSH, "Щетки")
 
 export const Materials: Map<string, string> = new Map()
 Materials.set("ДСП", FasadMaterial.DSP)

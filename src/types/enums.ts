@@ -17,7 +17,7 @@ export enum SandBase {
     SAND = 'SAND'
 }
 export enum SpecificationItem {
-    DSP = "DSP",
+    DSP10 = "DSP10",
     Mirror = "Mirror",
     Arakal = "Arakal",
     Hydro = "Hydro",
@@ -43,4 +43,12 @@ export enum SpecificationItem {
     RolikiBavaria = "RolikiBavaria",
     Karton = "Karton",
     Skotch = "Skotch"
+}
+
+export enum MaterialGroup {
+    PLATE = 'plate',
+    PROFILE = 'profile',
+    EDGE = 'edge',
+    ZAGLUSHKI = 'zaglushki',
+    BRUSH = 'brush'
 }

@@ -49,7 +49,7 @@ function combineSpecifications(fasad: Fasad): Map<SpecificationItem, number> {
 
 function calcSpecification(fasad: Fasad): Map<SpecificationItem, number> {
     const spec = getSpecificationPattern()
-    spec.set(SpecificationItem.DSP, calcDSP(fasad))
+    spec.set(SpecificationItem.DSP10, calcDSP10(fasad))
     spec.set(SpecificationItem.Mirror, calcMirror(fasad))
     spec.set(SpecificationItem.Arakal, calcArakal(fasad))
     spec.set(SpecificationItem.Hydro, calcHydro(fasad))
@@ -66,7 +66,7 @@ function calcSpecification(fasad: Fasad): Map<SpecificationItem, number> {
 }
 
 
-function calcDSP(fasad: Fasad): number {
+function calcDSP10(fasad: Fasad): number {
     return fasad.Material === FasadMaterial.DSP ? fasad.cutWidth * fasad.cutHeight / 1000000 : 0
 }
 function calcMirror(fasad: Fasad): number {

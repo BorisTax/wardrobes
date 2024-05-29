@@ -1,4 +1,4 @@
-import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
+import { Edge, ExtMaterial, ExtNewMaterial, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from "./materials"
 import { PriceListItem, Results, User } from "./server"
 import { NewTemplate, Template } from "./templates"
 interface IUserAbstractService {
@@ -19,6 +19,14 @@ interface IMaterialAbstractService {
     addProfile: ({ }: Profile) => Promise<Results>
     deleteProfile: (name: string, type: string) => Promise<Results>
     updateProfile: ({ }: NewProfile) => Promise<Results>
+    getEdges: () => Promise<Results>
+    addEdge: ({ }: Edge) => Promise<Results>
+    deleteEdge: (name: string) => Promise<Results>
+    updateEdge: ({ }: NewEdge) => Promise<Results>
+    getZaglushkas: () => Promise<Results>
+    addZaglushka: ({ }: Zaglushka) => Promise<Results>
+    deleteZaglushka: (name: string) => Promise<Results>
+    updateZaglushka: ({ }: NewZaglushka) => Promise<Results>
 }
 interface ITemplateAbstractService {
     getTemplates: (table: string) => Promise<Results>

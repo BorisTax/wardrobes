@@ -24,29 +24,33 @@ export const deleteProfileAtom = atom(null, async (get, set, profile: Profile, c
 
 export const addProfileAtom = atom(null, async (get, set, profile: Profile, callback: AtomCallbackResult) => {
     const user = get(userAtom)
-    const formData = new FormData()
-    formData.append(TableFields.NAME, profile.name)
-    formData.append(TableFields.TYPE, profile.type)
-    formData.append(TableFields.CODE, profile.code)
-    formData.append(TableFields.TOKEN, user.token)
+    const data = {
+        [TableFields.NAME]: profile.name,
+        [TableFields.TYPE]: profile.type,
+        [TableFields.CODE]: profile.code,
+        [TableFields.BRUSH]: profile.brush,
+        [TableFields.TOKEN]: user.token
+    }
     try {
-        const result = await fetchFormData("api/materials/profile", "POST", formData)
+        const result = await fetchData("api/materials/profile", "POST", JSON.stringify(data))
         await set(loadProfileListAtom)
-        callback(result)
+        callback({ success: result.success as boolean, message: result.message as string })
     } catch (e) { console.error(e) }
 })
 
-export const updateProfileAtom = atom(null, async (get, set, { name, type, newCode, newName }, callback: AtomCallbackResult) => {
+export const updateProfileAtom = atom(null, async (get, set, { name, type, newCode, newName, newBrush }, callback: AtomCallbackResult) => {
     const user = get(userAtom)
-    const formData = new FormData()
-    formData.append(TableFields.NAME, name)
-    formData.append(TableFields.NEWNAME, newName)
-    formData.append(TableFields.TYPE, type)
-    formData.append(TableFields.CODE, newCode)
-    formData.append(TableFields.TOKEN, user.token)
+    const data = {
+        [TableFields.NAME]: name,
+        [TableFields.NEWNAME]: newName,
+        [TableFields.TYPE]: type,
+        [TableFields.CODE]: newCode,
+        [TableFields.BRUSH]: newBrush,
+        [TableFields.TOKEN]: user.token
+    }
     try {
-        const result = await fetchFormData("api/materials/profile", "PUT", formData)
+        const result = await fetchData("api/materials/profile", "PUT", JSON.stringify(data))
         await set(loadProfileListAtom)
-        callback(result)
+        callback({ success: result.success as boolean, message: result.message as string })
     } catch (e) { console.error(e) }
 })

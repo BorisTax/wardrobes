@@ -1,13 +1,13 @@
-import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/other.js';
-import { MaterialService } from '../services/materialService.js';
-import { MyRequest, UserRoles } from '../types/server.js';
-import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from '../types/materials.js';
-import { materialServiceProvider } from '../options.js';
 import { isEditorAtLeast } from '../functions/user.js';
+import { addProfile, deleteProfile, getProfiles, updateProfile } from './materials/profiles.js';
+import { addExtMaterial, deleteExtMaterial, getExtMaterials, updateExtMaterial } from './materials/extMaterials.js';
+import { MyRequest, UserRoles } from '../types/server.js';
+import { addEdge, deleteEdge, getEdges, updateEdge } from './materials/edges.js';
+import { addZaglushka, deleteZaglushka, getZaglushkas, updateZaglushka } from './materials/zaglushka.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,16 +31,16 @@ router.delete("/profile", async (req: MyRequest, res) => {
 
 router.post("/profile", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { name, type, code } = req.body
-  const result = await addProfile({ name, type, code });
+  const { name, type, code, brush } = req.body
+  const result = await addProfile({ name, type, code, brush });
   const status = result.success ? 201 : 409
   res.status(status).json(result);
 });
 
 router.put("/profile", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { name, type, newName, code } = req.body
-  const result = await updateProfile({ name, type, newName, code });
+  const { name, type, newName, code, brush } = req.body
+  const result = await updateProfile({ name, type, newName, code, brush });
   res.status(result.status).json(result);
 });
 
@@ -72,68 +72,62 @@ router.put("/material", async (req: MyRequest, res) => {
   res.status(result.status).json(result);
 });
 
-export async function getExtMaterials() {
-  const materialService = new MaterialService(materialServiceProvider)
-  return await materialService.getExtMaterials()
-}
 
-export async function addExtMaterial({ name, material, image, code }: ExtMaterial) {
-  const materialService = new MaterialService(materialServiceProvider)
-  const result = await materialService.getExtMaterials()
-  if (!result.success) return result
-  const materials = result.data
-  if ((materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, status: 409, message: messages.MATERIAL_EXIST }
-  return await materialService.addExtMaterial({ name, material, image, code })
-}
+router.get("/edges", async (req, res) => {
+  const result = await getEdges();
+  if (!result.success) return res.json(result)
+  res.status(result.status).json(result);
+});
+router.delete("/edge", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name } = req.body
+  let result
+  result = await deleteEdge(name);
+  const status = result.success ? 200 : 404
+  res.status(status).json(result);  
+});
 
-export async function updateExtMaterial({ name, material, newName, image, code }: ExtNewMaterial) {
-  const materialService = new MaterialService(materialServiceProvider)
-  const result = await materialService.getExtMaterials()
-  if (!result.success) return result
-  const materials = result.data
-  if (!(materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
-  return await materialService.updateExtMaterial({ name, material, newName, image, code })
-}
+router.post("/edge", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name, dsp, code } = req.body
+  const result = await addEdge({ name, dsp, code });
+  const status = result.success ? 201 : 409
+  res.status(status).json(result);
+});
 
-export async function deleteExtMaterial(name: string, material: string) {
-  const materialService = new MaterialService(materialServiceProvider)
-  const result = await materialService.getExtMaterials()
-  if (!result.success) return result
-  const materials = result.data
-  if (!(materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
-  return await materialService.deleteExtMaterial(name, material)
-}
+router.put("/edge", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name, dsp, newName, code } = req.body
+  const result = await updateEdge({ name, dsp, newName, code });
+  res.status(result.status).json(result);
+});
 
 
+router.get("/zaglushka", async (req, res) => {
+  const result = await getZaglushkas();
+  if (!result.success) return res.json(result)
+  res.status(result.status).json(result);
+});
+router.delete("/zaglushka", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name } = req.body
+  let result
+  result = await deleteZaglushka(name);
+  const status = result.success ? 200 : 404
+  res.status(status).json(result);  
+});
 
-export async function getProfiles() {
-  const materialService = new MaterialService(materialServiceProvider)
-  return await materialService.getProfiles()
-}
+router.post("/zaglushka", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name, dsp, code } = req.body
+  const result = await addZaglushka({ name, dsp, code });
+  const status = result.success ? 201 : 409
+  res.status(status).json(result);
+});
 
-export async function addProfile({ name, type, code }: Profile) {
-  const materialService = new MaterialService(materialServiceProvider)
-  const result = await materialService.getProfiles()
-  if (!result.success) return result
-  const profiles = result.data
-  if ((profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 409, message: messages.PROFILE_EXIST }
-  return await materialService.addProfile({ name, type, code })
-}
-
-export async function updateProfile({ name, newName, type, code }: NewProfile) {
-  const materialService = new MaterialService(materialServiceProvider)
-  const result = await materialService.getProfiles()
-  if (!result.success) return result
-  const profiles = result.data
-  if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 404, message: messages.PROFILE_NO_EXIST }
-  return await materialService.updateProfile({ name, type, newName, code })
-}
-
-export async function deleteProfile(name: string, type: string) {
-  const materialService = new MaterialService(materialServiceProvider)
-  const result = await materialService.getProfiles()
-  if (!result.success) return result
-  const profiles = result.data
-  if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 404, message: messages.PROFILE_NO_EXIST }
-  return await materialService.deleteProfile(name, type)
-}
+router.put("/zaglushka", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name, dsp, newName, code } = req.body
+  const result = await updateZaglushka({ name, dsp, newName, code });
+  res.status(result.status).json(result);
+});

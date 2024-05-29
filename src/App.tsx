@@ -20,7 +20,6 @@ import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
 import { loadProfileListAtom } from './atoms/profiles'
 import RootFasadesContainer from './components/fasad/RootFasadesContainer'
-import EditProfileDialog from './components/dialogs/EditProfileDialog'
 import EditPriceDialog from './components/dialogs/EditPriceDialog'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast} from './server/functions/user'
@@ -34,12 +33,16 @@ import SettingsDialog from './components/dialogs/SettingsDialog'
 import StatusBar from './components/StatusBar'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
+import { loadEdgeListAtom } from './atoms/edges'
+import { loadZaglushkaListAtom } from './atoms/zaglushka'
 
 function App() {
   const user = useAtomValue(userAtom)
   const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
+  const loadEdgeList = useSetAtom(loadEdgeListAtom)
+  const loadZaglushkaList = useSetAtom(loadZaglushkaListAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
@@ -49,6 +52,8 @@ function App() {
     setAppData(getAppDataFromState(appState), false)
     loadMaterialList(!storage)
     loadProfileList()
+    loadEdgeList()
+    loadZaglushkaList()
     loadVersion()
   }, [])
   useEffect(() => {
@@ -58,7 +63,7 @@ function App() {
     window.addEventListener("beforeunload", onBeforeUnload)
     const toolTip = createToolTip()
     document.body.appendChild(toolTip)
-    return () => {
+    return () =>  {
       document.removeEventListener("contextmenu", onContextMenu)
       window.removeEventListener("beforeunload", onBeforeUnload)
       document.body.removeChild(toolTip)
@@ -80,7 +85,6 @@ function App() {
       <SettingsDialog />
       <LoginDialog />
       {isEditorAtLeast(user.role) ? <EditMaterialDialog /> : <></>}
-      {isEditorAtLeast(user.role) ? <EditProfileDialog /> : <></>}
       {isEditorAtLeast(user.role) ? <EditPriceDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SpecificationDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SchemaDialog /> : <></>}

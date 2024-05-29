@@ -2,7 +2,7 @@ export type ComboBoxProps = {
     onChange?: (index: number, value: string) => void
     items: string[] | Map<string, string>
     value: string
-    title: string
+    title?: string
     disabled?: boolean
     size?: number
 }

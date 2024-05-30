@@ -1,28 +1,25 @@
-import { atom, useAtom } from "jotai";
+import { atom, useAtomValue } from "jotai";
 import { ExtMaterial } from "../server/types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
-import { MaterialList, getMaterialList } from "../functions/materials";
 import { appDataAtom } from "./app";
 import Fasad from "../classes/Fasad";
 import { FasadMaterial } from "../types/enums";
 import { TableFields } from "../server/types/server";
 import { AtomCallbackResult } from "../types/atoms";
 
-export const materialListAtom = atom(new Map())
+export const materialListAtom = atom<ExtMaterial[]>([])
 
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
     try {
-        const { success, data }: FetchResult = await fetchGetData('api/materials/material')
+        const { success, data }: FetchResult<ExtMaterial[]> = await fetchGetData('api/materials/material')
         if (!success) return
-        const mList = getMaterialList(data as ExtMaterial[])
-        set(materialListAtom, mList)
+        set(materialListAtom, data as ExtMaterial[])
         const { rootFasades } = get(appDataAtom)
-        const material = [...mList.keys()][0] as FasadMaterial
-        const extMaterials = mList.get(material);
-        const extMaterial = extMaterials && extMaterials[0].name
+        const material = data && data[0].material
+        const extMaterial = data && data[0].name
         //if (setAsInitial) 
-        setInitialMaterials(rootFasades, material, extMaterial || "")
+        setInitialMaterials(rootFasades, material as FasadMaterial, extMaterial || "")
     } catch (e) { console.error(e) }
 })
 
@@ -80,10 +77,8 @@ export function setInitialMaterials(rootFasades: Fasad[], material: FasadMateria
 }
 
 export function useImageUrl(extMaterial: string) {
-    const [materials] = useAtom(materialListAtom)
-    for (const k of materials.keys()) {
-        const mat = (materials.get(k) as ExtMaterial[]).find((m: ExtMaterial) => m.name === extMaterial)
-        if (mat) return mat.image
-    }
+    const materials = useAtomValue(materialListAtom)
+    const mat = materials.find((m: ExtMaterial) => m.name === extMaterial)
+    if (mat) return mat.image
     return ""
 }

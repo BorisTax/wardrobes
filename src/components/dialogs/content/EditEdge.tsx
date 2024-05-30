@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react"
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import ComboBox from "../../ComboBox"
 import { Edge, ExtMaterial } from "../../../server/types/materials"
 import useMessage from "../../../custom-hooks/useMessage"
@@ -13,9 +13,9 @@ import { FasadMaterial } from "../../../types/enums"
 import { EditDialogProps } from "../EditMaterialDialog"
 
 export default function EditEdge(props: EditDialogProps) {
-    const [edgeList] = useAtom(edgeListAtom)
-    const [materialList] = useAtom(materialListAtom)
-    const mList = materialList.get(FasadMaterial.DSP).map((m: ExtMaterial) => m.name)
+    const edgeList = useAtomValue(edgeListAtom)
+    const materialList = useAtomValue(materialListAtom)
+    const mList = materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name)
     const [{ name: edgeName, dsp, code }, setState] = useState({ ...edgeList[0] })
     useMemo(() => { setState({ ...edgeList[0] }) }, [edgeList])
     const deleteEdge = useSetAtom(deleteEdgeAtom)

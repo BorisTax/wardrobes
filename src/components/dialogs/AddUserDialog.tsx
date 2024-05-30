@@ -7,6 +7,7 @@ import ComboBox from "../ComboBox"
 import { UserRolesCaptions, allUsersAtom, createUserAtom } from "../../atoms/users"
 import { UserRoles } from "../../server/types/server"
 import { rusMessages } from "../../functions/messages"
+import { EditDialogProps } from "./EditMaterialDialog"
 type DialogProps = {
     dialogRef: React.RefObject<HTMLDialogElement>
 }
@@ -14,7 +15,7 @@ type DialogProps = {
 const roles = [UserRoles.CLIENT, UserRoles.MANAGER, UserRoles.EDITOR]
 const minNameLen = 3
 const minPassLen = 6
-export default function AddUserDialog({ dialogRef }: DialogProps) {
+export default function AddUserDialog({ dialogRef, setLoading }: DialogProps & EditDialogProps) {
     const closeDialog = () => { dialogRef.current?.close() }
     const [{ name, password }, setState] = useState({ name: "", password: "" })
     const [roleIndex, setRoleIndex] = useState(0)
@@ -28,7 +29,9 @@ export default function AddUserDialog({ dialogRef }: DialogProps) {
         if (name.length < 3) return showMessage("Логин слишком короткий")
         if (!passwordCorrect) return showMessage("Пароль должен содержать только цифры и/или латинские буквы")
         showConfirm(`Создать пользователя ${name} с правами ${rolesCaptions[roleIndex]}?`, () => {
+            setLoading(true)
             createUser({ name, password, role: roles[roleIndex] }, (result) => {
+                setLoading(false)
                 showMessage(rusMessages[result.message])
             })
         })

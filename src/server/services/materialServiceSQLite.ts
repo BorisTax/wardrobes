@@ -13,7 +13,7 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
     }
 
     async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial): Promise<Results> {
-        return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, image, code, purpose) values('${name}', '${material}', '${image}', '${code}', '${purpose}';`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, image, code, purpose) values('${name}', '${material}', '${image}', '${code}', '${purpose}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
     }
 
     async updateExtMaterial({ name, material, newName, image, code, purpose }: ExtNewMaterial): Promise<Results> {

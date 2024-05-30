@@ -10,7 +10,7 @@ export const activeProfileIndexAtom = atom(0)
 
 export const loadProfileListAtom = atom(null, async (get, set) => {
     try {
-        const { success, data }: FetchResult = await fetchGetData('api/materials/profile')
+        const { success, data }: FetchResult<Profile[]> = await fetchGetData('api/materials/profile')
         if(success) set(profileListAtom, data as Profile[]);
     } catch (e) { console.error(e) }
 })

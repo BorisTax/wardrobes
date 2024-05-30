@@ -11,9 +11,9 @@ import InputField from "../InputField"
 import { PropertyType } from "../../types/property"
 import DialogWindow from "./DialogWindow"
 
-
 export default function EditPriceDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
+    const [loading, setLoading] = useState(false)
     const loadPriceList = useSetAtom(loadPriceListAtom)
     const [priceList] = useAtom(priceListAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -37,7 +37,7 @@ export default function EditPriceDialog() {
         loadPriceList()
         setPriceDialogRef(dialogRef)
     }, [setPriceDialogRef, dialogRef])
-    return <DialogWindow dialogRef={dialogRef}>
+    return <DialogWindow dialogRef={dialogRef} title="Редактор спецификации">
         <div className="overflow-scroll">
             <div className="pricelist">
                 <table>
@@ -94,7 +94,9 @@ export default function EditPriceDialog() {
                         if (markupChecked) data.markup = +newMarkup
                         if (captionChecked) data.caption = newCaption
                         showConfirm(message, () => {
+                            setLoading(true)
                             updatePriceList(data, (result) => {
+                                setLoading(false)
                                 showMessage(rusMessages[result.message])
                             })
                         })
@@ -102,6 +104,7 @@ export default function EditPriceDialog() {
                 </div>
             </div>
         </div>
+        {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
     </DialogWindow>
 }
 

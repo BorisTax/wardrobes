@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react"
-import { useAtom, useSetAtom } from "jotai"
-import { DSPPurpose, DSPPurposeCaptions, existMaterial, getFasadMaterial, getPurpose } from "../../../functions/materials"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { DSPPurpose, DSPPurposeCaptions, existMaterial, getFasadMaterial } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { ExtMaterial } from "../../../server/types/materials"
 import { DSP_PURPOSE, FasadMaterial } from "../../../types/enums"
@@ -13,26 +13,24 @@ import { rusMessages } from "../../../functions/messages"
 import { EditDialogProps } from "../EditMaterialDialog"
 
 export default function EditPlates(props: EditDialogProps) {
-    const [materialList] = useAtom(materialListAtom)
+    const materialList = useAtomValue(materialListAtom)
     const [{ baseMaterial, extMaterialIndex }, setState] = useState({ baseMaterial: FasadMaterial.DSP, extMaterialIndex: 0 })
     const deleteMaterial = useSetAtom(deleteMaterialAtom)
     const addMaterial = useSetAtom(addMaterialAtom)
     const updateMaterial = useSetAtom(updateMaterialAtom)
-    const extMaterials: ExtMaterial[] = useMemo(() => materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }], [materialList, baseMaterial]);
-    const imageSrc = extMaterials[extMaterialIndex].image || ""
-    const purpose = extMaterials[extMaterialIndex].purpose
-    const [{ newName, newCode, newImageSrc, newPurpose }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc, newPurpose: purpose })
+    const extMaterials: ExtMaterial[] = useMemo(() => materialList.filter(m => m.material === baseMaterial) || [{ name: "", material: "", imageurl: "" }], [materialList, baseMaterial]);
+    const imageSrc = extMaterials[extMaterialIndex]?.image || ""
+    const purpose = extMaterials[extMaterialIndex]?.purpose
+    const [{ newName, newCode, newImageSrc, newPurpose }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex]?.name || "", newCode: extMaterials[extMaterialIndex]?.code || "", newImageSrc: imageSrc, newPurpose: purpose })
     const [{ nameChecked, codeChecked, imageChecked, purposeChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false, purposeChecked: false })
-    const purposeEnabled = extMaterials[extMaterialIndex].material === FasadMaterial.DSP
-   
+    const purposeEnabled = extMaterials[extMaterialIndex]?.material === FasadMaterial.DSP
     const [imageFileName, setImageFileName] = useState("???")
     useMemo(() => {
-        setNewValues({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc, newPurpose: purpose })
+        setNewValues({ newName: extMaterials[extMaterialIndex]?.name || "", newCode: extMaterials[extMaterialIndex]?.code || "", newImageSrc: imageSrc, newPurpose: purpose })
         if (!purposeEnabled) setChecked(prev => ({ ...prev, purposeChecked: false }))
     }, [extMaterials, extMaterialIndex, imageSrc])
     const nameRef = useRef<HTMLInputElement>(null)
     const codeRef = useRef<HTMLInputElement>(null)
-    const purposeRef = useRef<HTMLInputElement>(null)
     const imageRef = useRef<HTMLInputElement>(null)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
@@ -41,7 +39,7 @@ export default function EditPlates(props: EditDialogProps) {
             <div>
                 <div className="property-grid">
                     <ComboBox title="Материал: " value={baseMaterial} items={Materials} onChange={(_, value: string) => { setState((prev) => ({ ...prev, baseMaterial: getFasadMaterial(value), extMaterialIndex: 0 })); }} />
-                    <ComboBox title="Цвет/Рисунок: " value={extMaterials[extMaterialIndex].name} items={extMaterials.map((m: ExtMaterial) => m.name)} onChange={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
+                    <ComboBox title="Цвет/Рисунок: " value={extMaterials[extMaterialIndex]?.name} items={extMaterials.map((m: ExtMaterial) => m.name)} onChange={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
                 </div>
                 <br />
                 <input style={{ width: "200px", height: "200px", border: "1px solid black" }} name="image" type="image" alt="Нет изображения" src={newImageSrc} onClick={() => imageRef.current?.click()} />

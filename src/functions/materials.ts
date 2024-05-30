@@ -120,9 +120,7 @@ export function getProfileDirection(direction: string): Division {
     }
 }
 
-export function existMaterial(name: string, material: string, materialList: MaterialList): boolean {
-    const mat: ExtMaterial[] | undefined = materialList.get(material)
-    if (!mat) return false
-    const f = mat.find((m: ExtMaterial) => m.name === name)
+export function existMaterial(name: string, material: string, materialList: ExtMaterial[]): boolean {
+    const f = materialList.find((m: ExtMaterial) => m.name === name && m.material === material)
     return !!f
 }

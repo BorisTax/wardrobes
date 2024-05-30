@@ -28,7 +28,7 @@ export default function PropertiesBar() {
     const { minSize } = useAtomValue(settingsAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
-    const materialList = useAtomValue(materialListAtom);
+    const materialList = useAtomValue(materialListAtom).filter(m => m.purpose !== DSP_PURPOSE.CORPUS)
     const totalPrice = useAtomValue(totalPriceAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)
@@ -42,7 +42,7 @@ export default function PropertiesBar() {
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const copyFasadDialogRef =  useAtomValue(copyFasadDialogAtom)
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
-    const extMaterials: ExtMaterial[] = materialList.get(material) || [{ name: "", material: "" }]
+    const extMaterials: ExtMaterial[] = materialList.filter(mat => mat.material === material) || [{ name: "", material: "" }]
     const fasadValue = fasad && totalPrice[rootFasadIndex].toFixed(2)
     const fasadPrice = isClientAtLeast(role) ? <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div> : <></>
     const onlyFasad = !!fasad && fasad.Children.length === 0

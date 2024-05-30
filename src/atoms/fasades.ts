@@ -103,7 +103,8 @@ export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial, us
     const appData = get(appDataAtom)
     activeFasad.setMaterial(material)
     const matList = get(materialListAtom)
-    activeFasad.setExtMaterial(matList.get(activeFasad.Material)[0]?.name)
+    const mat = matList.find(m => m.material === activeFasad.Material)?.name || ""
+    activeFasad.setExtMaterial(mat)
     set(appDataAtom, { ...appData }, useHistory)
 })
 

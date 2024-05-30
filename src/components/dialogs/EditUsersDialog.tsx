@@ -19,6 +19,7 @@ enum ListType {
 
 export default function EditUsersDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
+    const [loading, setLoading] = useState(false)
     const addUserDialogRef = useRef<HTMLDialogElement>(null)
     const setEditUsersDialogRef = useSetAtom(editUsersDialogAtom)
     const { token } = useAtomValue(userAtom)
@@ -74,7 +75,8 @@ export default function EditUsersDialog() {
                     {activeuserlist}
                 </div>}
         </div>
-        <AddUserDialog dialogRef={addUserDialogRef} />
+        <AddUserDialog dialogRef={addUserDialogRef} setLoading={(state: boolean) => setLoading(state)}/>
+        {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
     </DialogWindow>
 }
 

@@ -40,6 +40,7 @@ export enum TableFields {
     MATERIAL = 'material',
     IMAGE = 'image',
     CODE = 'code',
+    PURPOSE = 'purpose',
     BRUSH = 'brush',
     TOKEN = 'token',
     NEWNAME = 'newName',

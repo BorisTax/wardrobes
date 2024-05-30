@@ -1,4 +1,4 @@
-import { Edge, ExtMaterial, ExtNewMaterial, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from '../types/materials.js';
+import { Brush, Edge, ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from '../types/materials.js';
 import { Results } from '../types/server.js';
 import { IMaterialServiceProvider } from '../types/services.js';
 import { dataBaseQuery } from '../functions/other.js';
@@ -12,12 +12,12 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
         return dataBaseQuery(this.dbFile, "select * from 'extmaterials' order by material, name;", {successStatusCode: 200})
     }
 
-    async addExtMaterial({ name, material, image, code }: ExtMaterial): Promise<Results> {
-        return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, image, code) values('${name}', '${material}', '${image}', '${code}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
+    async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial): Promise<Results> {
+        return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, image, code, purpose) values('${name}', '${material}', '${image}', '${code}', '${purpose}';`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
     }
 
-    async updateExtMaterial({ name, material, newName, image, code }: ExtNewMaterial): Promise<Results> {
-        return dataBaseQuery(this.dbFile, getQuery({ newName, image, code, name, material }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
+    async updateExtMaterial({ name, material, newName, image, code, purpose }: ExtNewMaterial): Promise<Results> {
+        return dataBaseQuery(this.dbFile, getQuery({ newName, image, code, name, material, purpose }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
     }
 
     async deleteExtMaterial(name: string, material: string): Promise<Results> {
@@ -60,13 +60,26 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
     async updateZaglushka({ newName, dsp, code, name }: NewZaglushka) {
         return dataBaseQuery(this.dbFile, getZaglushkaQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_UPDATED})
     }
+    async getBrushes(): Promise<Results> {
+        return dataBaseQuery(this.dbFile, `select * from 'brush'`, {successStatusCode: 200})
+    }
+    async addBrush({ name, code }: Brush) {
+        return dataBaseQuery(this.dbFile, `insert into brush (name, code) values('${name}', '${code}');`, {successStatusCode: 201, successMessage: messages.BRUSH_ADDED})
+    }
+    async deleteBrush(name: string) {
+        return dataBaseQuery(this.dbFile, `DELETE FROM brush WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.BRUSH_DELETED})
+    }
+    async updateBrush({ newName, code, name }: NewBrush) {
+        return dataBaseQuery(this.dbFile, getBrushQuery({ newName, code, name }), {successStatusCode: 200, successMessage: messages.BRUSH_UPDATED})
+    }
 }
 
-function getQuery({ newName, image, code, name, material }: ExtNewMaterial) {
+function getQuery({ newName, image, code, name, material, purpose }: ExtNewMaterial) {
     const parts = []
     if (newName) parts.push(`name='${newName}'`)
     if (image) parts.push(`image='${image || ""}'`)
     if (code) parts.push(`code='${code}'`)
+    if (purpose) parts.push(`purpose='${purpose}'`)
     const query = parts.length > 0 ? `update extmaterials set ${parts.join(', ')} where name='${name}' and material='${material}';` : ""
     return query
 }
@@ -90,6 +103,13 @@ function getEdgeQuery({ newName, dsp, code, name }: NewEdge) {
     return query
 }
 
+function getBrushQuery({ newName, code, name }: NewBrush) {
+    const parts = []
+    if (newName) parts.push(`name='${newName}'`)
+    if (code) parts.push(`code='${code}'`)
+    const query = parts.length > 0 ? `update brush set ${parts.join(', ')} where name='${name}';` : ""
+    return query
+}
 function getZaglushkaQuery({ newName, dsp, code, name }: NewEdge) {
     const parts = []
     if (newName) parts.push(`name='${newName}'`)

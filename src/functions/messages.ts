@@ -1,6 +1,7 @@
 import messages from "../server/messages"
 export const rusMessages = {
   [messages.DATABASE_OPEN_ERROR]: "Ошибка базы данных",
+  [messages.DATABASE_CONSTRAINT_ERROR]: "Данный материал подвязан к другому материалу.",
   [messages.SQL_QUERY_ERROR]: "Ошибка запроса к базе данных",
   [messages.INVALID_NAME]: "Некорректное имя",
   [messages.INVALID_PASSWORD]: "Некорректный пароль",
@@ -18,6 +19,11 @@ export const rusMessages = {
   [messages.EDGE_ADDED]: "Кромка добавлена",
   [messages.EDGE_DELETED]: "Кромка удалена",
   [messages.EDGE_UPDATED]: "Кромка обновлена",
+  [messages.BRUSH_EXIST]: "Щетка уже существует",
+  [messages.BRUSH_NO_EXIST]: "Щетка не найдена",
+  [messages.BRUSH_ADDED]: "Щетка добавлена",
+  [messages.BRUSH_DELETED]: "Щетка удалена",
+  [messages.BRUSH_UPDATED]: "Щетка обновлена",
   [messages.ZAGLUSHKA_EXIST]: "Заглушка уже существует",
   [messages.ZAGLUSHKA_NO_EXIST]: "Заглушка не найдена",
   [messages.ZAGLUSHKA_ADDED]: "Заглушка добавлена",

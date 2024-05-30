@@ -19,7 +19,9 @@ export default function DialogWindow(props: DialogWindowProps) {
                 props.dialogRef.current?.close()
             }} />
         </div>
-        <hr/>
-        {props.children}
+        <hr />
+        <div>
+            {props.children}
+        </div>
     </dialog>
 }

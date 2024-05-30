@@ -10,11 +10,26 @@ export function dataBaseQuery(dbFile: string, query: string, { successStatusCode
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
             if (!query) { resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.close(); return }
-            db.all(query, (err: Error, rows: []) => {
-                if (err) { resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err }); db.close() }
-                else { resolve({ success: true, status: successStatusCode, data: rows, message: successMessage }) }
-                db.close()
-            });
+            db.get('PRAGMA foreign_keys = ON', (error) => {
+                if (error) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error }); db.close(); return }
+                db.all(query, (err: Error, rows: []) => {
+                    let message
+                    if (err) { 
+                        switch(err.message){
+                            case "SQLITE_CONSTRAINT: FOREIGN KEY constraint failed":
+                                message = messages.DATABASE_CONSTRAINT_ERROR;
+                                break;
+                            default:
+                                message = messages.SQL_QUERY_ERROR
+                        }
+                        resolve({ success: false, status: errorStatusCode, message, error: err });
+                        db.close(); 
+                        return
+                    }
+                    else { resolve({ success: true, status: successStatusCode, data: rows, message: successMessage }) }
+                    db.close()
+                });
+            })
         });
     }
     )

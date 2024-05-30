@@ -10,8 +10,9 @@ import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
 import { materialListAtom } from "../../../atoms/materials"
 import { FasadMaterial } from "../../../types/enums"
+import { EditDialogProps } from "../EditMaterialDialog"
 
-export default function EditZaglushka() {
+export default function EditZaglushka(props: EditDialogProps) {
     const [zaglushkaList] = useAtom(zaglushkaListAtom)
     const [materialList] = useAtom(materialListAtom)
     const mList = materialList.get(FasadMaterial.DSP).map((m: ExtMaterial) => m.name)
@@ -32,7 +33,7 @@ export default function EditZaglushka() {
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">
-                    <ComboBox title="Кромка: " value={zaglushkaName} items={zaglushkas} onChange={(_, value: string) => { const p = zaglushkaList.find((p: Zaglushka) => p.name === value) as Zaglushka; setState((prev) => ({ ...prev, name: value, code: p.code, dsp: p.dsp })) }} />
+                    <ComboBox title="Заглушка: " value={zaglushkaName} items={zaglushkas} onChange={(_, value: string) => { const p = zaglushkaList.find((p: Zaglushka) => p.name === value) as Zaglushka; setState((prev) => ({ ...prev, name: value, code: p.code, dsp: p.dsp })) }} />
                 </div>
             </div>
         </div>
@@ -62,7 +63,9 @@ export default function EditZaglushka() {
                     const index = zaglushkaList.findIndex((p: Zaglushka) => p.name === name)
                     const message = `Удалить заглушку: "${zaglushkaList[index].name}" ?`
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         deleteZaglushka(zaglushkaList[index], (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         });
                         setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
@@ -76,7 +79,9 @@ export default function EditZaglushka() {
                     if (zaglushkaList.find((p: Zaglushka) => p.name === name)) { showMessage(rusMessages[messages.ZAGLUSHKA_EXIST]); return }
                     const message = getAddMessage({ name: newName, code: newCode, dsp: newDSP })
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         addZaglushka({ name, dsp, code }, (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         });
                     })
@@ -86,10 +91,12 @@ export default function EditZaglushka() {
                     if (!checkFields({ nameChecked, codeChecked, dspChecked, newName, newCode, newDSP }, showMessage)) return
                     const message = getMessage({ nameChecked, codeChecked, dspChecked, name, code, dsp, newName, newCode, newDSP })
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         const usedName = nameChecked ? newName : ""
                         const usedCode = codeChecked ? newCode : ""
                         const usedDSP = dspChecked ? newDSP : ""
                         updateZaglushka({ name, newName: usedName, code: usedCode, dsp: usedDSP }, (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         })
                     })

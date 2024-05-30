@@ -1,18 +1,18 @@
 import { useMemo, useRef, useState } from "react"
 import { useAtom, useSetAtom } from "jotai"
-import { editMaterialDialogAtom } from "../../../atoms/dialogs"
-import { existMaterial, getFasadMaterial } from "../../../functions/materials"
+import { DSPPurpose, DSPPurposeCaptions, existMaterial, getFasadMaterial, getPurpose } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { ExtMaterial } from "../../../server/types/materials"
-import { FasadMaterial } from "../../../types/enums"
+import { DSP_PURPOSE, FasadMaterial } from "../../../types/enums"
 import { MaterialCaptions, Materials } from "../../../functions/materials"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials"
 import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
 import Button from "../../Button"
 import { rusMessages } from "../../../functions/messages"
+import { EditDialogProps } from "../EditMaterialDialog"
 
-export default function EditPlates() {
+export default function EditPlates(props: EditDialogProps) {
     const [materialList] = useAtom(materialListAtom)
     const [{ baseMaterial, extMaterialIndex }, setState] = useState({ baseMaterial: FasadMaterial.DSP, extMaterialIndex: 0 })
     const deleteMaterial = useSetAtom(deleteMaterialAtom)
@@ -20,14 +20,19 @@ export default function EditPlates() {
     const updateMaterial = useSetAtom(updateMaterialAtom)
     const extMaterials: ExtMaterial[] = useMemo(() => materialList.get(baseMaterial) || [{ name: "", material: "", imageurl: "" }], [materialList, baseMaterial]);
     const imageSrc = extMaterials[extMaterialIndex].image || ""
-    const [{ newName, newCode, newImageSrc }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc })
-    const [{ nameChecked, codeChecked, imageChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false })
+    const purpose = extMaterials[extMaterialIndex].purpose
+    const [{ newName, newCode, newImageSrc, newPurpose }, setNewValues] = useState({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc, newPurpose: purpose })
+    const [{ nameChecked, codeChecked, imageChecked, purposeChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false, purposeChecked: false })
+    const purposeEnabled = extMaterials[extMaterialIndex].material === FasadMaterial.DSP
+   
     const [imageFileName, setImageFileName] = useState("???")
     useMemo(() => {
-        setNewValues({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc })
+        setNewValues({ newName: extMaterials[extMaterialIndex].name || "", newCode: extMaterials[extMaterialIndex].code || "", newImageSrc: imageSrc, newPurpose: purpose })
+        if (!purposeEnabled) setChecked(prev => ({ ...prev, purposeChecked: false }))
     }, [extMaterials, extMaterialIndex, imageSrc])
     const nameRef = useRef<HTMLInputElement>(null)
     const codeRef = useRef<HTMLInputElement>(null)
+    const purposeRef = useRef<HTMLInputElement>(null)
     const imageRef = useRef<HTMLInputElement>(null)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
@@ -56,6 +61,14 @@ export default function EditPlates() {
                     <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
                     <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} />
                 </div>
+                <span className="text-end text-nowrap">Назначение:</span>
+                <div className="d-flex justify-content-start gap-2">
+                    <input type="checkbox" checked={purposeChecked} disabled={!purposeEnabled} onChange={() => { setChecked(prev => ({ ...prev, purposeChecked: !purposeChecked })) }} />
+                    <ComboBox value={DSPPurposeCaptions.get(newPurpose) || ""} disabled={!purposeEnabled} items={DSPPurpose} 
+                            onChange={(_, value: string) => { 
+                                setNewValues(prev => ({ ...prev, newPurpose: value as DSP_PURPOSE })); 
+                                }} />
+                </div>
                 <span className="text-end text-nowrap">Изображение:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={imageChecked} onChange={() => { setChecked(prev => ({ ...prev, imageChecked: !imageChecked })) }} />
@@ -77,36 +90,44 @@ export default function EditPlates() {
                     const name = extMaterials[extMaterialIndex].name
                     const message = `Удалить материал: "${MaterialCaptions.get(baseMaterial)} - ${name}" ?`
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         deleteMaterial(extMaterials[extMaterialIndex], (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         });
                         setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
                     })
                 }} />
-                <Button caption="Добавить" disabled={!(nameChecked && codeChecked)} onClick={() => {
+                <Button caption="Добавить" disabled={!(nameChecked && codeChecked && purposeChecked)} onClick={() => {
                     const name = newName
                     const code = newCode
                     const file = newImageSrc
+                    const purpose = newPurpose
                     if (!checkFields({ imageChecked, newName, newCode, file }, showMessage)) return
                     if (existMaterial(name, baseMaterial, materialList)) { showMessage("Материал уже существует"); return }
-                    const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode })
+                    const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode, purpose: DSPPurposeCaptions.get(purpose) as string })
                     showConfirm(message, () => {
-                        addMaterial({ name, material: baseMaterial, code, image: "" }, file, (result) => {
+                        props.setLoading(true)
+                        addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file, (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         });
                     })
                 }} />
-                <input type="button" value="Заменить" disabled={!(nameChecked || codeChecked || imageChecked)} onClick={() => {
+                <input type="button" value="Заменить" disabled={!(nameChecked || codeChecked || imageChecked || purposeChecked)} onClick={() => {
                     const name = extMaterials[extMaterialIndex].name
                     const file = newImageSrc
                     if (!checkFields({ nameChecked, codeChecked, imageChecked, newName, newCode, file }, showMessage)) return
                     const material = baseMaterial
-                    const message = getMessage({ nameChecked, codeChecked, imageChecked, name, code: extMaterials[extMaterialIndex].code, newName, newCode })
+                    const message = getMessage({ nameChecked, codeChecked, imageChecked, purposeChecked, name, code: extMaterials[extMaterialIndex].code, purpose: DSPPurposeCaptions.get(purpose) as string, newName, newCode, newPurpose: DSPPurposeCaptions.get(newPurpose) as string })
                     showConfirm(message, () => {
                         const usedName = nameChecked ? newName : ""
                         const usedCode = codeChecked ? newCode : ""
                         const usedFile = imageChecked ? file : null
-                        updateMaterial({ name, material, newName: usedName, newCode: usedCode, image: usedFile }, (result) => {
+                        const usedPurpose = purposeChecked ? newPurpose : DSP_PURPOSE.FASAD
+                        props.setLoading(true)
+                        updateMaterial({ name, material, newName: usedName, newCode: usedCode, image: usedFile, purpose: usedPurpose }, (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         })
                     })
@@ -132,19 +153,22 @@ function checkFields({ nameChecked = true, codeChecked = true, imageChecked, new
     return true
 }
 
-function getMessage({ nameChecked, codeChecked, imageChecked, name, code, newName, newCode }: { nameChecked: boolean, codeChecked: boolean, imageChecked: boolean, name: string, code: string, newName: string, newCode: string }): string {
+function getMessage({ nameChecked, codeChecked, imageChecked, purposeChecked, name, code, purpose, newName, newCode, newPurpose }: { nameChecked: boolean, codeChecked: boolean, imageChecked: boolean, purposeChecked: boolean, name: string, code: string, purpose: string, newName: string, newCode: string, newPurpose: string }): string {
     const changeName = nameChecked ? `материал: "${name}"` : ""
     const changeCode = codeChecked ? `код:"${code}"` : ""
+    const changePurpose = purposeChecked ? `назначение: "${purpose}"` : ""
     const changeImage = imageChecked ? `изображение` : ""
+    
     const changeName2 = nameChecked ? `"${newName}"` : ""
     const changeCode2 = codeChecked ? `код:"${newCode}"` : ""
+    const changePurpose2 = purposeChecked ? `назначение:"${newPurpose}"` : ""
     const sub1 = (nameChecked || codeChecked) && imageChecked ? "и" : ""
     const sub2 = nameChecked || codeChecked ? "на" : ""
-    const message = `Заменить ${changeName} ${changeCode} ${sub2} ${changeName2} ${changeCode2} ${sub1} ${changeImage} ?`
+    const message = `Заменить ${changeName} ${changeCode} ${changePurpose} ${sub2} ${changeName2} ${changeCode2} ${changePurpose2} ${sub1} ${changeImage} ?`
     return message
 }
 
-function getAddMessage({ material, name, code }: { material: string, name: string, code: string }): string {
+function getAddMessage({ material, name, code, purpose }: { material: string, name: string, code: string, purpose: string }): string {
     const message = `Добавить материал ${material} - ${name}, код: ${code} ?`
     return message
 }

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react"
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { Profiles, ProfilesCaptions } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { Profile, ProfileType } from "../../../server/types/materials"
@@ -9,11 +9,14 @@ import Button from "../../Button"
 import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../../../atoms/profiles"
 import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
+import { EditDialogProps } from "../EditMaterialDialog"
+import { brushListAtom } from "../../../atoms/brush"
 
-export default function EditProfile() {
+export default function EditProfile(props: EditDialogProps) {
     const [profileList] = useAtom(profileListAtom)
     const [{ name: profileName, type, code, brush }, setState] = useState({ ...profileList[0] })
-    const brushList = [...new Set(profileList.map((p: Profile) => p.brush))].toSorted()
+    const brushList = useAtomValue(brushListAtom).map(b => b.name).toSorted()
+    //const brushList = [...new Set(profileList.map((p: Profile) => p.brush))].toSorted()
     useMemo(() => { setState({ ...profileList[0] }) }, [profileList])
     const deleteProfile = useSetAtom(deleteProfileAtom)
     const addProfile = useSetAtom(addProfileAtom)
@@ -62,7 +65,9 @@ export default function EditProfile() {
 
                     const message = `Удалить профиль: "${profileList[index].name}" ?`
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         deleteProfile(profileList[index], (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         });
                         setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
@@ -76,7 +81,9 @@ export default function EditProfile() {
                     if (profileList.find((p: Profile) => p.name === name && p.type === type)) { showMessage(rusMessages[messages.PROFILE_EXIST]); return }
                     const message = getAddMessage({ type: ProfilesCaptions.get(type) || "", name: newName, code: newCode, brush: newBrush })
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         addProfile({ name, type, code, brush }, (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         });
                     })
@@ -86,10 +93,12 @@ export default function EditProfile() {
                     if (!checkFields({ nameChecked, codeChecked, brushChecked, newName, newCode, newBrush }, showMessage)) return
                     const message = getMessage({ nameChecked, codeChecked, brushChecked, name, code, brush, newName, newCode, newBrush })
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         const usedName = nameChecked ? newName : ""
                         const usedCode = codeChecked ? newCode : ""
                         const usedBrush = brushChecked ? newBrush : ""
                         updateProfile({ name, type, newName: usedName, newCode: usedCode, newBrush: usedBrush }, (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         })
                     })

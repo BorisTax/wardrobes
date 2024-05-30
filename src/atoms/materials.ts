@@ -1,8 +1,8 @@
 import { atom, useAtom } from "jotai";
 import { ExtMaterial } from "../server/types/materials";
-import { FetchResult, fetchData, fetchFormData, fetchGetData } from "../functions/fetch";
+import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
-import { getMaterialList } from "../functions/materials";
+import { MaterialList, getMaterialList } from "../functions/materials";
 import { appDataAtom } from "./app";
 import Fasad from "../classes/Fasad";
 import { FasadMaterial } from "../types/enums";
@@ -13,7 +13,7 @@ export const materialListAtom = atom(new Map())
 
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
     try {
-        const { success, data }: FetchResult = await fetchGetData('api/materials/materials')
+        const { success, data }: FetchResult = await fetchGetData('api/materials/material')
         if (!success) return
         const mList = getMaterialList(data as ExtMaterial[])
         set(materialListAtom, mList)
@@ -44,6 +44,7 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
         [TableFields.MATERIAL]: material.material,
         [TableFields.CODE]: material.code,
         [TableFields.IMAGE]: image,
+        [TableFields.PURPOSE]: material.purpose,
         [TableFields.TOKEN]: user.token
     }
     try {
@@ -53,7 +54,7 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
     } catch (e) { console.error(e) }
 })
 
-export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image }, callback: AtomCallbackResult) => {
+export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image, purpose }, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     const data = {
         [TableFields.NAME]: name,
@@ -61,6 +62,7 @@ export const updateMaterialAtom = atom(null, async (get, set, { name, material, 
         [TableFields.MATERIAL]: material,
         [TableFields.CODE]: newCode,
         [TableFields.IMAGE]: image,
+        [TableFields.PURPOSE]: purpose,
         [TableFields.TOKEN]: user.token
     }
     try {

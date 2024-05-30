@@ -10,8 +10,9 @@ import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
 import { materialListAtom } from "../../../atoms/materials"
 import { FasadMaterial } from "../../../types/enums"
+import { EditDialogProps } from "../EditMaterialDialog"
 
-export default function EditEdge() {
+export default function EditEdge(props: EditDialogProps) {
     const [edgeList] = useAtom(edgeListAtom)
     const [materialList] = useAtom(materialListAtom)
     const mList = materialList.get(FasadMaterial.DSP).map((m: ExtMaterial) => m.name)
@@ -50,7 +51,7 @@ export default function EditEdge() {
                     <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
                     <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} />
                 </div>
-                <span className="text-end text-nowrap">ДСП:</span>
+                <span className="text-end text-nowrap">Соответствие с ДСП:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={dspChecked} onChange={() => { setChecked(prev => ({ ...prev, dspChecked: !dspChecked })) }} />
                     <ComboBox value={newDSP} items={mList} onChange={(_, value: string) => { setNewValues(prev => ({ ...prev, newDSP: value })) }} />
@@ -62,7 +63,9 @@ export default function EditEdge() {
                     const index = edgeList.findIndex((p: Edge) => p.name === name)
                     const message = `Удалить кромку: "${edgeList[index].name}" ?`
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         deleteEdge(edgeList[index], (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         });
                         setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
@@ -76,7 +79,9 @@ export default function EditEdge() {
                     if (edgeList.find((p: Edge) => p.name === name)) { showMessage(rusMessages[messages.EDGE_EXIST]); return }
                     const message = getAddMessage({ name: newName, code: newCode, dsp: newDSP })
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         addEdge({ name, dsp, code }, (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         });
                     })
@@ -86,10 +91,12 @@ export default function EditEdge() {
                     if (!checkFields({ nameChecked, codeChecked, dspChecked, newName, newCode, newDSP }, showMessage)) return
                     const message = getMessage({ nameChecked, codeChecked, dspChecked, name, code, dsp, newName, newCode, newDSP })
                     showConfirm(message, () => {
+                        props.setLoading(true)
                         const usedName = nameChecked ? newName : ""
                         const usedCode = codeChecked ? newCode : ""
                         const usedDSP = dspChecked ? newDSP : ""
                         updateEdge({ name, newName: usedName, code: usedCode, dsp: usedDSP }, (result) => {
+                            props.setLoading(false)
                             showMessage(rusMessages[result.message])
                         })
                     })

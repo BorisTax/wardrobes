@@ -1,6 +1,6 @@
 import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
-import { Division, FasadMaterial, SandBase } from "../types/enums"
+import { DSP_PURPOSE, Division, FasadMaterial, SandBase } from "../types/enums"
 import InputField from "./InputField"
 import { PropertyType } from "../types/property"
 import PropertyGrid from "./PropertyGrid"
@@ -17,7 +17,7 @@ import { userAtom } from "../atoms/users"
 import { isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { getInitialBackImageProps } from "../classes/FasadState"
 import { settingsAtom } from "../atoms/settings"
-import { copyFasadDialogAtom, showTemplatesDialogAtom, templatesDialogAtom } from "../atoms/dialogs"
+import { copyFasadDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
 import { TEMPLATE_TABLES } from "../server/types/enums"
 import { hasFasadImage } from "../functions/fasades"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
@@ -28,7 +28,7 @@ export default function PropertiesBar() {
     const { minSize } = useAtomValue(settingsAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
-    const materialList = useAtomValue(materialListAtom)
+    const materialList = useAtomValue(materialListAtom);
     const totalPrice = useAtomValue(totalPriceAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)

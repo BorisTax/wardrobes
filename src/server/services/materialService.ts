@@ -1,4 +1,4 @@
-import { Edge, ExtMaterial, ExtNewMaterial, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from "../types/materials"
+import { Brush, Edge, ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from "../types/materials"
 import { IMaterialService, IMaterialServiceProvider } from "../types/services"
 
 export class MaterialService implements IMaterialService {
@@ -9,11 +9,11 @@ export class MaterialService implements IMaterialService {
     async getExtMaterials() {
         return await this.provider.getExtMaterials()
     }
-    async addExtMaterial({ name, material, image, code }: ExtMaterial) {
-        return await this.provider.addExtMaterial({ name, material, image, code })
+    async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial) {
+        return await this.provider.addExtMaterial({ name, material, image, code, purpose })
     }
-    async updateExtMaterial({ name, material, newName, image, code }: ExtNewMaterial) {
-        return await this.provider.updateExtMaterial({ name, material, newName, image, code })
+    async updateExtMaterial({ name, material, newName, image, code, purpose }: ExtNewMaterial) {
+        return await this.provider.updateExtMaterial({ name, material, newName, image, code, purpose })
     }
     async deleteExtMaterial(name: string, material: string) {
         return await this.provider.deleteExtMaterial(name, material)
@@ -53,6 +53,18 @@ export class MaterialService implements IMaterialService {
     }
     async updateZaglushka(edge: NewZaglushka) {
         return await this.provider.updateZaglushka(edge)
+    }
+    async getBrushes() {
+        return await this.provider.getBrushes()
+    }
+    async addBrush(edge: Brush) {
+        return await this.provider.addBrush(edge)
+    }
+    async deleteBrush(name: string) {
+        return await this.provider.deleteBrush(name)
+    }
+    async updateBrush(edge: NewBrush) {
+        return await this.provider.updateBrush(edge)
     }
 }
 

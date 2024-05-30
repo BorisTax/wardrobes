@@ -1,4 +1,4 @@
-import { Division, FasadMaterial, MaterialGroup, SandBase } from "../types/enums";
+import { DSP_PURPOSE, Division, FasadMaterial, MaterialGroup, SandBase } from "../types/enums";
 import { ExtMaterial, Profile, ProfileType } from "../server/types/materials";
 
 export const colors = {
@@ -17,6 +17,15 @@ MaterialGroupCaptions.set(MaterialGroup.EDGE, "Кромка")
 MaterialGroupCaptions.set(MaterialGroup.ZAGLUSHKI, "Заглушки")
 MaterialGroupCaptions.set(MaterialGroup.PROFILE, "Профиля")
 MaterialGroupCaptions.set(MaterialGroup.BRUSH, "Щетки")
+
+export const DSPPurpose: Map<string, string> = new Map()
+DSPPurpose.set("Фасад", DSP_PURPOSE.FASAD)
+DSPPurpose.set("Корпус", DSP_PURPOSE.CORPUS)
+DSPPurpose.set("Фасад и корпус", DSP_PURPOSE.BOTH)
+export const DSPPurposeCaptions: Map<string, string> = new Map()
+DSPPurposeCaptions.set(DSP_PURPOSE.FASAD, "Фасад")
+DSPPurposeCaptions.set(DSP_PURPOSE.CORPUS, "Корпус")
+DSPPurposeCaptions.set(DSP_PURPOSE.BOTH, "Фасад и корпус")
 
 export const Materials: Map<string, string> = new Map()
 Materials.set("ДСП", FasadMaterial.DSP)
@@ -60,12 +69,18 @@ UnitCaptions.set("litres", "литр")
 UnitCaptions.set("sheets", "лист")
 UnitCaptions.set("piece", "шт")
 
+export function getPurpose(fasad: boolean, corpus: boolean): DSP_PURPOSE {
+    if (fasad && corpus) return DSP_PURPOSE.BOTH
+    if (corpus) return DSP_PURPOSE.CORPUS
+    return DSP_PURPOSE.FASAD
+}
+
 export function getMaterialList(materials: ExtMaterial[]): MaterialList {
     const list = new Map<string, ExtMaterial[]>()
     if (!materials) return list
     materials.forEach((m: ExtMaterial) => {
         if (!list.has(m.material)) list.set(m.material, []);
-        list.get(m.material)?.push({ name: m.name, material: m.material, image: m.image, code: m.code })
+        list.get(m.material)?.push({ name: m.name, material: m.material, image: m.image, code: m.code, purpose: m.purpose })
     })
     return list
 }
@@ -82,7 +97,7 @@ export function getProfileList(profiles: Profile[]): ProfileList {
 
 export function getInitialMaterialList(): ExtMaterial[] {
     const list: ExtMaterial[] = []
-    list.push({ name: "белый110", material: "DSP", image: "", code: "" })
+    list.push({ name: "белый110", material: "DSP", image: "", code: "", purpose: DSP_PURPOSE.BOTH })
     return list
 }
 

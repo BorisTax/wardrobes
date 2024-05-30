@@ -35,6 +35,7 @@ import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
 import { loadEdgeListAtom } from './atoms/edges'
 import { loadZaglushkaListAtom } from './atoms/zaglushka'
+import { loadBrushListAtom } from './atoms/brush'
 
 function App() {
   const user = useAtomValue(userAtom)
@@ -42,6 +43,7 @@ function App() {
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
   const loadEdgeList = useSetAtom(loadEdgeListAtom)
+  const loadBrushList = useSetAtom(loadBrushListAtom)
   const loadZaglushkaList = useSetAtom(loadZaglushkaListAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
@@ -53,6 +55,7 @@ function App() {
     loadMaterialList(!storage)
     loadProfileList()
     loadEdgeList()
+    loadBrushList()
     loadZaglushkaList()
     loadVersion()
   }, [])

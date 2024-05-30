@@ -52,3 +52,9 @@ export enum MaterialGroup {
     ZAGLUSHKI = 'zaglushki',
     BRUSH = 'brush'
 }
+
+export enum DSP_PURPOSE {
+    FASAD = 'fasad',
+    CORPUS = 'corpus',
+    BOTH = 'both'
+}

@@ -22,7 +22,7 @@ export default function EditMaterialDialog() {
     const [loading, setLoading] = useState(false)
     const className = "p-1 border"
     const active = `${className} fw-bold`
-    let header = [...MaterialGroupCaptions.entries()].map(item => <div className={(group === item[0] ? active : className)} onClick={() => { setGroup(item[0] as MaterialGroup) }} role="button">{item[1]}</div>)
+    const header = [...MaterialGroupCaptions.entries()].map(item => <div className={(group === item[0] ? active : className)} onClick={() => { setGroup(item[0] as MaterialGroup) }} role="button">{item[1]}</div>)
     let content = <></>
     switch (group) {
         case MaterialGroup.PLATE:

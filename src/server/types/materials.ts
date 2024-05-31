@@ -1,11 +1,11 @@
-import { DSP_PURPOSE } from "../../types/enums"
+import { MAT_PURPOSE } from "../../types/enums"
 
 export type ExtMaterial = {
     name: string
     material: string
     image: string
     code: string
-    purpose: DSP_PURPOSE
+    purpose: MAT_PURPOSE
 }
 export type ExtNewMaterial = ExtMaterial & {
     newName: string

@@ -1,23 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { editPriceDialogAtom } from "../../atoms/dialogs"
 import useMessage from "../../custom-hooks/useMessage"
 import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
 import { loadPriceListAtom, priceListAtom, updatePriceListAtom } from "../../atoms/prices"
 import { PriceListItem } from "../../server/types/server"
-import { UnitCaptions } from "../../functions/materials"
+import { MATPurposeCaptions, UnitCaptions } from "../../functions/materials"
 import InputField from "../InputField"
 import { PropertyType } from "../../types/property"
 import DialogWindow from "./DialogWindow"
+import { MAT_PURPOSE } from "../../types/enums"
 
 export default function EditPriceDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const [loading, setLoading] = useState(false)
+    const [purpose, setPurpose] = useState(MAT_PURPOSE.FASAD)
     const loadPriceList = useSetAtom(loadPriceListAtom)
-    const [priceList] = useAtom(priceListAtom)
+    const priceList = useAtomValue(priceListAtom)
+    const filteredList = priceList.filter(p => p.purpose === purpose || p.purpose === MAT_PURPOSE.BOTH)
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name, caption, price, code, id, markup } = (priceList && priceList[selectedIndex]) ? { ...priceList[selectedIndex] } : { name: "", caption: "", price: "", code: "", id: "", markup: "" }
+    const def = { name: "", caption: "", price: "", code: "", id: "", markup: "" }
+    const { name, caption, price, code, id, markup } = (priceList && priceList[selectedIndex]) ? ({ ...(priceList.find(p => p.name === filteredList[selectedIndex].name) || def)}) : def
     const [, setPriceDialogRef] = useAtom(editPriceDialogAtom)
     const updatePriceList = useSetAtom(updatePriceListAtom)
     const [{ newCaption, newPrice, newCode, newId, newMarkup }, setNewValues] = useState({ newCaption: caption || "", newPrice: `${price}`, newCode: code || "", newId: id || "", newMarkup: `${markup}` })
@@ -25,19 +29,23 @@ export default function EditPriceDialog() {
     const [{ captionChecked, priceChecked, codeChecked, idChecked, markupChecked }, setChecked] = useState({ captionChecked: false, priceChecked: false, codeChecked: false, idChecked: false, markupChecked: false })
     const showMessage = useMessage()
     const showConfirm = useConfirm()
-    const contents = priceList?.map((i: PriceListItem, index) => <tr key={index} onClick={() => setSelectedIndex(index)}>
-        <td className="pricelist-cell">{i.caption}</td>
-        <td className="pricelist-cell">{UnitCaptions.get(i.units || "")}</td>
-        <td className="pricelist-cell">{i.price}</td>
-        <td className="pricelist-cell">{i.markup}</td>
-        <td className="pricelist-cell">{i.code || ""}</td>
-        <td className="pricelist-cell">{i.id || ""}</td>
-    </tr>)
+    const className = "p-1 border"
+    const active = `${className} fw-bold`
+    const header = [MAT_PURPOSE.FASAD, MAT_PURPOSE.CORPUS].map(item => <div className={(purpose === item ? active : className)} onClick={() => { setPurpose(item) }} role="button">{MATPurposeCaptions.get(item)}</div>)
+    const contents = filteredList?.map((i: PriceListItem, index) => <tr key={index} onClick={() => setSelectedIndex(index)}>
+                <td className="pricelist-cell">{i.caption}</td>
+                <td className="pricelist-cell">{UnitCaptions.get(i.units || "")}</td>
+                <td className="pricelist-cell">{i.price}</td>
+                <td className="pricelist-cell">{i.markup}</td>
+                <td className="pricelist-cell">{i.code || ""}</td>
+                <td className="pricelist-cell">{i.id || ""}</td>
+            </tr>)
     useEffect(() => {
         loadPriceList()
         setPriceDialogRef(dialogRef)
     }, [setPriceDialogRef, dialogRef])
     return <DialogWindow dialogRef={dialogRef} title="Редактор спецификации">
+        <div className="d-flex">{header}</div>
         <div className="overflow-scroll">
             <div className="pricelist">
                 <table>

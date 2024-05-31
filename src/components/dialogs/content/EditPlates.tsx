@@ -1,9 +1,9 @@
 import { useMemo, useRef, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { DSPPurpose, DSPPurposeCaptions, existMaterial, getFasadMaterial } from "../../../functions/materials"
+import { MATPurpose, MATPurposeCaptions, existMaterial, getFasadMaterial } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { ExtMaterial } from "../../../server/types/materials"
-import { DSP_PURPOSE, FasadMaterial } from "../../../types/enums"
+import { MAT_PURPOSE, FasadMaterial } from "../../../types/enums"
 import { MaterialCaptions, Materials } from "../../../functions/materials"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials"
 import useMessage from "../../../custom-hooks/useMessage"
@@ -62,9 +62,9 @@ export default function EditPlates(props: EditDialogProps) {
                 <span className="text-end text-nowrap">Назначение:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={purposeChecked} disabled={!purposeEnabled} onChange={() => { setChecked(prev => ({ ...prev, purposeChecked: !purposeChecked })) }} />
-                    <ComboBox value={DSPPurposeCaptions.get(newPurpose) || ""} disabled={!purposeEnabled} items={DSPPurpose} 
+                    <ComboBox value={MATPurposeCaptions.get(newPurpose) || ""} disabled={!purposeEnabled} items={MATPurpose} 
                             onChange={(_, value: string) => { 
-                                setNewValues(prev => ({ ...prev, newPurpose: value as DSP_PURPOSE })); 
+                                setNewValues(prev => ({ ...prev, newPurpose: value as MAT_PURPOSE })); 
                                 }} />
                 </div>
                 <span className="text-end text-nowrap">Изображение:</span>
@@ -103,7 +103,7 @@ export default function EditPlates(props: EditDialogProps) {
                     const purpose = newPurpose
                     if (!checkFields({ imageChecked, newName, newCode, file }, showMessage)) return
                     if (existMaterial(name, baseMaterial, materialList)) { showMessage("Материал уже существует"); return }
-                    const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode, purpose: DSPPurposeCaptions.get(purpose) as string })
+                    const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode, purpose: MATPurposeCaptions.get(purpose) as string })
                     showConfirm(message, () => {
                         props.setLoading(true)
                         addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file, (result) => {
@@ -117,12 +117,12 @@ export default function EditPlates(props: EditDialogProps) {
                     const file = newImageSrc
                     if (!checkFields({ nameChecked, codeChecked, imageChecked, newName, newCode, file }, showMessage)) return
                     const material = baseMaterial
-                    const message = getMessage({ nameChecked, codeChecked, imageChecked, purposeChecked, name, code: extMaterials[extMaterialIndex].code, purpose: DSPPurposeCaptions.get(purpose) as string, newName, newCode, newPurpose: DSPPurposeCaptions.get(newPurpose) as string })
+                    const message = getMessage({ nameChecked, codeChecked, imageChecked, purposeChecked, name, code: extMaterials[extMaterialIndex].code, purpose: MATPurposeCaptions.get(purpose) as string, newName, newCode, newPurpose: MATPurposeCaptions.get(newPurpose) as string })
                     showConfirm(message, () => {
                         const usedName = nameChecked ? newName : ""
                         const usedCode = codeChecked ? newCode : ""
                         const usedFile = imageChecked ? file : null
-                        const usedPurpose = purposeChecked ? newPurpose : DSP_PURPOSE.FASAD
+                        const usedPurpose = purposeChecked ? newPurpose : MAT_PURPOSE.FASAD
                         props.setLoading(true)
                         updateMaterial({ name, material, newName: usedName, newCode: usedCode, image: usedFile, purpose: usedPurpose }, (result) => {
                             props.setLoading(false)

@@ -1,4 +1,4 @@
-import { DSP_PURPOSE, Division, FasadMaterial, MaterialGroup, SandBase } from "../types/enums";
+import { MAT_PURPOSE, Division, FasadMaterial, MaterialGroup, SandBase } from "../types/enums";
 import { ExtMaterial, Profile, ProfileType } from "../server/types/materials";
 
 export const colors = {
@@ -18,14 +18,14 @@ MaterialGroupCaptions.set(MaterialGroup.ZAGLUSHKI, "Заглушки")
 MaterialGroupCaptions.set(MaterialGroup.PROFILE, "Профиля")
 MaterialGroupCaptions.set(MaterialGroup.BRUSH, "Щетки")
 
-export const DSPPurpose: Map<string, string> = new Map()
-DSPPurpose.set("Фасад", DSP_PURPOSE.FASAD)
-DSPPurpose.set("Корпус", DSP_PURPOSE.CORPUS)
-DSPPurpose.set("Фасад и корпус", DSP_PURPOSE.BOTH)
-export const DSPPurposeCaptions: Map<string, string> = new Map()
-DSPPurposeCaptions.set(DSP_PURPOSE.FASAD, "Фасад")
-DSPPurposeCaptions.set(DSP_PURPOSE.CORPUS, "Корпус")
-DSPPurposeCaptions.set(DSP_PURPOSE.BOTH, "Фасад и корпус")
+export const MATPurpose: Map<string, string> = new Map()
+MATPurpose.set("Фасад", MAT_PURPOSE.FASAD)
+MATPurpose.set("Корпус", MAT_PURPOSE.CORPUS)
+MATPurpose.set("Фасад и корпус", MAT_PURPOSE.BOTH)
+export const MATPurposeCaptions: Map<string, string> = new Map()
+MATPurposeCaptions.set(MAT_PURPOSE.FASAD, "Фасад")
+MATPurposeCaptions.set(MAT_PURPOSE.CORPUS, "Корпус")
+MATPurposeCaptions.set(MAT_PURPOSE.BOTH, "Фасад и корпус")
 
 export const Materials: Map<string, string> = new Map()
 Materials.set("ДСП", FasadMaterial.DSP)
@@ -68,11 +68,12 @@ UnitCaptions.set("meters2", "м2")
 UnitCaptions.set("litres", "литр")
 UnitCaptions.set("sheets", "лист")
 UnitCaptions.set("piece", "шт")
+UnitCaptions.set("kg", "кг")
 
-export function getPurpose(fasad: boolean, corpus: boolean): DSP_PURPOSE {
-    if (fasad && corpus) return DSP_PURPOSE.BOTH
-    if (corpus) return DSP_PURPOSE.CORPUS
-    return DSP_PURPOSE.FASAD
+export function getPurpose(fasad: boolean, corpus: boolean): MAT_PURPOSE {
+    if (fasad && corpus) return MAT_PURPOSE.BOTH
+    if (corpus) return MAT_PURPOSE.CORPUS
+    return MAT_PURPOSE.FASAD
 }
 
 export function getMaterialList(materials: ExtMaterial[]): MaterialList {
@@ -97,7 +98,7 @@ export function getProfileList(profiles: Profile[]): ProfileList {
 
 export function getInitialMaterialList(): ExtMaterial[] {
     const list: ExtMaterial[] = []
-    list.push({ name: "белый110", material: "DSP", image: "", code: "", purpose: DSP_PURPOSE.BOTH })
+    list.push({ name: "белый110", material: "DSP", image: "", code: "", purpose: MAT_PURPOSE.BOTH })
     return list
 }
 

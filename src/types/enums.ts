@@ -53,7 +53,7 @@ export enum MaterialGroup {
     BRUSH = 'brush'
 }
 
-export enum DSP_PURPOSE {
+export enum MAT_PURPOSE {
     FASAD = 'fasad',
     CORPUS = 'corpus',
     BOTH = 'both'

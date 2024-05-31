@@ -63,6 +63,7 @@ export type PriceListItem = {
     id?: string
     code?: string
     markup?: number
+    purpose?: string
 }
 
 export type Result<T> = {

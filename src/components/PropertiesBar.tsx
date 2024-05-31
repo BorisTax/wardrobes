@@ -1,6 +1,6 @@
 import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
-import { DSP_PURPOSE, Division, FasadMaterial, SandBase } from "../types/enums"
+import { MAT_PURPOSE, Division, FasadMaterial, SandBase } from "../types/enums"
 import InputField from "./InputField"
 import { PropertyType } from "../types/property"
 import PropertyGrid from "./PropertyGrid"
@@ -28,7 +28,7 @@ export default function PropertiesBar() {
     const { minSize } = useAtomValue(settingsAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
-    const materialList = useAtomValue(materialListAtom).filter(m => m.purpose !== DSP_PURPOSE.CORPUS)
+    const materialList = useAtomValue(materialListAtom).filter(m => m.purpose !== MAT_PURPOSE.CORPUS)
     const totalPrice = useAtomValue(totalPriceAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)

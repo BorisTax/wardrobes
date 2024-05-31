@@ -1,6 +1,6 @@
 import { dataBaseQuery, hashData } from '../functions/other.js'
 import { IUserServiceProvider } from '../types/services.js';
-import { Results, User } from '../types/server.js';
+import { Results, Token, User } from '../types/server.js';
 import messages from '../messages.js';
 
 export default class UserServiceSQLite implements IUserServiceProvider {
@@ -14,11 +14,12 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     async getTokens(): Promise<Results> {
         return dataBaseQuery(this.dbFile, "select * from 'tokens'", {successStatusCode: 200})
     }
-    async addToken({ token, userName, time }: { token: string, userName: string, time: number }): Promise<Results> {
-        
-        return dataBaseQuery(this.dbFile, `INSERT INTO tokens (token, username, time) VALUES('${token}', '${userName}', ${time})`, {successStatusCode: 201})
+    async addToken({ token, username, time, lastActionTime }: Token): Promise<Results> {
+        return dataBaseQuery(this.dbFile, `INSERT INTO tokens (token, username, time, lastActionTime) VALUES('${token}', '${username}', ${time}, ${lastActionTime})`, {successStatusCode: 201})
     }
-
+    async updateToken(token: string, lastActionTime: number): Promise<Results> {
+        return dataBaseQuery(this.dbFile, `UPDATE tokens set lastActionTime='${lastActionTime}' WHERE token='${token}';`, {successStatusCode: 200})
+    }
     async deleteToken(token: string): Promise<Results> {
         return dataBaseQuery(this.dbFile, `DELETE FROM tokens WHERE token='${token}'`, {successStatusCode: 200})
     }

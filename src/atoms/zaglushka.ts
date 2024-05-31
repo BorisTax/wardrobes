@@ -9,8 +9,8 @@ export const zaglushkaListAtom = atom<Zaglushka[]>([])
 
 export const loadZaglushkaListAtom = atom(null, async (_, set) => {
     try {
-        const { success, data }: FetchResult<Zaglushka[]> = await fetchGetData('api/materials/zaglushka')
-        if(success) set(zaglushkaListAtom, data as Zaglushka[]);
+        const result: FetchResult<[] | string> = await fetchGetData('api/materials/zaglushka')
+        if(result.success) set(zaglushkaListAtom, result.data as Zaglushka[]);
     } catch (e) { console.error(e) }
 })
 

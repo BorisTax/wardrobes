@@ -4,6 +4,7 @@ export type Token = {
     token: string
     username: string
     time: number
+    lastActionTime: number
 }
 export type RequestBody = {
     token?: string
@@ -32,6 +33,7 @@ export type ActiveUser = {
     role: string
     token: string
     time: number
+    lastActionTime: number
 }
 
 export enum TableFields {

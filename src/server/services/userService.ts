@@ -15,13 +15,14 @@ export async function getTokens(): Promise<Token[]> {
 }
 Promise.resolve().then(() => getTokens().then(r => activeTokens.tokenList = r))
 
-const expiredInterval = 3600 * 24 * 1000
+const expiredInterval = 3600 * 1000
 const clearExpiredTokens = () => {
   const userService = new UserService(userServiceProvider);
   activeTokens.tokenList.forEach((t: Token) => {
-    if (Date.now() - t.time > expiredInterval) userService.deleteToken(t.token)
+    if (Date.now() - t.lastActionTime > expiredInterval) userService.deleteToken(t.token)
   })
 }
+
 setInterval(clearExpiredTokens, 60000)
 
 export function notifyActiveUsers(){
@@ -49,15 +50,27 @@ export class UserService implements IUserService {
     const user = (userList.data as User[]).find(u => u.name === userName)
     return user
   }
+
   async getTokens() {
     return await this.provider.getTokens()
   }
-  async addToken({ token, userName }: { token: string, userName: string }) {
-    const time = Date.now()
-    const result = await this.provider.addToken({ token, userName, time })
-    if (result.success) activeTokens.tokenList.push({ token, username: userName, time })
+
+  async addToken({ token, username, time, lastActionTime }: Token) {
+    const result = await this.provider.addToken({ token, username, time, lastActionTime })
+    if (result.success) activeTokens.tokenList.push({ token, username, time, lastActionTime })
     return result
   }
+
+  async updateToken(token: string) {
+    const lastActionTime = Date.now()
+    const result = await this.provider.updateToken(token, lastActionTime)
+    if (result.success) {
+      const t = activeTokens.tokenList.find(t => t.token === token)
+      if (t) t.lastActionTime = lastActionTime
+    }
+    return result
+  }
+
   async deleteToken(token: string, extAction = () => { notifyActiveUsers() }) {
     const result = await this.provider.deleteToken(token)
     if (result.success) {

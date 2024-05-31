@@ -12,12 +12,12 @@ export const materialListAtom = atom<ExtMaterial[]>([])
 
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
     try {
-        const { success, data }: FetchResult<ExtMaterial[]> = await fetchGetData('api/materials/material')
-        if (!success) return
-        set(materialListAtom, data as ExtMaterial[])
+        const result: FetchResult<[] | string> = await fetchGetData('api/materials/material')
+        if (!result.success) return
+        set(materialListAtom, result.data as ExtMaterial[])
         const { rootFasades } = get(appDataAtom)
-        const material = data && data[0].material
-        const extMaterial = data && data[0].name
+        const material = result.data && (result.data as ExtMaterial[])[0]?.material
+        const extMaterial = result.data && (result.data as ExtMaterial[])[0]?.name
         //if (setAsInitial) 
         setInitialMaterials(rootFasades, material as FasadMaterial, extMaterial || "")
     } catch (e) { console.error(e) }

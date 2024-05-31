@@ -10,9 +10,9 @@ export const activeProfileIndexAtom = atom(0)
 export const loadPriceListAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
     try {
-        const { success, data }: FetchResult<PriceListItem[]> = await fetchGetData('api/prices/pricelist?token=' + token)
-        if (!success) set(priceListAtom, []); else
-            set(priceListAtom, data as PriceListItem[])
+        const result: FetchResult<[] | string> = await fetchGetData('api/prices/pricelist?token=' + token)
+        if (!result.success) set(priceListAtom, []); else
+            set(priceListAtom, result.data as PriceListItem[])
     } catch (e) { console.error(e) }
 })
 

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { DSPPurpose, DSPPurposeCaptions, existMaterial, getFasadMaterial } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { ExtMaterial } from "../../../server/types/materials"

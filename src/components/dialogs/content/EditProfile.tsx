@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { Profiles, ProfilesCaptions } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { Profile, ProfileType } from "../../../server/types/materials"
@@ -13,7 +13,7 @@ import { EditDialogProps } from "../EditMaterialDialog"
 import { brushListAtom } from "../../../atoms/brush"
 
 export default function EditProfile(props: EditDialogProps) {
-    const [profileList] = useAtom(profileListAtom)
+    const profileList = useAtomValue(profileListAtom)
     const [{ name: profileName, type, code, brush }, setState] = useState({ ...profileList[0] })
     const brushList = useAtomValue(brushListAtom).map(b => b.name).toSorted()
     //const brushList = [...new Set(profileList.map((p: Profile) => p.brush))].toSorted()

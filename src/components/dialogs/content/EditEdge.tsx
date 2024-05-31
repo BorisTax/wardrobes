@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import ComboBox from "../../ComboBox"
 import { Edge, ExtMaterial } from "../../../server/types/materials"
 import useMessage from "../../../custom-hooks/useMessage"

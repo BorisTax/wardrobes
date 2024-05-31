@@ -9,8 +9,8 @@ export const brushListAtom = atom<Brush[]>([])
 
 export const loadBrushListAtom = atom(null, async (_, set) => {
     try {
-        const { success, data }: FetchResult<Brush[]> = await fetchGetData('api/materials/brush')
-        if(success) set(brushListAtom, data as Brush[]);
+        const result: FetchResult<[] | string> = await fetchGetData('api/materials/brush')
+        if(result.success) set(brushListAtom, result.data as Brush[]);
     } catch (e) { console.error(e) }
 })
 

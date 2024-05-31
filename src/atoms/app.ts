@@ -8,12 +8,12 @@ import { openFile, readFile, saveState } from '../functions/file';
 import { materialListAtom, setInitialMaterials } from './materials';
 import { FasadMaterial } from '../types/enums';
 import { calculateSpecificationsAtom } from './specification';
-import { fetchGetData } from '../functions/fetch';
+import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
-    const result = await fetchGetData(`api/version`)
+    const result: FetchResult<[] | string> = await fetchGetData(`api/version`)
     if (result.success) set(versionAtom, result.data as string)
 })
 export const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
@@ -54,10 +54,10 @@ export const openStateAtom = atom(null, async (get: Getter, set: Setter) => {
 export const resetAppDataAtom = atom(null, (get: Getter, set: Setter) => {
     set(appAtom, { state: getInitialAppState(), next: null, previous: null })
     const mList = get(materialListAtom)
-    const material = [...mList.keys()][0] as FasadMaterial
-    const extMaterial = mList.get(material)[0].name
+    const material = mList[0].material
+    const extMaterial = mList[0].name
     const { rootFasades } = get(appDataAtom)
-    setInitialMaterials(rootFasades, material, extMaterial)
+    setInitialMaterials(rootFasades, material as FasadMaterial, extMaterial)
 })
 export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmCallback]: SetAtomComfirm<number>) => {
     const { order, wardWidth, wardHeight, profile, type, rootFasades } = get(appDataAtom)

@@ -12,9 +12,9 @@ export default function EventListener() {
   const loadActiveUsers = useSetAtom(loadActiveUsersAtom)
   const showMessage = useMessage()
   useEffect(() => {
-    const timer = setInterval(() => { fetchGetData('api/dontstop').then(r => console.log(r)) }, 60000)
+    const timer = setInterval(() => { fetchGetData(`api/users/standby?token=${user.token}`).then(r => console.log(r)) }, 60000)
     return () => { clearInterval(timer) }
-  }, [])
+  }, [user])
   useEffect(() => {
     if (user.role !== UserRoles.ANONYM) waitForMessageFromServer(user.token, (message, data) => {
       switch (message) {

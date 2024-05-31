@@ -1,10 +1,11 @@
 import { Brush, Edge, ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from "./materials"
-import { PriceListItem, Results, User } from "./server"
+import { PriceListItem, Results, Token, User } from "./server"
 import { NewTemplate, Template } from "./templates"
 interface IUserAbstractService {
     getUsers: () => Promise<Results>
     getTokens: () => Promise<Results>
-    addToken: ({ token, userName, time }: { token: string, userName: string, time: number }) => Promise<Results>
+    addToken: ({ token, username, time, lastActionTime }: Token) => Promise<Results>
+    updateToken: (token: string, lastActionTime: number) => Promise<Results>
     deleteToken: (token: string) => Promise<Results>
     clearAllTokens: () => Promise<Results>
     registerUser: (user: User) => Promise<Results>
@@ -42,7 +43,6 @@ interface IPriceAbstractService {
     getPriceList: () => Promise<Results>
     updatePriceList: (item: PriceListItem) => Promise<Results>
 }
-
 
 export interface IMaterialServiceProvider extends IMaterialAbstractService {
     dbFile: string

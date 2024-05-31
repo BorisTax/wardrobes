@@ -9,8 +9,8 @@ export const edgeListAtom = atom<Edge[]>([])
 
 export const loadEdgeListAtom = atom(null, async (_, set) => {
     try {
-        const { success, data }: FetchResult<Edge[]> = await fetchGetData('api/materials/edge')
-        if(success) set(edgeListAtom, data as Edge[]);
+        const result: FetchResult<[] | string> = await fetchGetData('api/materials/edge')
+        if(result.success) set(edgeListAtom, result.data as Edge[]);
     } catch (e) { console.error(e) }
 })
 

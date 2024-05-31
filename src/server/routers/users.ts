@@ -18,6 +18,13 @@ router.get("/hash", async (req, res) => {
   res.json(result);
 });
 
+router.get("/standby", async (req: MyRequest, res) => {
+  const token = req.token as string;
+  const userService = new UserService(userServiceProvider)
+  const result = await userService.updateToken(token)
+  res.json(result);
+});
+
 router.get("/events", async (req: MyRequest, res) => {
   const event = events.set(req.token as string, new EventEmitter()).get(req.token as string) as EventEmitter
   event.removeAllListeners("message")
@@ -41,7 +48,9 @@ router.post("/login", async (req, res) => {
   if (!user.password) user.password = "";
   const userService = new UserService(userServiceProvider)
   const result = await loginUser(user);
-  if (result.success) userService.addToken({ token: result.data as string, userName: user.name })
+  const time = Date.now()
+  const lastActionTime = time
+  if (result.success) userService.addToken({ token: result.data as string, username: user.name, time, lastActionTime })
   if (result.success) notifyActiveUsers()
   res.json(result);
 });
@@ -69,7 +78,7 @@ router.get("/active", async (req: MyRequest, res) => {
   const users = await userService.getUsers();
   tokens.forEach((t: Token) => {
     const user = (users.data as User[]).find((u: User) => u.name === t.username)
-    if (user) result.data?.push({ token: t.token, name: user.name, role: user.role, time: t.time })
+    if (user) result.data?.push({ token: t.token, name: user.name, role: user.role, time: t.time, lastActionTime: t.lastActionTime })
   })
   res.status(result.status).json(result);
 });

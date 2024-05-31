@@ -4,7 +4,7 @@ export type FetchResult<T> = {
     message?: string
     data?: T
 }
-export async function fetchGetData(url: string): Promise<FetchResult<[]>> {
+export async function fetchGetData(url: string): Promise<FetchResult<[] | string>> {
     try {
         let status: number
         const result = await fetch(url, { method: "GET" }).then(r => { status = r.status; return r.json() })

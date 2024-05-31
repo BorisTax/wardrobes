@@ -21,6 +21,7 @@ export type UserState = {
 }
 export type ActiveUserState = UserState & {
     time: number
+    lastActionTime: number
 }
 
 export const allUsersAtom = atom<UserState[]>([])

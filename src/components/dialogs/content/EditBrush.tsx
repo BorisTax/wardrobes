@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react"
-import { useAtom, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import ComboBox from "../../ComboBox"
 import { Brush } from "../../../server/types/materials"
 import useMessage from "../../../custom-hooks/useMessage"
@@ -8,11 +8,10 @@ import Button from "../../Button"
 import { addBrushAtom, deleteBrushAtom, brushListAtom, updateBrushAtom } from "../../../atoms/brush"
 import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
-import { materialListAtom } from "../../../atoms/materials"
 import { EditDialogProps } from "../EditMaterialDialog"
 
 export default function EditBrush(props: EditDialogProps) {
-    const [brushList] = useAtom(brushListAtom)
+    const brushList = useAtomValue(brushListAtom)
     const [{ name: brushName, code }, setState] = useState({ ...brushList[0] })
     useMemo(() => { setState({ ...brushList[0] }) }, [brushList])
     const deleteBrush = useSetAtom(deleteBrushAtom)

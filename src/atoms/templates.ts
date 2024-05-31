@@ -22,9 +22,9 @@ export const setTemplateTableAtom = atom(null, (get, set, table: TEMPLATE_TABLES
 export const loadTemplateListAtom = atom(null, async (get, set, table: string) => {
     const { token } = get(userAtom)
     try {
-        const { success, data }: FetchResult<Template[]> = await fetchGetData(`api/templates?table=${table}&token=${token}`)
-        if (!success) return
-        set(templateListAtom, data as Template[])
+        const result: FetchResult<[] | string> = await fetchGetData(`api/templates?table=${table}&token=${token}`)
+        if (!result.success) return
+        set(templateListAtom, result.data as Template[])
     } catch (e) { console.error(e) }
 })
 

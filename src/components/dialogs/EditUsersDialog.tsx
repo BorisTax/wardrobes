@@ -33,7 +33,11 @@ export default function EditUsersDialog() {
     const showConfirm = useConfirm()
     const [listType, setListType] = useState(ListType.REGISTERED)
     const userListHeader = <><div className="text-center">Имя</div><div className="text-center">Права</div><div></div></>
-    const activeUserListHeader = <><div className="text-center">Имя</div><div className="text-center">Права</div><div className="text-center">Время</div><div></div></>
+    const activeUserListHeader = <><div className="text-center">Имя</div>
+                                    <div className="text-center">Права</div>
+                                    <div className="text-center">Время</div>
+                                    <div className="text-center">Время простоя</div>
+                                    <div></div></>
     const onDelete: AtomCallbackResult = (result) => { showMessage(rusMessages[result.message]) }
     const userlist = users.map(u => {
         const isAdmin = u.role === UserRoles.ADMIN
@@ -48,6 +52,7 @@ export default function EditUsersDialog() {
         return <><div>{u.name}</div>
             <div>{UserRolesCaptions[u.role]}</div>
             <TimeField time={u.time} />
+            <TimeField time={u.lastActionTime} />
             <div className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>
         </>
     }

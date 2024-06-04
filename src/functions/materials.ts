@@ -17,6 +17,7 @@ MaterialGroupCaptions.set(MaterialGroup.EDGE, "Кромка")
 MaterialGroupCaptions.set(MaterialGroup.ZAGLUSHKI, "Заглушки")
 MaterialGroupCaptions.set(MaterialGroup.PROFILE, "Профиля")
 MaterialGroupCaptions.set(MaterialGroup.BRUSH, "Щетки")
+MaterialGroupCaptions.set(MaterialGroup.TREMPEL, "Тремпеля")
 
 export const MATPurpose: Map<string, string> = new Map()
 MATPurpose.set("Фасад", MAT_PURPOSE.FASAD)

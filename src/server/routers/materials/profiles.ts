@@ -1,15 +1,16 @@
 import messages from '../../messages.js'
 import { MaterialService } from '../../services/materialService.js';
 import { NewProfile, Profile } from '../../types/materials.js';
-import { materialServiceProvider } from '../../options.js';
+import { materialsPath } from '../../options.js';
+import MaterialServiceSQLite from '../../services/materialServiceSQLite.js';
 
 export async function getProfiles() {
-  const materialService = new MaterialService(materialServiceProvider)
+  const materialService = new MaterialService(new MaterialServiceSQLite(materialsPath))
   return await materialService.getProfiles()
 }
 
 export async function addProfile({ name, type, code, brush }: Profile) {
-  const materialService = new MaterialService(materialServiceProvider)
+  const materialService = new MaterialService(new MaterialServiceSQLite(materialsPath))
   const result = await materialService.getProfiles()
   if (!result.success) return result
   const profiles = result.data
@@ -18,7 +19,7 @@ export async function addProfile({ name, type, code, brush }: Profile) {
 }
 
 export async function updateProfile({ name, newName, type, code, brush }: NewProfile) {
-  const materialService = new MaterialService(materialServiceProvider)
+  const materialService = new MaterialService(new MaterialServiceSQLite(materialsPath))
   const result = await materialService.getProfiles()
   if (!result.success) return result
   const profiles = result.data
@@ -27,7 +28,7 @@ export async function updateProfile({ name, newName, type, code, brush }: NewPro
 }
 
 export async function deleteProfile(name: string, type: string) {
-  const materialService = new MaterialService(materialServiceProvider)
+  const materialService = new MaterialService(new MaterialServiceSQLite(materialsPath))
   const result = await materialService.getProfiles()
   if (!result.success) return result
   const profiles = result.data

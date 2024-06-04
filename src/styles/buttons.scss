@@ -4,7 +4,16 @@
   color: blue;
   cursor: pointer;
 }
-
+.small-button{
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+  border: 1px solid;
+  border-radius: 5px;
+  background-color: rgb(182, 220, 221);
+}
+.small-button:hover{
+  background-color: cadetblue;
+}
 .button {
   display: inline-block;
   position: relative;

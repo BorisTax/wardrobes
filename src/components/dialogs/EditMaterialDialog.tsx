@@ -10,6 +10,7 @@ import EditProfile from "./content/EditProfile"
 import EditEdge from "./content/EditEdge"
 import EditZaglushka from "./content/EditZaglushka"
 import EditBrush from "./content/EditBrush"
+import EditTrempel from "./content/EditTrempel"
 
 export type EditDialogProps = {
     setLoading: (state: boolean) => void
@@ -39,6 +40,9 @@ export default function EditMaterialDialog() {
             break;
         case MaterialGroup.BRUSH:
             content = <EditBrush setLoading={(state: boolean) => setLoading(state)} />
+            break;
+        case MaterialGroup.TREMPEL:
+            content = <EditTrempel setLoading={(state: boolean) => setLoading(state)} />
             break;
         default:
     }

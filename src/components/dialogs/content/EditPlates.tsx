@@ -5,7 +5,7 @@ import ComboBox from "../../ComboBox"
 import { ExtMaterial } from "../../../server/types/materials"
 import { MAT_PURPOSE, FasadMaterial } from "../../../types/enums"
 import { MaterialCaptions, Materials } from "../../../functions/materials"
-import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials"
+import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials/materials"
 import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
 import Button from "../../Button"
@@ -52,17 +52,17 @@ export default function EditPlates(props: EditDialogProps) {
                 <span className="text-end text-nowrap">Наименование:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={nameChecked} onChange={() => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />
-                    <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewValues(prev => ({ ...prev, newName: e.target.value })) }} />
+                    <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewValues(prev => ({ ...prev, newName: e.target.value })) }} disabled={!nameChecked}/>
                 </div>
                 <span className="text-end text-nowrap">Код:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
-                    <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} />
+                    <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} disabled={!codeChecked}/>
                 </div>
                 <span className="text-end text-nowrap">Назначение:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={purposeChecked} disabled={!purposeEnabled} onChange={() => { setChecked(prev => ({ ...prev, purposeChecked: !purposeChecked })) }} />
-                    <ComboBox value={MATPurposeCaptions.get(newPurpose) || ""} disabled={!purposeEnabled} items={MATPurpose} 
+                    <ComboBox value={MATPurposeCaptions.get(newPurpose) || ""} disabled={!purposeEnabled || !purposeChecked} items={MATPurpose} 
                             onChange={(_, value: string) => { 
                                 setNewValues(prev => ({ ...prev, newPurpose: value as MAT_PURPOSE })); 
                                 }} />

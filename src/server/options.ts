@@ -14,12 +14,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export const databaseZipFile = path.resolve(__dirname, 'database.zip')
 export const databaseFolder = path.resolve(__dirname, 'database')
-const usersPath = path.resolve(__dirname, 'database/users.db')
-const materialsPath = path.resolve(__dirname, 'database/materials.db')
-const pricePath = path.resolve(__dirname, 'database/prices.db')
-const templatePath = path.resolve(__dirname, 'database/templates.db')
+export const usersPath = path.resolve(__dirname, 'database/users.db')
+export const materialsPath = path.resolve(__dirname, 'database/materials.db')
+export const pricePath = path.resolve(__dirname, 'database/prices.db')
+export const templatePath = path.resolve(__dirname, 'database/templates.db')
 export const userServiceProvider = new UserServiceSQLite(usersPath)
-export const materialServiceProvider = new MaterialServiceSQLite(materialsPath)
 export const priceServiceProvider = new PriceServiceSQLite(pricePath)
 export const templateServiceProvider = new TemplateServiceSQLite(templatePath)
 

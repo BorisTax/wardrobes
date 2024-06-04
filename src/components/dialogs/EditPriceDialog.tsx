@@ -7,10 +7,10 @@ import { rusMessages } from "../../functions/messages"
 import { loadPriceListAtom, priceListAtom, updatePriceListAtom } from "../../atoms/prices"
 import { PriceListItem } from "../../server/types/server"
 import { MATPurposeCaptions, UnitCaptions } from "../../functions/materials"
-import InputField from "../InputField"
 import { PropertyType } from "../../types/property"
 import DialogWindow from "./DialogWindow"
 import { MAT_PURPOSE } from "../../types/enums"
+import TextBox from "../TextBox"
 
 export default function EditPriceDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -73,12 +73,12 @@ export default function EditPriceDialog() {
                     <span className="text-end text-nowrap">Цена:</span>
                     <div className="d-flex justify-content-start gap-2">
                         <input type="checkbox" checked={priceChecked} onChange={() => { setChecked(prev => ({ ...prev, priceChecked: !priceChecked })) }} />
-                        <InputField value={newPrice} disabled={!priceChecked} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newPrice: `${value}` })) }} />
+                        <TextBox value={newPrice} disabled={!priceChecked} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newPrice: `${value}` })) }} />
                     </div>
                     <span className="text-end text-nowrap">Наценка:</span>
                     <div className="d-flex justify-content-start gap-2">
                         <input type="checkbox" checked={markupChecked} onChange={() => { setChecked(prev => ({ ...prev, markupChecked: !markupChecked })) }} />
-                        <InputField value={newMarkup} disabled={!markupChecked} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newMarkup: `${value}` })) }} />
+                        <TextBox value={newMarkup} disabled={!markupChecked} type={PropertyType.POSITIVE_NUMBER} setValue={(value) => { setNewValues(prev => ({ ...prev, newMarkup: `${value}` })) }} />
                     </div>
                     <span className="text-end text-nowrap">Код:</span>
                     <div className="d-flex justify-content-start gap-2">

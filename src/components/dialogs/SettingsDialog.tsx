@@ -3,7 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { settingsDialogAtom } from "../../atoms/dialogs"
 import { setSettingsAtom, settingsAtom } from "../../atoms/settings"
 import DialogWindow from "./DialogWindow"
-import InputField from "../InputField"
+import TextBox from "../TextBox"
 import { PropertyType } from "../../types/property"
 
 export default function SettingsDialog() {
@@ -21,7 +21,7 @@ export default function SettingsDialog() {
         </div>
         <div className="d-flex gap-2">
         <div>Мин. размер секции:</div>
-        <InputField type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} value={settings.minSize} setValue={(value) => { setSettings({ ...settings, minSize: +value }) }} />
+        <TextBox type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} value={settings.minSize} setValue={(value) => { setSettings({ ...settings, minSize: +value }) }} />
         </div>
     </DialogWindow>
 }

@@ -6,7 +6,7 @@ import FixedWidth from "./FixedWidth";
 import FixedBoth from "./FixedBoth";
 import { useAtomValue, useSetAtom } from "jotai";
 import { setActiveFasadAtom } from "../../atoms/fasades";
-import { useImageUrl } from "../../atoms/materials";
+import { useImageUrl } from "../../atoms/materials/materials";
 import { settingsAtom } from "../../atoms/settings";
 import { FasadBackImageProps, getInitialBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";

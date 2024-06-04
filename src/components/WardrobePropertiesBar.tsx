@@ -1,9 +1,8 @@
-import InputField from "./InputField"
 import { PropertyType } from "../types/property"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import { profileListAtom } from "../atoms/profiles"
+import { useAtomValue, useSetAtom } from "jotai"
+import { profileListAtom } from "../atoms/materials/profiles"
 import { Profile } from "../server/types/materials"
 import ComboBox from "./ComboBox"
 import { appDataAtom, historyAppAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setOrderAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"
@@ -13,11 +12,12 @@ import useConfirm from "../custom-hooks/useConfirm"
 import ImageButton from "./ImageButton"
 import { userAtom } from "../atoms/users"
 import { isClientAtLeast } from "../server/functions/user"
+import TextBox from "./TextBox"
 const fasades = ["2", "3", "4", "5", "6"]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)
-    const [profileList] = useAtom(profileListAtom)
-    const [{ order, profile, fasadCount, type, wardHeight, wardWidth }] = useAtom(appDataAtom)
+    const profileList = useAtomValue(profileListAtom)
+    const { order, profile, fasadCount, type, wardHeight, wardWidth } = useAtomValue(appDataAtom)
     const setOrder = useSetAtom(setOrderAtom)
     const setProfile = useSetAtom(setProfileAtom)
     const setFasadCount = useSetAtom(setFasadCountAtom)
@@ -62,16 +62,16 @@ export default function WardrobePropertiesBar() {
         <PropertyGrid>
             <div className="text-end">Заказ: </div>
             <PropertyRow>
-                <InputField name="order" value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
+                <TextBox name="order" value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
             </PropertyRow>
             <ComboBox title="Тип:" value={type} items={WardTypes} onChange={(_, value) => { setWardType([value as WardType, wardTypeChangeConfirm]) }} />
             <div className="text-end">Высота: </div>
             <PropertyRow>
-                <InputField name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1900} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} />
+                <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1900} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} />
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <InputField name="width" value={wardWidth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setWardWidth([+value, wardWidthConfirm]) }} />
+                <TextBox name="width" value={wardWidth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setWardWidth([+value, wardWidthConfirm]) }} />
             </PropertyRow>
             <ComboBox title="Кол-во фасадов:" value={`${fasadCount}`} items={fasades} onChange={(_, value) => { setFasadCount([+value, wardFasadCountConfirm]) }} />
             <ComboBox title="Профиль:" value={profile?.name || ""} items={profileList.map((p: Profile) => p.name)} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />

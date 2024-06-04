@@ -5,7 +5,7 @@ import { Profile } from "../server/types/materials";
 import Fasad from "../classes/Fasad";
 import { trySetHeight, trySetWidth } from "../functions/fasades";
 import { openFile, readFile, saveState } from '../functions/file';
-import { materialListAtom, setInitialMaterials } from './materials';
+import { materialListAtom, setInitialMaterials } from './materials/materials';
 import { FasadMaterial } from '../types/enums';
 import { calculateSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';

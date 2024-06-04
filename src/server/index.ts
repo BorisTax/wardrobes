@@ -37,9 +37,9 @@ app.use(userRoleParser)
 
 app.use('/api', router)
 
-// app.use(function (req, res) {
-//     res.sendFile(path.join(__dirname, '/index.html'))
-//   })
+app.use(function (req, res) {
+    res.sendFile(path.join(__dirname, '../../dist/index.html'))
+  })
 
 const port = process.env.PORT || 5000
 var httpServer = http.createServer(app);

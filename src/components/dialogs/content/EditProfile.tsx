@@ -6,11 +6,11 @@ import { Profile, ProfileType } from "../../../server/types/materials"
 import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
 import Button from "../../Button"
-import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../../../atoms/profiles"
+import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../../../atoms/materials/profiles"
 import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
 import { EditDialogProps } from "../EditMaterialDialog"
-import { brushListAtom } from "../../../atoms/brush"
+import { brushListAtom } from "../../../atoms/materials/brush"
 
 export default function EditProfile(props: EditDialogProps) {
     const profileList = useAtomValue(profileListAtom)
@@ -45,17 +45,17 @@ export default function EditProfile(props: EditDialogProps) {
                 <span className="text-end text-nowrap">Наименование:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={nameChecked} onChange={() => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />
-                    <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewValues(prev => ({ ...prev, newName: e.target.value })) }} />
+                    <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewValues(prev => ({ ...prev, newName: e.target.value })) }} disabled={!nameChecked}/>
                 </div>
                 <span className="text-end text-nowrap">Код:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
-                    <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} />
+                    <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} disabled={!codeChecked}/>
                 </div>
                 <span className="text-end text-nowrap">Щетка:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={brushChecked} onChange={() => { setChecked(prev => ({ ...prev, brushChecked: !brushChecked })) }} />
-                    <ComboBox value={newBrush} items={brushList} onChange={(_, value: string) => { setNewValues(prev => ({ ...prev, newBrush: value })) }} />
+                    <ComboBox value={newBrush} items={brushList} onChange={(_, value: string) => { setNewValues(prev => ({ ...prev, newBrush: value })) }} disabled={!brushChecked}/>
                 </div>
             </div>
             <div className="editmaterial-buttons-container">

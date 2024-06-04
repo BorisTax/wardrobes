@@ -44,6 +44,10 @@ export type Brush = {
 export type NewBrush = Brush & {
     newName: string
 }
+export type Trempel = {
+    name: string
+    code: string
+}
 export enum ProfileType {
     STANDART = 'STANDART',
     BAVARIA = 'BAVARIA'

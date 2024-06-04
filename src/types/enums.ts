@@ -50,7 +50,8 @@ export enum MaterialGroup {
     PROFILE = 'profile',
     EDGE = 'edge',
     ZAGLUSHKI = 'zaglushki',
-    BRUSH = 'brush'
+    BRUSH = 'brush',
+    TREMPEL = 'trempel',
 }
 
 export enum MAT_PURPOSE {

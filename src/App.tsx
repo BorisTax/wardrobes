@@ -7,19 +7,15 @@ import './styles/messages.scss'
 import './styles/inputs.scss'
 import './styles/templates.scss'
 import Header from './components/Header'
-import PropertiesBar from './components/PropertiesBar'
 import { createToolTip, isMobile } from './functions/functions'
 import LoginDialog from './components/dialogs/LoginDialog'
-import WardrobePropertiesBar from './components/WardrobePropertiesBar'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { setActiveFasadAtom } from './atoms/fasades'
-import { loadMaterialListAtom } from './atoms/materials'
+import { loadMaterialListAtom } from './atoms/materials/materials'
 import EditMaterialDialog from './components/dialogs/EditMaterialDialog'
 import {  userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
-import { loadProfileListAtom } from './atoms/profiles'
-import RootFasadesContainer from './components/fasad/RootFasadesContainer'
+import { loadProfileListAtom } from './atoms/materials/profiles'
 import EditPriceDialog from './components/dialogs/EditPriceDialog'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast} from './server/functions/user'
@@ -33,17 +29,32 @@ import SettingsDialog from './components/dialogs/SettingsDialog'
 import StatusBar from './components/StatusBar'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
-import { loadEdgeListAtom } from './atoms/edges'
-import { loadZaglushkaListAtom } from './atoms/zaglushka'
-import { loadBrushListAtom } from './atoms/brush'
+import { loadEdgeListAtom } from './atoms/materials/edges'
+import { loadZaglushkaListAtom } from './atoms/materials/zaglushka'
+import { loadBrushListAtom } from './atoms/materials/brush'
+import { loadTrempelListAtom } from './atoms/materials/trempel'
+import CombiFasades from './components/CombiFasades'
+import { BrowserRouter, Link, Route, RouterProvider, Routes, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import WardrobeCalculator from './components/WardrobeCalculator'
+import { ErrorBoundary } from 'react-error-boundary'
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" >
+      <Route path="/" element={<Select />}></Route>
+      <Route path="/combi" element={<CombiFasades />} />
+      <Route path="/calculator" element={<WardrobeCalculator /> } />
+    </Route>
+  )
+);
 
 function App() {
   const user = useAtomValue(userAtom)
-  const setActiveFasad = useSetAtom(setActiveFasadAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
   const loadEdgeList = useSetAtom(loadEdgeListAtom)
   const loadBrushList = useSetAtom(loadBrushListAtom)
+  const loadTrempelList = useSetAtom(loadTrempelListAtom)
   const loadZaglushkaList = useSetAtom(loadZaglushkaListAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
@@ -56,6 +67,7 @@ function App() {
     loadProfileList()
     loadEdgeList()
     loadBrushList()
+    loadTrempelList()
     loadZaglushkaList()
     loadVersion()
   }, [])
@@ -74,15 +86,14 @@ function App() {
   }, [])
   return (
     <>
+      <BrowserRouter>
       <Header />
-      {!isMobile() ? <StatusBar /> : <></>}
-      <div className="main-container" onClick={() => { setActiveFasad(null); }}>
-        <div className='properties-container'>
-          <WardrobePropertiesBar />
-          <PropertiesBar />
-        </div>
-        <RootFasadesContainer />
-      </div>
+        <Routes>
+          <Route path="/" element={<Select />}></Route>
+          <Route path="/combi" element={<CombiFasades />} />
+          <Route path="/calculator" element={<WardrobeCalculator /> } />
+         </Routes>
+      </BrowserRouter>
       <CopyFasadDialog />
       <FasadTemplatesDialog />
       <SettingsDialog />
@@ -101,6 +112,14 @@ function App() {
 
 export default App
 
-
+function Select(){
+  return <div style={{height: "100%", display: "flex", flexDirection: "column"}}>
+    <div style={{display: "flex", justifyContent: "center", alignItems: "stretch"}}>
+      <Link to="combi"><div style={{fontSize: "2em", border: "1px solid", borderRadius: "5px", padding: "2em"}}>Калькулятор комби фасадов</div></Link>
+      <br/>
+      <Link to="calculator"><div style={{fontSize: "2em", border: "1px solid", borderRadius: "5px", padding: "2em"}}>Калькулятор шкафов</div></Link>
+    </div>
+  </div>
+}
 
 

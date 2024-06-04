@@ -1,7 +1,6 @@
 import Fasad from "../classes/Fasad"
 import ComboBox from "./ComboBox"
 import { MAT_PURPOSE, Division, FasadMaterial, SandBase } from "../types/enums"
-import InputField from "./InputField"
 import { PropertyType } from "../types/property"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
@@ -10,16 +9,17 @@ import { ExtMaterial } from "../server/types/materials"
 import ImageButton from "./ImageButton"
 import { useAtomValue, useSetAtom } from "jotai"
 import { activeFasadAtom, activeRootFasadIndexAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
-import { materialListAtom } from "../atoms/materials"
+import { materialListAtom } from "../atoms/materials/materials"
 import { Materials, SandBases } from "../functions/materials"
 import { totalPriceAtom } from "../atoms/specification"
 import { userAtom } from "../atoms/users"
 import { isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { getInitialBackImageProps } from "../classes/FasadState"
 import { settingsAtom } from "../atoms/settings"
-import { copyFasadDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
+import { copyFasadDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
 import { TEMPLATE_TABLES } from "../server/types/enums"
 import { hasFasadImage } from "../functions/fasades"
+import TextBox from "./TextBox"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 export default function PropertiesBar() {
     const { role } = useAtomValue(userAtom)
@@ -42,6 +42,8 @@ export default function PropertiesBar() {
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const copyFasadDialogRef =  useAtomValue(copyFasadDialogAtom)
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
+    const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
+    const showSchemaDialog = useSetAtom(showSchemaDialogAtom)
     const extMaterials: ExtMaterial[] = materialList.filter(mat => mat.material === material) || [{ name: "", material: "" }]
     const fasadValue = fasad && totalPrice[rootFasadIndex].toFixed(2)
     const fasadPrice = isClientAtLeast(role) ? <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div> : <></>
@@ -51,6 +53,11 @@ export default function PropertiesBar() {
         <div className="property-bar-header">
             Параметры фасада
             <div className="d-flex gap-1">
+                {isClientAtLeast(role) &&
+                    <>
+                        <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
+                        <ImageButton title="Cхема" icon="schemaButton" onClick={() => { showSchemaDialog() }} />
+                    </>}
                 {isEditorAtLeast(role) && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
                 {isClientAtLeast(role) && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
                 {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />}
@@ -69,12 +76,12 @@ export default function PropertiesBar() {
         <PropertyGrid>
             <div className="text-end">Высота: </div>
             <PropertyRow>
-                <InputField value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minSize} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
+                <TextBox value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minSize} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
                 <ToggleButton pressed={fixHeight} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать высоту" visible={!disabledFixHeight} onClick={() => { setFixedHeight(!fixHeight) }} />
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <InputField value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minSize} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
+                <TextBox value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minSize} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" visible={!disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
             <ComboBox title="Материал:" value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value as FasadMaterial) }} />

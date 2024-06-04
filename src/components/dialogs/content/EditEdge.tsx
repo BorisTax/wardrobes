@@ -5,10 +5,10 @@ import { Edge, ExtMaterial } from "../../../server/types/materials"
 import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
 import Button from "../../Button"
-import { addEdgeAtom, deleteEdgeAtom, edgeListAtom, updateEdgeAtom } from "../../../atoms/edges"
+import { addEdgeAtom, deleteEdgeAtom, edgeListAtom, updateEdgeAtom } from "../../../atoms/materials/edges"
 import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
-import { materialListAtom } from "../../../atoms/materials"
+import { materialListAtom } from "../../../atoms/materials/materials"
 import { FasadMaterial } from "../../../types/enums"
 import { EditDialogProps } from "../EditMaterialDialog"
 
@@ -44,17 +44,17 @@ export default function EditEdge(props: EditDialogProps) {
                 <span className="text-end text-nowrap">Наименование:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={nameChecked} onChange={() => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />
-                    <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewValues(prev => ({ ...prev, newName: e.target.value })) }} />
+                    <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewValues(prev => ({ ...prev, newName: e.target.value })) }} disabled={!nameChecked}/>
                 </div>
                 <span className="text-end text-nowrap">Код:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
-                    <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} />
+                    <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} disabled={!codeChecked}/>
                 </div>
                 <span className="text-end text-nowrap">Соответствие с ДСП:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={dspChecked} onChange={() => { setChecked(prev => ({ ...prev, dspChecked: !dspChecked })) }} />
-                    <ComboBox value={newDSP} items={mList} onChange={(_, value: string) => { setNewValues(prev => ({ ...prev, newDSP: value })) }} />
+                    <ComboBox value={newDSP} items={mList} onChange={(_, value: string) => { setNewValues(prev => ({ ...prev, newDSP: value })) }} disabled={!dspChecked}/>
                 </div>
             </div>
             <div className="editmaterial-buttons-container">

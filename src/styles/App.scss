@@ -19,6 +19,9 @@ body{
   background-color: rgb(233, 233, 233) !important;
   height: 100%;
 }
+#root{
+  height: 100%;
+}
 body:has(dialog[open]) {
   overflow: hidden;
 }

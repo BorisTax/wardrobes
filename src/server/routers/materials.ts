@@ -9,6 +9,7 @@ import { MyRequest, UserRoles } from '../types/server.js';
 import { addEdge, deleteEdge, getEdges, updateEdge } from './materials/edges.js';
 import { addZaglushka, deleteZaglushka, getZaglushkas, updateZaglushka } from './materials/zaglushka.js';
 import { addBrush, deleteBrush, getBrushes, updateBrush } from './materials/brush.js';
+import { addTrempel, deleteTrempel, getTrempels, updateTrempel } from './materials/trempel.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -155,9 +156,38 @@ router.post("/brush", async (req: MyRequest, res) => {
   res.status(status).json(result);
 });
 
-router.put("/brush", async (req: MyRequest, res) => {
+router.put("/trempel", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, newName, code } = req.body
-  const result = await updateBrush({ name, newName, code });
+  const result = await updateTrempel({ name, newName, code });
+  res.status(result.status).json(result);
+});
+
+router.get("/trempel", async (req, res) => {
+  const result = await getTrempels();
+  if (!result.success) return res.json(result)
+  res.status(result.status).json(result);
+});
+router.delete("/trempel", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name } = req.body
+  let result
+  result = await deleteTrempel(name);
+  const status = result.success ? 200 : 404
+  res.status(status).json(result);  
+});
+
+router.post("/trempel", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name, code } = req.body
+  const result = await addTrempel({ name, code });
+  const status = result.success ? 201 : 409
+  res.status(status).json(result);
+});
+
+router.put("/trempel", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name, newName, code } = req.body
+  const result = await updateTrempel({ name, newName, code });
   res.status(result.status).json(result);
 });

@@ -4,15 +4,23 @@ import FasadState from "../classes/FasadState"
 import { getFasadState, newFasadFromState } from "./fasades"
 import { Division, FasadMaterial } from "../types/enums"
 import Fasad from "../classes/Fasad"
+import { CONSOLE_TYPE } from "../server/types/wardrobe"
 
 export const WardTypes: Map<string, string> = new Map()
 WardTypes.set("ШКАФ", WardType.WARDROBE)
 WardTypes.set("СИСТЕМА", WardType.SYSTEM)
 
-
 export const WardTypesCaptions: Map<string, string> = new Map()
 WardTypesCaptions.set(WardType.WARDROBE, "ШКАФ")
 WardTypesCaptions.set(WardType.SYSTEM, "СИСТЕМА")
+
+export const ConsoleTypes: Map<string, string> = new Map()
+ConsoleTypes.set("Прямая", CONSOLE_TYPE.STANDART)
+ConsoleTypes.set("Радиусная", CONSOLE_TYPE.RADIAL)
+
+export const ConsoleTypesCaptions: Map<string, string> = new Map()
+ConsoleTypesCaptions.set(CONSOLE_TYPE.STANDART, "Прямая")
+ConsoleTypesCaptions.set(CONSOLE_TYPE.RADIAL, "Радиусная")
 
 export function getFasadWidth(wardWidth: number, fasadCount: number, wardType: WardType, profileType: ProfileType): number {
     let offset: number

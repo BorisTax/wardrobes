@@ -1,4 +1,4 @@
-import { Brush, Edge, ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from "./materials"
+import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
 import { PriceListItem, Results, Token, User } from "./server"
 import { NewTemplate, Template } from "./templates"
 interface IUserAbstractService {
@@ -11,7 +11,7 @@ interface IUserAbstractService {
     registerUser: (user: User) => Promise<Results>
     deleteUser: (user: User) => Promise<Results>
 }
-interface IMaterialAbstractService {
+export interface IMaterialService {
     getExtMaterials: () => Promise<Results>
     addExtMaterial: ({ }: ExtMaterial) => Promise<Results>
     updateExtMaterial: ({ }: ExtNewMaterial) => Promise<Results>
@@ -20,18 +20,12 @@ interface IMaterialAbstractService {
     addProfile: ({ }: Profile) => Promise<Results>
     deleteProfile: (name: string, type: string) => Promise<Results>
     updateProfile: ({ }: NewProfile) => Promise<Results>
-    getEdges: () => Promise<Results>
-    addEdge: ({ }: Edge) => Promise<Results>
-    deleteEdge: (name: string) => Promise<Results>
-    updateEdge: ({ }: NewEdge) => Promise<Results>
-    getZaglushkas: () => Promise<Results>
-    addZaglushka: ({ }: Zaglushka) => Promise<Results>
-    deleteZaglushka: (name: string) => Promise<Results>
-    updateZaglushka: ({ }: NewZaglushka) => Promise<Results>
-    getBrushes: () => Promise<Results>
-    addBrush: ({ }: Brush) => Promise<Results>
-    deleteBrush: (name: string) => Promise<Results>
-    updateBrush: ({ }: NewBrush) => Promise<Results>
+}
+export interface IMaterialExtService<T> {
+    getExtData: () => Promise<Results>
+    addExtData: ({ }: T) => Promise<Results>
+    deleteExtData: (name: string) => Promise<Results>
+    updateExtData: ({ }: T & {newName: string}) => Promise<Results>
 }
 interface ITemplateAbstractService {
     getTemplates: (table: string) => Promise<Results>
@@ -44,11 +38,12 @@ interface IPriceAbstractService {
     updatePriceList: (item: PriceListItem) => Promise<Results>
 }
 
-export interface IMaterialServiceProvider extends IMaterialAbstractService {
+export interface IMaterialServiceProvider extends IMaterialService {
     dbFile: string
 }
-export interface IMaterialService extends IMaterialAbstractService {
-    provider: IMaterialServiceProvider
+export interface IMaterialExtServiceProvider<T> {
+    service: IMaterialExtService<T>
+    dbFile: string
 }
 export interface ITemplateServiceProvider extends ITemplateAbstractService {
     dbFile: string

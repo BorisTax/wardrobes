@@ -6,30 +6,23 @@ import { editMaterialDialogAtom, editPriceDialogAtom, settingsDialogAtom, showEd
 import MenuSeparator from "./MenuSeparator"
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { downloadDatabaseAtom } from "../atoms/database"
+import { Link } from "react-router-dom"
 export default function Header() {
   const user = useAtomValue(userAtom)
   const editMaterialDialog = useAtomValue(editMaterialDialogAtom)
   const editPriceDialog = useAtomValue(editPriceDialogAtom)
-  const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
-  const showSchemaDialog = useSetAtom(showSchemaDialogAtom)
+
   const showUserListDialog = useSetAtom(showEditUsersDialogAtom)
   const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   const settingsDialog = useAtomValue(settingsDialogAtom)
   return <div className="header">
+      <Link to="">Главная</Link>
     <div className="file-buttons-bar">
-      <ImageButton title="Настройки" icon="settingsButton" onClick={() => { settingsDialog?.current?.showModal() }} />
       {isEditorAtLeast(user.role) ?
         <>
           <MenuSeparator />
           <ImageButton title="База материалов" icon="editMaterials" onClick={() => { editMaterialDialog?.current?.showModal() }} />
           <ImageButton title="Редактор спецификации" icon="editPrice" onClick={() => { editPriceDialog?.current?.showModal() }} />
-        </>
-        : <></>}
-      {isClientAtLeast(user.role) ?
-        <>
-          <MenuSeparator />
-          <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
-          <ImageButton title="Cхема" icon="schemaButton" onClick={() => { showSchemaDialog() }} />
         </>
         : <></>}
       {isAdminAtLeast(user.role) ?

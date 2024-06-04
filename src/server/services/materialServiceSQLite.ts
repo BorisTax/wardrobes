@@ -1,9 +1,9 @@
 import { Brush, Edge, ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from '../types/materials.js';
 import { Results } from '../types/server.js';
-import { IMaterialServiceProvider } from '../types/services.js';
+import { IMaterialService, IMaterialServiceProvider } from '../types/services.js';
 import { dataBaseQuery } from '../functions/other.js';
 import messages from '../messages.js';
-export default class MaterialServiceSQLite implements IMaterialServiceProvider {
+export default class MaterialServiceSQLite implements IMaterialService {
     dbFile: string;
     constructor(dbFile: string) {
         this.dbFile = dbFile
@@ -35,42 +35,6 @@ export default class MaterialServiceSQLite implements IMaterialServiceProvider {
     }
     async updateProfile({ newName, code, type, name, brush }: NewProfile) {
         return dataBaseQuery(this.dbFile, getProfileQuery({ newName, code, name, type, brush }), {successStatusCode: 200, successMessage: messages.PROFILE_UPDATED})
-    }
-    async getEdges(): Promise<Results> {
-        return dataBaseQuery(this.dbFile, `select * from 'edge'`, {successStatusCode: 200})
-    }
-    async addEdge({ name, dsp, code }: Edge) {
-        return dataBaseQuery(this.dbFile, `insert into edge (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.EDGE_ADDED})
-    }
-    async deleteEdge(name: string) {
-        return dataBaseQuery(this.dbFile, `DELETE FROM edge WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.EDGE_DELETED})
-    }
-    async updateEdge({ newName, dsp, code, name }: NewEdge) {
-        return dataBaseQuery(this.dbFile, getEdgeQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.EDGE_UPDATED})
-    }
-    async getZaglushkas(): Promise<Results> {
-        return dataBaseQuery(this.dbFile, `select * from 'zaglushka'`, {successStatusCode: 200})
-    }
-    async addZaglushka({ name, dsp, code }: Zaglushka) {
-        return dataBaseQuery(this.dbFile, `insert into zaglushka (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.ZAGLUSHKA_ADDED})
-    }
-    async deleteZaglushka(name: string) {
-        return dataBaseQuery(this.dbFile, `DELETE FROM zaglushka WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_DELETED})
-    }
-    async updateZaglushka({ newName, dsp, code, name }: NewZaglushka) {
-        return dataBaseQuery(this.dbFile, getZaglushkaQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_UPDATED})
-    }
-    async getBrushes(): Promise<Results> {
-        return dataBaseQuery(this.dbFile, `select * from 'brush'`, {successStatusCode: 200})
-    }
-    async addBrush({ name, code }: Brush) {
-        return dataBaseQuery(this.dbFile, `insert into brush (name, code) values('${name}', '${code}');`, {successStatusCode: 201, successMessage: messages.BRUSH_ADDED})
-    }
-    async deleteBrush(name: string) {
-        return dataBaseQuery(this.dbFile, `DELETE FROM brush WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.BRUSH_DELETED})
-    }
-    async updateBrush({ newName, code, name }: NewBrush) {
-        return dataBaseQuery(this.dbFile, getBrushQuery({ newName, code, name }), {successStatusCode: 200, successMessage: messages.BRUSH_UPDATED})
     }
 }
 

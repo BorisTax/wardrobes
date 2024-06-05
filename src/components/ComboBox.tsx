@@ -5,9 +5,10 @@ export type ComboBoxProps = {
     title?: string
     disabled?: boolean
     size?: number
+    styles?: {}
 }
 
-export default function ComboBox(props: ComboBoxProps = { value: "", items: [], disabled: false, title: "", size: 1 }) {
+export default function ComboBox(props: ComboBoxProps = { value: "", items: [], disabled: false, title: "", size: 1, styles: {} }) {
     const items: number[] | string[] = props.items instanceof Map ? [...props.items.keys()] : props.items
     let value = props.value
     if (props.items instanceof Map) {
@@ -23,9 +24,10 @@ export default function ComboBox(props: ComboBoxProps = { value: "", items: [], 
     )
     return (
         <>
-            {props.title ? <span className="text-end text-nowrap">{props.title}</span> : <></>}
+            {props.title ? <span className="text-end text-nowrap" style={{ ...props.styles }}>{props.title}</span> : <></>}
             <select size={!props.size ? 1 : props.size}
                 value={value}
+                style={{ ...props.styles }}
                 disabled={props.disabled}
                 onClick={(e) => { e.stopPropagation() }}
                 onChange={(e) => {

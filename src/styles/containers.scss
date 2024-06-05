@@ -1,6 +1,8 @@
 @import "./App.scss";
 
 .header {
+  top: 0px;
+  position: sticky;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;

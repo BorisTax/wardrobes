@@ -50,6 +50,7 @@ export enum TableFields {
     DSP = 'dsp',
     CAPTION = 'caption',
     ID = 'id',
+    COEF = 'coef',
     PRICE = 'price',
     MARKUP = 'markup',
     TABLE = 'table',
@@ -59,6 +60,7 @@ export type PriceListItem = {
     name: string
     caption?: string
     units?: string
+    coef?: number
     price?: number
     id?: string
     code?: string

@@ -1,13 +1,13 @@
 import { Getter, Setter, atom } from 'jotai';
 import { AppData, AppState, HistoryState, SetAtomComfirm, WardType } from "../types/app";
 import { createAppState, getAppDataFromState, getAppState, getFasadHeight, getFasadWidth, getInitialAppState } from "../functions/wardrobe";
-import { Profile } from "../server/types/materials";
+import { Profile } from "../types/materials";
 import Fasad from "../classes/Fasad";
 import { trySetHeight, trySetWidth } from "../functions/fasades";
 import { openFile, readFile, saveState } from '../functions/file';
 import { materialListAtom, setInitialMaterials } from './materials/materials';
 import { FasadMaterial } from '../types/enums';
-import { calculateSpecificationsAtom } from './specification';
+import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
 
@@ -24,7 +24,7 @@ export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state)
     localStorage.setItem('appState', JSON.stringify(state))
     if (useHistory) set(appAtom, { previous: app, state, next: null });
     else set(appAtom, { ...app, state })
-    set(calculateSpecificationsAtom)
+    set(calculateCombiSpecificationsAtom)
 })
 export const saveToStorageAtom = atom(null, (get, set) => {
     const app = get(appAtom)

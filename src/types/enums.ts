@@ -42,7 +42,31 @@ export enum SpecificationItem {
     Roliki = "Roliki",
     RolikiBavaria = "RolikiBavaria",
     Karton = "Karton",
-    Skotch = "Skotch"
+    Skotch = "Skotch",
+    DSP = "DSP",
+    DVP = "DVP",
+    Kromka2 = "Kromka2",
+    Kromka05 = "Kromka05",
+    Glue = "Glue",
+    Leg = "Leg",
+    Confirmat = "Confirmat",
+    ZagConfirmat = "ZagConfirmat",
+    ZagMinifix = "ZagMinifix",
+    Minifix = "Minifix",
+    Nails = "Nails",
+    Planka = "Planka",
+    Trempel = "Trempel",
+    Trempel250 = "Trempel250",
+    Trempel300 = "Trempel300",
+    Truba = "Truba",
+    Flanec = "Flanec",
+    Samorez16 = "Samorez16",
+    StyagkaM6 = "StyagkaM6",
+    NapravTop = "NapravTop",
+    NapravBottom = "NapravBottom",
+    Stopor = "Stopor",
+    ConfKluch = "ConfKluch",
+    Box = "Box",
 }
 
 export enum MaterialGroup {
@@ -58,4 +82,24 @@ export enum MAT_PURPOSE {
     FASAD = 'fasad',
     CORPUS = 'corpus',
     BOTH = 'both'
+}
+export enum SERVER_EVENTS {
+    LOGOUT = "LOGOUT",
+    UPDATE_ACTIVE_USERS = "UPDATE_ACTIVE_USERS"
+}
+export enum TEMPLATE_TABLES {
+    FASAD = "fasad"
+}
+
+export enum DetailNames {
+    WARDROBE_ROOF = 'WARDROBE_ROOF',
+    WARDROBE_STAND = 'WARDROBE_STAND',
+    WARDROBE_INNER_STAND = 'WARDROBE_INNER_STAND',
+    WARDROBE_SHELF = 'WARDROBE_SHELF',
+    WARDROBE_SHELFPLAT = 'WARDROBE_SHELFPLAT',
+    WARDROBE_PILLAR = 'WARDROBE_PILLAR'
+}
+
+export enum WARDROBE_KIND {
+    STANDART = 'STANDART'
 }

@@ -1,6 +1,6 @@
-import { NewZaglushka, Zaglushka } from '../../types/materials.js';
-import { Results } from '../../types/server.js';
-import { IMaterialExtService } from '../../types/services.js';
+import { NewZaglushka, Zaglushka } from '../../../types/materials.js';
+import { Result, Results } from '../../../types/server.js';
+import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
 export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglushka> {
@@ -8,16 +8,16 @@ export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglus
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
-    async getExtData(): Promise<Results> {
+    async getExtData(): Promise<Result<Zaglushka[]>> {
         return dataBaseQuery(this.dbFile, `select * from 'zaglushka'`, {successStatusCode: 200})
     }
-    async addExtData({ name, dsp, code }: Zaglushka) {
+    async addExtData({ name, dsp, code }: Zaglushka): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into zaglushka (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.ZAGLUSHKA_ADDED})
     }
-    async deleteExtData(name: string) {
+    async deleteExtData(name: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM zaglushka WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_DELETED})
     }
-    async updateExtData({ newName, dsp, code, name }: NewZaglushka) {
+    async updateExtData({ newName, dsp, code, name }: NewZaglushka): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, getZaglushkaQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_UPDATED})
     }
 }

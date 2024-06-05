@@ -1,5 +1,5 @@
 import messages from '../../messages.js'
-import { Trempel } from '../../types/materials.js';
+import { Trempel } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import TrempelServiceSQLite from '../../services/extServices/trempelServiceSQLite.js';
 import { MaterialExtService } from '../../services/materialExtService.js';

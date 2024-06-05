@@ -1,6 +1,6 @@
 import messages from '../../messages.js'
 import { MaterialService } from '../../services/materialService.js';
-import { Zaglushka, NewZaglushka } from '../../types/materials.js';
+import { Zaglushka, NewZaglushka } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
 import BrushServiceSQLite from '../../services/extServices/brushServiceSQLite.js';

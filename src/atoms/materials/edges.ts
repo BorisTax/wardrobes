@@ -1,8 +1,8 @@
 import { atom } from "jotai";
-import { Edge } from "../../server/types/materials";
+import { Edge } from "../../types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
-import { TableFields } from "../../server/types/server";
+import { TableFields } from "../../types/server";
 import { AtomCallbackResult } from "../../types/atoms";
 
 export const edgeListAtom = atom<Edge[]>([])

@@ -5,7 +5,7 @@ import useConfirm from "../../custom-hooks/useConfirm"
 import ImageButton from "../ImageButton"
 import ComboBox from "../ComboBox"
 import { UserRolesCaptions, allUsersAtom, createUserAtom } from "../../atoms/users"
-import { UserRoles } from "../../server/types/server"
+import { UserRoles } from "../../types/server"
 import { rusMessages } from "../../functions/messages"
 import { EditDialogProps } from "./EditMaterialDialog"
 type DialogProps = {

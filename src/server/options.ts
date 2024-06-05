@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { UserService } from './services/userService.js'
-import { MyRequest, RequestBody } from './types/server.js'
+import { MyRequest, RequestBody } from '../types/server.js'
 import { Response, NextFunction } from "express"
 import UserServiceSQLite from './services/userServiceSQLite.js'
 import MaterialServiceSQLite from './services/materialServiceSQLite.js'

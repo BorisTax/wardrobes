@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { specificationDialogAtom } from "../../atoms/dialogs"
 import { priceListAtom } from "../../atoms/prices"
-import { PriceListItem } from "../../server/types/server"
+import { PriceListItem } from "../../types/server"
 import { UnitCaptions } from "../../functions/materials"
-import { specificationAtom } from "../../atoms/specification"
+import { specificationCombiAtom } from "../../atoms/specification"
 import { SpecificationItem } from "../../types/enums"
 import ImageButton from "../ImageButton"
 import { saveToExcelAtom } from "../../atoms/export"
@@ -17,7 +17,7 @@ export default function SpecificationDialog() {
     const { role } = useAtomValue(userAtom)
     const saveToExcel = useSetAtom(saveToExcelAtom)
     const [priceList] = useAtom(priceListAtom)
-    const [specifications] = useAtom(specificationAtom)
+    const [specifications] = useAtom(specificationCombiAtom)
     const [fasadIndex, setFasadIndex] = useState(0)
     const [showAll, setShowAll] = useState(false)
     const [, setSpecificationDialogRef] = useAtom(specificationDialogAtom)

@@ -3,9 +3,9 @@ import bcrypt from "bcrypt";
 import sqlite3 from "sqlite3";
 import messages from '../messages.js';
 import { Response } from "express"
-import { MyRequest, Result, Results, UserRoles } from '../types/server.js';
+import { MyRequest, Result, Results, UserRoles } from '../../types/server.js';
 
-export function dataBaseQuery(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Results> {
+export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
@@ -18,7 +18,7 @@ export function dataBaseQuery(dbFile: string, query: string, { successStatusCode
                     db.close(); 
                     return
                 }
-                else { resolve({ success: true, status: successStatusCode, data: rows, message: successMessage }) }
+                else { resolve({ success: true, status: successStatusCode, data: rows as T, message: successMessage }) }
                 db.close()
             });
         });

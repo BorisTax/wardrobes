@@ -1,15 +1,10 @@
 import messages from '../messages.js'
-import path from 'path'
-import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied, incorrectData, noExistData } from '../functions/other.js';
-import { MyRequest, PriceListItem, UserRoles } from '../types/server.js';
+import { MyRequest, PriceListItem, UserRoles } from '../../types/server.js';
 import { priceServiceProvider } from '../options.js';
 import { PriceService } from '../services/priceService.js';
 import { isClientAtLeast, isEditorAtLeast } from '../functions/user.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 export default router
@@ -22,8 +17,8 @@ router.get("/pricelist", async (req: MyRequest, res) => {
 
 router.put("/pricelist", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { name, caption, price, code, id, markup } = req.body
-  const result = await updatePriceList({ name, caption, price, code, id, markup });
+  const { name, caption, coef, price, code, id, markup } = req.body
+  const result = await updatePriceList({ name, caption, coef, price, code, id, markup });
   res.status(result.status).json(result);
 });
 
@@ -32,14 +27,13 @@ export async function getPriceList() {
   return await priceService.getPriceList()
 }
 
-export async function updatePriceList({ name, caption, price, code, id, markup }: PriceListItem) {
+export async function updatePriceList({ name, caption, coef, price, code, id, markup }: PriceListItem) {
   const priceService = new PriceService(priceServiceProvider)
   const result = await priceService.getPriceList()
-  
   if (!result.success) return result
   const priceList = result.data
   if (markup && isNaN(+markup)) return incorrectData(messages.PRICELIST_MARKUP_INCORRECT)
   if (price && isNaN(+price)) return incorrectData(messages.PRICELIST_PRICE_INCORRECT)
   if (!(priceList as PriceListItem[]).find(m => m.name === name)) return noExistData(messages.PRICELIST_NAME_NO_EXIST)
-  return await priceService.updatePriceList({ name, caption, price, code, id, markup })
+  return await priceService.updatePriceList({ name, caption, coef, price, code, id, markup })
 }

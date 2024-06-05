@@ -1,6 +1,6 @@
-import { Brush, Edge, ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from '../types/materials.js';
-import { Results } from '../types/server.js';
-import { IMaterialService, IMaterialServiceProvider } from '../types/services.js';
+import { Brush, Edge, ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from '../../types/materials.js';
+import { Result, Results } from '../../types/server.js';
+import { IMaterialService, IMaterialServiceProvider } from '../../types/services.js';
 import { dataBaseQuery } from '../functions/other.js';
 import messages from '../messages.js';
 export default class MaterialServiceSQLite implements IMaterialService {
@@ -8,32 +8,32 @@ export default class MaterialServiceSQLite implements IMaterialService {
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
-    async getExtMaterials(): Promise<Results> {
+    async getExtMaterials(): Promise<Result<ExtMaterial[]>> {
         return dataBaseQuery(this.dbFile, "select * from 'extmaterials' order by material, name;", {successStatusCode: 200})
     }
 
-    async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial): Promise<Results> {
+    async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into extmaterials (name, material, image, code, purpose) values('${name}', '${material}', '${image}', '${code}', '${purpose}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
     }
 
-    async updateExtMaterial({ name, material, newName, image, code, purpose }: ExtNewMaterial): Promise<Results> {
+    async updateExtMaterial({ name, material, newName, image, code, purpose }: ExtNewMaterial): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, getQuery({ newName, image, code, name, material, purpose }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
     }
 
-    async deleteExtMaterial(name: string, material: string): Promise<Results> {
+    async deleteExtMaterial(name: string, material: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM extmaterials WHERE name='${name}' and material='${material}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
     }
 
-    async getProfiles(): Promise<Results> {
+    async getProfiles(): Promise<Result<Profile[]>> {
         return dataBaseQuery(this.dbFile, `select * from 'profileColors'`, {successStatusCode: 200})
     }
-    async addProfile({ name, code, type, brush }: Profile) {
+    async addProfile({ name, code, type, brush }: Profile): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into profilecolors (name, type, code, brush) values('${name}', '${type}', '${code}', '${brush}');`, {successStatusCode: 201, successMessage: messages.PROFILE_ADDED})
     }
-    async deleteProfile(name: string, type: string) {
+    async deleteProfile(name: string, type: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM profilecolors WHERE name='${name}' and type='${type}';`, {successStatusCode: 200, successMessage: messages.PROFILE_DELETED})
     }
-    async updateProfile({ newName, code, type, name, brush }: NewProfile) {
+    async updateProfile({ newName, code, type, name, brush }: NewProfile): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, getProfileQuery({ newName, code, name, type, brush }), {successStatusCode: 200, successMessage: messages.PROFILE_UPDATED})
     }
 }

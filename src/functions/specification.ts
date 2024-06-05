@@ -1,6 +1,12 @@
 import Fasad from "../classes/Fasad";
 import { Division, FasadMaterial, SpecificationItem } from "../types/enums";
-import { ProfileType } from "../server/types/materials";
+import { ProfileType } from "../types/materials";
+
+export function filterEmptySpecification(spec: Map<SpecificationItem, number>): Map<SpecificationItem, number>{
+    const newSpec = new Map<SpecificationItem, number>()
+    spec.forEach((v, k) => { if (v !== 0) newSpec.set(k, v) })
+    return newSpec
+}
 
 export function getSpecificationPattern(): Map<SpecificationItem, number> {
     const spec = new Map<SpecificationItem, number>()
@@ -8,22 +14,22 @@ export function getSpecificationPattern(): Map<SpecificationItem, number> {
     return spec
 }
 
-export function getTotalSpecification(fasad: Fasad, profileType: ProfileType): Map<SpecificationItem, number> {
-    const spec = combineSpecifications(fasad)
+export function getFasadSpecification(fasad: Fasad, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
+    const spec = combineSpecifications(fasad, coefList)
     if (profileType === ProfileType.STANDART) {
-        const uplot = spec.get(SpecificationItem.Uplot) || 0
-        const uplotSoed = spec.get(SpecificationItem.UplotSoed) || 0
+        const uplot = (spec.get(SpecificationItem.Uplot) || 0) * (coefList.get(SpecificationItem.Uplot) || 1)
+        const uplotSoed = (spec.get(SpecificationItem.UplotSoed) || 0) * (coefList.get(SpecificationItem.UplotSoed) || 1)
         spec.set(SpecificationItem.Uplot, uplot + uplotSoed)
         spec.set(SpecificationItem.UplotSoed, 0)
     }
-    spec.set(SpecificationItem.ProfileSoedStandart, profileType === ProfileType.STANDART ? calcProfileSoed(fasad) : 0)
-    spec.set(SpecificationItem.ProfileVertStandart, profileType === ProfileType.STANDART ? calcProfileVert(fasad) : 0)
-    spec.set(SpecificationItem.ProfileHorTopStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) : 0)
-    spec.set(SpecificationItem.ProfileHorBottomStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) : 0)
-    spec.set(SpecificationItem.ProfileSoedBavaria, profileType === ProfileType.BAVARIA ? calcProfileSoed(fasad) : 0)
-    spec.set(SpecificationItem.ProfileVertBavaria, profileType === ProfileType.BAVARIA ? calcProfileVert(fasad) : 0)
-    spec.set(SpecificationItem.ProfileHorTopBavaria, profileType === ProfileType.BAVARIA ? calcProfileHor(fasad) : 0)
-    spec.set(SpecificationItem.ProfileHorBottomBavaria, profileType === ProfileType.BAVARIA ? calcProfileHor(fasad) : 0)
+    spec.set(SpecificationItem.ProfileSoedStandart, profileType === ProfileType.STANDART ? calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedStandart) || 1) : 0)
+    spec.set(SpecificationItem.ProfileVertStandart, profileType === ProfileType.STANDART ? calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertStandart) || 1) : 0)
+    spec.set(SpecificationItem.ProfileHorTopStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopStandart) || 1) : 0)
+    spec.set(SpecificationItem.ProfileHorBottomStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomStandart) || 0) : 0)
+    spec.set(SpecificationItem.ProfileSoedBavaria, profileType === ProfileType.BAVARIA ? calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedBavaria) || 1) : 0)
+    spec.set(SpecificationItem.ProfileVertBavaria, profileType === ProfileType.BAVARIA ? calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertBavaria) || 1) : 0)
+    spec.set(SpecificationItem.ProfileHorTopBavaria, profileType === ProfileType.BAVARIA ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopBavaria) || 1) : 0)
+    spec.set(SpecificationItem.ProfileHorBottomBavaria, profileType === ProfileType.BAVARIA ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomBavaria) || 1) : 0)
     spec.set(SpecificationItem.Streich, 12)
     spec.set(SpecificationItem.Roliki, profileType === ProfileType.STANDART ? 1 : 0)
     spec.set(SpecificationItem.RolikiBavaria, profileType === ProfileType.BAVARIA ? 1 : 0)
@@ -32,11 +38,11 @@ export function getTotalSpecification(fasad: Fasad, profileType: ProfileType): M
     return spec
 }
 
-function combineSpecifications(fasad: Fasad): Map<SpecificationItem, number> {
+function combineSpecifications(fasad: Fasad, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
     if (fasad.Children.length > 0) {
         const spec: Map<SpecificationItem, number> = getSpecificationPattern()
         fasad.Children.forEach((f: Fasad) => {
-            const s = combineSpecifications(f)
+            const s = combineSpecifications(f, coefList)
             s.forEach((value, key) => {
                 const prev = spec.get(key) || 0
                 spec.set(key, prev + value)
@@ -44,24 +50,24 @@ function combineSpecifications(fasad: Fasad): Map<SpecificationItem, number> {
         })
         return spec
     }
-    return calcSpecification(fasad)
+    return calcSpecification(fasad, coefList)
 }
 
-function calcSpecification(fasad: Fasad): Map<SpecificationItem, number> {
+function calcSpecification(fasad: Fasad, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
     const spec = getSpecificationPattern()
-    spec.set(SpecificationItem.DSP10, calcDSP10(fasad))
-    spec.set(SpecificationItem.Mirror, calcMirror(fasad))
-    spec.set(SpecificationItem.Arakal, calcArakal(fasad))
-    spec.set(SpecificationItem.Hydro, calcHydro(fasad))
-    spec.set(SpecificationItem.Lacobel, calcLacobel(fasad))
-    spec.set(SpecificationItem.Ritrama, calcRitrama(fasad))
-    spec.set(SpecificationItem.Armirovka, calcArmirovka(fasad))
-    spec.set(SpecificationItem.FMPPaper, calcFMPPaper(fasad))
-    spec.set(SpecificationItem.FMPGlass, calcFMPGlass(fasad))
-    spec.set(SpecificationItem.Paint, calcPaint(fasad))
-    spec.set(SpecificationItem.EVA, calcEva(fasad))
-    spec.set(SpecificationItem.Uplot, calcUplotnitel(fasad))
-    spec.set(SpecificationItem.UplotSoed, calcUplotnitelSoed(fasad))
+    spec.set(SpecificationItem.DSP10, calcDSP10(fasad) * (coefList.get(SpecificationItem.DSP10) || 1))
+    spec.set(SpecificationItem.Mirror, calcMirror(fasad) * (coefList.get(SpecificationItem.Mirror) || 1))
+    spec.set(SpecificationItem.Arakal, calcArakal(fasad) * (coefList.get(SpecificationItem.Arakal) || 1))
+    spec.set(SpecificationItem.Hydro, calcHydro(fasad) * (coefList.get(SpecificationItem.Hydro) || 1))
+    spec.set(SpecificationItem.Lacobel, calcLacobel(fasad) * (coefList.get(SpecificationItem.Lacobel) || 1))
+    spec.set(SpecificationItem.Ritrama, calcRitrama(fasad) * (coefList.get(SpecificationItem.Ritrama) || 1))
+    spec.set(SpecificationItem.Armirovka, calcArmirovka(fasad) * (coefList.get(SpecificationItem.Armirovka) || 1))
+    spec.set(SpecificationItem.FMPPaper, calcFMPPaper(fasad) * (coefList.get(SpecificationItem.FMPPaper) || 1))
+    spec.set(SpecificationItem.FMPGlass, calcFMPGlass(fasad) * (coefList.get(SpecificationItem.FMPGlass) || 1))
+    spec.set(SpecificationItem.Paint, calcPaint(fasad) * (coefList.get(SpecificationItem.Paint) || 1))
+    spec.set(SpecificationItem.EVA, calcEva(fasad) * (coefList.get(SpecificationItem.EVA) || 1))
+    spec.set(SpecificationItem.Uplot, calcUplotnitel(fasad) * (coefList.get(SpecificationItem.Uplot) || 1))
+    spec.set(SpecificationItem.UplotSoed, calcUplotnitelSoed(fasad) * (coefList.get(SpecificationItem.UplotSoed) || 1))
     return spec
 }
 

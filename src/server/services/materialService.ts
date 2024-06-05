@@ -1,5 +1,5 @@
-import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "../types/materials"
-import { IMaterialService, IMaterialServiceProvider } from "../types/services"
+import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "../../types/materials"
+import { IMaterialService, IMaterialServiceProvider } from "../../types/services"
 
 export class MaterialService implements IMaterialService {
     provider: IMaterialServiceProvider

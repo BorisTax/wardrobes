@@ -1,3 +1,5 @@
+import { useEffect } from "react"
+
 export type ComboBoxProps = {
     onChange?: (index: number, value: string) => void
     items: number[] | string[] | Map<string, string>
@@ -22,6 +24,10 @@ export default function ComboBox(props: ComboBoxProps = { value: "", items: [], 
             {i}
         </option>
     )
+    useEffect(() => { 
+        const value = props.items instanceof Map ? [...(props.items as Map<string, string>).values()][0] || "" : props.items[0]
+        if (props.onChange) props.onChange(0, value as string)
+    }, [props.items])
     return (
         <>
             {props.title ? <span className="text-end text-nowrap" style={{ ...props.styles }}>{props.title}</span> : <></>}

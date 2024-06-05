@@ -1,4 +1,4 @@
-import { IMaterialExtService, IMaterialExtServiceProvider } from "../types/services"
+import { IMaterialExtService, IMaterialExtServiceProvider } from "../../types/services"
 
 export class MaterialExtService<T> {
     provider: IMaterialExtService<T>

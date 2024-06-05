@@ -1,5 +1,5 @@
-import { ITemplateService, ITemplateServiceProvider } from "../types/services"
-import { NewTemplate, Template } from "../types/templates"
+import { ITemplateService, ITemplateServiceProvider } from "../../types/services"
+import { NewTemplate, Template } from "../../types/templates"
 
 export class TemplateService implements ITemplateService {
     provider: ITemplateServiceProvider

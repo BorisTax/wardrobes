@@ -1,4 +1,4 @@
-import { MAT_PURPOSE } from "../../types/enums"
+import { MAT_PURPOSE } from "./enums"
 
 export type ExtMaterial = {
     name: string

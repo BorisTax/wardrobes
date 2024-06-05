@@ -1,9 +1,9 @@
 import EventEmitter from 'events'
-import { Results, Token, User } from '../types/server.js'
-import { IUserService, IUserServiceProvider } from '../types/services.js'
+import { Result, Results, Token, User } from '../../types/server.js'
+import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
-import { SERVER_EVENTS } from '../types/enums.js'
+import { SERVER_EVENTS } from "../../types/enums.js"
 
 export const activeTokens: { tokenList: Token[] } = { tokenList: [] }
 export const events: Map<string, EventEmitter> = new Map()
@@ -36,7 +36,7 @@ export class UserService implements IUserService {
   constructor(provider: IUserServiceProvider) {
     this.provider = provider
   }
-  async getUsers(): Promise<Results> {
+  async getUsers(): Promise<Result<User[]>> {
     return await this.provider.getUsers()
   }
   
@@ -101,7 +101,7 @@ export class UserService implements IUserService {
   async isUserNameExist(name: string) {
     if (!name) return { success: false, status: 400, message: messages.INVALID_USER_DATA }
     const result = await this.getUsers()
-    if (!result.success) return result
+    if (!result.success) return { ...result, data: null }
     const userList = result.data || []
     const user = (userList as User[]).find(u => u.name === name)
     if (user) return { success: false, status: 409, message: messages.USER_NAME_EXIST }

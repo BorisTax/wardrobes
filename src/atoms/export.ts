@@ -1,14 +1,14 @@
 import { atom } from "jotai";
-import { specificationAtom } from "./specification";
+import { specificationCombiAtom } from "./specification";
 import writeToExcel from 'write-excel-file';
 import { priceListAtom } from "./prices";
 import { SpecificationItem } from "../types/enums";
 import { UnitCaptions } from "../functions/materials";
-import { PriceListItem } from "../server/types/server";
+import { PriceListItem } from "../types/server";
 import { appDataAtom } from "./app";
 
 export const saveToExcelAtom = atom(null, async (get, set, index: number) => {
-    const specifications = get(specificationAtom)
+    const specifications = get(specificationCombiAtom)
     const { order } = get(appDataAtom)
     const orderCaption = order.trim() ? order.trim() + " " : ""
     const priceList = get(priceListAtom)

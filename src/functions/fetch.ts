@@ -13,7 +13,7 @@ export async function fetchGetData(url: string): Promise<FetchResult<[] | string
         return { success: false }
     }
 }
-export async function fetchData(url: string, method: string, body: string): Promise<FetchResult<[]>> {
+export async function fetchData<T>(url: string, method: string, body: string): Promise<FetchResult<T>> {
     try {
         let status: number
         const result = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body }).then(r => { status = r.status; return r.json() })

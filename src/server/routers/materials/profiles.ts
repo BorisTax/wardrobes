@@ -1,6 +1,6 @@
 import messages from '../../messages.js'
 import { MaterialService } from '../../services/materialService.js';
-import { NewProfile, Profile } from '../../types/materials.js';
+import { NewProfile, Profile } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import MaterialServiceSQLite from '../../services/materialServiceSQLite.js';
 

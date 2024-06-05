@@ -1,6 +1,6 @@
-import { Trempel } from '../../types/materials.js';
-import { Results } from '../../types/server.js';
-import { IMaterialExtService } from '../../types/services.js';
+import { Trempel } from '../../../types/materials.js';
+import { Result, Results } from '../../../types/server.js';
+import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
 export default class TrempelServiceSQLite implements IMaterialExtService<Trempel> {
@@ -8,16 +8,16 @@ export default class TrempelServiceSQLite implements IMaterialExtService<Trempel
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
-    async getExtData(): Promise<Results> {
+    async getExtData(): Promise<Result<Trempel[]>> {
         return dataBaseQuery(this.dbFile, `select * from 'trempel'`, {successStatusCode: 200})
     }
-    async addExtData({ name, code }: Trempel) {
+    async addExtData({ name, code }: Trempel): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into trempel (name, code) values('${name}', '${code}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
     }
-    async deleteExtData(name: string) {
+    async deleteExtData(name: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM trempel WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
     }
-    async updateExtData({ newName, code, name }: Trempel & {newName: string}) {
+    async updateExtData({ newName, code, name }: Trempel & {newName: string}): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, getQuery({ newName, code, name }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
     }
 }

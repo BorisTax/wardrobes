@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import ComboBox from "../../ComboBox"
-import { Brush } from "../../../server/types/materials"
+import { Brush } from "../../../types/materials"
 import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
 import Button from "../../Button"

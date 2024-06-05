@@ -1,5 +1,5 @@
-import { PriceListItem, Results } from '../types/server.js'
-import { IPriceService, IPriceServiceProvider} from '../types/services.js'
+import { PriceListItem, Result, Results } from '../../types/server.js'
+import { IPriceService, IPriceServiceProvider} from '../../types/services.js'
 
 
 export class PriceService implements IPriceService {
@@ -7,10 +7,10 @@ export class PriceService implements IPriceService {
   constructor(provider: IPriceServiceProvider) {
     this.provider = provider
   }
-  async getPriceList(): Promise<Results> {
+  async getPriceList(): Promise<Result<PriceListItem[]>> {
     return await this.provider.getPriceList()
   }
-  async updatePriceList(item: PriceListItem) {
+  async updatePriceList(item: PriceListItem): Promise<Result<null>> {
     return await this.provider.updatePriceList(item)
   }
 

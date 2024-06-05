@@ -1,10 +1,10 @@
 import { AppData, AppState, WardType } from "../types/app"
-import { Profile, ProfileType } from "../server/types/materials"
+import { Profile, ProfileType } from "../types/materials"
 import FasadState from "../classes/FasadState"
 import { getFasadState, newFasadFromState } from "./fasades"
 import { Division, FasadMaterial } from "../types/enums"
 import Fasad from "../classes/Fasad"
-import { CONSOLE_TYPE } from "../server/types/wardrobe"
+import { CONSOLE_TYPE, WARDROBE_TYPE } from "../types/wardrobe"
 
 export const WardTypes: Map<string, string> = new Map()
 WardTypes.set("ШКАФ", WardType.WARDROBE)
@@ -22,14 +22,14 @@ export const ConsoleTypesCaptions: Map<string, string> = new Map()
 ConsoleTypesCaptions.set(CONSOLE_TYPE.STANDART, "Прямая")
 ConsoleTypesCaptions.set(CONSOLE_TYPE.RADIAL, "Радиусная")
 
-export function getFasadWidth(wardWidth: number, fasadCount: number, wardType: WardType, profileType: ProfileType): number {
+export function getFasadWidth(wardWidth: number, fasadCount: number, wardType: WardType | WARDROBE_TYPE, profileType: ProfileType): number {
     let offset: number
     if (wardType === WardType.WARDROBE) {
         offset = profileType === ProfileType.STANDART ? [94, 108, 120, 135, 144][fasadCount - 2] : 47
     } else offset = profileType === ProfileType.STANDART ? [61, 75, 87, 104, 112][fasadCount - 2] : 15
     return Math.round((wardWidth - offset) / fasadCount) + 3
 }
-export function getFasadHeight(wardHeight: number, wardType: WardType, profileType: ProfileType): number {
+export function getFasadHeight(wardHeight: number, wardType: WardType | WARDROBE_TYPE, profileType: ProfileType): number {
     let offset: number
     if (wardType === WardType.WARDROBE) {
         offset = profileType === ProfileType.STANDART ? 157 : 103

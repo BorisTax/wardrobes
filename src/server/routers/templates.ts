@@ -3,11 +3,11 @@ import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/other.js';
-import { MyRequest, UserRoles } from '../types/server.js';
+import { MyRequest, UserRoles } from '../../types/server.js';
 import { templateServiceProvider } from '../options.js';
 import { isClientAtLeast, isEditorAtLeast } from '../functions/user.js';
 import { TemplateService } from '../services/templateService.js';
-import { NewTemplate, Template } from '../types/templates.js';
+import { NewTemplate, Template } from '../../types/templates.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

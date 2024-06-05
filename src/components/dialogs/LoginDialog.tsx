@@ -3,7 +3,7 @@ import { useSetAtom } from "jotai"
 import { setUserAtom } from "../../atoms/users"
 import { loginDialogAtom } from "../../atoms/dialogs"
 import onFetch from "../../functions/fetch"
-import { Results } from "../../server/types/server"
+import { Results } from "../../types/server"
 import CheckBox from "../CheckBox"
 
 export default function LoginDialog() {

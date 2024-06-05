@@ -1,5 +1,5 @@
-import { DetailNames } from "../types/enums";
-import { IWardrobe, WardrobeData } from "../types/wardrobe";
+import { DetailNames } from "../../types/enums";
+import { IWardrobe, WardrobeData } from "../../types/wardrobe";
 import { getKarton, getLegs, getNails, getSamorez16 } from "./functions";
 import { DetailNamesCaptions } from "./names";
 import { WardrobeDetail } from "./types";
@@ -148,7 +148,7 @@ export default class StandartWardrobe implements IWardrobe {
         this.shelfPlat = (this.width - this.innerStandCount * 16 - 32 - this.shelf * found?.blocks) / foundPlat?.blocks
         if (this.shelfPlatCount > 0) this.details.push({ name: DetailNamesCaptions[DetailNames.WARDROBE_SHELFPLAT], length: this.shelfPlat, width: this.depth - this.offset, count: this.shelfPlatCount })
         const foundPillar = sizesPillar.findLast((s => s.width > this.width)) || { width: 0, countLess: 0, countGreater: 0 }
-        this.pillarCount = foundPillar.width
+        this.pillarCount = (this.height < 2200 ? foundPillar.countLess : foundPillar.countGreater)
         this.pillar = this.pillarCount ? 282 : 0
         if (this.pillarCount > 0) this.details.push({ name: DetailNamesCaptions[DetailNames.WARDROBE_PILLAR], length: this.pillar, width: this.depth - this.offset, count: this.pillarCount })
     }

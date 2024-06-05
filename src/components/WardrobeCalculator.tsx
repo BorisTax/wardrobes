@@ -1,16 +1,18 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import ComboBox from "./ComboBox"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
-import { CONSOLE_TYPE, WARDROBE_TYPE, WardrobeData } from "../server/types/wardrobe"
+import { CONSOLE_TYPE, FasadesData, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { PropertyType } from "../types/property"
 import { materialListAtom } from "../atoms/materials/materials"
-import { useAtomValue } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { FasadMaterial, MAT_PURPOSE } from "../types/enums"
 import { WardrobeTypes, WardrobeTypesCaptions } from "../server/wardrobes/names"
 import { profileListAtom } from "../atoms/materials/profiles"
 import TextBox from "./TextBox"
 import { ConsoleTypes, ConsoleTypesCaptions } from "../functions/wardrobe"
+import { WARDROBE_KIND } from "../types/enums"
+import { calculateSpecificationsAtom } from "../atoms/specification"
 const numbers = [0, 1, 2, 3, 4, 5, 6]
 const initFasades = {
     dsp: { count: 0, names: [] },
@@ -21,6 +23,7 @@ const initFasades = {
     lacobelGlass: { count: 0, names: [] }
 }
 const initState: WardrobeData = {
+    wardKind: WARDROBE_KIND.STANDART,
     wardType: WARDROBE_TYPE.WARDROBE,
     width: 2400,
     depth: 600,
@@ -42,18 +45,21 @@ const initState: WardrobeData = {
     }
 }
 const styles = { fontStyle: "italic", color: "gray" }
+
 export default function WardrobeCalculator() {
+    const calculate = useSetAtom(calculateSpecificationsAtom)
     const materialList = useAtomValue(materialListAtom)
-    const dspList = materialList.filter(m => m.purpose !== MAT_PURPOSE.FASAD).map(m => m.name)
-    const dsp10List = materialList.filter(m => m.material === FasadMaterial.DSP && m.purpose !== MAT_PURPOSE.CORPUS).map(m => m.name)
-    const mirrorList = materialList.filter(m => m.material === FasadMaterial.MIRROR).map(m => m.name)
-    const fmpList = materialList.filter(m => m.material === FasadMaterial.FMP).map(m => m.name)
-    const sandList = materialList.filter(m => m.material === FasadMaterial.SAND).map(m => m.name)
-    const lacobelList = materialList.filter(m => m.material === FasadMaterial.LACOBEL).map(m => m.name)
-    const lacobelGlassList = materialList.filter(m => m.material === FasadMaterial.LACOBELGLASS).map(m => m.name)
+    const dspList = useMemo(() => materialList.filter(m => m.purpose !== MAT_PURPOSE.FASAD).map(m => m.name), [materialList])
+    const dsp10List = useMemo(() => materialList.filter(m => m.material === FasadMaterial.DSP && m.purpose !== MAT_PURPOSE.CORPUS).map(m => m.name), [materialList])
+    const mirrorList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.MIRROR).map(m => m.name), [materialList])
+    const fmpList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.FMP).map(m => m.name), [materialList])
+    const sandList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.SAND).map(m => m.name), [materialList])
+    const lacobelList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.LACOBEL).map(m => m.name), [materialList])
+    const lacobelGlassList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.LACOBELGLASS).map(m => m.name), [materialList])
     const profileList = useAtomValue(profileListAtom)
-    const profileNames = profileList.map(p => p.name)
-    const [{ wardType, width, depth, height, dspName, fasades, profileName, extComplect }, setState] = useState<WardrobeData>(initState)
+    const profileNames = useMemo(() => profileList.map(p => p.name), [profileList])
+    const [data, setState] = useState<WardrobeData>(initState)
+    const { wardType, width, depth, height, dspName, fasades, profileName, extComplect } = data
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const maxFasades = 6
     return <div>
@@ -125,7 +131,7 @@ export default function WardrobeCalculator() {
                         <TextBox value={extComplect.light} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setState(prev => ({ ...prev, extComplect: { ...prev.extComplect, light: +value } })) }} />
                     </PropertyGrid>
                 </div>
-                
+                <div className="small-button" role="button" onClick={() => { calculate(data) }}>Рассчет</div>
             </div>
         </div>
     </div>

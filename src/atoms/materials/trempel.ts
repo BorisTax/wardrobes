@@ -1,8 +1,8 @@
 import { atom } from "jotai";
-import { Trempel } from "../../server/types/materials";
+import { Trempel } from "../../types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
-import { TableFields } from "../../server/types/server";
+import { TableFields } from "../../types/server";
 import { AtomCallbackResult } from "../../types/atoms";
 
 export const trempelListAtom = atom<Trempel[]>([])

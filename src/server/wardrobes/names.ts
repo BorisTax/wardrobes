@@ -1,5 +1,5 @@
-import { DetailNames } from "../types/enums";
-import { WARDROBE_TYPE } from "../types/wardrobe";
+import { DetailNames } from "../../types/enums";
+import { WARDROBE_TYPE } from "../../types/wardrobe";
 
 export const DetailNamesCaptions = {
     [DetailNames.WARDROBE_ROOF]: "Крыша-дно",

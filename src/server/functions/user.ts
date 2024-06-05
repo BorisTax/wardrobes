@@ -1,4 +1,4 @@
-import { UserRoles } from "../types/server.js";
+import { UserRoles } from "../../types/server.js";
 export function isClientAtLeast(role: UserRoles): boolean {
     return isManagerAtLeast(role) || role === UserRoles.CLIENT
 }

@@ -1,5 +1,5 @@
 import messages from '../../messages.js'
-import { Brush, NewBrush } from '../../types/materials.js';
+import { Brush, NewBrush } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import BrushServiceSQLite from '../../services/extServices/brushServiceSQLite.js';
 import { MaterialExtService } from '../../services/materialExtService.js';

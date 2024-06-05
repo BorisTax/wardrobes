@@ -5,7 +5,7 @@ import { accessDenied } from '../functions/other.js';
 import { isEditorAtLeast } from '../functions/user.js';
 import { addProfile, deleteProfile, getProfiles, updateProfile } from './materials/profiles.js';
 import { addExtMaterial, deleteExtMaterial, getExtMaterials, updateExtMaterial } from './materials/extMaterials.js';
-import { MyRequest, UserRoles } from '../types/server.js';
+import { MyRequest, UserRoles } from '../../types/server.js';
 import { addEdge, deleteEdge, getEdges, updateEdge } from './materials/edges.js';
 import { addZaglushka, deleteZaglushka, getZaglushkas, updateZaglushka } from './materials/zaglushka.js';
 import { addBrush, deleteBrush, getBrushes, updateBrush } from './materials/brush.js';

@@ -1,8 +1,9 @@
 import { atom } from "jotai";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
-import { PriceListItem, TableFields } from "../server/types/server";
+import { PriceListItem, TableFields } from "../types/server";
 import { AtomCallbackResult } from "../types/atoms";
+import { SpecificationItem } from "../types/enums";
 
 export const priceListAtom = atom<PriceListItem[]>([])
 export const activeProfileIndexAtom = atom(0)
@@ -16,12 +17,18 @@ export const loadPriceListAtom = atom(null, async (get, set) => {
     } catch (e) { console.error(e) }
 })
 
+export const coefListAtom = atom<Map<SpecificationItem, number>>((get) => {
+    const coef = new Map()
+    get(priceListAtom).forEach(p => { coef.set(p.name, p.coef) })
+    return coef
+})
 
-export const updatePriceListAtom = atom(null, async (get, set, { name, caption, price, code, id, markup }: PriceListItem, callback: AtomCallbackResult) => {
+export const updatePriceListAtom = atom(null, async (get, set, { name, caption, coef, price, code, id, markup }: PriceListItem, callback: AtomCallbackResult) => {
     const user = get(userAtom)
     const formData: any = {}
     formData[TableFields.NAME] = name
     if (caption !== undefined) formData[TableFields.CAPTION] = caption
+    if (coef !== undefined) formData[TableFields.COEF] = coef
     if (price !== undefined) formData[TableFields.PRICE] = `${price}`
     if (markup !== undefined) formData[TableFields.MARKUP] = `${markup}`
     if (code !== undefined) formData[TableFields.CODE] = code

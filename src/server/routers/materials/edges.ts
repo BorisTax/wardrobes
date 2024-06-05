@@ -2,7 +2,7 @@ import messages from '../../messages.js'
 import { materialsPath } from '../../options.js';
 import EdgeServiceSQLite from '../../services/extServices/edgeServiceSQLite.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
-import { Edge, NewEdge } from '../../types/materials.js';
+import { Edge, NewEdge } from '../../../types/materials.js';
 
 export async function getEdges() {
   const materialService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath))

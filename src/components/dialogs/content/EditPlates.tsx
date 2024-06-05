@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { MATPurpose, MATPurposeCaptions, existMaterial, getFasadMaterial } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
-import { ExtMaterial } from "../../../server/types/materials"
+import { ExtMaterial } from "../../../types/materials"
 import { MAT_PURPOSE, FasadMaterial } from "../../../types/enums"
 import { MaterialCaptions, Materials } from "../../../functions/materials"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials/materials"
@@ -25,6 +25,7 @@ export default function EditPlates(props: EditDialogProps) {
     const [{ nameChecked, codeChecked, imageChecked, purposeChecked }, setChecked] = useState({ nameChecked: false, codeChecked: false, imageChecked: false, purposeChecked: false })
     const purposeEnabled = extMaterials[extMaterialIndex]?.material === FasadMaterial.DSP
     const [imageFileName, setImageFileName] = useState("???")
+    const extMaterialNames = useMemo(() => extMaterials.map((m: ExtMaterial) => m.name), [extMaterials])
     useMemo(() => {
         setNewValues({ newName: extMaterials[extMaterialIndex]?.name || "", newCode: extMaterials[extMaterialIndex]?.code || "", newImageSrc: imageSrc, newPurpose: purpose })
         if (!purposeEnabled) setChecked(prev => ({ ...prev, purposeChecked: false }))
@@ -39,7 +40,7 @@ export default function EditPlates(props: EditDialogProps) {
             <div>
                 <div className="property-grid">
                     <ComboBox title="Материал: " value={baseMaterial} items={Materials} onChange={(_, value: string) => { setState((prev) => ({ ...prev, baseMaterial: getFasadMaterial(value), extMaterialIndex: 0 })); }} />
-                    <ComboBox title="Цвет/Рисунок: " value={extMaterials[extMaterialIndex]?.name} items={extMaterials.map((m: ExtMaterial) => m.name)} onChange={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
+                    <ComboBox title="Цвет/Рисунок: " value={extMaterials[extMaterialIndex]?.name} items={extMaterialNames} onChange={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
                 </div>
                 <br />
                 <input style={{ width: "200px", height: "200px", border: "1px solid black" }} name="image" type="image" alt="Нет изображения" src={newImageSrc} onClick={() => imageRef.current?.click()} />

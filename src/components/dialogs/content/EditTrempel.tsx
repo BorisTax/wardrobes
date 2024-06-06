@@ -24,7 +24,7 @@ export default function EditTrempel(props: EditDialogProps) {
     const codeRef = useRef<HTMLInputElement>(null)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
-    const trempeles = trempelList.map((p: Trempel) => p.name).toSorted()
+    const trempeles = useMemo(() => trempelList.map((p: Trempel) => p.name).toSorted(), [trempelList])
     return <>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>

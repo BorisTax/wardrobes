@@ -20,6 +20,7 @@ export const rusMessages = {
   [messages.EDGE_DELETED]: "Кромка удалена",
   [messages.EDGE_UPDATED]: "Кромка обновлена",
   [messages.BRUSH_EXIST]: "Щетка уже существует",
+  [messages.BRUSH_LINKED]: "Щетка привязана к одному из профилей!",
   [messages.BRUSH_NO_EXIST]: "Щетка не найдена",
   [messages.BRUSH_ADDED]: "Щетка добавлена",
   [messages.BRUSH_DELETED]: "Щетка удалена",

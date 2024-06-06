@@ -24,7 +24,7 @@ export default function EditBrush(props: EditDialogProps) {
     const codeRef = useRef<HTMLInputElement>(null)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
-    const brushes = brushList.map((p: Brush) => p.name).toSorted()
+    const brushes = useMemo(() => brushList.map((p: Brush) => p.name).toSorted(), [brushList])
     return <>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>

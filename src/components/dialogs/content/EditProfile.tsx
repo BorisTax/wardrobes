@@ -15,7 +15,8 @@ import { brushListAtom } from "../../../atoms/materials/brush"
 export default function EditProfile(props: EditDialogProps) {
     const profileList = useAtomValue(profileListAtom)
     const [{ name: profileName, type, code, brush }, setState] = useState({ ...profileList[0] })
-    const brushList = useAtomValue(brushListAtom).map(b => b.name).toSorted()
+    const bList = useAtomValue(brushListAtom)
+    const brushList = useMemo(() => bList.map(b => b.name).toSorted(), bList)
     //const brushList = [...new Set(profileList.map((p: Profile) => p.brush))].toSorted()
     useMemo(() => { setState({ ...profileList[0] }) }, [profileList])
     const deleteProfile = useSetAtom(deleteProfileAtom)

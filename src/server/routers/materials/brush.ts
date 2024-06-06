@@ -3,6 +3,7 @@ import { Brush, NewBrush } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import BrushServiceSQLite from '../../services/extServices/brushServiceSQLite.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
+import { getProfiles } from './profiles.js';
 
 export async function getBrushes() {
   const materialService = new MaterialExtService<Brush>(new BrushServiceSQLite(materialsPath))
@@ -33,5 +34,9 @@ export async function deleteBrush(name: string) {
   if (!result.success) return result
   const brushes = result.data
   if (!(brushes as Brush[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.BRUSH_NO_EXIST }
+  const {success, data: profiles} = await getProfiles()
+  if(success){
+    if(profiles?.find(p => p.brush === name)) return { success: false, status: 409, message: messages.BRUSH_LINKED }
+  }
   return await materialService.deleteExtData(name)
 }

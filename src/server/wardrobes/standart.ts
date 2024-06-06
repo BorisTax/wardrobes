@@ -106,48 +106,48 @@ export default class StandartWardrobe implements IWardrobe {
     };
     private calcInnerStand() {
         const sizes = [
-            { width: 3001, value: 4 },
-            { width: 2800, value: 3 },
-            { width: 2700, value: 2 },
             { width: 1900, value: 1 },
+            { width: 2700, value: 2 },
+            { width: 2800, value: 3 },
+            { width: 3001, value: 4 },
         ]
-        this.innerStandCount = sizes.findLast((s => s.width > this.width))?.value || 0
+        this.innerStandCount = sizes.find((s => s.width > this.width))?.value || 0
         this.innerStand = this.height - 62
         this.details.push({ name: DetailNamesCaptions[DetailNames.WARDROBE_INNER_STAND], length: this.innerStand, width: this.depth - this.offset, count: this.innerStandCount })
     };
     private calcShelves() {
         const sizes = [
-            { width: 3001, countLess: 8, countGreater: 10, length: 600, blocks: 2 },
-            { width: 2700, countLess: 5, countGreater: 7, length: 600, blocks: 1 },
-            { width: 2600, countLess: 8, countGreater: 10, length: 600, blocks: 2 },
-            { width: 2500, countLess: 4, countGreater: 5, length: 600, blocks: 1 },
-            { width: 2200, countLess: 8, countGreater: 10, length: 390, blocks: 2 },
-            { width: 1900, countLess: 4, countGreater: 5, length: 600, blocks: 1 },
             { width: 1700, countLess: 4, countGreater: 5, length: 390, blocks: 1 },
+            { width: 1900, countLess: 4, countGreater: 5, length: 600, blocks: 1 },
+            { width: 2200, countLess: 8, countGreater: 10, length: 390, blocks: 2 },
+            { width: 2500, countLess: 4, countGreater: 5, length: 600, blocks: 1 },
+            { width: 2600, countLess: 8, countGreater: 10, length: 600, blocks: 2 },
+            { width: 2700, countLess: 5, countGreater: 7, length: 600, blocks: 1 },
+            { width: 3001, countLess: 8, countGreater: 10, length: 600, blocks: 2 },
         ]
         const sizesPlat = [
-            { width: 3001, countLess: 2, countGreater: 3, blocks: 2 },
-            { width: 2700, countLess: 1, countGreater: 2, blocks: 1 },
-            { width: 2500, countLess: 2, countGreater: 4, blocks: 2 },
-            { width: 2200, countLess: 1, countGreater: 2, blocks: 1 },
             { width: 1900, countLess: 1, countGreater: 2, blocks: 1 },
+            { width: 2200, countLess: 1, countGreater: 2, blocks: 1 },
+            { width: 2500, countLess: 2, countGreater: 4, blocks: 2 },
+            { width: 2700, countLess: 1, countGreater: 2, blocks: 1 },
+            { width: 3001, countLess: 2, countGreater: 3, blocks: 2 },
         ]
         const sizesPillar = [
-            { width: 3001, countLess: 0, countGreater: 0 },
-            { width: 2700, countLess: 1, countGreater: 2 },
-            { width: 2500, countLess: 0, countGreater: 0 },
-            { width: 2200, countLess: 1, countGreater: 2 },
             { width: 1350, countLess: 0, countGreater: 0 },
+            { width: 2200, countLess: 1, countGreater: 2 },
+            { width: 2500, countLess: 0, countGreater: 0 },
+            { width: 2700, countLess: 1, countGreater: 2 },
+            { width: 3001, countLess: 0, countGreater: 0 },
         ]
-        const found = sizes.findLast((s => s.width > this.width)) || { width: 0, countLess: 0, countGreater: 0, length: 0, blocks: 1 }
-        const foundPlat = sizesPlat.findLast((s => s.width > this.width)) || { width: 0, countLess: 0, countGreater: 0, blocks: 1 }
+        const found = sizes.find((s => s.width > this.width)) || { width: 0, countLess: 0, countGreater: 0, length: 0, blocks: 1 }
+        const foundPlat = sizesPlat.find((s => s.width > this.width)) || { width: 0, countLess: 0, countGreater: 0, blocks: 1 }
         this.shelfCount = (this.height < 2300 ? found?.countLess : found?.countGreater) || 0
         this.shelf = found?.length || 0
         if (this.shelfCount > 0) this.details.push({ name: DetailNamesCaptions[DetailNames.WARDROBE_SHELF], length: this.shelf, width: this.depth - this.offset, count: this.shelfCount })
         this.shelfPlatCount = (this.height < 2200 ? foundPlat?.countLess : foundPlat?.countGreater) || 0
         this.shelfPlat = (this.width - this.innerStandCount * 16 - 32 - this.shelf * found?.blocks) / foundPlat?.blocks
         if (this.shelfPlatCount > 0) this.details.push({ name: DetailNamesCaptions[DetailNames.WARDROBE_SHELFPLAT], length: this.shelfPlat, width: this.depth - this.offset, count: this.shelfPlatCount })
-        const foundPillar = sizesPillar.findLast((s => s.width > this.width)) || { width: 0, countLess: 0, countGreater: 0 }
+        const foundPillar = sizesPillar.find((s => s.width > this.width)) || { width: 0, countLess: 0, countGreater: 0 }
         this.pillarCount = (this.height < 2200 ? foundPillar.countLess : foundPillar.countGreater)
         this.pillar = this.pillarCount ? 282 : 0
         if (this.pillarCount > 0) this.details.push({ name: DetailNamesCaptions[DetailNames.WARDROBE_PILLAR], length: this.pillar, width: this.depth - this.offset, count: this.pillarCount })
@@ -182,24 +182,24 @@ export default class StandartWardrobe implements IWardrobe {
     private calcTruba() {
         if (this.depth < 500) return
         const sizes = [
-            { width: 3001, value: 2 },
-            { width: 2700, value: 3 },
-            { width: 2600, value: 1 },
-            { width: 2500, value: 2 },
             { width: 2200, value: 1 },
+            { width: 2500, value: 2 },
+            { width: 2600, value: 1 },
+            { width: 2700, value: 3 },
+            { width: 3001, value: 2 },
         ]
-        this.tubeCount = sizes.findLast((s => s.width > this.width))?.value || 0
+        this.tubeCount = sizes.find((s => s.width > this.width))?.value || 0
         this.tube = this.shelfPlat
     };
     private calcTrempel() {
         if (this.depth >= 500) return
         const sizes = [
-            { width: 3001, value: 2 },
-            { width: 2700, value: this.height < 2200 ? 3 : 4 },
-            { width: 2600, value: 2 },
             { width: 1400, value: 1 },
+            { width: 2600, value: 2 },
+            { width: 2700, value: this.height < 2200 ? 3 : 4 },
+            { width: 3001, value: 2 },
         ]
-        this.trempelCount = sizes.findLast((s => s.width > this.width))?.value || 0
+        this.trempelCount = sizes.find((s => s.width > this.width))?.value || 0
         this.trempel = this.depth <= 400 ? 250 : 300
     };
 }

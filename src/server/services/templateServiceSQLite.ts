@@ -1,4 +1,4 @@
-import { Result, Results } from '../../types/server.js';
+import { Result } from '../../types/server.js';
 import { ITemplateServiceProvider } from '../../types/services.js';
 import { dataBaseQuery } from '../functions/other.js';
 import messages from '../messages.js';

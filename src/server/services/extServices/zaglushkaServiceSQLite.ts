@@ -1,5 +1,5 @@
 import { NewZaglushka, Zaglushka } from '../../../types/materials.js';
-import { Result, Results } from '../../../types/server.js';
+import { Result } from '../../../types/server.js';
 import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
@@ -9,7 +9,7 @@ export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglus
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Zaglushka[]>> {
-        return dataBaseQuery(this.dbFile, `select * from 'zaglushka'`, {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, `select * from zaglushka;`, {successStatusCode: 200})
     }
     async addExtData({ name, dsp, code }: Zaglushka): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into zaglushka (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.ZAGLUSHKA_ADDED})

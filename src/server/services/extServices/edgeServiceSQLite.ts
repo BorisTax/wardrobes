@@ -1,5 +1,5 @@
 import { Edge, NewEdge } from '../../../types/materials.js';
-import { Result, Results } from '../../../types/server.js';
+import { Result } from '../../../types/server.js';
 import { IMaterialExtService, IMaterialServiceProvider } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
@@ -9,7 +9,7 @@ export default class EdgeServiceSQLite implements IMaterialExtService<Edge> {
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Edge[]>> {
-        return dataBaseQuery<Edge[]>(this.dbFile, `select * from 'edge'`, {successStatusCode: 200})
+        return dataBaseQuery<Edge[]>(this.dbFile, `select * from edge;`, {successStatusCode: 200})
     }
     async addExtData({ name, dsp, code }: Edge): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into edge (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.EDGE_ADDED})

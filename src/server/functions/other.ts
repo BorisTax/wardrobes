@@ -3,8 +3,26 @@ import bcrypt from "bcrypt";
 import sqlite3 from "sqlite3";
 import messages from '../messages.js';
 import { Response } from "express"
-import { MyRequest, Result, Results, UserRoles } from '../../types/server.js';
+import { MyRequest, Result, UserRoles } from '../../types/server.js';
 
+export enum MAT_TABLE_NAMES {
+    MATERIALS = 'materials',
+    EXTMATERIALS = 'extmaterials',
+    PROFILE_COLORS = 'profilecolors',
+    BRUSH = 'brush',
+    EDGE = 'edge',
+    TREMPEL = 'trempel',
+    ZAGLUSHKA = 'zaglushka'
+}
+export enum PRICE_TABLE_NAMES {
+    PRICELIST = 'pricelist',
+    UNITS = 'units',
+}
+export enum USER_TABLE_NAMES {
+    USERS = 'users',
+    USERROLES = 'userroles',
+    TOKENS = 'tokens'
+}
 export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
@@ -60,10 +78,10 @@ export function hashData(data: string): Promise<Result<string>> {
     });
 }
 
-export function incorrectData(message: string): Results {
+export function incorrectData(message: string): Result<null> {
     return { success: false, status: 400, message }
 }
-export function noExistData(message: string): Results {
+export function noExistData(message: string): Result<null> {
     return { success: false, status: 404, message }
 }
 export function accessDenied(res: Response) {

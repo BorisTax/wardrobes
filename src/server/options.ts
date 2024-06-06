@@ -3,7 +3,6 @@ import { UserService } from './services/userService.js'
 import { MyRequest, RequestBody } from '../types/server.js'
 import { Response, NextFunction } from "express"
 import UserServiceSQLite from './services/userServiceSQLite.js'
-import MaterialServiceSQLite from './services/materialServiceSQLite.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import PriceServiceSQLite from './services/priceServiceSQLite.js'

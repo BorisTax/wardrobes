@@ -1,6 +1,6 @@
-import { Brush, Edge, ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, NewZaglushka, Profile, Zaglushka } from '../../types/materials.js';
-import { Result, Results } from '../../types/server.js';
-import { IMaterialService, IMaterialServiceProvider } from '../../types/services.js';
+import { ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, Profile } from '../../types/materials.js';
+import { Result } from '../../types/server.js';
+import { IMaterialService } from '../../types/services.js';
 import { dataBaseQuery } from '../functions/other.js';
 import messages from '../messages.js';
 export default class MaterialServiceSQLite implements IMaterialService {
@@ -9,7 +9,7 @@ export default class MaterialServiceSQLite implements IMaterialService {
         this.dbFile = dbFile
     }
     async getExtMaterials(): Promise<Result<ExtMaterial[]>> {
-        return dataBaseQuery(this.dbFile, "select * from 'extmaterials' order by material, name;", {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, "select * from extmaterials order by material, name;", {successStatusCode: 200})
     }
 
     async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial): Promise<Result<null>> {
@@ -25,7 +25,7 @@ export default class MaterialServiceSQLite implements IMaterialService {
     }
 
     async getProfiles(): Promise<Result<Profile[]>> {
-        return dataBaseQuery(this.dbFile, `select * from 'profileColors'`, {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, `select * from profileColors;`, {successStatusCode: 200})
     }
     async addProfile({ name, code, type, brush }: Profile): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into profilecolors (name, type, code, brush) values('${name}', '${type}', '${code}', '${brush}');`, {successStatusCode: 201, successMessage: messages.PROFILE_ADDED})

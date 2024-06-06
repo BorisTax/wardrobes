@@ -1,5 +1,5 @@
 import { Brush, NewBrush } from '../../../types/materials.js';
-import { Result, Results } from '../../../types/server.js';
+import { Result } from '../../../types/server.js';
 import { IMaterialExtService, IMaterialServiceProvider } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
@@ -9,7 +9,7 @@ export default class BrushServiceSQLite implements IMaterialExtService<Brush> {
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Brush[]>> {
-        return dataBaseQuery(this.dbFile, `select * from 'brush'`, {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, `select * from brush;`, {successStatusCode: 200})
     }
     async addExtData({ name, code }: Brush): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into brush (name, code) values('${name}', '${code}');`, {successStatusCode: 201, successMessage: messages.BRUSH_ADDED})

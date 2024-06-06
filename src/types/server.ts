@@ -77,10 +77,3 @@ export type Result<T> = {
     error?: Error
 }
 
-export type Results = Result<null> |
-    Result<ExtMaterial[]> |
-    Result<Profile[]> |
-    Result<User[]> |
-    Result<Token[]> |
-    Result<PriceListItem[]> |
-    Result<string>

@@ -4,7 +4,7 @@ import archiver from 'archiver'
 import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/other.js';
-import { MyRequest, Results, UserRoles } from '../../types/server.js';
+import { MyRequest, Result, UserRoles } from '../../types/server.js';
 import { isAdminAtLeast } from '../functions/user.js';
 import { databaseFolder, databaseZipFile } from '../options.js';
 
@@ -20,7 +20,7 @@ router.get("/download", async (req: MyRequest, res) => {
   if(result.success) res.download(databaseZipFile, 'database.zip')
 });
 
-function zipDirectory(sourceDir: string, outPath: string): Promise<Results> {
+function zipDirectory(sourceDir: string, outPath: string): Promise<Result<null>> {
   const archive = archiver('zip', { zlib: { level: 9 }});
   const stream = fs.createWriteStream(outPath);
   return new Promise((resolve) => {

@@ -1,6 +1,6 @@
 import { dataBaseQuery } from '../functions/other.js'
 import { IPriceServiceProvider } from '../../types/services.js';
-import { PriceListItem, Result, Results } from '../../types/server.js';
+import { PriceListItem, Result } from '../../types/server.js';
 import messages from '../messages.js';
 
 export default class PriceServiceSQLite implements IPriceServiceProvider {
@@ -9,7 +9,7 @@ export default class PriceServiceSQLite implements IPriceServiceProvider {
         this.dbFile = dbFile
     }
     async getPriceList(): Promise<Result<PriceListItem[]>> {
-        return dataBaseQuery(this.dbFile, "select * from 'pricelist'", { successStatusCode: 200 })
+        return dataBaseQuery(this.dbFile, "select * from pricelist;", { successStatusCode: 200 })
     }
     async updatePriceList({ name, caption, coef, code, id, price, markup }: PriceListItem): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, getPriceQuery({ name, caption, coef, code, id, price, markup }), { successStatusCode: 200, successMessage: messages.PRICELIST_UPDATED })

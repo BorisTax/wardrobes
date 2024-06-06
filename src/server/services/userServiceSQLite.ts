@@ -1,6 +1,6 @@
 import { dataBaseQuery, hashData } from '../functions/other.js'
 import { IUserServiceProvider } from '../../types/services.js';
-import { Result, Results, Token, User } from '../../types/server.js';
+import { Result, Token, User } from '../../types/server.js';
 import messages from '../messages.js';
 
 export default class UserServiceSQLite implements IUserServiceProvider {
@@ -9,10 +9,10 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         this.dbFile = dbFile
     }
     async getUsers(): Promise<Result<User[]>> {
-        return dataBaseQuery(this.dbFile, "select * from 'users'", {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, "select * from users;", {successStatusCode: 200})
     }
     async getTokens(): Promise<Result<Token[]>> {
-        return dataBaseQuery(this.dbFile, "select * from 'tokens'", {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, "select * from tokens;", {successStatusCode: 200})
     }
     async addToken({ token, username, time, lastActionTime }: Token): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `INSERT INTO tokens (token, username, time, lastActionTime) VALUES('${token}', '${username}', ${time}, ${lastActionTime})`, {successStatusCode: 201})

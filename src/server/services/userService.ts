@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import { Result, Results, Token, User } from '../../types/server.js'
+import { Result, Token, User } from '../../types/server.js'
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'

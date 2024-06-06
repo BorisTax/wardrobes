@@ -3,19 +3,21 @@ import { Result } from '../../../types/server.js';
 import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
+import { MAT_TABLE_NAMES } from '../../functions/other.js';
+const { ZAGLUSHKA } = MAT_TABLE_NAMES
 export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglushka> {
     dbFile: string;
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Zaglushka[]>> {
-        return dataBaseQuery(this.dbFile, `select * from zaglushka;`, {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, `select * from ${ZAGLUSHKA};`, {successStatusCode: 200})
     }
     async addExtData({ name, dsp, code }: Zaglushka): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into zaglushka (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.ZAGLUSHKA_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.ZAGLUSHKA_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM zaglushka WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_DELETED})
     }
     async updateExtData({ newName, dsp, code, name }: NewZaglushka): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, getZaglushkaQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_UPDATED})
@@ -27,6 +29,6 @@ function getZaglushkaQuery({ newName, dsp, code, name }: NewZaglushka) {
     if (newName) parts.push(`name='${newName}'`)
     if (code) parts.push(`code='${code}'`)
     if (dsp) parts.push(`dsp='${dsp}'`)
-    const query = parts.length > 0 ? `update zaglushka set ${parts.join(', ')} where name='${name}';` : ""
+    const query = parts.length > 0 ? `update ${ZAGLUSHKA} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

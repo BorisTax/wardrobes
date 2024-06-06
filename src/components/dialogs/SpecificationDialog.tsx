@@ -5,7 +5,7 @@ import { priceListAtom } from "../../atoms/prices"
 import { PriceListItem } from "../../types/server"
 import { UnitCaptions } from "../../functions/materials"
 import { specificationCombiAtom } from "../../atoms/specification"
-import { SpecificationItem } from "../../types/enums"
+import { MAT_PURPOSE, SpecificationItem } from "../../types/enums"
 import ImageButton from "../ImageButton"
 import { saveToExcelAtom } from "../../atoms/export"
 import { userAtom } from "../../atoms/users"
@@ -22,7 +22,7 @@ export default function SpecificationDialog() {
     const [showAll, setShowAll] = useState(false)
     const [, setSpecificationDialogRef] = useAtom(specificationDialogAtom)
     const specification = specifications[fasadIndex]
-    const contents = priceList?.filter(i => specification.get(i.name as SpecificationItem) || showAll).map((i: PriceListItem, index: number) => {
+    const contents = priceList?.filter(i => i.purpose !== MAT_PURPOSE.CORPUS && (specification.get(i.name as SpecificationItem) || showAll)).map((i: PriceListItem, index: number) => {
         const amount = specification.get(i.name as SpecificationItem) || 0
         const price = i.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"

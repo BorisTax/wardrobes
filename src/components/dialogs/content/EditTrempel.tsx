@@ -49,33 +49,6 @@ export default function EditTrempel(props: EditDialogProps) {
                 </div>
             </div>
             <div className="editmaterial-buttons-container">
-                <input type="button" value="Удалить" onClick={() => {
-                    const name = trempelName
-                    const index = trempelList.findIndex((p: Trempel) => p.name === name)
-                    const message = `Удалить тремпель: "${trempelList[index].name}" ?`
-                    showConfirm(message, () => {
-                        props.setLoading(true)
-                        deleteTrempel(trempelList[index], (result) => {
-                            props.setLoading(false)
-                            showMessage(rusMessages[result.message])
-                        });
-                        setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
-                    })
-                }} />
-                <Button caption="Добавить" disabled={!(nameChecked && codeChecked )} onClick={() => {
-                    const name = newName
-                    const code = newCode
-                    if (!checkFields({ newName, newCode }, showMessage)) return
-                    if (trempelList.find((p: Trempel) => p.name === name)) { showMessage(rusMessages[messages.BRUSH_EXIST]); return }
-                    const message = getAddMessage({ name: newName, code: newCode })
-                    showConfirm(message, () => {
-                        props.setLoading(true)
-                        addTrempel({ name, code }, (result) => {
-                            props.setLoading(false)
-                            showMessage(rusMessages[result.message])
-                        });
-                    })
-                }} />
                 <input type="button" value="Заменить" disabled={!(nameChecked || codeChecked )} onClick={() => {
                     const name = trempelName
                     if (!checkFields({ nameChecked, codeChecked, newName, newCode }, showMessage)) return

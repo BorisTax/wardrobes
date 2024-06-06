@@ -28,13 +28,13 @@ export default function EditProfile(props: EditDialogProps) {
     const codeRef = useRef<HTMLInputElement>(null)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
-    const profiles = profileList.filter((p: Profile) => p.type === type).map((p: Profile) => p.name)
+    const profiles = useMemo(() => profileList.filter((p: Profile) => p.type === type).map((p: Profile) => p.name), [profileList])
     return <>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">
-                    <ComboBox title="Тип: " value={ProfilesCaptions.get(type) || ""} items={Profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.type === value) as Profile; setState({ type: value as ProfileType, name: p.name, code: p.code, brush: p.brush }); }} />
-                    <ComboBox title="Цвет: " value={profileName} items={profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.name === value) as Profile; setState((prev) => ({ ...prev, name: value, code: p.code, brush: p.brush })) }} />
+                    <ComboBox title="Тип: " value={ProfilesCaptions.get(type) || ""} items={Profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.type === value) as Profile; if(p) setState({ type: value as ProfileType, name: p.name, code: p.code, brush: p.brush }); }} />
+                    <ComboBox title="Цвет: " value={profileName} items={profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.name === value) as Profile; if(p) setState((prev) => ({ ...prev, name: value, code: p.code, brush: p.brush })) }} />
                 </div>
             </div>
         </div>

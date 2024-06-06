@@ -16,25 +16,21 @@
 }
 .button {
   display: inline-block;
-  position: relative;
   background-size: 100%;
   background-position: center;
-  -width: 27px;
-  -height: 27px;
   cursor: pointer;
 }
 
 .button:hover {
-  mix-blend-mode: multiply;
+  -mix-blend-mode: multiply;
 }
 
 .button-disabled {
   display: inline-block;
   background-size: 100%;
   background-position: center;
-  -width: 27px;
-  -height: 27px;
-  mix-blend-mode: hard-light;
+  visibility: hidden;
+  -mix-blend-mode: hard-light;
 }
 
 .image-text-button {

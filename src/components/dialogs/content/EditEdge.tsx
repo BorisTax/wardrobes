@@ -15,7 +15,7 @@ import { EditDialogProps } from "../EditMaterialDialog"
 export default function EditEdge(props: EditDialogProps) {
     const edgeList = useAtomValue(edgeListAtom)
     const materialList = useAtomValue(materialListAtom)
-    const mList = materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name)
+    const mList = useMemo(() => materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name), [materialList])
     const [{ name: edgeName, dsp, code }, setState] = useState({ ...edgeList[0] })
     useMemo(() => { setState({ ...edgeList[0] }) }, [edgeList])
     const deleteEdge = useSetAtom(deleteEdgeAtom)
@@ -28,7 +28,7 @@ export default function EditEdge(props: EditDialogProps) {
     const codeRef = useRef<HTMLInputElement>(null)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
-    const edges = edgeList.map((p: Edge) => p.name).toSorted()
+    const edges = useMemo(() => edgeList.map((p: Edge) => p.name).toSorted(), [edgeList])
     return <>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>

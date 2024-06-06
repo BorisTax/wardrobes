@@ -15,7 +15,7 @@ import { EditDialogProps } from "../EditMaterialDialog"
 export default function EditZaglushka(props: EditDialogProps) {
     const zaglushkaList = useAtomValue(zaglushkaListAtom)
     const materialList = useAtomValue(materialListAtom)
-    const mList = materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name)
+    const mList = useMemo(() => materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name), [materialList])
     const [{ name: zaglushkaName, dsp, code }, setState] = useState({ ...zaglushkaList[0] })
     useMemo(() => { setState({ ...zaglushkaList[0] }) }, [zaglushkaList])
     const deleteZaglushka = useSetAtom(deleteZaglushkaAtom)
@@ -28,7 +28,7 @@ export default function EditZaglushka(props: EditDialogProps) {
     const codeRef = useRef<HTMLInputElement>(null)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
-    const zaglushkas = zaglushkaList.map((p: Zaglushka) => p.name).toSorted()
+    const zaglushkas = useMemo(() => zaglushkaList.map((p: Zaglushka) => p.name).toSorted(), [zaglushkaList])
     return <>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>

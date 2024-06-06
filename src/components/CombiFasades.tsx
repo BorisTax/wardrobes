@@ -10,7 +10,9 @@ export default function CombiFasades() {
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     return <>
         {!isMobile() ? <StatusBar /> : <></>}
-        <div className="main-container" onClick={() => { setActiveFasad(null); }}>
+        <div className="main-container" onClick={() => { 
+            setActiveFasad(null); 
+            }}>
             <div className='properties-container'>
                 <WardrobePropertiesBar />
                 <PropertiesBar />

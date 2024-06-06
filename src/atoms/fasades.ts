@@ -1,7 +1,7 @@
 import { atom } from 'jotai'
 import Fasad from '../classes/Fasad'
 import { FasadMaterial, SandBase } from '../types/enums'
-import { getRootFasad, trySetHeight, trySetWidth } from '../functions/fasades'
+import { getRootFasad, isFasadExist, trySetHeight, trySetWidth } from '../functions/fasades'
 import { getProfileDirection } from '../functions/materials'
 import { materialListAtom } from './materials/materials'
 import { appDataAtom } from './app'
@@ -25,6 +25,7 @@ export const activeFasadAtom = atom<Fasad | null>((get) => {
 })
 export const setActiveFasadAtom = atom(null, (get, set, activeFasad: Fasad | null) => {
     const appData = get(appDataAtom)
+    if (activeFasad !== null && appData.rootFasades.every(f => !isFasadExist(f, activeFasad))) return
     appData.rootFasades.forEach((f: Fasad) => f.setActiveFasad(activeFasad))
     set(appDataAtom, { ...appData }, false)
 })

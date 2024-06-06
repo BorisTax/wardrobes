@@ -31,7 +31,7 @@ export default function EditPriceDialog() {
     const showConfirm = useConfirm()
     const className = "p-1 border"
     const active = `${className} fw-bold`
-    const header = [MAT_PURPOSE.FASAD, MAT_PURPOSE.CORPUS].map(item => <div className={(purpose === item ? active : className)} onClick={() => { setPurpose(item) }} role="button">{MATPurposeCaptions.get(item)}</div>)
+    const header = [MAT_PURPOSE.FASAD, MAT_PURPOSE.CORPUS].map(item => <div key={item} className={(purpose === item ? active : className)} onClick={() => { setPurpose(item) }} role="button">{MATPurposeCaptions.get(item)}</div>)
     const contents = filteredList?.map((i: PriceListItem, index) => <tr key={index} onClick={() => setSelectedIndex(index)}>
                 <td className="pricelist-cell">{i.caption}</td>
                 <td className="pricelist-cell">{UnitCaptions.get(i.units || "")}</td>

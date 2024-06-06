@@ -26,7 +26,7 @@ export default function ComboBox(props: ComboBoxProps = { value: "", items: [], 
     )
     useEffect(() => { 
         const value = props.items instanceof Map ? [...(props.items as Map<string, string>).values()][0] || "" : props.items[0]
-        if (props.onChange) props.onChange(0, value as string)
+        if (props.onChange) props.onChange(0, props.value || value as string)
     }, [props.items])
     return (
         <>

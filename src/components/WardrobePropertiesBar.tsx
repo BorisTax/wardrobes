@@ -13,10 +13,12 @@ import ImageButton from "./ImageButton"
 import { userAtom } from "../atoms/users"
 import { isClientAtLeast } from "../server/functions/user"
 import TextBox from "./TextBox"
+import { useMemo } from "react"
 const fasades = ["2", "3", "4", "5", "6"]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)
     const profileList = useAtomValue(profileListAtom)
+    const profileNames = useMemo(() => profileList.map((p: Profile) => p.name), [profileList])
     const { order, profile, fasadCount, type, wardHeight, wardWidth } = useAtomValue(appDataAtom)
     const setOrder = useSetAtom(setOrderAtom)
     const setProfile = useSetAtom(setProfileAtom)
@@ -74,7 +76,7 @@ export default function WardrobePropertiesBar() {
                 <TextBox name="width" value={wardWidth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setWardWidth([+value, wardWidthConfirm]) }} />
             </PropertyRow>
             <ComboBox title="Кол-во фасадов:" value={`${fasadCount}`} items={fasades} onChange={(_, value) => { setFasadCount([+value, wardFasadCountConfirm]) }} />
-            <ComboBox title="Профиль:" value={profile?.name || ""} items={profileList.map((p: Profile) => p.name)} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />
+            <ComboBox title="Профиль:" value={profile?.name || ""} items={profileNames} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />
         </PropertyGrid>
     </div>
 }

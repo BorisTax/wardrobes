@@ -1,11 +1,11 @@
 import { atom } from "jotai";
-import { Profile } from "../../types/materials";
-import { FetchResult, fetchData, fetchFormData, fetchGetData } from "../../functions/fetch";
+import { Profile, ProfileType } from "../../types/materials";
+import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
 import { TableFields } from "../../types/server";
 import { AtomCallbackResult } from "../../types/atoms";
-
-export const profileListAtom = atom<Profile[]>([])
+const initProfile: Profile = { type: ProfileType.STANDART, name: "", brush: "", code: "" }
+export const profileListAtom = atom<Profile[]>([initProfile])
 export const activeProfileIndexAtom = atom(0)
 
 export const loadProfileListAtom = atom(null, async (get, set) => {

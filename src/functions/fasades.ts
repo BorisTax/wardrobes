@@ -58,3 +58,8 @@ export function getRootFasad(fasad: Fasad): Fasad {
 export function hasFasadImage(fasad: Fasad){
     return fasad.Material === FasadMaterial.FMP || fasad.Material === FasadMaterial.SAND
 }
+
+export function isFasadExist(root: Fasad, fasad: Fasad): boolean{
+    if(root === fasad) return true
+    return root.Children.some(c => isFasadExist(c, fasad))
+}

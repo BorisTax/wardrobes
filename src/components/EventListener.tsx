@@ -12,7 +12,7 @@ export default function EventListener() {
   const loadActiveUsers = useSetAtom(loadActiveUsersAtom)
   const showMessage = useMessage()
   useEffect(() => {
-    const timer = setInterval(() => { fetchGetData(`api/users/standby?token=${user.token}`).then(r => console.log(r)) }, 60000)
+    const timer = setInterval(() => { fetchGetData(`api/users/standby?token=${user.token}`).then(r => {}) }, 60000)
     return () => { clearInterval(timer) }
   }, [user])
   useEffect(() => {

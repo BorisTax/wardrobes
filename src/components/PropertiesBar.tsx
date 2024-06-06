@@ -20,7 +20,9 @@ import { copyFasadDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom,
 import { TEMPLATE_TABLES } from "../types/enums"
 import { hasFasadImage } from "../functions/fasades"
 import TextBox from "./TextBox"
+import { useMemo } from "react"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
+const directions: Map<string, string> = new Map()
 export default function PropertiesBar() {
     const { role } = useAtomValue(userAtom)
     const fasad = useAtomValue(activeFasadAtom)
@@ -28,7 +30,8 @@ export default function PropertiesBar() {
     const { minSize } = useAtomValue(settingsAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
-    const materialList = useAtomValue(materialListAtom).filter(m => m.purpose !== MAT_PURPOSE.CORPUS)
+    const matList = useAtomValue(materialListAtom)
+    const materialList = useMemo(() => matList.filter(m => m.purpose !== MAT_PURPOSE.CORPUS), [matList])
     const totalPrice = useAtomValue(totalPriceAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)
@@ -44,7 +47,7 @@ export default function PropertiesBar() {
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
     const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
     const showSchemaDialog = useSetAtom(showSchemaDialogAtom)
-    const extMaterials: ExtMaterial[] = materialList.filter(mat => mat.material === material) || [{ name: "", material: "" }]
+    const extMaterialsName = useMemo(() => (materialList.filter(mat => mat.material === material) || [{ name: "", material: "" }]).map((m: ExtMaterial) => m.name), [materialList, material])
     const fasadValue = fasad && totalPrice[rootFasadIndex].toFixed(2)
     const fasadPrice = isClientAtLeast(role) ? <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div> : <></>
     const onlyFasad = !!fasad && fasad.Children.length === 0
@@ -85,8 +88,8 @@ export default function PropertiesBar() {
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" visible={!disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
             <ComboBox title="Материал:" value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value as FasadMaterial) }} />
-            <ComboBox title="Цвет/Рисунок:" value={extmaterial} items={extMaterials.map((m: ExtMaterial) => m.name)} disabled={!fasad} onChange={(_, value) => { setExtMaterial(value) }} />
-            <ComboBox title="Основа:" value={sandBase || ""} items={sandBase ? SandBases : []} disabled={fasad?.Material !== FasadMaterial.SAND} onChange={(_, value) => { setSandBase(value as SandBase) }} />
+            <ComboBox title="Цвет/Рисунок:" value={extmaterial} items={extMaterialsName} disabled={!fasad} onChange={(_, value) => { setExtMaterial(value) }} />
+            {material === FasadMaterial.SAND && <ComboBox title="Основа:" value={sandBase || ""} items={SandBases} disabled={fasad?.Material !== FasadMaterial.SAND} onChange={(_, value) => { setSandBase(value as SandBase) }} />}
             <ComboBox title="Направление профиля:" value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
             <ComboBox title="Кол-во секций:" value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
         </PropertyGrid>
@@ -101,7 +104,7 @@ function getProperties(fasad: Fasad | null) {
     const extmaterial = fasad?.ExtMaterial || ""
     const sandBase = (fasad?.Material === FasadMaterial.SAND && fasad?.SandBase) || ""
     const materials = fasad ? Materials : []
-    const directions: Map<string, string> = new Map()
+    directions.clear()
     if (fasad) {
         directions.set("Вертикально", Division.WIDTH)
         directions.set("Горизонтально", Division.HEIGHT)

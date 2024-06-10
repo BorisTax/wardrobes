@@ -100,6 +100,3 @@ export enum DetailNames {
     WARDROBE_PILLAR = 'WARDROBE_PILLAR'
 }
 
-export enum WARDROBE_KIND {
-    STANDART = 'STANDART'
-}

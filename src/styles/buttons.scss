@@ -22,7 +22,7 @@
 }
 
 .button:hover {
-  -mix-blend-mode: multiply;
+  transform: scale(0.9);
 }
 
 .button-disabled {
@@ -30,7 +30,7 @@
   background-size: 100%;
   background-position: center;
   visibility: hidden;
-  -mix-blend-mode: hard-light;
+  opacity: 50%;
 }
 
 .image-text-button {

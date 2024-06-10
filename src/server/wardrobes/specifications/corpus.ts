@@ -1,6 +1,6 @@
 import { getSpecificationPattern } from "../../../functions/specification"
 import { SpecificationItem } from "../../../types/enums"
-import { WARDROBE_KIND } from "../../../types/enums"
+import { WARDROBE_KIND } from "../../../types/wardrobe"
 import { ProfileType } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"

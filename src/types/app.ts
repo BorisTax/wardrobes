@@ -1,10 +1,11 @@
 import Fasad from "../classes/Fasad"
 import FasadState from "../classes/FasadState"
 import { Profile } from "./materials"
+import { WARDROBE_TYPE } from "./wardrobe"
 
 export type AppState = {
     order: string
-    type: WardType
+    type: WARDROBE_TYPE
     wardHeight: number
     wardWidth: number
     profile: Profile
@@ -13,17 +14,14 @@ export type AppState = {
 }
 export type AppData = {
     order: string
-    type: WardType
+    type: WARDROBE_TYPE
     wardHeight: number
     wardWidth: number
     profile: Profile
     fasadCount: number
     rootFasades: Fasad[]
 }
-export enum WardType {
-    WARDROBE = "WARDROBE",
-    SYSTEM = "SYSTEM"
-}
+
 
 export type HistoryState = {
     state: AppState

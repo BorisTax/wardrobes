@@ -6,7 +6,6 @@ import { profileListAtom } from "../atoms/materials/profiles"
 import { Profile } from "../types/materials"
 import ComboBox from "./ComboBox"
 import { appDataAtom, historyAppAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setOrderAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"
-import { WardType } from "../types/app"
 import { WardTypes } from "../functions/wardrobe"
 import useConfirm from "../custom-hooks/useConfirm"
 import ImageButton from "./ImageButton"
@@ -14,6 +13,7 @@ import { userAtom } from "../atoms/users"
 import { isClientAtLeast } from "../server/functions/user"
 import TextBox from "./TextBox"
 import { useMemo } from "react"
+import { WARDROBE_TYPE } from "../types/wardrobe"
 const fasades = ["2", "3", "4", "5", "6"]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)
@@ -34,6 +34,7 @@ export default function WardrobePropertiesBar() {
     const undo = useSetAtom(undoAtom)
     const redo = useSetAtom(redoAtom)
     const disabledFiles = !isClientAtLeast(user.role)
+    const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.CORPUS)), [WardTypes])
     const wardTypeChangeConfirm = () => new Promise<boolean>((resolve) => {
         showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
     })
@@ -66,7 +67,9 @@ export default function WardrobePropertiesBar() {
             <PropertyRow>
                 <TextBox name="order" value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
             </PropertyRow>
-            <ComboBox title="Тип:" value={type} items={WardTypes} onChange={(_, value) => { setWardType([value as WardType, wardTypeChangeConfirm]) }} />
+            <ComboBox title="Тип:" value={type} items={wardTypes} onChange={(_, value) => { 
+                setWardType([value as WARDROBE_TYPE, wardTypeChangeConfirm])
+            }} />
             <div className="text-end">Высота: </div>
             <PropertyRow>
                 <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1900} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} />

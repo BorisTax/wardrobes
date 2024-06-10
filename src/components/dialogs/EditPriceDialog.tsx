@@ -6,7 +6,7 @@ import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
 import { loadPriceListAtom, priceListAtom, updatePriceListAtom } from "../../atoms/prices"
 import { PriceListItem } from "../../types/server"
-import { MATPurposeCaptions, UnitCaptions } from "../../functions/materials"
+import { MATPurpose, UnitCaptions } from "../../functions/materials"
 import { PropertyType } from "../../types/property"
 import DialogWindow from "./DialogWindow"
 import { MAT_PURPOSE } from "../../types/enums"
@@ -31,7 +31,7 @@ export default function EditPriceDialog() {
     const showConfirm = useConfirm()
     const className = "p-1 border"
     const active = `${className} fw-bold`
-    const header = [MAT_PURPOSE.FASAD, MAT_PURPOSE.CORPUS].map(item => <div key={item} className={(purpose === item ? active : className)} onClick={() => { setPurpose(item) }} role="button">{MATPurposeCaptions.get(item)}</div>)
+    const header = [MAT_PURPOSE.FASAD, MAT_PURPOSE.CORPUS].map(item => <div key={item} className={(purpose === item ? active : className)} onClick={() => { setPurpose(item) }} role="button">{MATPurpose.get(item)}</div>)
     const contents = filteredList?.map((i: PriceListItem, index) => <tr key={index} onClick={() => setSelectedIndex(index)}>
                 <td className="pricelist-cell">{i.caption}</td>
                 <td className="pricelist-cell">{UnitCaptions.get(i.units || "")}</td>

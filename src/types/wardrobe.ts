@@ -1,7 +1,5 @@
 import { SpecificationItem } from "./enums"
 import { WardrobeDetail } from "../server/wardrobes/types"
-import { WARDROBE_KIND } from "./enums"
-import { ExtMaterial, Profile } from "./materials"
 
 export interface IWardrobe {
     getDetails: () => WardrobeDetail[]
@@ -95,4 +93,8 @@ export enum WARDROBE_TYPE {
 export enum CONSOLE_TYPE {
     STANDART = 'STANDART',
     RADIAL = 'RADIAL',
+}
+
+export enum WARDROBE_KIND {
+    STANDART = 'STANDART'
 }

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { Profiles, ProfilesCaptions } from "../../../functions/materials"
+import { Profiles } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { Profile, ProfileType } from "../../../types/materials"
 import useMessage from "../../../custom-hooks/useMessage"
@@ -34,7 +34,7 @@ export default function EditProfile(props: EditDialogProps) {
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
                 <div className="property-grid">
-                    <ComboBox title="Тип: " value={ProfilesCaptions.get(type) || ""} items={Profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.type === value) as Profile; if(p) setState({ type: value as ProfileType, name: p.name, code: p.code, brush: p.brush }); }} />
+                    <ComboBox title="Тип: " value={type || ""} items={Profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.type === value) as Profile; if(p) setState({ type: value as ProfileType, name: p.name, code: p.code, brush: p.brush }); }} />
                     <ComboBox title="Цвет: " value={profileName} items={profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.name === value) as Profile; if(p) setState((prev) => ({ ...prev, name: value, code: p.code, brush: p.brush })) }} />
                 </div>
             </div>
@@ -80,7 +80,7 @@ export default function EditProfile(props: EditDialogProps) {
                     const brush = newBrush
                     if (!checkFields({ newName, newCode, newBrush }, showMessage)) return
                     if (profileList.find((p: Profile) => p.name === name && p.type === type)) { showMessage(rusMessages[messages.PROFILE_EXIST]); return }
-                    const message = getAddMessage({ type: ProfilesCaptions.get(type) || "", name: newName, code: newCode, brush: newBrush })
+                    const message = getAddMessage({ type: Profiles.get(type) || "", name: newName, code: newCode, brush: newBrush })
                     showConfirm(message, () => {
                         props.setLoading(true)
                         addProfile({ name, type, code, brush }, (result) => {

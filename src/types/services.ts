@@ -1,6 +1,6 @@
 import { SpecificationItem } from "./enums"
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
-import { PriceListItem, Result, Results, Token, User } from "./server"
+import { PriceListItem, Result, Token, User } from "./server"
 import { NewTemplate, Template } from "./templates"
 import { SpecificationResult, WardrobeData } from "./wardrobe"
 interface IUserAbstractService {

@@ -10,12 +10,3 @@ export const DetailNamesCaptions = {
     [DetailNames.WARDROBE_PILLAR]: "Перемычка",
 }
 
-export const WardrobeTypes: Map<string, string> = new Map()
-WardrobeTypes.set("ШКАФ", WARDROBE_TYPE.WARDROBE)
-WardrobeTypes.set("КОРПУС", WARDROBE_TYPE.CORPUS)
-WardrobeTypes.set("СИСТЕМА", WARDROBE_TYPE.SYSTEM)
-
-export const WardrobeTypesCaptions: Map<string, string> = new Map()
-WardrobeTypesCaptions.set(WARDROBE_TYPE.WARDROBE, "ШКАФ")
-WardrobeTypesCaptions.set(WARDROBE_TYPE.CORPUS, "КОРПУС")
-WardrobeTypesCaptions.set(WARDROBE_TYPE.SYSTEM, "СИСТЕМА")

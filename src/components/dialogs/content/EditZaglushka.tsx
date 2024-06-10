@@ -51,7 +51,7 @@ export default function EditZaglushka(props: EditDialogProps) {
                     <input type="checkbox" checked={codeChecked} onChange={() => { setChecked(prev => ({ ...prev, codeChecked: !codeChecked })) }} />
                     <input type="text" ref={codeRef} value={newCode} onChange={(e) => { setNewValues(prev => ({ ...prev, newCode: e.target.value })) }} disabled={!codeChecked}/>
                 </div>
-                <span className="text-end text-nowrap">ДСП:</span>
+                <span className="text-end text-nowrap">Соответствие с ДСП:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={dspChecked} onChange={() => { setChecked(prev => ({ ...prev, dspChecked: !dspChecked })) }} />
                     <ComboBox value={newDSP} items={mList} onChange={(_, value: string) => { setNewValues(prev => ({ ...prev, newDSP: value })) }} disabled={!dspChecked}/>

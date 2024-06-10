@@ -106,8 +106,8 @@ function getProperties(fasad: Fasad | null) {
     const materials = fasad ? Materials : []
     directions.clear()
     if (fasad) {
-        directions.set("Вертикально", Division.WIDTH)
-        directions.set("Горизонтально", Division.HEIGHT)
+        directions.set(Division.WIDTH, "Вертикально")
+        directions.set(Division.HEIGHT, "Горизонтально")
     }
     const direction = fasad ? (fasad.Division === Division.HEIGHT ? "Горизонтально" : "Вертикально") : ""
     const sectionCount = (fasad && (fasad.Children.length > 1)) ? `${fasad.Children.length}` : ""

@@ -1,10 +1,10 @@
 import { useMemo, useRef, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { MATPurpose, MATPurposeCaptions, existMaterial, getFasadMaterial } from "../../../functions/materials"
+import { MATPurpose, existMaterial, getFasadMaterial } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { ExtMaterial } from "../../../types/materials"
 import { MAT_PURPOSE, FasadMaterial } from "../../../types/enums"
-import { MaterialCaptions, Materials } from "../../../functions/materials"
+import { Materials } from "../../../functions/materials"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials/materials"
 import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
@@ -63,7 +63,7 @@ export default function EditPlates(props: EditDialogProps) {
                 <span className="text-end text-nowrap">Назначение:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={purposeChecked} disabled={!purposeEnabled} onChange={() => { setChecked(prev => ({ ...prev, purposeChecked: !purposeChecked })) }} />
-                    <ComboBox value={MATPurposeCaptions.get(newPurpose) || ""} disabled={!purposeEnabled || !purposeChecked} items={MATPurpose} 
+                    <ComboBox value={MATPurpose.get(newPurpose) || ""} disabled={!purposeEnabled || !purposeChecked} items={MATPurpose} 
                             onChange={(_, value: string) => { 
                                 setNewValues(prev => ({ ...prev, newPurpose: value as MAT_PURPOSE })); 
                                 }} />
@@ -87,7 +87,7 @@ export default function EditPlates(props: EditDialogProps) {
             <div className="editmaterial-buttons-container">
                 <input type="button" value="Удалить" onClick={() => {
                     const name = extMaterials[extMaterialIndex].name
-                    const message = `Удалить материал: "${MaterialCaptions.get(baseMaterial)} - ${name}" ?`
+                    const message = `Удалить материал: "${Materials.get(baseMaterial)} - ${name}" ?`
                     showConfirm(message, () => {
                         props.setLoading(true)
                         deleteMaterial(extMaterials[extMaterialIndex], (result) => {
@@ -104,7 +104,7 @@ export default function EditPlates(props: EditDialogProps) {
                     const purpose = newPurpose
                     if (!checkFields({ imageChecked, newName, newCode, file }, showMessage)) return
                     if (existMaterial(name, baseMaterial, materialList)) { showMessage("Материал уже существует"); return }
-                    const message = getAddMessage({ material: MaterialCaptions.get(baseMaterial) || "", name: newName, code: newCode, purpose: MATPurposeCaptions.get(purpose) as string })
+                    const message = getAddMessage({ material: Materials.get(baseMaterial) || "", name: newName, code: newCode, purpose: MATPurpose.get(purpose) as string })
                     showConfirm(message, () => {
                         props.setLoading(true)
                         addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file, (result) => {
@@ -118,7 +118,7 @@ export default function EditPlates(props: EditDialogProps) {
                     const file = newImageSrc
                     if (!checkFields({ nameChecked, codeChecked, imageChecked, newName, newCode, file }, showMessage)) return
                     const material = baseMaterial
-                    const message = getMessage({ nameChecked, codeChecked, imageChecked, purposeChecked, name, code: extMaterials[extMaterialIndex].code, purpose: MATPurposeCaptions.get(purpose) as string, newName, newCode, newPurpose: MATPurposeCaptions.get(newPurpose) as string })
+                    const message = getMessage({ nameChecked, codeChecked, imageChecked, purposeChecked, name, code: extMaterials[extMaterialIndex].code, purpose: MATPurpose.get(purpose) as string, newName, newCode, newPurpose: MATPurpose.get(newPurpose) as string })
                     showConfirm(message, () => {
                         const usedName = nameChecked ? newName : ""
                         const usedCode = codeChecked ? newCode : ""

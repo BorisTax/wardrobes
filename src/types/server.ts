@@ -1,5 +1,4 @@
 import { Request } from "express"
-import { ExtMaterial, Profile } from "./materials"
 export type Token = {
     token: string
     username: string

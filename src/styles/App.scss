@@ -1,63 +1,79 @@
 $icon-url: '../images/icons/';
 $image-url: '../images/';
-*{
+
+* {
   user-select: none;
 }
-.version{
+
+.version {
   display: flex;
   align-items: center;
-  
+
 }
-dialog{
+
+dialog {
   overflow: hidden;
   padding: 0.5rem;
 }
-html{
+
+html {
   height: 100%;
 }
-body{
+
+body {
   background-color: rgb(233, 233, 233) !important;
   height: 100%;
 }
-#root{
+
+#root {
   height: 100%;
 }
+
 body:has(dialog[open]) {
   overflow: hidden;
 }
-input, select{
+
+input,
+select {
   width: 100%;
 }
-input[type="checkbox"]{
+
+input[type="checkbox"] {
   width: auto;
 }
-option{
+
+option {
   overflow: hidden;
 }
-hr{
-  margin: 0.2rem 0 0.5rem 0!important;
+
+hr {
+  margin: 0.2rem 0 0.5rem 0 !important;
 }
-dialog{
+
+dialog {
   box-shadow: 0px 0px 10px black;
 }
 
-.property-grid{
+.property-grid {
   display: grid;
   align-items: center;
   grid-template-columns: auto auto;
   gap: 0.2rem;
 }
-.property-row{
+
+.property-row {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
   gap: 1em;
 }
-svg{
+
+svg {
   min-width: 0;
   min-height: 0;
 }
-.user{
+
+.user {
   justify-self: end;
   display: inline-flex;
   align-items: center;
@@ -65,7 +81,7 @@ svg{
   margin-right: 1em;
 }
 
-.spinner-container{ 
+.spinner-container {
   position: absolute;
   top: 0px;
   margin: auto;
@@ -79,7 +95,7 @@ svg{
 }
 
 .spinner {
-  border: 8px solid #ffffff; 
+  border: 8px solid #ffffff;
   border-top: 8px solid #2f00ff;
   border-radius: 50%;
   width: 120px;
@@ -88,6 +104,11 @@ svg{
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -109,7 +109,7 @@ function getProperties(fasad: Fasad | null) {
         directions.set(Division.WIDTH, "Вертикально")
         directions.set(Division.HEIGHT, "Горизонтально")
     }
-    const direction = fasad ? (fasad.Division === Division.HEIGHT ? "Горизонтально" : "Вертикально") : ""
+    const direction = fasad ? fasad.Division : ""
     const sectionCount = (fasad && (fasad.Children.length > 1)) ? `${fasad.Children.length}` : ""
     const fixWidth = fasad?.FixedWidth() || false
     const fixHeight = fasad?.FixedHeight() || false

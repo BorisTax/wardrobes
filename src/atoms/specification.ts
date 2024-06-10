@@ -28,16 +28,19 @@ const initSpecification = {
 
 export const specificationCombiAtom = atom<Map<SpecificationItem, number>[]>([])
 export const specificationAtom = atom<SpecificationResult>(initSpecification)
+export const specificationInProgress = atom(false)
 
 export const calculateSpecificationsAtom = atom(null, async (get, set, data: WardrobeData) => {
     const { token } = get(userAtom)
     const formData: any = {}
     formData[TableFields.DATA] = data
     formData[TableFields.TOKEN] = token
+    set(specificationInProgress, true)
     try {
         const result: FetchResult<SpecificationResult> = await fetchData('api/specification', "POST", JSON.stringify(formData))
-        if (!result.success) set(specificationAtom, initSpecification); else
+        if (!result.success) set(specificationAtom, {...initSpecification}); else
             set(specificationAtom, result.data as SpecificationResult)
+            set(specificationInProgress, false)
     } catch (e) { console.error(e) }
 })
 

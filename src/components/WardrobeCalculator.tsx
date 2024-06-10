@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import ComboBox from "./ComboBox"
 import PropertyGrid from "./PropertyGrid"
 import { CONSOLE_TYPE, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
@@ -60,7 +60,9 @@ export default function WardrobeCalculator() {
     const { wardKind, wardType, width, depth, height, dspName, fasades, profileName, extComplect } = data
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const maxFasades = 6
-    const consoleTypes = useMemo(() => [...ConsoleTypes.keys()], [ConsoleTypes])
+    useEffect(() => {
+        calculate(data)
+    }, [data])
     return <div>
         <div style={{ display: "flex", flexDirection:"column", justifyContent: "center", padding: "1em" }}>
             <div style={{ display: "flex", gap:"1rem" }}>
@@ -68,7 +70,6 @@ export default function WardrobeCalculator() {
                     <div className="text-center">Основные параметры</div>
                     <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
                         <ComboBox title="Серия шкафа:" value={wardKind as string} items={WardKinds} onChange={(_, value) => { setState(prev => ({ ...prev, wardKind: value as WARDROBE_KIND })) }} />
-                        <div className="text-end">Ширина: </div>
                         <ComboBox title="Тип шкафа:" value={wardType as string} items={WardTypes} onChange={(_, value) => { setState(prev => ({ ...prev, wardType: value as WARDROBE_TYPE })) }} />
                         <div className="text-end">Ширина: </div>
                         <TextBox value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setState(prev => ({ ...prev, width: +value })) }} />
@@ -133,7 +134,7 @@ export default function WardrobeCalculator() {
                     </PropertyGrid>
                 </div>
             </div>
-                <div className="small-button align-self-center" role="button" onClick={() => { calculate(data) }}>Рассчет</div>
+                
         </div>
     </div>
 }

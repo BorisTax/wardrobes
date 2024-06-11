@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import { specificationCombiAtom } from "./specification";
 import writeToExcel from 'write-excel-file';
 import { priceListAtom } from "./prices";
-import { SpecificationItem } from "../types/enums";
+import { SpecificationItem } from "../types/specification.ts";
 import { UnitCaptions } from "../functions/materials";
 import { PriceListItem } from "../types/server";
 import { appDataAtom } from "./app";

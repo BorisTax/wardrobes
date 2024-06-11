@@ -1,3 +1,86 @@
+import { DETAIL_NAME, Detail, WARDROBE_KIND, WardrobeDetailTable } from "../../types/wardrobe";
+import { wardrobePath } from "../options";
+import { WardrobeDetailTableService } from "../services/wardrobeDetailTableService";
+
+export async function getDetails(kind: WARDROBE_KIND, width: number, height: number, depth: number): Promise<Detail[]>{
+    const service = new WardrobeDetailTableService(wardrobePath)
+    const result = await service.getDetailTable({ kind })
+    if(!result.success) return []
+    const table = result.data as WardrobeDetailTable[]
+    const details: Detail[] = []
+    var { count, size } = getDetail(table, DETAIL_NAME.ROOF, width, height, 0, 0)
+    const offset = 100
+    details.push({name: DETAIL_NAME.ROOF, length: size, width: depth, count})
+    var { count, size } = getDetail(table, DETAIL_NAME.STAND, width, height, 0, 0)
+    details.push({name: DETAIL_NAME.STAND, length: size, width: depth, count})
+    var { count, size } = getDetail(table, DETAIL_NAME.INNER_STAND, width, height, 0, 0)
+    const innerStandLCount = count
+    details.push({ name: DETAIL_NAME.INNER_STAND, length: size, width: depth - offset, count })
+    var { count, size } = getDetail(table, DETAIL_NAME.SHELF, width, height, 0, innerStandLCount)
+    const shelfSize = size
+    details.push({ name: DETAIL_NAME.SHELF, length: size, width: depth - offset, count })
+    var { count, size } = getDetail(table, DETAIL_NAME.SHELF_PLAT, width, height, shelfSize, innerStandLCount)
+    details.push({ name: DETAIL_NAME.SHELF_PLAT, length: size, width: depth - offset, count })
+    var { count, size } = getDetail(table, DETAIL_NAME.PILLAR, width, height, shelfSize, innerStandLCount)
+    details.push({ name: DETAIL_NAME.PILLAR, length: size, width: depth - offset, count })
+    return details
+}
+
+function getDetail(table: WardrobeDetailTable[], name: DETAIL_NAME, width: number, height: number, shelfSize: number, standCount: number): { count: number, size: number } {
+    const detail = table.find(t => (name === t.name) && (width >= t.width1) && (width <= t.width2) && (height >= t.height1) && (height <= t.height2))
+    if(!detail) return {count: 0, size: 0}
+    const size = calcFunction(detail.size, { width, height, shelfSize, standCount })
+    return { count: size ? detail.count : 0, size }
+}
+
+function calcFunction(func: string, { width, height, shelfSize, standCount }: { width: number, height: number, shelfSize: number, standCount: number }): number {
+    try {
+        const f = new Function('W', 'H', 'ShL', 'StN', 'return ' + func)
+        const result = f(width, height, shelfSize, standCount)
+        return result
+    } catch (e) {
+        return 0
+    }
+}
+
+export async function getDVP(width: number, height: number, depth: number){
+    const dvpLayers = [
+        {count: 3, width: 789},
+        {count: 4, width: 591},
+        {count: 5, width: 472},
+        {count: 6, width: 393},
+        {count: 7, width: 337},
+        {count: 8, width: 295},
+    ]
+    const service = new WardrobeDetailTableService(wardrobePath)
+    const result = await service.getDVPTemplates()
+    if (!result.success) return { dvpWidth: 0, dvpLength: 0, dvpRealWidth: 0, dvpRealLength: 0, dvpCount: 0, dvpPlanka: 0, dvpPlankaCount: 0 }
+    if (!result.data) return {dvpWidth:0, dvpLength:0, dvpRealWidth:0, dvpRealLength:0, dvpCount:0, dvpPlanka:0, dvpPlankaCount:0}
+    const dvpTemplates592 = result.data.filter(d => d.width === 592).map(i => i.length)
+    const dvpTemplates393 = result.data.filter(d => d.width === 393).map(i => i.length)
+    const found = dvpLayers.find(d => d.width <= depth) || {count: 1, width: height }
+    const section = width > 2750 ? 2 : 1
+    const roof = width / section
+    const dvpRealWidth = found.width
+    const dvpRealLength = roof - 3 
+    const length592 = dvpTemplates592.find(t => t >= dvpRealLength)
+    const length393 = dvpTemplates393.find(t => t >= dvpRealLength)
+    let dvpWidth
+    let dvpLength
+    if (found.width <= 393 && length393) {
+        dvpWidth = 393
+        dvpLength = length393
+    } else {
+        dvpWidth = 592
+        dvpLength = length592 || 0 
+    }   
+    const dvpCount = found.count
+    const dvpPlanka = roof - 32
+    const dvpPlankaCount = section === 1 ? (dvpCount - 1) : (dvpCount / 2 - 1) * 2 
+    
+    return {dvpWidth, dvpLength, dvpRealWidth, dvpRealLength, dvpCount, dvpPlanka, dvpPlankaCount}
+}
+
 export function getKarton(width: number, height: number){
     const wLess500_hLess2150 = [
         { width: 1600, value: 2.5 },

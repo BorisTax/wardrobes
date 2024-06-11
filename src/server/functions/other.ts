@@ -14,6 +14,12 @@ export enum MAT_TABLE_NAMES {
     TREMPEL = 'trempel',
     ZAGLUSHKA = 'zaglushka'
 }
+export enum WARDROBE_TABLE_NAMES {
+    WARDROBES = 'wardrobes',
+    DETAILS = 'details',
+    DETAIL_TABLE = 'detail_table',
+    DVP_TEMPLATES = 'dvp_templates',
+}
 export enum PRICE_TABLE_NAMES {
     PRICELIST = 'pricelist',
     UNITS = 'units',

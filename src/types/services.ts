@@ -1,8 +1,8 @@
-import { SpecificationItem } from "./enums"
+import { SpecificationItem } from "./specification"
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
 import { PriceListItem, Result, Token, User } from "./server"
 import { NewTemplate, Template } from "./templates"
-import { SpecificationResult, WardrobeData } from "./wardrobe"
+import { DETAIL_NAME, SpecificationResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User[]>>
     getTokens: () => Promise<Result<Token[]>>
@@ -41,6 +41,10 @@ interface IPriceAbstractService {
 }
 export interface ISpecificationService {
     getSpecList: (data: WardrobeData, coefList: Map<SpecificationItem, number>) => Promise<Result<SpecificationResult>>
+}
+export interface IWardrobeDetailTableService {
+    getDetailTable: ({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }) => Promise<Result<WardrobeDetailTable[]>>
+    getDVPTemplates: () => Promise<Result<{ width: number, length: number }[]>>
 }
 export interface IMaterialServiceProvider extends IMaterialService {
     dbFile: string

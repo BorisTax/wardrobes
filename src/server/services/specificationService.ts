@@ -1,5 +1,6 @@
 import { filterEmptySpecification, getFasadSpecification } from '../../functions/specification.js'
-import { SpecificationItem } from '../../types/enums.js'
+import { CORPUS_SPECS } from "../../types/specification.js"
+import { SpecificationItem } from "../../types/specification"
 import { materialsPath } from '../options.js'
 import { Brush, Profile, ProfileType } from '../../types/materials.js'
 import { PriceListItem, Result } from '../../types/server.js'
@@ -9,6 +10,7 @@ import { getCorpusSpecification, getWardrobe } from '../wardrobes/specifications
 import { createFasades } from '../wardrobes/specifications/fasades.js'
 import BrushServiceSQLite from './extServices/brushServiceSQLite.js'
 import { MaterialExtService } from './materialExtService.js'
+import { getDVP, getDetails } from '../wardrobes/functions.js'
 
 
 export class SpecificationService implements ISpecificationService {
@@ -19,23 +21,11 @@ export class SpecificationService implements ISpecificationService {
     this.matProvider = matProvider
   }
   async getSpecList(data: WardrobeData): Promise<Result<SpecificationResult>> {
-    const result: SpecificationResult = {
-      corpus: {},
-      fasades: [],
-      extComplect: {
-        telescope: {},
-        console: {},
-        blinder: {},
-        shelf: {},
-        shelfPlat: {},
-        pillar: {},
-        stand: {},
-        truba: {},
-        trempel: {},
-        light: {},
-    }
-    }
-    const wardrobe = getWardrobe(data)
+    const result: SpecificationResult = []
+    const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
+    const dvpData = await getDVP(data.width, data.height, data.depth)
+    const dvp = dvpData.dvpLength * dvpData.dvpWidth * dvpData.dvpCount / 1000000
+    const wardrobe = getWardrobe(data, details)
     const priceList = (await this.priceProvider.getPriceList()).data || []
     const coefList: Map<SpecificationItem, number> = new Map(priceList.map((p: PriceListItem) => [p.name as SpecificationItem, p.coef as number]))
     const profiles = (await this.matProvider.getProfiles()).data
@@ -44,9 +34,8 @@ export class SpecificationService implements ISpecificationService {
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
     const brush: Brush | undefined = brushes?.find(b => b.name === profile?.brush)
     const fasades = createFasades(data, profile?.type as ProfileType)
-    result.corpus = Object.fromEntries(filterEmptySpecification(getCorpusSpecification(wardrobe, profile?.type as ProfileType, coefList)))
-    result.fasades = fasades.map(f => Object.fromEntries(filterEmptySpecification(getFasadSpecification(f, profile?.type as ProfileType, coefList))))
-
+    result.push({ type: CORPUS_SPECS.CORPUS, spec: [...(filterEmptySpecification(getCorpusSpecification(wardrobe, dvp, profile?.type as ProfileType, coefList))).entries()] })
+    fasades.forEach(f => { result.push({ type: f.Material, spec: [...(filterEmptySpecification(getFasadSpecification(f, profile?.type as ProfileType, coefList))).entries()] }) }) 
     return {success: true, status: 200, data: result}
   }
 

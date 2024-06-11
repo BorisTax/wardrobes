@@ -3,7 +3,7 @@ import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { PriceListItem, TableFields } from "../types/server";
 import { AtomCallbackResult } from "../types/atoms";
-import { SpecificationItem } from "../types/enums";
+import { SpecificationItem } from "../types/specification.ts";
 
 export const priceListAtom = atom<PriceListItem[]>([])
 export const activeProfileIndexAtom = atom(0)

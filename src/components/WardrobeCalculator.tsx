@@ -11,6 +11,7 @@ import TextBox from "./TextBox"
 import { ConsoleTypes, WardKinds, WardTypes } from "../functions/wardrobe"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import { calculateSpecificationsAtom } from "../atoms/specification"
+import WardrobeSpecification from "./WardrobeSpecification"
 const numbers = [0, 1, 2, 3, 4, 5, 6]
 const initFasades = {
     dsp: { count: 0, names: [] },
@@ -133,6 +134,7 @@ export default function WardrobeCalculator() {
                         <TextBox value={extComplect.light} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setState(prev => ({ ...prev, extComplect: { ...prev.extComplect, light: +value } })) }} />
                     </PropertyGrid>
                 </div>
+        <WardrobeSpecification />
             </div>
                 
         </div>

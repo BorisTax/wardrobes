@@ -1,8 +1,9 @@
-import { SpecificationItem } from "./enums"
-import { WardrobeDetail } from "../server/wardrobes/types"
+import { FasadMaterial } from "./enums"
+import { SPEC_GROUP } from "./specification"
+import { SpecificationItem } from "./specification"
 
 export interface IWardrobe {
-    getDetails: () => WardrobeDetail[]
+    getDetails: () => Detail[]
     getDSP: () => number
     getDVP: () => number
     getEdge2: () => number
@@ -67,22 +68,15 @@ export type SpecificationRow = {
     amount: number
 }
 
-export type SpecificationResult = {
-    corpus: {}
-    fasades: {}[]
-    extComplect: {
-        telescope: {}
-        console: {}
-        blinder: {}
-        shelf: {}
-        shelfPlat: {}
-        pillar: {}
-        stand: {}
-        truba: {}
-        trempel: {}
-        light: {}
-    }
-}
+export type SpecificationResultFasades = [
+    { type: FasadMaterial, spec: [SpecificationItem, number][] },
+    { type: FasadMaterial, spec: [SpecificationItem, number][] },
+    { type: FasadMaterial, spec: [SpecificationItem, number][] },
+    { type: FasadMaterial, spec: [SpecificationItem, number][] },
+    { type: FasadMaterial, spec: [SpecificationItem, number][] },
+    { type: FasadMaterial, spec: [SpecificationItem, number][] },
+]
+export type SpecificationResult = { type: SPEC_GROUP, spec: [SpecificationItem, number][] }[]
 
 export enum WARDROBE_TYPE {
     WARDROBE = 'WARDROBE',
@@ -97,4 +91,33 @@ export enum CONSOLE_TYPE {
 
 export enum WARDROBE_KIND {
     STANDART = 'STANDART'
+}
+
+
+export type WardrobeDetailTable = {
+    type: WARDROBE_KIND
+    name: DETAIL_NAME
+    width1: number
+    width2: number
+    height1: number
+    height2: number
+    count: number
+    size: string
+    enabled: boolean
+}
+
+export type Detail = {
+    name: DETAIL_NAME
+    length: number
+    width: number
+    count: number
+}
+
+export enum DETAIL_NAME {
+    ROOF = 'ROOF',
+    STAND = 'STAND',
+    INNER_STAND = 'INNER_STAND',
+    SHELF = 'SHELF',
+    SHELF_PLAT = 'SHELF_PLAT',
+    PILLAR = 'PILLAR'
 }

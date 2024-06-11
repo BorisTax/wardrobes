@@ -53,6 +53,7 @@ export enum TableFields {
     PRICE = 'price',
     MARKUP = 'markup',
     TABLE = 'table',
+    KIND = 'kind',
 }
 
 export type PriceListItem = {

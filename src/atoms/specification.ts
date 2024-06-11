@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { SpecificationItem } from "../types/enums";
+import { SpecificationItem } from "../types/specification";
 import { getFasadSpecification } from "../functions/specification";
 import { appDataAtom } from "./app";
 import Fasad from "../classes/Fasad";
@@ -8,29 +8,15 @@ import { SpecificationResult, WardrobeData } from "../types/wardrobe";
 import { userAtom } from "./users";
 import { FetchResult, fetchData } from "../functions/fetch";
 import { TableFields } from "../types/server";
-
-const initSpecification = {
-    corpus: {},
-    fasades: [],
-    extComplect: {
-        telescope: {},
-        console: {},
-        blinder: {},
-        shelf: {},
-        shelfPlat: {},
-        pillar: {},
-        stand: {},
-        truba: {},
-        trempel: {},
-        light: {},
-    }
-}
+import { getInitSpecification } from "../functions/specification";
 
 export const specificationCombiAtom = atom<Map<SpecificationItem, number>[]>([])
-export const specificationAtom = atom<SpecificationResult>(initSpecification)
+export const specificationAtom = atom<SpecificationResult>(getInitSpecification())
 export const specificationInProgress = atom(false)
 
 export const calculateSpecificationsAtom = atom(null, async (get, set, data: WardrobeData) => {
+    const fasadCount = Object.values(data.fasades).reduce((a, f) => f.count + a, 0)
+    if (fasadCount === 1 || fasadCount > 6) return
     const { token } = get(userAtom)
     const formData: any = {}
     formData[TableFields.DATA] = data
@@ -38,7 +24,7 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, data: War
     set(specificationInProgress, true)
     try {
         const result: FetchResult<SpecificationResult> = await fetchData('api/specification', "POST", JSON.stringify(formData))
-        if (!result.success) set(specificationAtom, {...initSpecification}); else
+        if (!result.success) set(specificationAtom, [...getInitSpecification()]); else
             set(specificationAtom, result.data as SpecificationResult)
             set(specificationInProgress, false)
     } catch (e) { console.error(e) }

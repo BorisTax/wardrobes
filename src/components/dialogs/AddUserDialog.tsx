@@ -44,7 +44,7 @@ export default function AddUserDialog({ dialogRef, setLoading }: DialogProps & E
         </div>
         <hr />
         <form onSubmit={(e) => { e.preventDefault(); create() }}>
-            <div className="property-grid">
+            <div className="table-grid">
                 <div>{`Логин (мин. ${minNameLen} символов):`}</div>
                 <input required value={name} onChange={(e) => { setState((prev) => ({ ...prev, name: e.target.value })); }} />
                 <div>{`Пароль (мин. ${minPassLen} символов):`}</div>

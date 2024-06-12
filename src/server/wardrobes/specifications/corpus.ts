@@ -1,17 +1,16 @@
 import { getSpecificationPattern } from "../../../functions/specification"
 import { SpecificationItem } from "../../../types/specification"
-import { Detail, WARDROBE_KIND } from "../../../types/wardrobe"
+import { DVPData, Detail, WARDROBE_KIND } from "../../../types/wardrobe"
 import { ProfileType } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"
-import { getDVP } from "../functions"
 
-export function getCorpusSpecification(wardrobe: IWardrobe, dvp:number, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
+export function getCorpusSpecification(wardrobe: IWardrobe, dvpData: DVPData, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
     const spec = getSpecificationPattern()
     const truba = wardrobe.getTruba()
     const trempel = wardrobe.getTrempel()
     spec.set(SpecificationItem.DSP, wardrobe.getDSP() * (coefList.get(SpecificationItem.DSP) || 1))
-    spec.set(SpecificationItem.DVP, dvp * (coefList.get(SpecificationItem.DVP) || 1))
+    spec.set(SpecificationItem.DVP, (dvpData.dvpLength * dvpData.dvpWidth * dvpData.dvpCount / 1000000) * (coefList.get(SpecificationItem.DVP) || 1))
     spec.set(SpecificationItem.Kromka2, wardrobe.getEdge2() * (coefList.get(SpecificationItem.Kromka2) || 1))
     spec.set(SpecificationItem.Kromka05, wardrobe.getEdge05() * (coefList.get(SpecificationItem.Kromka05) || 1))
     spec.set(SpecificationItem.Confirmat, wardrobe.getConfirmat() * (coefList.get(SpecificationItem.Confirmat) || 1))

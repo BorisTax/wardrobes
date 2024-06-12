@@ -38,7 +38,7 @@ export default function EditPlates(props: EditDialogProps) {
     return <>
     <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
-                <div className="property-grid">
+                <div className="table-grid">
                     <ComboBox title="Материал: " value={baseMaterial} items={Materials} onChange={(_, value: string) => { setState((prev) => ({ ...prev, baseMaterial: getFasadMaterial(value), extMaterialIndex: 0 })); }} />
                     <ComboBox title="Цвет/Рисунок: " value={extMaterials[extMaterialIndex]?.name} items={extMaterialNames} onChange={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
                 </div>
@@ -49,7 +49,7 @@ export default function EditPlates(props: EditDialogProps) {
         <hr />
         <div className="editmaterial-container">
             <hr />
-            <div className="property-grid">
+            <div className="table-grid">
                 <span className="text-end text-nowrap">Наименование:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={nameChecked} onChange={() => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />

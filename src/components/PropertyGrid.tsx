@@ -3,5 +3,5 @@ export type PropertyGridProps = {
     style?: object
 }
 export default function PropertyGrid(props: PropertyGridProps){
-    return <div className="property-grid" style={{...props.style}}>{props.children}</div>
+    return <div className="table-grid" style={{...props.style}}>{props.children}</div>
 }

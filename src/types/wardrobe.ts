@@ -62,6 +62,16 @@ export type WardrobeData = {
     }
 }
 
+export type DVPData = {
+    dvpWidth: number,
+    dvpLength: number,
+    dvpRealWidth: number,
+    dvpRealLength: number,
+    dvpCount: number,
+    dvpPlanka: number,
+    dvpPlankaCount: number
+}
+
 export type SpecificationRow = {
     name: SpecificationItem
     code_char: string

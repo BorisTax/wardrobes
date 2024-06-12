@@ -33,7 +33,7 @@ export default function EditProfile(props: EditDialogProps) {
     return <>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
-                <div className="property-grid">
+                <div className="table-grid">
                     <ComboBox title="Тип: " value={type || ""} items={Profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.type === value) as Profile; if(p) setState({ type: value as ProfileType, name: p.name, code: p.code, brush: p.brush }); }} />
                     <ComboBox title="Цвет: " value={profileName} items={profiles} onChange={(_, value: string) => { const p = profileList.find((p: Profile) => p.name === value) as Profile; if(p) setState((prev) => ({ ...prev, name: value, code: p.code, brush: p.brush })) }} />
                 </div>
@@ -42,7 +42,7 @@ export default function EditProfile(props: EditDialogProps) {
         <hr />
         <div className="editmaterial-container">
             <hr />
-            <div className="property-grid">
+            <div className="table-grid">
                 <span className="text-end text-nowrap">Наименование:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={nameChecked} onChange={() => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />

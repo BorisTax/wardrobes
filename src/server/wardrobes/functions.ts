@@ -1,4 +1,4 @@
-import { DETAIL_NAME, Detail, WARDROBE_KIND, WardrobeDetailTable } from "../../types/wardrobe";
+import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeDetailTable } from "../../types/wardrobe";
 import { wardrobePath } from "../options";
 import { WardrobeDetailTableService } from "../services/wardrobeDetailTableService";
 
@@ -43,19 +43,13 @@ function calcFunction(func: string, { width, height, shelfSize, standCount }: { 
     }
 }
 
-export async function getDVP(width: number, height: number, depth: number){
-    const dvpLayers = [
-        {count: 3, width: 789},
-        {count: 4, width: 591},
-        {count: 5, width: 472},
-        {count: 6, width: 393},
-        {count: 7, width: 337},
-        {count: 8, width: 295},
-    ]
+export async function getDVP(width: number, height: number, depth: number): Promise<DVPData> {
+    const lines = [3, 4, 5, 6, 7, 8]
+    const dvpLayers = lines.map(l => ({ width: Math.round(height - 30 - 2 * (l - 1) / l), count: l }))
     const service = new WardrobeDetailTableService(wardrobePath)
     const result = await service.getDVPTemplates()
     if (!result.success) return { dvpWidth: 0, dvpLength: 0, dvpRealWidth: 0, dvpRealLength: 0, dvpCount: 0, dvpPlanka: 0, dvpPlankaCount: 0 }
-    if (!result.data) return {dvpWidth:0, dvpLength:0, dvpRealWidth:0, dvpRealLength:0, dvpCount:0, dvpPlanka:0, dvpPlankaCount:0}
+    if (!result.data) return { dvpWidth: 0, dvpLength: 0, dvpRealWidth: 0, dvpRealLength: 0, dvpCount: 0, dvpPlanka: 0, dvpPlankaCount: 0 }
     const dvpTemplates592 = result.data.filter(d => d.width === 592).map(i => i.length)
     const dvpTemplates393 = result.data.filter(d => d.width === 393).map(i => i.length)
     const found = dvpLayers.find(d => d.width <= depth) || {count: 1, width: height }

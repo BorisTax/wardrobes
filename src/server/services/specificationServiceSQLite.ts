@@ -1,6 +1,6 @@
 import { dataBaseQuery } from '../functions/other.js'
-import { IPriceServiceProvider, ISpecificationServiceProvider } from '../../types/services.js';
-import { Result, PriceData, SpecificationData } from '../../types/server.js';
+import { ISpecificationServiceProvider } from '../../types/services.js';
+import { Result, SpecificationData } from '../../types/server.js';
 import messages from '../messages.js';
 import { SPEC_TABLE_NAMES } from '../functions/other.js';
 const { MATERIALS } = SPEC_TABLE_NAMES
@@ -13,18 +13,18 @@ export default class SpecificationServiceSQLite implements ISpecificationService
         return dataBaseQuery(this.dbFile, `select * from ${MATERIALS};`, { successStatusCode: 200 })
     }
     async updateSpecList({ name, caption, code, coef, id, purpose }: SpecificationData): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getQuery({ name, caption, code, coef, id, purpose }), { successStatusCode: 200, successMessage: messages.PRICELIST_UPDATED })
+        return dataBaseQuery(this.dbFile, getQuery({ name, caption, code, coef, id, purpose }), { successStatusCode: 200, successMessage: messages.DATA_UPDATED })
     }
 
 }
 
 function getQuery({ name, caption, code, coef, id, purpose }: SpecificationData) {
     const parts = []
-    if (caption) parts.push(`caption=${caption}`)
-    if (code) parts.push(`code=${code}`)
+    if (caption) parts.push(`caption='${caption}'`)
+    if (code) parts.push(`code='${code}'`)
     if (coef) parts.push(`coef=${coef}`)
-    if (id) parts.push(`id=${id}`)
-    if (purpose) parts.push(`purpose=${purpose}`)
-    const query = parts.length > 0 ? `update specification set ${parts.join(', ')} where name='${name}';` : ""
+    if (id) parts.push(`id='${id}'`)
+    if (purpose) parts.push(`purpose='${purpose}'`)
+    const query = parts.length > 0 ? `update ${MATERIALS} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

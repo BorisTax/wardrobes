@@ -28,7 +28,7 @@ export default function EditTrempel(props: EditDialogProps) {
     return <>
         <div className="d-flex flex-nowrap gap-2 align-items-start">
             <div>
-                <div className="property-grid">
+                <div className="table-grid">
                     <ComboBox title="Тремпель: " value={trempelName} items={trempeles} onChange={(_, value: string) => { const p = trempelList.find((p: Trempel) => p.name === value) as Trempel; setState((prev) => ({ ...prev, name: value, code: p.code })) }} />
                 </div>
             </div>
@@ -36,7 +36,7 @@ export default function EditTrempel(props: EditDialogProps) {
         <hr />
         <div className="editmaterial-container">
             <hr />
-            <div className="property-grid">
+            <div className="table-grid">
                 <span className="text-end text-nowrap">Наименование:</span>
                 <div className="d-flex justify-content-start gap-2">
                     <input type="checkbox" checked={nameChecked} onChange={() => { setChecked(prev => ({ ...prev, nameChecked: !nameChecked })) }} />

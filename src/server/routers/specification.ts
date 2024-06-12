@@ -6,6 +6,7 @@ import { WardrobeData } from "../../types/wardrobe.js";
 import { isEditorAtLeast } from "../functions/user.js";
 import { accessDenied, incorrectData, noExistData } from "../functions/other.js";
 import messages from "../messages.js";
+import { getVerboseDSPData } from "../wardrobes/verbose.js";
 
 const router = express.Router();
 export default router
@@ -14,6 +15,12 @@ router.get("/", async (req: MyRequest, res) => {
   //if (!isClientAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { data } = req.body
   const result = await getSpecList();
+  res.json(result);
+});
+router.get("/verbose/dsp", async (req: MyRequest, res) => {
+  //if (!isClientAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { data } = req.body
+  const result = await getVerboseDSPData(data)
   res.json(result);
 });
 router.put("/", async (req: MyRequest, res) => {

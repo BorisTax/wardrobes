@@ -3,6 +3,7 @@ export const rusMessages = {
   [messages.DATABASE_OPEN_ERROR]: "Ошибка базы данных",
   [messages.DATABASE_CONSTRAINT_ERROR]: "Данный материал подвязан к другому материалу.",
   [messages.SQL_QUERY_ERROR]: "Ошибка запроса к базе данных",
+  [messages.DATA_UPDATED]: "Данные обновлены",
   [messages.INVALID_NAME]: "Некорректное имя",
   [messages.INVALID_PASSWORD]: "Некорректный пароль",
   [messages.INVALID_USER_DATA]: "Некорректные данные пользователя",

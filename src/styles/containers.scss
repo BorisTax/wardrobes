@@ -193,7 +193,7 @@ table {
   position: relative;
   border-collapse: collapse; 
 }
-.pricelist tr:hover{
+.table-data tr:hover{
   background-color: #88dffa;
 }
 .tr-attention{
@@ -203,18 +203,18 @@ table {
 .tr-noattention{
   color: #818181;
 }
-.pricelist{
+.table-data{
   font-size: 0.8rem;
   -display: grid;
   -grid-template-columns: auto auto auto;
   overflow: scroll;
   max-height: 50svh;
 }
-.pricelist-cell{
+.table-data-cell{
 border: 1px solid black;
 padding: 0.1em 0.5rem;
 }
-.priceheader{
+.table-header{
   font-weight: bold;
   position: sticky;
   top: 0;

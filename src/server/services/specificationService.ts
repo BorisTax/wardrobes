@@ -31,7 +31,6 @@ export class SpecificationService implements ISpecificationService {
     const result: SpecificationResult = []
     const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
     const dvpData = await getDVP(data.width, data.height, data.depth)
-    const dvp = dvpData.dvpLength * dvpData.dvpWidth * dvpData.dvpCount / 1000000
     const wardrobe = getWardrobe(data, details)
     const priceList = (await this.provider.getSpecList()).data || []
     const coefList: Map<SpecificationItem, number> = new Map(priceList.map((p: SpecificationData) => [p.name as SpecificationItem, p.coef as number]))
@@ -41,7 +40,7 @@ export class SpecificationService implements ISpecificationService {
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
     const brush: Brush | undefined = brushes?.find(b => b.name === profile?.brush)
     const fasades = createFasades(data, profile?.type as ProfileType)
-    result.push({ type: CORPUS_SPECS.CORPUS, spec: [...(filterEmptySpecification(getCorpusSpecification(wardrobe, dvp, profile?.type as ProfileType, coefList))).entries()] })
+    result.push({ type: CORPUS_SPECS.CORPUS, spec: [...(filterEmptySpecification(getCorpusSpecification(wardrobe, dvpData, profile?.type as ProfileType, coefList))).entries()] })
     fasades.forEach(f => { result.push({ type: f.Material, spec: [...(filterEmptySpecification(getFasadSpecification(f, profile?.type as ProfileType, coefList))).entries()] }) }) 
     return {success: true, status: 200, data: result}
   }

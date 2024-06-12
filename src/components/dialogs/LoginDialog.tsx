@@ -30,7 +30,7 @@ export default function LoginDialog() {
             const formData = new FormData(document.getElementById("loginForm") as HTMLFormElement)
             login(formData.get("name") as string, formData.get("password") as string)
         }}>
-            <div className="property-grid"> 
+            <div className="table-grid"> 
                 <label htmlFor="name">Логин</label>
                 <input id="name" name="name" required />
                 <label htmlFor="pass">Пароль</label>

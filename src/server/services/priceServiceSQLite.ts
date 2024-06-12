@@ -13,7 +13,7 @@ export default class PriceServiceSQLite implements IPriceServiceProvider {
         return dataBaseQuery(this.dbFile, `select * from ${PRICELIST};`, { successStatusCode: 200 })
     }
     async updatePriceList({ name, price, markup }: PriceData): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getPriceQuery({ name, price, markup }), { successStatusCode: 200, successMessage: messages.PRICELIST_UPDATED })
+        return dataBaseQuery(this.dbFile, getPriceQuery({ name, price, markup }), { successStatusCode: 200, successMessage: messages.DATA_UPDATED })
     }
 
 }
@@ -22,6 +22,6 @@ function getPriceQuery({ name, price, markup }: PriceData) {
     const parts = []
     if (price) parts.push(`price=${price}`)
     if (markup) parts.push(`markup=${markup}`)
-    const query = parts.length > 0 ? `update pricelist set ${parts.join(', ')} where name='${name}';` : ""
+    const query = parts.length > 0 ? `update ${PRICELIST} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

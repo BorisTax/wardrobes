@@ -1,23 +1,26 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useAtomValue } from "jotai"
 import { priceListAtom } from "../atoms/prices"
-import { PriceListItem } from "../types/server"
+import { PriceData, SpecificationData } from "../types/server"
 import { UnitCaptions } from "../functions/materials"
 import { MAT_PURPOSE } from "../types/enums"
 import { SpecificationItem } from "../types/specification"
 import { userAtom } from "../atoms/users"
 import { isManagerAtLeast } from "../server/functions/user"
+import { specificationDataAtom } from "../atoms/specification"
 
 type SpecificationTableProps = {
     purposes: MAT_PURPOSE[],
     specification: Map<SpecificationItem, number>
 }
-
+type TotalData = PriceData & SpecificationData
 export default function SpecificationTable(props: SpecificationTableProps) {
     const { role } = useAtomValue(userAtom)
+    const specList = useAtomValue(specificationDataAtom)
     const priceList = useAtomValue(priceListAtom)
+    const list: TotalData[] = useMemo(() => specList.map(s => ({ ...s, ...priceList.find(p => p.name === s.name) })), [specList, priceList])
     const [showAll, setShowAll] = useState(false)
-    const contents = priceList?.filter(i => props.purposes.some(p => i.purpose === p) && (props.specification.get(i.name as SpecificationItem) || showAll)).map((i: PriceListItem, index: number) => {
+    const contents = list?.filter(i => props.purposes.some(p => i.purpose === p) && (props.specification.get(i.name as SpecificationItem) || showAll)).map((i: TotalData, index: number) => {
         const amount = props.specification.get(i.name as SpecificationItem) || 0
         const price = i.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"

@@ -202,7 +202,10 @@ $header_button_height: 32px;
   background-image: url($icon-url+'editPrice.png');
   @include header_button();
 }
-
+.editSpecification {
+  background-image: url($icon-url+'editSpecification.png');
+  @include header_button();
+}
 .specButton {
   background-image: url($icon-url+'specButton.png');
   @include header_button();

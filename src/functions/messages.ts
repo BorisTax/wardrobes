@@ -51,10 +51,11 @@ export const rusMessages = {
   [messages.PRICELIST_NAME_NO_EXIST]: "Материал не существует в базе",
   [messages.PRICELIST_PRICE_INCORRECT]: "Некорректная цена",
   [messages.PRICELIST_MARKUP_INCORRECT]: "Некорректная наценка",
-  [messages.PRICELIST_CAPTION_EXIST]: "Наименование уже существует",
-  [messages.PRICELIST_CODE_EXIST]: "Код уже существует",
-  [messages.PRICELIST_ID_EXIST]: "Идентификатор уже существует",
 
-  [messages.PRICELIST_UPDATED]: "Данные обновлены",
+  [messages.SPEC_NAME_NO_EXIST]: "Материал не существует в базе",
+  [messages.SPEC_CAPTION_EXIST]: "Наименование уже существует",
+  [messages.SPEC_CODE_EXIST]: "Код уже существует",
+  [messages.SPEC_ID_EXIST]: "Идентификатор уже существует",
+  [messages.SPEC_UPDATED]: "Данные обновлены",
 
 }

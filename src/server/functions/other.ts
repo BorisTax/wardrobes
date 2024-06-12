@@ -20,8 +20,9 @@ export enum WARDROBE_TABLE_NAMES {
     DETAIL_TABLE = 'detail_table',
     DVP_TEMPLATES = 'dvp_templates',
 }
-export enum PRICE_TABLE_NAMES {
+export enum SPEC_TABLE_NAMES {
     PRICELIST = 'pricelist',
+    MATERIALS = 'materials',
     UNITS = 'units',
 }
 export enum USER_TABLE_NAMES {

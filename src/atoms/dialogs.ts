@@ -1,6 +1,6 @@
 import { Getter, Setter, atom } from "jotai";
 import React from "react";
-import { calculateCombiSpecificationsAtom } from "./specification";
+import { calculateCombiSpecificationsAtom, loadSpecificationListAtom } from "./specification";
 import { loadPriceListAtom } from "./prices";
 import { loadActiveUsersAtom, loadUsersAtom } from "./users";
 import { loadTemplateListAtom } from "./templates";
@@ -24,6 +24,7 @@ export const loginDialogAtom = atom((get: Getter) => get(loginDialog), (get: Get
 export const editMaterialDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const editProfileDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const editPriceDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const editSpecificationDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const templatesDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const templatesDialogPropsAtom = atom(false)
 export const showTemplatesDialogAtom = atom(null, (get, set, table: string, edit: boolean) => {
@@ -37,6 +38,11 @@ export const showSpecificationDialogAtom = atom(null, (get, set) => {
     const dialogRef = get(specificationDialogAtom)
     set(loadPriceListAtom)
     set(calculateCombiSpecificationsAtom)
+    dialogRef?.current?.showModal()
+})
+export const showEditSpecificationDialogAtom = atom(null, (get, set) => {
+    const dialogRef = get(editSpecificationDialogAtom)
+    set(loadSpecificationListAtom)
     dialogRef?.current?.showModal()
 })
 export const schemaDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)

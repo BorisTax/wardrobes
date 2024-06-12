@@ -56,16 +56,19 @@ export enum TableFields {
     KIND = 'kind',
 }
 
-export type PriceListItem = {
+export type SpecificationData = {
     name: string
     caption?: string
     units?: string
     coef?: number
-    price?: number
     id?: string
     code?: string
-    markup?: number
     purpose?: string
+}
+export type PriceData = {
+    name: string
+    price?: number
+    markup?: number
 }
 
 export type Result<T> = {

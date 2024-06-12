@@ -35,6 +35,7 @@ import { loadTrempelListAtom } from './atoms/materials/trempel'
 import CombiFasades from './components/CombiFasades'
 import { BrowserRouter, Link, Route, Routes, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import WardrobeCalculator from './components/WardrobeCalculator'
+import EditSpecificationDialog from './components/dialogs/EditSpecificationDialog'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -98,6 +99,7 @@ function App() {
       <LoginDialog />
       {isEditorAtLeast(user.role) ? <EditMaterialDialog /> : <></>}
       {isEditorAtLeast(user.role) ? <EditPriceDialog /> : <></>}
+      {isEditorAtLeast(user.role) ? <EditSpecificationDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SpecificationDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SchemaDialog /> : <></>}
       {isAdminAtLeast(user.role) ? <EditUsersDialog /> : <></>}

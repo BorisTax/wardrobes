@@ -1,6 +1,6 @@
 import { SpecificationItem } from "./specification"
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
-import { PriceListItem, Result, Token, User } from "./server"
+import { SpecificationData, Result, Token, User, PriceData } from "./server"
 import { NewTemplate, Template } from "./templates"
 import { DETAIL_NAME, SpecificationResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
 interface IUserAbstractService {
@@ -36,11 +36,12 @@ interface ITemplateAbstractService {
     updateTemplate: (table: string, { }: NewTemplate) => Promise<Result<null>>
 }
 interface IPriceAbstractService {
-    getPriceList: () => Promise<Result<PriceListItem[]>>
-    updatePriceList: (item: PriceListItem) => Promise<Result<null>>
+    getPriceList: () => Promise<Result<PriceData[]>>
+    updatePriceList: (item: PriceData) => Promise<Result<null>>
 }
-export interface ISpecificationService {
-    getSpecList: (data: WardrobeData, coefList: Map<SpecificationItem, number>) => Promise<Result<SpecificationResult>>
+export interface ISpecificationAbstractService {
+    getSpecList: () => Promise<Result<SpecificationData[]>>
+    updateSpecList: (item: SpecificationData) => Promise<Result<null>>
 }
 export interface IWardrobeDetailTableService {
     getDetailTable: ({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }) => Promise<Result<WardrobeDetailTable[]>>
@@ -71,4 +72,11 @@ export interface IPriceServiceProvider extends IPriceAbstractService {
 }
 export interface IPriceService extends IPriceAbstractService {
     provider: IPriceServiceProvider
+}
+
+export interface ISpecificationServiceProvider extends ISpecificationAbstractService {
+    dbFile: string
+}
+export interface ISpecificationService extends ISpecificationAbstractService {
+    provider: ISpecificationServiceProvider
 }

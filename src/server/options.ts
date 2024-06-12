@@ -7,6 +7,8 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import PriceServiceSQLite from './services/priceServiceSQLite.js'
 import TemplateServiceSQLite from './services/templateServiceSQLite.js'
+import SpecificationServiceSQLite from './services/specificationServiceSQLite.js'
+import MaterialServiceSQLite from './services/materialServiceSQLite.js'
 
 export const JWT_SECRET = "secretkey"
 const __filename = fileURLToPath(import.meta.url);
@@ -15,11 +17,13 @@ export const databaseZipFile = path.resolve(__dirname, 'database.zip')
 export const databaseFolder = path.resolve(__dirname, 'database')
 export const usersPath = path.resolve(__dirname, 'database/users.db')
 export const materialsPath = path.resolve(__dirname, 'database/materials.db')
-export const pricePath = path.resolve(__dirname, 'database/prices.db')
+export const specificationPath = path.resolve(__dirname, 'database/specification.db')
 export const templatePath = path.resolve(__dirname, 'database/templates.db')
 export const wardrobePath = path.resolve(__dirname, 'database/wardrobe.db')
+export const materialServiceProvider = new MaterialServiceSQLite(materialsPath)
 export const userServiceProvider = new UserServiceSQLite(usersPath)
-export const priceServiceProvider = new PriceServiceSQLite(pricePath)
+export const priceServiceProvider = new PriceServiceSQLite(specificationPath)
+export const specServiceProvider = new SpecificationServiceSQLite(specificationPath)
 export const templateServiceProvider = new TemplateServiceSQLite(templatePath)
 
 export const userRoleParser = async (req: MyRequest, res: Response, next: NextFunction) => {

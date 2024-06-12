@@ -36,9 +36,10 @@ router.get("/events", async (req: MyRequest, res) => {
 });
 
 router.get("/verify", async (req: MyRequest, res) => {
+  const token = req.token as string;
   const userService = new UserService(userServiceProvider)
   const tokens = await userService.getTokens();
-  const result = (tokens.data as Token[]).find((t: Token) => t.token === req.query.token)
+  const result = (tokens.data as Token[]).find((t: Token) => t.token === token)
   res.json({ success: !!result });
 });
 

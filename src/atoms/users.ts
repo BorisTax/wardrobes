@@ -44,6 +44,19 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
 })
 
 export const userAtom = atom<UserState>({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+
+export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
+    const { token } = get(userAtom)
+        const result = await fetchGetData(`api/users/verify?token=${token}`)
+        if (!result.success) {
+            set(userAtom, { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+            return
+        }
+})
+export const standbyUserAtom = atom(null, async (get: Getter, set: Setter) => {
+    const { token } = get(userAtom)
+    const result = await fetchGetData(`api/users/standby?token=${token}`)
+})
 export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: string, verify = false) => {
     if (verify) {
         const result = await fetchGetData(`api/users/verify?token=${token}`)

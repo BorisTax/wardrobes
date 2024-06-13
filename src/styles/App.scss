@@ -1,6 +1,6 @@
 $icon-url: '../images/icons/';
 $image-url: '../images/';
-
+$defaultBackColor: rgb(255, 255, 255);
 * {
   user-select: none;
 }
@@ -21,7 +21,7 @@ html {
 }
 
 body {
-  background-color: rgb(233, 233, 233) !important;
+  background-color: $defaultBackColor !important;
   height: 100%;
 }
 
@@ -54,12 +54,7 @@ dialog {
   box-shadow: 0px 0px 10px black;
 }
 
-.table-grid {
-  display: grid;
-  align-items: center;
-  grid-template-columns: auto auto;
-  gap: 0.2rem;
-}
+
 
 .property-row {
   display: flex;

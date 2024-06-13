@@ -4,8 +4,12 @@ export enum PropertyType {
     INTEGER_POSITIVE_NUMBER = 'INTEGER_POSITIVE_NUMBER',
     BOOL = 'BOOL',
     STRING = 'STRING',
-    INPUT = 'INPUT',
-    LIST = 'LIST'
+};
+export enum InputType {
+    TEXT = 'TEXT',
+    LIST = 'LIST',
+    FILE = 'FILE',
+    IMAGE = 'IMAGE', 
 };
 export const RegExp = new Map<string, RegExp>()
 

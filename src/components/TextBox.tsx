@@ -22,7 +22,7 @@ export default function TextBox(props: TextBoxProps) {
         let { value, correct } = test(v, props.type, props.max, props.min)
         if (correct) setState({ ...state, value })
     }
-    const className = ((state.value !== state.prevValue) ? "inputfield-incorrect" : "inputfield")
+    const className = ((state.value !== state.prevValue) ? "textbox-incorrect" : "textbox")
 
     return (
       <form

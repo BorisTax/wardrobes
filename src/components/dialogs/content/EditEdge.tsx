@@ -11,6 +11,7 @@ import { FasadMaterial } from "../../../types/enums"
 import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../TableData"
+import { InputType } from "../../../types/property"
 
 export default function EditEdge(props: EditDialogProps) {
     const edgeList = useAtomValue(edgeListAtom)
@@ -26,9 +27,9 @@ export default function EditEdge(props: EditDialogProps) {
     const heads = ['Наименование', 'Код', 'Соответствие ДСП']
     const contents = edgeList.map((i: Edge) => [i.name, i.code, i.dsp])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: edgeName || "", message: "Введите наименование" },
-        { caption: "Код:", value: code, message: "Введите код" },
-        { caption: "Соответствие ДСП:", value: dsp, list: mList, message: "Выберите ДСП" },
+        { caption: "Наименование:", value: edgeName || "", message: "Введите наименование", type: InputType.TEXT },
+        { caption: "Код:", value: code, message: "Введите код", type: InputType.TEXT },
+        { caption: "Соответствие ДСП:", value: dsp, list: mList, message: "Выберите ДСП", type: InputType.LIST },
     ]
     return <>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
@@ -46,9 +47,8 @@ export default function EditEdge(props: EditDialogProps) {
                     })
                 })
             }}
-            onDelete={(name) => {
+            onDelete={(name, message) => {
                 const index = edgeList.findIndex((p: Edge) => p.name === name)
-                const message = `Удалить кромку: "${edgeList[index].name}" ?`
                 showConfirm(message, () => {
                     props.setLoading(true)
                     deleteEdge(edgeList[index], (result) => {

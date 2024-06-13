@@ -12,18 +12,25 @@ export default function WardrobeSpecification() {
     const specifications = useAtomValue(specificationAtom)
     const [specIndex, setSpecIndex] = useState(0)
     const specification = specifications[specIndex] || specifications[0]
-    const active = "fw-bold"
-    const heads = useMemo(() => specifications.map((spec, index) => <div key={index} role="button" className={index === specIndex ? active : ""} onClick={() => { setSpecIndex(index) }}>{`${SpecGroups.get(spec.type)}`}</div>), [specifications, specIndex])
+    const captionsMap = new Map()
+    const captions = specifications.map((spec => {
+        const cap = SpecGroups.get(spec.type)
+        if (!Object.keys(FasadMaterial).find(k => k === spec.type)) return cap
+        if (captionsMap.has(cap)) captionsMap.set(cap, captionsMap.get(cap) + 1); else captionsMap.set(cap, 1)
+        return `${cap}(${captionsMap.get(cap)})`
+    }))
+    const heads = useMemo(() => specifications.map((spec, index) => <div key={index} role="button" className={index === specIndex ? "tab-button-active" : "tab-button-inactive"} onClick={() => { setSpecIndex(index) }}>{`${captions[index]}`}</div>), [specifications, specIndex])
     const spec = useMemo(() => getSpecification(specification.spec), [specification])
     const purpose = Object.keys(FasadMaterial).find(k => k === specification.type) ? MAT_PURPOSE.FASAD : MAT_PURPOSE.CORPUS
-    useEffect(()=>{
+    useEffect(() => {
         setSpecIndex(0)
     }, [specifications])
     return <div>
-        <ImageButton icon="excel" title="Сохранить в Excel" onClick={() => saveToExcel(specIndex)} />
+        <ImageButton icon="excel" title="Сохранить в Excel" onClick={() => saveToExcel(new Map(specification.spec), captions[specIndex] as string)} />
         <div className="d-flex flex-row flex-nowrap justify-content-center align-items-center gap-1">
             {heads}
         </div>
+        <hr/>
         <SpecificationTable purposes={[purpose, MAT_PURPOSE.BOTH]} specification={spec} />
     </div>
 }

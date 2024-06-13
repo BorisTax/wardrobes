@@ -19,7 +19,7 @@ MaterialGroupCaptions.set(MaterialGroup.PROFILE, "Профиля")
 MaterialGroupCaptions.set(MaterialGroup.BRUSH, "Щетки")
 MaterialGroupCaptions.set(MaterialGroup.TREMPEL, "Тремпеля")
 
-export const MATPurpose: Map<string, string> = new Map()
+export const MATPurpose: Map<MAT_PURPOSE, string> = new Map()
 MATPurpose.set(MAT_PURPOSE.FASAD, "Фасад")
 MATPurpose.set(MAT_PURPOSE.CORPUS, "Корпус")
 MATPurpose.set(MAT_PURPOSE.BOTH, "Фасад и корпус")
@@ -55,6 +55,14 @@ UnitCaptions.set("litres", "литр")
 UnitCaptions.set("sheets", "лист")
 UnitCaptions.set("piece", "шт")
 UnitCaptions.set("kg", "кг")
+
+export function getMATPurpose(purpose: string): MAT_PURPOSE {
+    let result: MAT_PURPOSE = MAT_PURPOSE.BOTH
+    MATPurpose.forEach((v, k) => {
+        if (v === purpose) result = k
+    })
+    return result
+}
 
 export function getPurpose(fasad: boolean, corpus: boolean): MAT_PURPOSE {
     if (fasad && corpus) return MAT_PURPOSE.BOTH

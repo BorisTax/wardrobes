@@ -11,6 +11,8 @@ import { specificationDataAtom } from "../../atoms/specification"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { UnitCaptions } from "../../functions/materials"
 import TableData from "./TableData"
+import { SpecificationItem } from "../../types/specification"
+import { InputType, PropertyType } from "../../types/property"
 type ExtPriceData = PriceData & { units: string, caption: string }
 export default function EditPriceDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -29,9 +31,9 @@ export default function EditPriceDialog() {
     const heads = ['Наименование', 'Ед', 'Цена', 'Наценка']
     const contents = extPriceList.map((i: ExtPriceData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.price || ""}`, `${i.markup || ""}`])
     const editItems: EditDataItem[] = [
-        {caption: "Наименование:", value: caption || "", message: "Введите наименование", readonly: true},
-        {caption: "Цена:", value: `${price}`, message: "Введите цену"},
-        {caption: "Наценка:", value: `${markup}`, message: "Введите наценку"},
+        { caption: "Наименование:", value: caption || "", message: "Введите наименование", type: InputType.TEXT, readonly: true },
+        { caption: "Цена:", value: `${price}`, message: "Введите цену", type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
+        { caption: "Наценка:", value: `${markup}`, message: "Введите наценку", type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
     ]
     useEffect(() => {
         loadPriceList()
@@ -41,7 +43,7 @@ export default function EditPriceDialog() {
         <div className="overflow-scroll">
             <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
             <EditDataSection items={editItems} onUpdate={(checked, values, message) => {
-                const data: PriceData = { name }
+                const data: PriceData = { name: name as SpecificationItem }
                 if (checked[1]) data.price = +values[1]
                 if (checked[2]) data.markup = +values[2]
                 showConfirm(message, () => {

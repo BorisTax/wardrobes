@@ -6,6 +6,7 @@ import './styles/containers.scss'
 import './styles/messages.scss'
 import './styles/inputs.scss'
 import './styles/templates.scss'
+import './styles/tables.scss'
 import Header from './components/Header'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/dialogs/LoginDialog'
@@ -87,11 +88,15 @@ function App() {
     <>
       <BrowserRouter>
       <Header />
-        <Routes>
-          <Route path="/" element={<Select />}></Route>
-          <Route path="/combi" element={<CombiFasades />} />
-          <Route path="/calculator" element={<WardrobeCalculator /> } />
-         </Routes>
+      <div className="main-container">
+          <div className='main-container-background'>
+            <Routes>
+              <Route path="/" element={<Select />}></Route>
+              <Route path="/combi" element={<CombiFasades />} />
+              <Route path="/calculator" element={<WardrobeCalculator /> } />
+             </Routes>
+          </div>
+      </div>
       </BrowserRouter>
       <CopyFasadDialog />
       <FasadTemplatesDialog />

@@ -3,7 +3,7 @@ import { useSetAtom } from "jotai"
 import { setUserAtom } from "../../atoms/users"
 import { loginDialogAtom } from "../../atoms/dialogs"
 import onFetch from "../../functions/fetch"
-import { Results } from "../../types/server"
+import { Result } from "../../types/server"
 import CheckBox from "../CheckBox"
 
 export default function LoginDialog() {
@@ -16,7 +16,7 @@ export default function LoginDialog() {
     const setLoginDialogRef = useSetAtom(loginDialogAtom)
     const login = (name: string, password: string) => {
         setState({ loading: true, message: "" })
-        const onResolve = (r: Results) => { setUser(r.data as string); closeDialog() }
+        const onResolve = (r: Result<string | null>) => { setUser(r.data as string); closeDialog() }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }
         const onCatch = () => { setState({ loading: false, message: "Ошибка сервера" }) }
         onFetch('api/users/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)

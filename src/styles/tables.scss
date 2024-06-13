@@ -1,0 +1,58 @@
+@import "./App.scss";
+table {
+    text-align: left;
+    position: relative;
+    border-collapse: collapse; 
+    background-color: $defaultBackColor;
+  }
+  .table-data tr:hover{
+    background-color: #88dffa;
+  }
+  .tr-attention{
+    font-weight: bold;
+    background-color: #88dffa;
+  }
+  .tr-noattention{
+    color: #818181;
+  }
+  .table-data{
+    font-size: 0.8rem;
+    max-height: 300px;
+    overflow: scroll;
+    background-color: $defaultBackColor;
+  }
+  .table-data-cell{
+  border: 1px solid black;
+  padding: 0.1em 0.5rem;
+  }
+  .table-header{
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    border: 1px solid black;
+    text-align: center;
+    }
+    .speclist{
+      font-size: 0.8rem;
+      -display: grid;
+      -grid-template-columns: auto auto auto auto auto auto;
+      overflow: scroll;
+      max-height: 50svh;
+    }
+
+    .table-grid {
+        display: grid;
+        align-items: center;
+        grid-template-columns: auto auto;
+        gap: 0.2rem;
+        background-color: $defaultBackColor;
+      }
+      
+    .edit-section-grid {
+        display: grid;
+        align-items: center;
+        grid-template-columns: auto auto auto;
+        gap: 0.2rem;
+        background-color: $defaultBackColor;
+      }

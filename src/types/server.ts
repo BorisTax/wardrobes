@@ -1,4 +1,5 @@
 import { Request } from "express"
+import { SpecificationItem } from "./specification"
 export type Token = {
     token: string
     username: string
@@ -57,7 +58,7 @@ export enum TableFields {
 }
 
 export type SpecificationData = {
-    name: string
+    name: SpecificationItem
     caption?: string
     units?: string
     coef?: number
@@ -66,7 +67,7 @@ export type SpecificationData = {
     purpose?: string
 }
 export type PriceData = {
-    name: string
+    name: SpecificationItem
     price?: number
     markup?: number
 }

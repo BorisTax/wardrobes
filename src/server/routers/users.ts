@@ -118,10 +118,10 @@ router.get("/users", async (req: MyRequest, res) => {
   res.status(result.status).json(result)
 });
 
-async function loginUser(user: User): Promise<Result<string | User[] | null>> {
+async function loginUser(user: User): Promise<Result<string | null>> {
   const userService = new UserService(userServiceProvider)
   const result = await userService.getUsers()
-  if (!result.success) return result;
+  if (!result.success) return { success: false, status: 404, data: null };
   const userList = result.data
   const foundUser = (userList as User[]).find(u => (user.name === u.name))
   if (!foundUser) return incorrectData(messages.INVALID_USER_DATA)

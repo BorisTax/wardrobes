@@ -66,7 +66,7 @@ export default function WardrobeCalculator() {
     }, [data])
     return <div>
         <div style={{ display: "flex", flexDirection:"column", justifyContent: "center", padding: "1em" }}>
-            <div style={{ display: "flex", gap:"1rem" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap:"1rem" }}>
                 <div>
                     <div className="text-center">Основные параметры</div>
                     <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>

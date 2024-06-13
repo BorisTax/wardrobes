@@ -16,7 +16,7 @@ export function createToolTip() {
     return toolTip
 }
 export function isLandscape(): boolean {
-    const mainContainer = document.querySelector('.main-container') as HTMLDivElement
+    const mainContainer = document.querySelector('.combifasades-container') as HTMLDivElement
     if(!mainContainer) return false
     return getComputedStyle(mainContainer).display === 'grid'
 }

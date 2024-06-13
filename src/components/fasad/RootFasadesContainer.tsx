@@ -32,7 +32,7 @@ export default function RootFasadesContainer(): ReactElement {
 const resize = (ratio: number, rootFasades: Fasad[], rootFasadesContainerRef: React.RefObject<HTMLDivElement>) => {
     if (!rootFasadesContainerRef.current) return
     const propertiesContainer = document.querySelector('.properties-container') as HTMLDivElement
-    const mainContainer = document.querySelector('.main-container') as HTMLDivElement
+    const mainContainer = document.querySelector('.combifasades-container') as HTMLDivElement
     const landscape = isLandscape()
     const gapWidth = parseFloat(getComputedStyle(rootFasadesContainerRef.current).gap)
     if (landscape) {

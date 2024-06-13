@@ -4,14 +4,13 @@ import { editSpecificationDialogAtom } from "../../atoms/dialogs"
 import useMessage from "../../custom-hooks/useMessage"
 import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
-import { updatePriceListAtom } from "../../atoms/prices"
 import { SpecificationData } from "../../types/server"
 import { UnitCaptions } from "../../functions/materials"
 import DialogWindow from "./DialogWindow"
 import { loadSpecificationListAtom, specificationDataAtom, updateSpecificationListAtom } from "../../atoms/specification"
 import TableData from "./TableData"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
-import { updateSpecList } from "../../server/routers/specification"
+import { InputType, PropertyType } from "../../types/property"
 
 export default function EditSpecificationDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -28,10 +27,10 @@ export default function EditSpecificationDialog() {
     const heads = ['Наименование', 'Ед', 'Коэф-т', 'Код', 'Идентификатор']
     const contents = specList.map((i: SpecificationData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.coef}`, i.code || "", i.id || ""])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: caption || "", message: "Введите наименование" },
-        { caption: "Коэф-т:", value: `${coef}`, message: "Введите коэф-т" },
-        { caption: "Код:", value: code || "", message: "Введите код" },
-        { caption: "Идентификатор:", value: id || "", message: "Введите идентификатор" },
+        { caption: "Наименование:", value: caption || "", message: "Введите наименование", type: InputType.TEXT },
+        { caption: "Коэф-т:", value: `${coef}`, message: "Введите коэф-т", type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
+        { caption: "Код:", value: code || "", message: "Введите код", type: InputType.TEXT },
+        { caption: "Идентификатор:", value: id || "", message: "Введите идентификатор", type: InputType.TEXT },
     ]
     useEffect(() => {
         loadSpecList()

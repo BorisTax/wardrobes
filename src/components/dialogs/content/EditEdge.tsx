@@ -14,7 +14,8 @@ import TableData from "../TableData"
 import { InputType } from "../../../types/property"
 
 export default function EditEdge(props: EditDialogProps) {
-    const edgeList = useAtomValue(edgeListAtom)
+    const edgeNotSortedList = useAtomValue(edgeListAtom)
+    const edgeList = useMemo(() => edgeNotSortedList.toSorted((e1, e2) => e1.name > e2.name ? 1 : -1), [edgeNotSortedList])
     const materialList = useAtomValue(materialListAtom)
     const mList = useMemo(() => materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name), [materialList])
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -33,7 +34,6 @@ export default function EditEdge(props: EditDialogProps) {
     ]
     return <>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        <hr/>
         <EditDataSection name={edgeList[selectedIndex].name} items={editItems}
             onUpdate={(checked, values, message) => {
                 showConfirm(message, () => {

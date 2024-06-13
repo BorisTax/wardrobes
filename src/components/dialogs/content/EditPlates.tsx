@@ -20,7 +20,7 @@ export default function EditPlates(props: EditDialogProps) {
     const deleteMaterial = useSetAtom(deleteMaterialAtom)
     const addMaterial = useSetAtom(addMaterialAtom)
     const updateMaterial = useSetAtom(updateMaterialAtom)
-    const extMaterials: ExtMaterial[] = useMemo(() => materialList.filter(m => m.material === baseMaterial) || [{ name: "", material: "", imageurl: "" }], [materialList, baseMaterial]);
+    const extMaterials: ExtMaterial[] = useMemo(() => (materialList.filter(m => m.material === baseMaterial) || [{ name: "", material: "" }]).toSorted((m1, m2) => (m1.name > m2.name) ? 1 : -1), [materialList, baseMaterial]);
     const extMaterial = extMaterials[extMaterialIndex] || { name: "", code: "", image: "", material: FasadMaterial.DSP, purpose: MAT_PURPOSE.BOTH }
     const purposeEnabled = extMaterial?.material === FasadMaterial.DSP
     const showMessage = useMessage()
@@ -30,7 +30,7 @@ export default function EditPlates(props: EditDialogProps) {
     const editItems: EditDataItem[] = [
         { caption: "Наименование:", value: extMaterial.name || "", message: "Введите наименование", type: InputType.TEXT },
         { caption: "Код:", value: extMaterial.code, message: "Введите код", type: InputType.TEXT  },
-        { caption: "Назначение:", value: MATPurpose.get(extMaterial.purpose) || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
+        { caption: "Назначение:", value: extMaterial.purpose || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
         { caption: "Изображение:", value: extMaterial.image || "", message: "Выберите изображение", type: InputType.FILE },
     ]
     return <>

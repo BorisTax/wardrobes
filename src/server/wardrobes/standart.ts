@@ -25,47 +25,6 @@ export default class StandartWardrobe implements IWardrobe {
         this.calcTruba()
         this.calcTrempel()
     }
-    public getDetails(){
-        return this.details
-    };
-    public getDSP(){
-        return this.details.reduce((a, d) => a + d.width * d.length * d.count, 0) / 1000000
-    };
-    public getDVP() {
-        return (this.dvpLength * this.dvpWidth * this.dvpCount) / 1000000
-    }
-    public getDVPPlanka() {
-        return (this.dvpPlanka * this.dvpPlankaCount) / 1000
-    }
-    public getEdge2(){
-        return this.details.filter(d => d.name === DETAIL_NAME.ROOF || d.name === DETAIL_NAME.STAND).reduce((a, d) => a + d.length * d.count, 0) / 1000
-    };
-    public getEdge05(){
-        return this.details.filter(d => d.name !== DETAIL_NAME.STAND).reduce((a, d) => a + ((d.name === DETAIL_NAME.ROOF) ? d.width * 2 : d.length) * d.count, 0) / 1000
-    };
-    public getConfirmat(){
-        return this.details.reduce((a, d) => {
-            let count = 0
-            if (d.name===DETAIL_NAME.SHELF || d.name===DETAIL_NAME.SHELF_PLAT) count = d.count * 4;
-            if (d.name===DETAIL_NAME.PILLAR) count = d.count * 2;
-            return a + count
-        }, 0) 
-    };
-    public getMinifix(){
-        return this.details.reduce((a, d) => {
-            let count = 0
-            if (d.name===DETAIL_NAME.STAND || d.name===DETAIL_NAME.INNER_STAND) count = d.count * 4;
-            if (d.name===DETAIL_NAME.PILLAR) count = d.count * 2;
-            return a + count
-        }, 0) 
-    };
-    public getLegs(data: WardrobeData) {
-        return 0
-    };
-
-    public getNails(){
-        return getNails(this.width)
-    }
     public getSamorez16(){
         return getSamorez16(this.width)
     };
@@ -81,9 +40,7 @@ export default class StandartWardrobe implements IWardrobe {
     public getNaprav(){
         return (this.width - 32) / 1000
     };
-    public getGlue(){
-        return (this.getEdge2() + this.getEdge05()) * 0.008
-    };
+
 
     private calcTruba() {
         if (this.depth < 500) return

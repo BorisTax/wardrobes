@@ -6,6 +6,16 @@ import { materialServiceProvider, specServiceProvider } from "../options";
 import { SpecificationService } from "../services/specificationService";
 import { FullData, VerboseData } from "../../types/server";
 
+function getFineRange(min: number, max: number): string {
+    const maxValue = 3000
+    let result = ""
+    if (min <= 0 && max >= maxValue) result = "---"
+    if (min <= 0 && max < maxValue) result = "<= " + max
+    if (min > 0 && max >= maxValue) result = ">= " + min
+    if (min > 0 && max < maxValue) result = min + " - " + max
+    return result
+}
+
 export function isDataFit(width: number, height: number, depth: number, item: WardrobeFurnitureTableSchema): boolean{
     return (width >= item.minwidth) && (width <= item.maxwidth) && (height >= item.minheight) && (height <= item.maxheight)&& (depth >= item.mindepth) && (depth <= item.maxdepth)
 }
@@ -172,27 +182,20 @@ export async function getKarton(data: WardrobeData): Promise<FullData> {
 
     list.forEach(item => {
         const active = isDataFit(width, height, depth, item)
-        if (active) verbose.push({ data: [`${item.minwidth}-${item.maxwidth}`, `${item.minheight}-${item.maxheight}`, `${item.mindepth}-${item.maxdepth}`, `${item.count}`], active: false })
+        if (active) verbose.push({ data: [getFineRange(item.minwidth, item.maxwidth), getFineRange(item.minheight, item.maxheight), getFineRange(item.mindepth, item.maxdepth), `${item.count}`], active: false })
     })
     return { amount: current * coef, verbose }
 }
-// const service = new SpecificationService(specServiceProvider, materialServiceProvider)
-// const result = await service.getFurnitureTable({kind: WARDROBE_KIND.STANDART, item: SpecificationItem.Karton})
-// const list = result.data as WardrobeFurnitureTableSchema[]
-// const karton = list.find(item => isDataFit(width, height, depth, item))
-// return karton?.count || 0
-
-
 
 export async function getLegs(data: WardrobeData): Promise<FullData> {
     const {wardKind, width, height, depth} = data
     const service = new SpecificationService(specServiceProvider, materialServiceProvider)
-    const legs = (await service.getFurnitureTable({ kind: data.wardKind, item: SpecificationItem.Leg })).data || []
+    const list = (await service.getFurnitureTable({ kind: data.wardKind, item: SpecificationItem.Leg })).data || []
     const caption = await getWardrobeKind(data.wardKind)
-    const current = legs.find(item => isDataFit(width, height, depth, item))?.count || 0
+    const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0
     const verbose = [{ data: ["Ширина", "Кол-во"], active: false }]
-    legs.forEach(l => {
-        verbose.push({ data: [`${l.minwidth}-${l.maxwidth}`, `${l.count}`], active: current === l.count })
+    list.forEach(item => {
+        verbose.push({ data: [getFineRange(item.minwidth, item.maxwidth), `${item.count}`], active: current === item.count })
     })
     return {amount: current, verbose}
 }
@@ -228,17 +231,19 @@ export async function getMinifix(data: WardrobeData): Promise<FullData> {
     return {amount: total, verbose}
 }
 
-export function getNails(width: number) {
-    const sizes = [
-        { width: 1400, value: 0.095 },
-        { width: 1600, value: 0.1 },
-        { width: 1900, value: 0.11 },
-        { width: 2100, value: 0.14 },
-        { width: 2500, value: 0.15 },
-        { width: 3001, value: 0.2 },
-    ]
-    return sizes.find((s => s.width > width))?.value || 0
-};
+export async function getNails(data: WardrobeData): Promise<FullData> {
+    const {wardKind, width, height, depth} = data
+    const service = new SpecificationService(specServiceProvider, materialServiceProvider)
+    const list = (await service.getFurnitureTable({ kind: data.wardKind, item: SpecificationItem.Nails })).data || []
+    const caption = await getWardrobeKind(data.wardKind)
+    const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0
+    const verbose: VerboseData = [{ data: ["Ширина", "Кол-во"] }]
+    list.forEach(item => {
+        const active = isDataFit(width, height, depth, item)
+        if (active) verbose.push({ data: [getFineRange(item.minwidth, item.maxwidth), `${item.count}`] })
+    })
+    return {amount: current, verbose}
+}
 
 export function getSamorez16(width: number) {
     const sizes = [

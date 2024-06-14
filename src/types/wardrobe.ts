@@ -3,14 +3,7 @@ import { SPEC_GROUP } from "./specification"
 import { SpecificationItem } from "./specification"
 
 export interface IWardrobe {
-    getDetails: () => Detail[]
-    getDSP: () => number
-    getDVP: () => number
-    getEdge2: () => number
-    getEdge05: () => number
-    getGlue: () => number
-    getNails: () => number
-    getDVPPlanka: () => number
+
     getTrempel: () => {length: number, count: number}
     getTruba: () => {length: number, count: number}
     getSamorez16: () => number

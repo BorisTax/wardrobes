@@ -4,7 +4,7 @@ import { Detail, WARDROBE_KIND, WardrobeIntermediateData } from "../../../types/
 import { ProfileType } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"
-import { getConfirmat, getDSP, getDVP, getDVPPlanka, getEdge05, getEdge2, getGlue, getKarton, getLegs, getMinifix } from "../functions"
+import { getConfirmat, getDSP, getDVP, getDVPPlanka, getEdge05, getEdge2, getGlue, getKarton, getLegs, getMinifix, getNails } from "../functions"
 
 export async function getCorpusSpecification(wardrobe: IWardrobe, data: WardrobeData, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Promise<Map<SpecificationItem, number>> {
     const spec = getSpecificationPattern()
@@ -27,6 +27,7 @@ export async function getCorpusSpecification(wardrobe: IWardrobe, data: Wardrobe
     spec.set(SpecificationItem.Leg, (await getLegs(data)).amount)
     spec.set(SpecificationItem.Karton, karton)
     spec.set(SpecificationItem.Skotch, karton * 20 * (coefList.get(SpecificationItem.Skotch) || 1))
+    spec.set(SpecificationItem.Nails, (await getNails(data)).amount)
     spec.set(SpecificationItem.NapravTop, wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravTop) || 1))
     spec.set(SpecificationItem.NapravBottom, wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravBottom) || 1))
     spec.set(SpecificationItem.Samorez16, wardrobe.getSamorez16() * (coefList.get(SpecificationItem.Samorez16) || 1))

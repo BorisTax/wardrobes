@@ -2,7 +2,7 @@ import express from "express";
 import { accessDenied } from '../functions/other.js';
 import { MyRequest, UserRoles } from '../../types/server.js';
 import { isManagerAtLeast } from '../functions/user.js';
-import { getConfirmat, getDSP, getDVP, getDVPPlanka, getEdge05, getEdge2, getGlue, getKarton, getLegs, getMinifix } from "../wardrobes/functions.js";
+import { getConfirmat, getDSP, getDVP, getDVPPlanka, getEdge05, getEdge2, getGlue, getKarton, getLegs, getMinifix, getNails } from "../wardrobes/functions.js";
 
 const router = express.Router();
 export default router
@@ -67,5 +67,11 @@ router.post("/karton", async (req: MyRequest, res) => {
   if (!isManagerAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { data } = req.body
   const result = (await getKarton(data)).verbose
+  res.json({success: true, data: result});
+});
+router.post("/nails", async (req: MyRequest, res) => {
+  if (!isManagerAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { data } = req.body
+  const result = (await getNails(data)).verbose
   res.json({success: true, data: result});
 });

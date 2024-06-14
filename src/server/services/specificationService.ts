@@ -30,8 +30,8 @@ export class SpecificationService implements ISpecificationService {
   async getSpecData(data: WardrobeData): Promise<Result<SpecificationResult>> {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: SpecificationResult = []
-    const intermediteData = await getWardrobeIntermediateData(data)
-    const wardrobe = getWardrobe(data, intermediteData.details)
+    const intermediateData = await getWardrobeIntermediateData(data)
+    const wardrobe = getWardrobe(data, intermediateData.details)
     const priceList = (await this.provider.getSpecList()).data || []
     const coefList: Map<SpecificationItem, number> = new Map(priceList.map((p: SpecificationData) => [p.name as SpecificationItem, p.coef as number]))
     const profiles = (await this.matProvider.getProfiles()).data
@@ -40,7 +40,7 @@ export class SpecificationService implements ISpecificationService {
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
     const brush: Brush | undefined = brushes?.find(b => b.name === profile?.brush)
     const fasades = createFasades(data, profile?.type as ProfileType)
-    result.push({ type: CORPUS_SPECS.CORPUS, spec: [...(filterEmptySpecification(getCorpusSpecification(wardrobe, intermediteData, profile?.type as ProfileType, coefList))).entries()] })
+    result.push({ type: CORPUS_SPECS.CORPUS, spec: [...(filterEmptySpecification(getCorpusSpecification(wardrobe, intermediateData, profile?.type as ProfileType, coefList))).entries()] })
     fasades.forEach(f => { result.push({ type: f.Material, spec: [...(filterEmptySpecification(getFasadSpecification(f, profile?.type as ProfileType, coefList))).entries()] }) }) 
     return {success: true, status: 200, data: result}
   }

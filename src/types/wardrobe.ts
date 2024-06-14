@@ -9,16 +9,12 @@ export interface IWardrobe {
     getEdge2: () => number
     getEdge05: () => number
     getGlue: () => number
-    getLegs: (data: WardrobeData) => number
-    getConfirmat: () => number
-    getMinifix: () => number
     getNails: () => number
     getDVPPlanka: () => number
     getTrempel: () => {length: number, count: number}
     getTruba: () => {length: number, count: number}
     getSamorez16: () => number
     getStyagka: () => number
-    getKarton: () => number
     getNaprav: () => number
 }
 
@@ -140,4 +136,5 @@ export type WardrobeIntermediateData = {
     details: Detail[],
     dvpData: DVPData,
     legs: number,
+    karton: number,
 }

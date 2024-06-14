@@ -1,9 +1,13 @@
 import { rmSync } from "fs";
-import { WardrobeDetailSchema } from "../../types/schemas";
+import { WardrobeDetailSchema, WardrobeFurnitureTableSchema } from "../../types/schemas";
 import { SpecificationItem } from "../../types/specification";
 import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeData, WardrobeDetailTable, WardrobeIntermediateData } from "../../types/wardrobe";
 import { materialServiceProvider, specServiceProvider } from "../options";
 import { SpecificationService } from "../services/specificationService";
+
+export function isDataFit(width: number, height: number, depth: number, item: WardrobeFurnitureTableSchema): boolean{
+    return (width >= item.minwidth) && (width <= item.maxwidth) && (height >= item.minheight) && (height <= item.maxheight)&& (depth >= item.mindepth) && (depth <= item.maxdepth)
+}
 
 export function hasEdge2(detail: DETAIL_NAME): boolean {
     return detail === DETAIL_NAME.ROOF ||
@@ -19,12 +23,23 @@ export function hasEdge05(detail: DETAIL_NAME): boolean {
         detail === DETAIL_NAME.SHELF_PLAT ||
         detail === DETAIL_NAME.PILLAR
 }
-
+export function useConfirmat(detail: DETAIL_NAME): boolean {
+    return detail === DETAIL_NAME.SHELF ||
+        detail === DETAIL_NAME.SHELF_PLAT ||
+        detail === DETAIL_NAME.PILLAR
+}
+export function useMinifix(detail: DETAIL_NAME): boolean {
+    return detail === DETAIL_NAME.STAND ||
+        detail === DETAIL_NAME.INNER_STAND ||
+        detail === DETAIL_NAME.CONSOLE_STAND ||
+        detail === DETAIL_NAME.CONSOLE_BACK_STAND
+}
 export async function getWardrobeIntermediateData(data: WardrobeData): Promise<WardrobeIntermediateData> {
     const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
     const dvpData = await getDVPData(data.width, data.height, data.depth)
     const legs =  await getLegs(data)
-    return { details, dvpData, legs }
+    const karton = await getKarton(data.width, data.height, data.depth)
+    return { details, dvpData, legs, karton }
 }
 
 export async function getCoef(item: SpecificationItem): Promise<number> {
@@ -123,38 +138,15 @@ export async function getDVPData(width: number, height: number, depth: number): 
     return {dvpWidth, dvpLength, dvpRealWidth, dvpRealLength, dvpCount, dvpPlanka, dvpPlankaCount}
 }
 
-export function getKarton(width: number, height: number){
-    const wLess500_hLess2150 = [
-        { width: 1600, value: 2.5 },
-        { width: 2100, value: 2.6 },
-        { width: 2500, value: 3 },
-        { width: 3001, value: 3.5 },
-    ]
-    const wGreater500_hLess2150 = [
-        { width: 1600, value: 3 },
-        { width: 2500, value: 3.5 },
-        { width: 2800, value: 4 },
-        { width: 3001, value: 4.5 },
-    ]
-    const wLess500_hGreater2150 = [
-        { width: 1900, value: 3 },
-        { width: 2500, value: 3.5 },
-        { width: 2800, value: 4 },
-        { width: 3001, value: 4.5 },
-    ]
-    const wGreater500_hGreater2150 = [
-        { width: 1600, value: 3 },
-        { width: 2100, value: 3.5 },
-        { width: 2500, value: 4 },
-        { width: 2800, value: 4.5 },
-        { width: 3001, value: 5 },
-    ]
-    if (width < 500 && height < 2150) return wLess500_hLess2150.find(i => i.width > width)?.value || 0;
-    if (width >= 500 && height < 2150) return wGreater500_hLess2150.find(i => i.width > width)?.value || 0;
-    if (width < 500 && height >= 2150) return wLess500_hGreater2150.find(i => i.width > width)?.value || 0;
-    if (width >= 500 && height >= 2150) return wGreater500_hGreater2150.find(i => i.width > width)?.value || 0;
-    return 0
+export async function getKarton(width: number, height: number, depth: number){
+    const service = new SpecificationService(specServiceProvider, materialServiceProvider)
+    const result = await service.getFurnitureTable({kind: WARDROBE_KIND.STANDART, item: SpecificationItem.Karton})
+    const list = result.data as WardrobeFurnitureTableSchema[]
+    const karton = list.find(item => isDataFit(width, height, depth, item))
+    return karton?.count || 0
 }
+
+
 
 export async function getLegs({wardKind, width, height, depth}: WardrobeData) {
     const service = new SpecificationService(specServiceProvider)
@@ -214,3 +206,9 @@ export function getMinifix(details: Detail[]){
         return a + count
     }, 0) 
 };
+export async function getWardrobeKind(kind: WARDROBE_KIND): Promise<string> {
+    const service = new SpecificationService(specServiceProvider, materialServiceProvider)
+    const wardkinds = (await service.getWardobeKinds()).data as WardrobeDetailSchema[]
+    const caption = wardkinds.find(w => w.name === kind)?.caption
+    return caption || ""
+}

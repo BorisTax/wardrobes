@@ -1,9 +1,9 @@
-import { WardrobeDetailSchema } from "../../types/schemas"
 import { VerboseData } from "../../types/server"
 import { SpecificationItem } from "../../types/specification"
 import { DETAIL_NAME, WARDROBE_KIND, WardrobeData } from "../../types/wardrobe"
 import { materialServiceProvider, specServiceProvider } from "../options"
 import { SpecificationService } from "../services/specificationService"
+import { getKarton, getWardrobeKind, isDataFit, useConfirmat, useMinifix } from "./functions"
 import { getCoef, getDVPData, getDetailNames, getDetails, getEdge05, getEdge2, getLegs, hasEdge05, hasEdge2 } from "./functions"
 
 export async function getVerboseDSPData(data: WardrobeData): Promise<VerboseData> {
@@ -92,9 +92,44 @@ export async function getVerboseLegData(data: WardrobeData): Promise<VerboseData
     return result
 }
 
-export async function getWardrobeKind(kind: WARDROBE_KIND): Promise<string>{
+export async function getVerboseConfirmatData(data: WardrobeData): Promise<VerboseData> {
+    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => useConfirmat(d.name))
+    const detailNames = await getDetailNames()
+    const result: VerboseData = [{ data: ["Деталь", "Кол-во", "Конфирматы"], active: false }]
+    let total = 0
+    details.forEach(d => {
+        const conf = d.count * (d.name === DETAIL_NAME.PILLAR ? 2 : 4)
+        const caption = detailNames.find(n => n.name === d.name)?.caption || ""
+        result.push({data: [caption, `${d.count}`, `${conf}`], active: false})
+        total += conf
+    })
+    result.push({data: ["", "Итого:", total], active: false})
+    return result
+}
+
+export async function getVerboseMinifixData(data: WardrobeData): Promise<VerboseData> {
+    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => useMinifix(d.name))
+    const detailNames = await getDetailNames()
+    const result: VerboseData = [{ data: ["Деталь", "Кол-во", "Минификсы"], active: false }]
+    let total = 0
+    details.forEach(d => {
+        const count = d.count * ((d.name === DETAIL_NAME.CONSOLE_BACK_STAND || d.name === DETAIL_NAME.PILLAR) ? 2 : 4)
+        const caption = detailNames.find(n => n.name === d.name)?.caption || ""
+        result.push({data: [caption, `${d.count}`, `${count}`], active: false})
+        total += count
+    })
+    result.push({data: ["", "Итого:", total], active: false})
+    return result
+}
+
+export async function getVerboseKartonData(data: WardrobeData): Promise<VerboseData> {
     const service = new SpecificationService(specServiceProvider, materialServiceProvider)
-    const wardkinds = (await service.getWardobeKinds()).data as WardrobeDetailSchema[]
-    const caption = wardkinds.find(w => w.name === kind)?.caption
-    return caption || ""
+    const list = (await service.getFurnitureTable({ kind: WARDROBE_KIND.STANDART, item: SpecificationItem.Karton })).data || []
+    const caption = await getWardrobeKind(data.wardKind)
+    const current = await getKarton(data.width, data.height, data.depth)
+    const result = [{ data: ["Ширина", "Высота", "Глубина", "Кол-во"], active: false }]
+    list.forEach(item => {
+        result.push({ data: [`${item.minwidth}-${item.maxwidth}`, `${item.minheight}-${item.maxheight}`, `${item.mindepth}-${item.maxdepth}`, `${item.count}`], active: isDataFit(data.width, data.height, data.depth, item) })
+    })
+    return result
 }

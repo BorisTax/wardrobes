@@ -10,6 +10,7 @@ import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { SpecificationData, TableFields } from "../types/server";
 import { getInitSpecification } from "../functions/specification";
 import { AtomCallbackResult } from "../types/atoms";
+import { wardrobeDataAtom } from "./wardrobe";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])
@@ -39,6 +40,8 @@ export const updateSpecificationListAtom = atom(null, async (get, set, { name, c
     try {
         const result = await fetchData("api/specification", "PUT", JSON.stringify(formData))
         await set(loadSpecificationListAtom)
+        const data = get(wardrobeDataAtom)
+        set(calculateSpecificationsAtom, data)
         callback({success: result.success as boolean, message: result.message as string})
     } catch (e) { console.error(e) }
 })

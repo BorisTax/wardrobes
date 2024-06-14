@@ -62,9 +62,7 @@ export default class StandartWardrobe implements IWardrobe {
     public getLegs(data: WardrobeData) {
         return 0
     };
-    public getKarton(){
-        return getKarton(this.width, this.height)
-    }
+
     public getNails(){
         return getNails(this.width)
     }

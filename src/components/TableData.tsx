@@ -1,6 +1,6 @@
 export type TableDataProps = {
-    heads: string[]
-    content: string[][]
+    heads: (string | number)[]
+    content: (string | number)[][]
     styles?: object[][]
     onSelectRow?: (index: number) => void
 }

@@ -13,6 +13,9 @@ export function getRoute(item: SpecificationItem): string{
     routes.set(SpecificationItem.Kromka05, 'api/verbose/edge05')
     routes.set(SpecificationItem.Glue, 'api/verbose/glue')
     routes.set(SpecificationItem.Leg, 'api/verbose/legs')
+    routes.set(SpecificationItem.Confirmat, 'api/verbose/confirmat')
+    routes.set(SpecificationItem.Minifix, 'api/verbose/minifix')
+    routes.set(SpecificationItem.Karton, 'api/verbose/karton')
     return routes.get(item)
 }
 

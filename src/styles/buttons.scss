@@ -25,6 +25,7 @@
 .tab-button-active{
   @include tab-button;
   font-weight: bold;
+  background-color: white;
 }
 .button {
   display: inline-block;

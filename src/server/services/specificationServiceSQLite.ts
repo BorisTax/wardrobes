@@ -13,7 +13,7 @@ export default class SpecificationServiceSQLite implements ISpecificationService
         this.dbFile = dbFile
     }
     async getSpecList(): Promise<Result<SpecificationData[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${MATERIALS};`, { successStatusCode: 200 })
+        return dataBaseQuery(this.dbFile, `select * from ${MATERIALS} order by caption;`, { successStatusCode: 200 })
     }
     async updateSpecList({ name, caption, code, coef, id, purpose }: SpecificationData): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, getQuery({ name, caption, code, coef, id, purpose }), { successStatusCode: 200, successMessage: messages.DATA_UPDATED })

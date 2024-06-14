@@ -4,11 +4,11 @@ import { Detail, WARDROBE_KIND, WardrobeIntermediateData } from "../../../types/
 import { ProfileType } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"
-import { getConfirmat, getDVPPlanka, getEdge05, getEdge2, getGlue, getLegs, getMinifix } from "../functions"
+import { getConfirmat, getDVPPlanka, getEdge05, getEdge2, getGlue, getKarton, getLegs, getMinifix } from "../functions"
 
-export function getCorpusSpecification(wardrobe: IWardrobe, intermediteData: WardrobeIntermediateData, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
+export function getCorpusSpecification(wardrobe: IWardrobe, intermediateData: WardrobeIntermediateData, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
     const spec = getSpecificationPattern()
-    const { details, dvpData, legs } = intermediteData
+    const { details, dvpData, legs, karton } = intermediateData
       const truba = wardrobe.getTruba()
     const trempel = wardrobe.getTrempel()
     spec.set(SpecificationItem.DSP, wardrobe.getDSP() * (coefList.get(SpecificationItem.DSP) || 1))
@@ -22,8 +22,8 @@ export function getCorpusSpecification(wardrobe: IWardrobe, intermediteData: War
     spec.set(SpecificationItem.Glue, getGlue(details, coefList.get(SpecificationItem.Kromka2) || 1, coefList.get(SpecificationItem.Kromka05) || 1) * (coefList.get(SpecificationItem.Glue) || 1))
     spec.set(SpecificationItem.Planka, getDVPPlanka(dvpData) * (coefList.get(SpecificationItem.Planka) || 1))
     spec.set(SpecificationItem.Leg, legs * (coefList.get(SpecificationItem.Leg) || 1))
-    spec.set(SpecificationItem.Karton, wardrobe.getKarton() * (coefList.get(SpecificationItem.Karton) || 1))
-    spec.set(SpecificationItem.Skotch, wardrobe.getKarton() * 20 * (coefList.get(SpecificationItem.Skotch) || 1))
+    spec.set(SpecificationItem.Karton, karton * (coefList.get(SpecificationItem.Karton) || 1))
+    spec.set(SpecificationItem.Skotch, karton * 20 * (coefList.get(SpecificationItem.Skotch) || 1))
     spec.set(SpecificationItem.NapravTop, wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravTop) || 1))
     spec.set(SpecificationItem.NapravBottom, wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravBottom) || 1))
     spec.set(SpecificationItem.Samorez16, wardrobe.getSamorez16() * (coefList.get(SpecificationItem.Samorez16) || 1))

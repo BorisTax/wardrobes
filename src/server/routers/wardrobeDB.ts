@@ -1,10 +1,10 @@
 import express from "express";
 import { accessDenied } from '../functions/other.js';
 import { MyRequest, UserRoles } from '../../types/server.js';
-import { wardrobePath } from '../options.js';
+import { specificationPath } from '../options.js';
 import { isManagerAtLeast } from '../functions/user.js';
-import { WardrobeDetailTableService } from '../services/wardrobeDetailTableService.js';
 import { WARDROBE_KIND } from '../../types/wardrobe.js';
+import SpecificationServiceSQLite from "../services/specificationServiceSQLite.js";
 
 const router = express.Router();
 export default router
@@ -18,7 +18,7 @@ router.post("/wardrobeTable", async (req: MyRequest, res) => {
 
 
 export async function getTable(kind: WARDROBE_KIND) {
-  const service = new WardrobeDetailTableService(wardrobePath)
+  const service = new SpecificationServiceSQLite(specificationPath)
   return await service.getDetailTable({ kind })
 }
 

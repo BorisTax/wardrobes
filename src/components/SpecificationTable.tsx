@@ -31,7 +31,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
         const amount = props.specification.get(i.name as SpecificationItem) || 0
         const price = i.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"
-        const verbose = getRoute(i.name) ? { role: "button", onClick: () => { showVerbose(wardrobeData, i.name) } } : {}
+        const verbose = getRoute(i.name) ? {className:"table-data-cell table-data-cell-hover", role: "button", onClick: () => { showVerbose(wardrobeData, i.name) } } : {}
         return <tr key={index} className={className}>
             <td className="table-data-cell" {...verbose}>{i.caption}</td>
             <td className="table-data-cell">{amount.toFixed(3)}</td>

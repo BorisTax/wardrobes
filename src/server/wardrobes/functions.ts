@@ -1,16 +1,46 @@
 import { WardrobeDetailSchema } from "../../types/schemas";
-import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeDetailTable } from "../../types/wardrobe";
-import { wardrobePath } from "../options";
-import { WardrobeDetailTableService } from "../services/wardrobeDetailTableService";
+import { SpecificationItem } from "../../types/specification";
+import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeData, WardrobeDetailTable, WardrobeIntermediateData } from "../../types/wardrobe";
+import { materialServiceProvider, specServiceProvider } from "../options";
+import { SpecificationService } from "../services/specificationService";
+
+export function hasEdge2(detail: DETAIL_NAME): boolean {
+    return detail === DETAIL_NAME.ROOF ||
+        detail === DETAIL_NAME.STAND ||
+        detail === DETAIL_NAME.CONSOLE_STAND ||
+        detail === DETAIL_NAME.CONSOLE_BACK_STAND ||
+        detail === DETAIL_NAME.CONSOLE_ROOF
+}
+export function hasEdge05(detail: DETAIL_NAME): boolean {
+    return detail === DETAIL_NAME.ROOF ||
+        detail === DETAIL_NAME.INNER_STAND ||
+        detail === DETAIL_NAME.SHELF ||
+        detail === DETAIL_NAME.SHELF_PLAT ||
+        detail === DETAIL_NAME.PILLAR
+}
+
+export async function getWardrobeIntermediateData(data: WardrobeData): Promise<WardrobeIntermediateData> {
+    const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
+    const dvpData = await getDVPData(data.width, data.height, data.depth)
+
+    return { details, dvpData }
+}
+
+export async function getCoef(item: SpecificationItem): Promise<number> {
+    const specService = new SpecificationService(specServiceProvider, materialServiceProvider)
+    const list = await specService.getSpecList()
+    const coef = list.data?.find(s => s.name === item)?.coef || 1
+    return coef
+}
 
 export async function getDetailNames(): Promise<WardrobeDetailSchema[]>{
-    const service = new WardrobeDetailTableService(wardrobePath)
+    const service = new SpecificationService(specServiceProvider)
     const result = await service.getDetailNames()
     return result.data as WardrobeDetailSchema[]
 }
 
 export async function getDetails(kind: WARDROBE_KIND, width: number, height: number, depth: number): Promise<Detail[]>{
-    const service = new WardrobeDetailTableService(wardrobePath)
+    const service = new SpecificationService(specServiceProvider)
     const result = await service.getDetailTable({ kind })
     if(!result.success) return []
     const table = result.data as WardrobeDetailTable[]
@@ -50,10 +80,20 @@ function calcFunction(func: string, { width, height, shelfSize, standCount }: { 
     }
 }
 
-export async function getDVP(width: number, height: number, depth: number): Promise<DVPData> {
+export function getDSP(details: Detail[]){
+    return details.reduce((a, d) => a + d.width * d.length * d.count, 0) / 1000000
+};
+export function getDVP(dvpData: DVPData) {
+    return (dvpData.dvpLength * dvpData.dvpWidth * dvpData.dvpCount) / 1000000
+}
+export function getDVPPlanka(dvpData: DVPData) {
+    return (dvpData.dvpPlanka * dvpData.dvpPlankaCount) / 1000
+}
+
+export async function getDVPData(width: number, height: number, depth: number): Promise<DVPData> {
     const lines = [3, 4, 5, 6, 7, 8]
-    const dvpLayers = lines.map(l => ({ width: Math.round(height - 30 - 2 * (l - 1) / l), count: l }))
-    const service = new WardrobeDetailTableService(wardrobePath)
+    const dvpLayers = lines.map(l => ({ width: Math.round((height - 30 - 2 * (l - 1)) / l), count: l }))
+    const service = new SpecificationService(specServiceProvider)
     const result = await service.getDVPTemplates()
     if (!result.success) return { dvpWidth: 0, dvpLength: 0, dvpRealWidth: 0, dvpRealLength: 0, dvpCount: 0, dvpPlanka: 0, dvpPlankaCount: 0 }
     if (!result.data) return { dvpWidth: 0, dvpLength: 0, dvpRealWidth: 0, dvpRealLength: 0, dvpCount: 0, dvpPlanka: 0, dvpPlankaCount: 0 }
@@ -144,4 +184,34 @@ export function getSamorez16(width: number) {
         { width: 3001, value: 36 },
     ]
     return sizes.find((s => s.width > width))?.value || 0
+};
+
+export function getEdge2(details: Detail[]): number {
+    return details.filter(d => d.name === DETAIL_NAME.ROOF || d.name === DETAIL_NAME.STAND).reduce((a, d) => a + d.length * d.count, 0) / 1000
+};
+
+export function getEdge05(details: Detail[]): number {
+    return details.filter(d => d.name !== DETAIL_NAME.STAND).reduce((a, d) => a + ((d.name === DETAIL_NAME.ROOF) ? d.width * 2 : d.length) * d.count, 0) / 1000
+};
+
+export function getGlue(details: Detail[]) {
+    return (getEdge2(details) + getEdge05(details)) * 0.008
+};
+
+export function getConfirmat(details: Detail[]){
+    return details.reduce((a, d) => {
+        let count = 0
+        if (d.name===DETAIL_NAME.SHELF || d.name===DETAIL_NAME.SHELF_PLAT) count = d.count * 4;
+        if (d.name===DETAIL_NAME.PILLAR) count = d.count * 2;
+        return a + count
+    }, 0) 
+};
+
+export function getMinifix(details: Detail[]){
+    return details.reduce((a, d) => {
+        let count = 0
+        if (d.name===DETAIL_NAME.STAND || d.name===DETAIL_NAME.INNER_STAND) count = d.count * 4;
+        if (d.name===DETAIL_NAME.PILLAR) count = d.count * 2;
+        return a + count
+    }, 0) 
 };

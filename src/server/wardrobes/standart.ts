@@ -41,7 +41,7 @@ export default class StandartWardrobe implements IWardrobe {
         return this.details.filter(d => d.name === DETAIL_NAME.ROOF || d.name === DETAIL_NAME.STAND).reduce((a, d) => a + d.length * d.count, 0) / 1000
     };
     public getEdge05(){
-        return this.details.filter(d => d.name !== DETAIL_NAME.ROOF && d.name !== DETAIL_NAME.STAND).reduce((a, d) => a + d.length * d.count, 0) / 1000
+        return this.details.filter(d => d.name !== DETAIL_NAME.STAND).reduce((a, d) => a + ((d.name === DETAIL_NAME.ROOF) ? d.width * 2 : d.length) * d.count, 0) / 1000
     };
     public getConfirmat(){
         return this.details.reduce((a, d) => {

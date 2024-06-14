@@ -14,17 +14,17 @@ export enum MAT_TABLE_NAMES {
     TREMPEL = 'trempel',
     ZAGLUSHKA = 'zaglushka'
 }
-export enum WARDROBE_TABLE_NAMES {
+
+export enum SPEC_TABLE_NAMES {
+    PRICELIST = 'pricelist',
+    MATERIALS = 'materials',
+    UNITS = 'units',
     WARDROBES = 'wardrobes',
     DETAILS = 'details',
     DETAIL_TABLE = 'detail_table',
     DVP_TEMPLATES = 'dvp_templates',
 }
-export enum SPEC_TABLE_NAMES {
-    PRICELIST = 'pricelist',
-    MATERIALS = 'materials',
-    UNITS = 'units',
-}
+
 export enum USER_TABLE_NAMES {
     USERS = 'users',
     USERROLES = 'userroles',
@@ -36,11 +36,11 @@ export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusC
             if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
             if (!query) { resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.close(); return }
             db.all(query, (err: Error, rows: []) => {
-                if (err) { 
+                if (err) {
                     resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
                     console.log(query)
                     console.log(err.message)
-                    db.close(); 
+                    db.close();
                     return
                 }
                 else { resolve({ success: true, status: successStatusCode, data: rows as T, message: successMessage }) }

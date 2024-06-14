@@ -31,7 +31,6 @@ export default function WardrobeCalculator() {
     const lacobelGlassList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.LACOBELGLASS).map(m => m.name), [materialList])
     const profileList = useAtomValue(profileListAtom)
     const profileNames = useMemo(() => profileList.map(p => p.name), [profileList])
-    //const [data, setState] = useState<WardrobeData>(initState)
     const { wardKind, wardType, width, depth, height, dspName, fasades, profileName, extComplect } = data
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const maxFasades = 6

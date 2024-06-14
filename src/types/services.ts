@@ -43,6 +43,9 @@ interface IPriceAbstractService {
 export interface ISpecificationAbstractService {
     getSpecList: () => Promise<Result<SpecificationData[]>>
     updateSpecList: (item: SpecificationData) => Promise<Result<null>>
+    getDetailTable: ({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }) => Promise<Result<WardrobeDetailTable[]>>
+    getDVPTemplates: () => Promise<Result<{ width: number, length: number }[]>>
+    getDetailNames: () => Promise<Result<WardrobeDetailSchema[]>>
 }
 export interface IWardrobeDetailTableService {
     getDetailTable: ({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }) => Promise<Result<WardrobeDetailTable[]>>

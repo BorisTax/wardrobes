@@ -17,12 +17,6 @@ router.get("/", async (req: MyRequest, res) => {
   const result = await getSpecList();
   res.json(result);
 });
-router.get("/verbose/dsp", async (req: MyRequest, res) => {
-  //if (!isClientAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { data } = req.body
-  const result = await getVerboseDSPData(data)
-  res.json(result);
-});
 router.put("/", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
   const { name, caption, coef, code, id } = req.body

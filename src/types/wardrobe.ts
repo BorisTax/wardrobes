@@ -129,5 +129,14 @@ export enum DETAIL_NAME {
     INNER_STAND = 'INNER_STAND',
     SHELF = 'SHELF',
     SHELF_PLAT = 'SHELF_PLAT',
-    PILLAR = 'PILLAR'
+    PILLAR = 'PILLAR',
+    CONSOLE_STAND= "CONSOLE_STAND",
+    CONSOLE_BACK_STAND= "CONSOLE_BACK_STAND",
+    CONSOLE_ROOF = 'CONSOLE_ROOF',
+    CONSOLE_SHELF = 'SHELF',
+}
+
+export type WardrobeIntermediateData = {
+    details: Detail[],
+    dvpData: DVPData,
 }

@@ -25,6 +25,9 @@ table {
   border: 1px solid black;
   padding: 0.1em 0.5rem;
   }
+  .table-data-cell-hover:hover {
+    color: red;
+    }
   .table-header{
     font-weight: bold;
     position: sticky;

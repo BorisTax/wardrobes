@@ -11,7 +11,7 @@ import useConfirm from "../../../custom-hooks/useConfirm"
 import { rusMessages } from "../../../functions/messages"
 import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
-import TableData from "../TableData"
+import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
 
 export default function EditPlates(props: EditDialogProps) {

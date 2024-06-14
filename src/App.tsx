@@ -37,6 +37,7 @@ import CombiFasades from './components/CombiFasades'
 import { BrowserRouter, Link, Route, Routes, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import WardrobeCalculator from './components/WardrobeCalculator'
 import EditSpecificationDialog from './components/dialogs/EditSpecificationDialog'
+import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -108,6 +109,7 @@ function App() {
       {isClientAtLeast(user.role) ? <SpecificationDialog /> : <></>}
       {isClientAtLeast(user.role) ? <SchemaDialog /> : <></>}
       {isAdminAtLeast(user.role) ? <EditUsersDialog /> : <></>}
+      <VerboseDataDialog />
       <MessageDialog />
       <ConfirmDialog />
       <EventListener />

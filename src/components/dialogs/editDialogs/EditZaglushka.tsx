@@ -11,7 +11,7 @@ import { FasadMaterial } from "../../../types/enums"
 import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
-import TableData from "../TableData"
+import TableData from "../../TableData"
 
 export default function EditZaglushka(props: EditDialogProps) {
     const zaglushkaNoSortedList = useAtomValue(zaglushkaListAtom)

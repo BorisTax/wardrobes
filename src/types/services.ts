@@ -3,6 +3,7 @@ import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
 import { SpecificationData, Result, Token, User, PriceData } from "./server"
 import { NewTemplate, Template } from "./templates"
 import { DETAIL_NAME, SpecificationResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
+import { WardrobeDetailSchema } from "./schemas"
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User[]>>
     getTokens: () => Promise<Result<Token[]>>
@@ -46,6 +47,7 @@ export interface ISpecificationAbstractService {
 export interface IWardrobeDetailTableService {
     getDetailTable: ({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }) => Promise<Result<WardrobeDetailTable[]>>
     getDVPTemplates: () => Promise<Result<{ width: number, length: number }[]>>
+    getDetailNames: () => Promise<Result<WardrobeDetailSchema[]>>
 }
 export interface IMaterialServiceProvider extends IMaterialService {
     dbFile: string

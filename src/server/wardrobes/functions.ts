@@ -1,6 +1,13 @@
+import { WardrobeDetailSchema } from "../../types/schemas";
 import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeDetailTable } from "../../types/wardrobe";
 import { wardrobePath } from "../options";
 import { WardrobeDetailTableService } from "../services/wardrobeDetailTableService";
+
+export async function getDetailNames(): Promise<WardrobeDetailSchema[]>{
+    const service = new WardrobeDetailTableService(wardrobePath)
+    const result = await service.getDetailNames()
+    return result.data as WardrobeDetailSchema[]
+}
 
 export async function getDetails(kind: WARDROBE_KIND, width: number, height: number, depth: number): Promise<Detail[]>{
     const service = new WardrobeDetailTableService(wardrobePath)
@@ -10,24 +17,24 @@ export async function getDetails(kind: WARDROBE_KIND, width: number, height: num
     const details: Detail[] = []
     var { count, size } = getDetail(table, DETAIL_NAME.ROOF, width, height, 0, 0)
     const offset = 100
-    details.push({name: DETAIL_NAME.ROOF, length: size, width: depth, count})
+    if (count > 0) details.push({ name: DETAIL_NAME.ROOF, length: size, width: depth, count })
     var { count, size } = getDetail(table, DETAIL_NAME.STAND, width, height, 0, 0)
-    details.push({name: DETAIL_NAME.STAND, length: size, width: depth, count})
+    if (count > 0) details.push({name: DETAIL_NAME.STAND, length: size, width: depth, count})
     var { count, size } = getDetail(table, DETAIL_NAME.INNER_STAND, width, height, 0, 0)
     const innerStandLCount = count
-    details.push({ name: DETAIL_NAME.INNER_STAND, length: size, width: depth - offset, count })
+    if (count > 0) details.push({ name: DETAIL_NAME.INNER_STAND, length: size, width: depth - offset, count })
     var { count, size } = getDetail(table, DETAIL_NAME.SHELF, width, height, 0, innerStandLCount)
     const shelfSize = size
-    details.push({ name: DETAIL_NAME.SHELF, length: size, width: depth - offset, count })
+    if (count > 0) details.push({ name: DETAIL_NAME.SHELF, length: size, width: depth - offset, count })
     var { count, size } = getDetail(table, DETAIL_NAME.SHELF_PLAT, width, height, shelfSize, innerStandLCount)
-    details.push({ name: DETAIL_NAME.SHELF_PLAT, length: size, width: depth - offset, count })
+    if (count > 0) details.push({ name: DETAIL_NAME.SHELF_PLAT, length: size, width: depth - offset, count })
     var { count, size } = getDetail(table, DETAIL_NAME.PILLAR, width, height, shelfSize, innerStandLCount)
-    details.push({ name: DETAIL_NAME.PILLAR, length: size, width: depth - offset, count })
+    if (count > 0) details.push({ name: DETAIL_NAME.PILLAR, length: size, width: depth - offset, count })
     return details
 }
 
 function getDetail(table: WardrobeDetailTable[], name: DETAIL_NAME, width: number, height: number, shelfSize: number, standCount: number): { count: number, size: number } {
-    const detail = table.find(t => (name === t.name) && (width >= t.width1) && (width <= t.width2) && (height >= t.height1) && (height <= t.height2))
+    const detail = table.find(t => (name === t.name) && (width >= t.minwidth) && (width <= t.maxwidth) && (height >= t.minheight) && (height <= t.maxheight))
     if(!detail) return {count: 0, size: 0}
     const size = calcFunction(detail.size, { width, height, shelfSize, standCount })
     return { count: size ? detail.count : 0, size }

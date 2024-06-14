@@ -1,10 +1,10 @@
 export type TableDataProps = {
     heads: string[]
     content: string[][]
-    onSelectRow: (index: number) => void
+    onSelectRow?: (index: number) => void
 }
 export default function TableData(props: TableDataProps) {
-    const contents = props.content.map((r, index) => <tr key={'row' + index} onClick={() => props.onSelectRow(index)}>
+    const contents = props.content.map((r, index) => <tr key={'row' + index} onClick={() => {if(props.onSelectRow) props.onSelectRow(index)}}>
         {r.map((i, index) => <td key={'item' + index} className="table-data-cell">{i}</td>)}
     </tr>)
     return <div className="table-data">

@@ -6,6 +6,7 @@ import ImageButton from "./ImageButton"
 import { saveToExcelAtom } from "../atoms/export"
 import SpecificationTable from "./SpecificationTable"
 import { SpecGroups, getSpecification } from "../functions/specification"
+import VerboseDataDialog from "./dialogs/VerboseDataDialog"
 
 export default function WardrobeSpecification() {
     const saveToExcel = useSetAtom(saveToExcelAtom)
@@ -32,5 +33,6 @@ export default function WardrobeSpecification() {
         </div>
         <hr/>
         <SpecificationTable purposes={[purpose, MAT_PURPOSE.BOTH]} specification={spec} />
+        
     </div>
 }

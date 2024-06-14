@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import ComboBox from "./ComboBox"
 import PropertyGrid from "./PropertyGrid"
 import { CONSOLE_TYPE, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { PropertyType } from "../types/property"
 import { materialListAtom } from "../atoms/materials/materials"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { FasadMaterial, MAT_PURPOSE } from "../types/enums"
 import { profileListAtom } from "../atoms/materials/profiles"
 import TextBox from "./TextBox"
@@ -12,40 +12,14 @@ import { ConsoleTypes, WardKinds, WardTypes } from "../functions/wardrobe"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import { calculateSpecificationsAtom } from "../atoms/specification"
 import WardrobeSpecification from "./WardrobeSpecification"
+import { initFasades, wardrobeDataAtom } from "../atoms/wardrobe"
+
 const numbers = [0, 1, 2, 3, 4, 5, 6]
-const initFasades = {
-    dsp: { count: 0, names: [] },
-    mirror: { count: 0, names: [] },
-    fmp: { count: 0, names: [] },
-    sand: { count: 0, names: [] },
-    lacobel: { count: 0, names: [] },
-    lacobelGlass: { count: 0, names: [] }
-}
-const initState: WardrobeData = {
-    wardKind: WARDROBE_KIND.STANDART,
-    wardType: WARDROBE_TYPE.WARDROBE,
-    width: 2400,
-    depth: 600,
-    height: 2400,
-    dspName: "",
-    profileName: "",
-    fasades: initFasades,
-    extComplect: {
-        telescope: 0,
-        blinder: 0,
-        console: { count: 0, height: 0, depth: 0, width: 0, type: CONSOLE_TYPE.STANDART },
-        shelf: 0,
-        shelfPlat: 0,
-        stand: { count: 0, height: 0, },
-        pillar: 0,
-        truba: 0,
-        trempel: 0,
-        light: 0
-    }
-}
 const styles = { fontStyle: "italic", color: "gray" }
 
 export default function WardrobeCalculator() {
+    const [data, setData] = useAtom(wardrobeDataAtom)
+    const setState = (func: (prev: WardrobeData) => WardrobeData) => { setData(func(data)) }
     const calculate = useSetAtom(calculateSpecificationsAtom)
     const materialList = useAtomValue(materialListAtom)
     const dspList = useMemo(() => materialList.filter(m => m.purpose !== MAT_PURPOSE.FASAD).map(m => m.name), [materialList])
@@ -57,7 +31,7 @@ export default function WardrobeCalculator() {
     const lacobelGlassList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.LACOBELGLASS).map(m => m.name), [materialList])
     const profileList = useAtomValue(profileListAtom)
     const profileNames = useMemo(() => profileList.map(p => p.name), [profileList])
-    const [data, setState] = useState<WardrobeData>(initState)
+    //const [data, setState] = useState<WardrobeData>(initState)
     const { wardKind, wardType, width, depth, height, dspName, fasades, profileName, extComplect } = data
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const maxFasades = 6

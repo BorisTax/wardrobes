@@ -12,7 +12,7 @@ import { EditDialogProps } from "../EditMaterialDialog"
 import { brushListAtom } from "../../../atoms/materials/brush"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
-import TableData from "../TableData"
+import TableData from "../../TableData"
 
 export default function EditProfile(props: EditDialogProps) {
     const profileAllList = useAtomValue(profileListAtom)

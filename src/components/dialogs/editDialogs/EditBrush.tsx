@@ -9,7 +9,7 @@ import messages from "../../../server/messages"
 import { EditDialogProps } from "../EditMaterialDialog"
 import { InputType } from "../../../types/property"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
-import TableData from "../TableData"
+import TableData from "../../TableData"
 
 export default function EditBrush(props: EditDialogProps) {
     const brushNoSortedList = useAtomValue(brushListAtom)

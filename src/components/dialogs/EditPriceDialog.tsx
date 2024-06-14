@@ -10,7 +10,7 @@ import DialogWindow from "./DialogWindow"
 import { specificationDataAtom } from "../../atoms/specification"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { UnitCaptions } from "../../functions/materials"
-import TableData from "./TableData"
+import TableData from "../TableData"
 import { SpecificationItem } from "../../types/specification"
 import { InputType, PropertyType } from "../../types/property"
 type ExtPriceData = PriceData & { units: string, caption: string }

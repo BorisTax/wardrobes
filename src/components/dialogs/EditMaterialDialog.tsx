@@ -5,12 +5,12 @@ import { MaterialGroup } from "../../types/enums"
 import { useAtom } from "jotai"
 import { editMaterialDialogAtom } from "../../atoms/dialogs"
 import { MaterialGroupCaptions } from "../../functions/materials"
-import EditPlates from "./content/EditPlates"
-import EditProfile from "./content/EditProfile"
-import EditEdge from "./content/EditEdge"
-import EditZaglushka from "./content/EditZaglushka"
-import EditBrush from "./content/EditBrush"
-import EditTrempel from "./content/EditTrempel"
+import EditPlates from "./editDialogs/EditPlates"
+import EditProfile from "./editDialogs/EditProfile"
+import EditEdge from "./editDialogs/EditEdge"
+import EditZaglushka from "./editDialogs/EditZaglushka"
+import EditBrush from "./editDialogs/EditBrush"
+import EditTrempel from "./editDialogs/EditTrempel"
 
 export type EditDialogProps = {
     setLoading: (state: boolean) => void

@@ -8,7 +8,7 @@ import { SpecificationData } from "../../types/server"
 import { UnitCaptions } from "../../functions/materials"
 import DialogWindow from "./DialogWindow"
 import { loadSpecificationListAtom, specificationDataAtom, updateSpecificationListAtom } from "../../atoms/specification"
-import TableData from "./TableData"
+import TableData from "../TableData"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { InputType, PropertyType } from "../../types/property"
 

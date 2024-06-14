@@ -10,7 +10,7 @@ import { materialListAtom } from "../../../atoms/materials/materials"
 import { FasadMaterial } from "../../../types/enums"
 import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
-import TableData from "../TableData"
+import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
 
 export default function EditEdge(props: EditDialogProps) {

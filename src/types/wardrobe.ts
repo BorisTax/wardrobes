@@ -107,10 +107,10 @@ export enum WARDROBE_KIND {
 export type WardrobeDetailTable = {
     type: WARDROBE_KIND
     name: DETAIL_NAME
-    width1: number
-    width2: number
-    height1: number
-    height2: number
+    minwidth: number
+    maxwidth: number
+    minheight: number
+    maxheight: number
     count: number
     size: string
     enabled: boolean

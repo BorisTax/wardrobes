@@ -8,7 +8,7 @@ import { rusMessages } from "../../../functions/messages"
 import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
-import TableData from "../TableData"
+import TableData from "../../TableData"
 
 export default function EditTrempel(props: EditDialogProps) {
     const trempelNoSortedList = useAtomValue(trempelListAtom)

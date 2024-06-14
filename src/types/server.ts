@@ -81,3 +81,4 @@ export type Result<T> = {
     error?: Error
 }
 
+export type VerboseData = string[][]

@@ -1,9 +1,10 @@
+import { WardrobeDetailSchema } from '../../types/schemas.js';
 import { Result } from '../../types/server.js';
 import { IWardrobeDetailTableService } from '../../types/services.js'
 import { DETAIL_NAME, WARDROBE_KIND, WardrobeDetailTable } from '../../types/wardrobe.js'
 import { dataBaseQuery } from '../functions/other.js'
 import { WARDROBE_TABLE_NAMES } from '../functions/other.js';
-const { DETAIL_TABLE, DVP_TEMPLATES } = WARDROBE_TABLE_NAMES
+const { DETAIL_TABLE, DVP_TEMPLATES, DETAILS } = WARDROBE_TABLE_NAMES
 
 export class WardrobeDetailTableService implements IWardrobeDetailTableService {
   dbFile: string;
@@ -16,6 +17,9 @@ export class WardrobeDetailTableService implements IWardrobeDetailTableService {
   }
   async getDVPTemplates(): Promise<Result<{width: number, length: number}[]>> {
     return dataBaseQuery(this.dbFile, `select * from ${DVP_TEMPLATES};` , { successStatusCode: 200 }) 
+  }
+  async getDetailNames(): Promise<Result<WardrobeDetailSchema[]>> {
+    return dataBaseQuery(this.dbFile, `select * from ${DETAILS};`, { successStatusCode: 200 }) 
   }
 }
 

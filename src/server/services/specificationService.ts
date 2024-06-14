@@ -10,9 +10,8 @@ import { getCorpusSpecification, getWardrobe } from '../wardrobes/specifications
 import { createFasades } from '../wardrobes/specifications/fasades.js'
 import BrushServiceSQLite from './extServices/brushServiceSQLite.js'
 import { MaterialExtService } from './materialExtService.js'
-import { getWardrobeIntermediateData } from '../wardrobes/functions.js'
-import { SPEC_TABLE_NAMES } from '../functions/other.js'
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from '../../types/schemas.js'
+import { getDetails } from '../wardrobes/functions.js'
 
 export class SpecificationService implements ISpecificationService {
   provider: ISpecificationServiceProvider
@@ -30,8 +29,8 @@ export class SpecificationService implements ISpecificationService {
   async getSpecData(data: WardrobeData): Promise<Result<SpecificationResult>> {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: SpecificationResult = []
-    const intermediateData = await getWardrobeIntermediateData(data)
-    const wardrobe = getWardrobe(data, intermediateData.details)
+    const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
+    const wardrobe = getWardrobe(data, details)
     const priceList = (await this.provider.getSpecList()).data || []
     const coefList: Map<SpecificationItem, number> = new Map(priceList.map((p: SpecificationData) => [p.name as SpecificationItem, p.coef as number]))
     const profiles = (await this.matProvider.getProfiles()).data
@@ -40,7 +39,8 @@ export class SpecificationService implements ISpecificationService {
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
     const brush: Brush | undefined = brushes?.find(b => b.name === profile?.brush)
     const fasades = createFasades(data, profile?.type as ProfileType)
-    result.push({ type: CORPUS_SPECS.CORPUS, spec: [...(filterEmptySpecification(getCorpusSpecification(wardrobe, intermediateData, profile?.type as ProfileType, coefList))).entries()] })
+    const corpus = await getCorpusSpecification(wardrobe, data, profile?.type as ProfileType, coefList)
+    result.push({ type: CORPUS_SPECS.CORPUS, spec: [...(filterEmptySpecification(corpus)).entries()] })
     fasades.forEach(f => { result.push({ type: f.Material, spec: [...(filterEmptySpecification(getFasadSpecification(f, profile?.type as ProfileType, coefList))).entries()] }) }) 
     return {success: true, status: 200, data: result}
   }

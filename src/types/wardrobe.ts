@@ -134,7 +134,11 @@ export enum DETAIL_NAME {
 
 export type WardrobeIntermediateData = {
     details: Detail[],
+    dsp: number,
     dvpData: DVPData,
+    edge2: number,
+    edge05: number,
+    glue: number,
     legs: number,
     karton: number,
 }

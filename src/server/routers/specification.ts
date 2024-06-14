@@ -6,7 +6,6 @@ import { WardrobeData } from "../../types/wardrobe.js";
 import { isEditorAtLeast } from "../functions/user.js";
 import { accessDenied, incorrectData, noExistData } from "../functions/other.js";
 import messages from "../messages.js";
-import { getVerboseDSPData } from "../wardrobes/verbose.js";
 
 const router = express.Router();
 export default router

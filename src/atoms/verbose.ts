@@ -9,6 +9,7 @@ export function getRoute(item: SpecificationItem): string{
     const routes = new Map()
     routes.set(SpecificationItem.DSP, 'api/verbose/dsp')
     routes.set(SpecificationItem.DVP, 'api/verbose/dvp')
+    routes.set(SpecificationItem.Planka, 'api/verbose/dvpplanka')
     routes.set(SpecificationItem.Kromka2, 'api/verbose/edge2')
     routes.set(SpecificationItem.Kromka05, 'api/verbose/edge05')
     routes.set(SpecificationItem.Glue, 'api/verbose/glue')

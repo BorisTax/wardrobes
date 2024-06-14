@@ -4,6 +4,7 @@ import { SpecificationItem } from "../../types/specification";
 import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeData, WardrobeDetailTable, WardrobeIntermediateData } from "../../types/wardrobe";
 import { materialServiceProvider, specServiceProvider } from "../options";
 import { SpecificationService } from "../services/specificationService";
+import { FullData, VerboseData } from "../../types/server";
 
 export function isDataFit(width: number, height: number, depth: number, item: WardrobeFurnitureTableSchema): boolean{
     return (width >= item.minwidth) && (width <= item.maxwidth) && (height >= item.minheight) && (height <= item.maxheight)&& (depth >= item.mindepth) && (depth <= item.maxdepth)
@@ -33,13 +34,6 @@ export function useMinifix(detail: DETAIL_NAME): boolean {
         detail === DETAIL_NAME.INNER_STAND ||
         detail === DETAIL_NAME.CONSOLE_STAND ||
         detail === DETAIL_NAME.CONSOLE_BACK_STAND
-}
-export async function getWardrobeIntermediateData(data: WardrobeData): Promise<WardrobeIntermediateData> {
-    const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
-    const dvpData = await getDVPData(data.width, data.height, data.depth)
-    const legs =  await getLegs(data)
-    const karton = await getKarton(data.width, data.height, data.depth)
-    return { details, dvpData, legs, karton }
 }
 
 export async function getCoef(item: SpecificationItem): Promise<number> {
@@ -96,14 +90,43 @@ function calcFunction(func: string, { width, height, shelfSize, standCount }: { 
     }
 }
 
-export function getDSP(details: Detail[]){
-    return details.reduce((a, d) => a + d.width * d.length * d.count, 0) / 1000000
-};
-export function getDVP(dvpData: DVPData) {
-    return (dvpData.dvpLength * dvpData.dvpWidth * dvpData.dvpCount) / 1000000
+export async function getDSP(data: WardrobeData): Promise<FullData> {
+    const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
+    const detailNames = await getDetailNames()
+    const verbose = [{data: ["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""], active: false}]
+    let totalArea = 0
+    details.forEach(d => {
+        const area = d.length * d.width * d.count / 1000000
+        const caption = detailNames.find(n => n.name === d.name)?.caption || ""
+        verbose.push({data: [caption, `${d.length}`, `${d.width}`, `${d.count}`, area.toFixed(3), ""], active: false})
+        totalArea += area
+    })
+    const coef = await getCoef(SpecificationItem.DSP)
+    verbose.push({ data: ["", "", "", "", totalArea.toFixed(3), `x ${coef} = ${(totalArea * coef).toFixed(3)}`], active: false })
+    return { amount: totalArea * coef, verbose }
 }
-export function getDVPPlanka(dvpData: DVPData) {
-    return (dvpData.dvpPlanka * dvpData.dvpPlankaCount) / 1000
+
+export async function getDVP(data: WardrobeData): Promise<FullData>{
+    const dvp = await getDVPData(data.width, data.height, data.depth)
+    const coef = await getCoef(SpecificationItem.DVP) 
+    const area = dvp.dvpLength * dvp.dvpWidth * dvp.dvpCount / 1000000
+    const areaCoef = area * coef
+    const verbose = [{data: ["", "", ""], active: false}]
+    verbose.push({data: ["Расчетные размеры", `${dvp.dvpRealLength}x${dvp.dvpRealWidth} - ${dvp.dvpCount}шт`, ``], active: false})
+    verbose.push({data: ["Распиловочные размеры", `${dvp.dvpLength}x${dvp.dvpWidth} - ${dvp.dvpCount}шт`, `${area.toFixed(3)} x ${coef}= ${areaCoef.toFixed(3)}`], active: false})
+    return { amount: areaCoef, verbose }
+}
+
+export async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
+    const { width, height, depth } = data
+    const dvpData = await getDVPData(width, height, depth)
+    const coef = await getCoef(SpecificationItem.Planka) 
+    const verbose: VerboseData = [{ data: ["Длина", "Кол-во", "Итого"] }]
+    const total = dvpData.dvpPlanka * dvpData.dvpPlankaCount / 1000
+    const totalCoef = total * coef
+    verbose.push({ data: [(dvpData.dvpPlanka / 1000).toFixed(3), dvpData.dvpPlankaCount, total.toFixed(3)] })
+    if (coef !== 1) verbose.push({ data: ["", "", `${total.toFixed(3)} x ${coef} = ${totalCoef}`] })
+    return { amount: totalCoef, verbose }
 }
 
 export async function getDVPData(width: number, height: number, depth: number): Promise<DVPData> {
@@ -138,23 +161,72 @@ export async function getDVPData(width: number, height: number, depth: number): 
     return {dvpWidth, dvpLength, dvpRealWidth, dvpRealLength, dvpCount, dvpPlanka, dvpPlankaCount}
 }
 
-export async function getKarton(width: number, height: number, depth: number){
+export async function getKarton(data: WardrobeData): Promise<FullData> {
+    const {width, height, depth} = data
     const service = new SpecificationService(specServiceProvider, materialServiceProvider)
-    const result = await service.getFurnitureTable({kind: WARDROBE_KIND.STANDART, item: SpecificationItem.Karton})
-    const list = result.data as WardrobeFurnitureTableSchema[]
-    const karton = list.find(item => isDataFit(width, height, depth, item))
-    return karton?.count || 0
+    const list = (await service.getFurnitureTable({ kind: WARDROBE_KIND.STANDART, item: SpecificationItem.Karton })).data || []
+    const caption = await getWardrobeKind(data.wardKind)
+    const coef = await getCoef(SpecificationItem.Karton) || 1
+    const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0
+    const verbose = [{ data: ["Ширина", "Высота", "Глубина", "Кол-во"], active: false }]
+
+    list.forEach(item => {
+        const active = isDataFit(width, height, depth, item)
+        if (active) verbose.push({ data: [`${item.minwidth}-${item.maxwidth}`, `${item.minheight}-${item.maxheight}`, `${item.mindepth}-${item.maxdepth}`, `${item.count}`], active: false })
+    })
+    return { amount: current * coef, verbose }
+}
+// const service = new SpecificationService(specServiceProvider, materialServiceProvider)
+// const result = await service.getFurnitureTable({kind: WARDROBE_KIND.STANDART, item: SpecificationItem.Karton})
+// const list = result.data as WardrobeFurnitureTableSchema[]
+// const karton = list.find(item => isDataFit(width, height, depth, item))
+// return karton?.count || 0
+
+
+
+export async function getLegs(data: WardrobeData): Promise<FullData> {
+    const {wardKind, width, height, depth} = data
+    const service = new SpecificationService(specServiceProvider, materialServiceProvider)
+    const legs = (await service.getFurnitureTable({ kind: data.wardKind, item: SpecificationItem.Leg })).data || []
+    const caption = await getWardrobeKind(data.wardKind)
+    const current = legs.find(item => isDataFit(width, height, depth, item))?.count || 0
+    const verbose = [{ data: ["Ширина", "Кол-во"], active: false }]
+    legs.forEach(l => {
+        verbose.push({ data: [`${l.minwidth}-${l.maxwidth}`, `${l.count}`], active: current === l.count })
+    })
+    return {amount: current, verbose}
+}
+
+export async function getConfirmat(data: WardrobeData): Promise<FullData> {
+    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => useConfirmat(d.name))
+    const detailNames = await getDetailNames()
+    const verbose: VerboseData = [{ data: ["Деталь", "Кол-во", "Конфирматы"], active: false }]
+    let total = 0
+    details.forEach(d => {
+        const conf = d.count * (d.name === DETAIL_NAME.PILLAR ? 2 : 4)
+        const caption = detailNames.find(n => n.name === d.name)?.caption || ""
+        verbose.push({data: [caption, `${d.count}`, `${conf}`], active: false})
+        total += conf
+    })
+    verbose.push({data: ["", "Итого:", total], active: false})
+    return {amount: total, verbose}
 }
 
 
-
-export async function getLegs({wardKind, width, height, depth}: WardrobeData) {
-    const service = new SpecificationService(specServiceProvider)
-    const result = await service.getFurnitureTable({kind: wardKind, item: SpecificationItem.Leg})
-    const legs = result.data || []
-    const leg = legs.find(l => (width >= l.minwidth) && (width <= l.maxwidth) && (height >= l.minheight) && (height <= l.maxheight)&& (depth >= l.mindepth) && (depth <= l.maxdepth))
-    return leg?.count || 0
-};
+export async function getMinifix(data: WardrobeData): Promise<FullData> {
+    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => useMinifix(d.name))
+    const detailNames = await getDetailNames()
+    const verbose: VerboseData = [{ data: ["Деталь", "Кол-во", "Минификсы"], active: false }]
+    let total = 0
+    details.forEach(d => {
+        const count = d.count * ((d.name === DETAIL_NAME.CONSOLE_BACK_STAND || d.name === DETAIL_NAME.PILLAR) ? 2 : 4)
+        const caption = detailNames.find(n => n.name === d.name)?.caption || ""
+        verbose.push({data: [caption, `${d.count}`, `${count}`], active: false})
+        total += count
+    })
+    verbose.push({data: ["", "Итого:", total], active: false})
+    return {amount: total, verbose}
+}
 
 export function getNails(width: number) {
     const sizes = [
@@ -177,35 +249,49 @@ export function getSamorez16(width: number) {
     return sizes.find((s => s.width > width))?.value || 0
 };
 
-export function getEdge2(details: Detail[]): number {
-    return details.filter(d => d.name === DETAIL_NAME.ROOF || d.name === DETAIL_NAME.STAND).reduce((a, d) => a + d.length * d.count, 0) / 1000
-};
+export async function getEdge2(data: WardrobeData): Promise<FullData> {
+    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => hasEdge2(d.name))
+    const detailNames = await getDetailNames()
+    const verbose = [{data: ["Деталь", "Длина", "Ширина", "Кол-во", "Длина кромки", ""], active: false}]
+    let totalEdge = 0
+    details.forEach(d => {
+        const edge = d.length * d.count / 1000
+        const caption = detailNames.find(n => n.name === d.name)?.caption || ""
+        verbose.push({data: [caption, `${d.length}`, `${d.width}`, `${d.count}`, edge.toFixed(3), ""], active: false})
+        totalEdge += edge
+    })
+    const coef = await getCoef(SpecificationItem.Kromka2)
+    verbose.push({data: ["", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`], active: false})
+    return { amount: totalEdge * coef, verbose }
+}
 
-export function getEdge05(details: Detail[]): number {
-    return details.filter(d => d.name !== DETAIL_NAME.STAND).reduce((a, d) => a + ((d.name === DETAIL_NAME.ROOF) ? d.width * 2 : d.length) * d.count, 0) / 1000
-};
+export async function getEdge05(data: WardrobeData): Promise<FullData> {
+    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => hasEdge05(d.name))
+    const detailNames = await getDetailNames()
+    const verbose = [{data: ["Деталь", "Длина", "Ширина", "Кол-во", "Длина кромки", ""], active: false}]
+    let totalEdge = 0
+    details.forEach(d => {
+        const edge = (d.name === DETAIL_NAME.ROOF ? d.width * 2 : d.length) * d.count / 1000
+        const caption = detailNames.find(n => n.name === d.name)?.caption || ""
+        verbose.push({data: [caption, `${d.length}`, `${d.width}`, `${d.count}`, edge.toFixed(3), ""], active: false})
+        totalEdge += edge
+    })
+    const coef = await getCoef(SpecificationItem.Kromka2)
+    verbose.push({data: ["", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`], active: false})
+    return {amount: totalEdge * coef, verbose}
+}
 
-export function getGlue(details: Detail[], coef2: number, coef05: number) {
-    return (getEdge2(details) * coef2 + getEdge05(details) * coef05) * 0.008
-};
+export async function getGlue(data: WardrobeData): Promise<FullData> {
+    const coefGlue = await getCoef(SpecificationItem.Glue)
+    const edge2 = (await getEdge2(data)).amount
+    const edge05 = (await getEdge05(data)).amount
+    const glue = (edge2 + edge05) * coefGlue * 0.008
+    const verbose = [{data: ["Кромка 2мм", "Кромка 0.45мм", "Итого", "Клей"], active: false}]
+    verbose.push({data: [edge2.toFixed(3), edge05.toFixed(3), (edge2 + edge05).toFixed(3), `x 0.008 = ${glue.toFixed(3)}`], active: false})
+    return {amount: glue, verbose}
+}
 
-export function getConfirmat(details: Detail[]){
-    return details.reduce((a, d) => {
-        let count = 0
-        if (d.name===DETAIL_NAME.SHELF || d.name===DETAIL_NAME.SHELF_PLAT) count = d.count * 4;
-        if (d.name===DETAIL_NAME.PILLAR) count = d.count * 2;
-        return a + count
-    }, 0) 
-};
 
-export function getMinifix(details: Detail[]){
-    return details.reduce((a, d) => {
-        let count = 0
-        if (d.name===DETAIL_NAME.STAND || d.name===DETAIL_NAME.INNER_STAND) count = d.count * 4;
-        if (d.name===DETAIL_NAME.PILLAR) count = d.count * 2;
-        return a + count
-    }, 0) 
-};
 export async function getWardrobeKind(kind: WARDROBE_KIND): Promise<string> {
     const service = new SpecificationService(specServiceProvider, materialServiceProvider)
     const wardkinds = (await service.getWardobeKinds()).data as WardrobeDetailSchema[]

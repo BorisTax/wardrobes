@@ -82,3 +82,4 @@ export type Result<T> = {
 }
 
 export type VerboseData = { data: (string | number)[], active?: boolean }[]
+export type FullData = { amount: number, verbose: VerboseData }

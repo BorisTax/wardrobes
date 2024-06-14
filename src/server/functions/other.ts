@@ -23,6 +23,7 @@ export enum SPEC_TABLE_NAMES {
     DETAILS = 'details',
     DETAIL_TABLE = 'detail_table',
     DVP_TEMPLATES = 'dvp_templates',
+    FURNITURE = 'furniture',
 }
 
 export enum USER_TABLE_NAMES {

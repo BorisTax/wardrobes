@@ -1,14 +1,14 @@
 import { getSpecificationPattern } from "../../../functions/specification"
 import { SpecificationItem } from "../../../types/specification"
-import { DVPData, Detail, WARDROBE_KIND, WardrobeIntermediateData } from "../../../types/wardrobe"
+import { Detail, WARDROBE_KIND, WardrobeIntermediateData } from "../../../types/wardrobe"
 import { ProfileType } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"
-import { getConfirmat, getDVPPlanka, getEdge05, getEdge2, getGlue, getMinifix } from "../functions"
+import { getConfirmat, getDVPPlanka, getEdge05, getEdge2, getGlue, getLegs, getMinifix } from "../functions"
 
 export function getCorpusSpecification(wardrobe: IWardrobe, intermediteData: WardrobeIntermediateData, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
     const spec = getSpecificationPattern()
-    const { details, dvpData } = intermediteData
+    const { details, dvpData, legs } = intermediteData
       const truba = wardrobe.getTruba()
     const trempel = wardrobe.getTrempel()
     spec.set(SpecificationItem.DSP, wardrobe.getDSP() * (coefList.get(SpecificationItem.DSP) || 1))
@@ -19,9 +19,9 @@ export function getCorpusSpecification(wardrobe: IWardrobe, intermediteData: War
     spec.set(SpecificationItem.ZagConfirmat, getConfirmat(details) * (coefList.get(SpecificationItem.ZagConfirmat) || 1))
     spec.set(SpecificationItem.Minifix, getMinifix(details) * (coefList.get(SpecificationItem.Minifix) || 1))
     spec.set(SpecificationItem.ZagMinifix, getMinifix(details) * (coefList.get(SpecificationItem.ZagMinifix) || 1))
-    spec.set(SpecificationItem.Glue, getGlue(details) * (coefList.get(SpecificationItem.Glue) || 1))
+    spec.set(SpecificationItem.Glue, getGlue(details, coefList.get(SpecificationItem.Kromka2) || 1, coefList.get(SpecificationItem.Kromka05) || 1) * (coefList.get(SpecificationItem.Glue) || 1))
     spec.set(SpecificationItem.Planka, getDVPPlanka(dvpData) * (coefList.get(SpecificationItem.Planka) || 1))
-    spec.set(SpecificationItem.Leg, wardrobe.getLegs() * (coefList.get(SpecificationItem.Leg) || 1))
+    spec.set(SpecificationItem.Leg, legs * (coefList.get(SpecificationItem.Leg) || 1))
     spec.set(SpecificationItem.Karton, wardrobe.getKarton() * (coefList.get(SpecificationItem.Karton) || 1))
     spec.set(SpecificationItem.Skotch, wardrobe.getKarton() * 20 * (coefList.get(SpecificationItem.Skotch) || 1))
     spec.set(SpecificationItem.NapravTop, wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravTop) || 1))

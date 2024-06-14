@@ -1,17 +1,19 @@
 export type TableDataProps = {
     heads: string[]
     content: string[][]
+    styles?: object[][]
     onSelectRow?: (index: number) => void
 }
-export default function TableData(props: TableDataProps) {
-    const contents = props.content.map((r, index) => <tr key={'row' + index} onClick={() => {if(props.onSelectRow) props.onSelectRow(index)}}>
-        {r.map((i, index) => <td key={'item' + index} className="table-data-cell">{i}</td>)}
+export default function TableData({ heads, content, styles = [[{}]], onSelectRow = () => { } }: TableDataProps) {
+    const defStyles = content.map((i, r) => i.map((i, c) => { if (styles[r]) return styles[r][c]; else return {} }))
+    const contents = content.map((r, rowIndex) => <tr key={'row' + rowIndex} onClick={() => {if(onSelectRow) onSelectRow(rowIndex)}}>
+        {r.map((i, colIndex) => <td key={'item' + colIndex} className="table-data-cell" style={{ ...defStyles[rowIndex][colIndex] }}>{i}</td>)}
     </tr>)
     return <div className="table-data">
             <table>
                 <thead>
                     <tr>
-                    {props.heads.map((h, index) => <th key={'head' + index} className="table-header">{h}</th>)}
+                    {heads.map((h, index) => <th key={'head' + index} className="table-header">{h}</th>)}
                     </tr>
                 </thead>
                 <tbody>{contents}</tbody>

@@ -12,7 +12,7 @@ import BrushServiceSQLite from './extServices/brushServiceSQLite.js'
 import { MaterialExtService } from './materialExtService.js'
 import { getWardrobeIntermediateData } from '../wardrobes/functions.js'
 import { SPEC_TABLE_NAMES } from '../functions/other.js'
-import { WardrobeDetailSchema } from '../../types/schemas.js'
+import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from '../../types/schemas.js'
 
 export class SpecificationService implements ISpecificationService {
   provider: ISpecificationServiceProvider
@@ -47,11 +47,17 @@ export class SpecificationService implements ISpecificationService {
   async getDetailTable({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }): Promise<Result<WardrobeDetailTable[]>> {
     return await this.provider.getDetailTable({ kind, detailName })
   }
-  async getDVPTemplates(): Promise<Result<{ width: number, length: number }[]>> {
+  async getDVPTemplates(): Promise<Result<DVPTableSchema[]>> {
     return await this.provider.getDVPTemplates()
   }
   async getDetailNames(): Promise<Result<WardrobeDetailSchema[]>> {
     return await this.provider.getDetailNames()
+  }
+  async getFurnitureTable({ kind, item }: { kind: WARDROBE_KIND, item?: SpecificationItem }): Promise<Result<WardrobeFurnitureTableSchema[]>>{
+    return await this.provider.getFurnitureTable({ kind, item })
+  }
+  async getWardobeKinds(): Promise<Result<WardrobeTableSchema[]>>{
+    return await this.provider.getWardobeKinds()
   }
 }
 

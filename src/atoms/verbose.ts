@@ -11,10 +11,12 @@ export function getRoute(item: SpecificationItem): string{
     routes.set(SpecificationItem.DVP, 'api/verbose/dvp')
     routes.set(SpecificationItem.Kromka2, 'api/verbose/edge2')
     routes.set(SpecificationItem.Kromka05, 'api/verbose/edge05')
+    routes.set(SpecificationItem.Glue, 'api/verbose/glue')
+    routes.set(SpecificationItem.Leg, 'api/verbose/legs')
     return routes.get(item)
 }
 
-export const verboseDataAtom = atom<VerboseData>([[]])
+export const verboseDataAtom = atom<VerboseData>([{ data: [], active: false }])
 
 export const loadVerboseDataAtom = atom(null, async (get, set, data: WardrobeData, item: SpecificationItem) => {
     const { token } = get(userAtom)

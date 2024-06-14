@@ -81,4 +81,4 @@ export type Result<T> = {
     error?: Error
 }
 
-export type VerboseData = string[][]
+export type VerboseData = { data: string[], active?: boolean }[]

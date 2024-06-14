@@ -9,7 +9,7 @@ export interface IWardrobe {
     getEdge2: () => number
     getEdge05: () => number
     getGlue: () => number
-    getLegs: () => number
+    getLegs: (data: WardrobeData) => number
     getConfirmat: () => number
     getMinifix: () => number
     getNails: () => number
@@ -139,4 +139,5 @@ export enum DETAIL_NAME {
 export type WardrobeIntermediateData = {
     details: Detail[],
     dvpData: DVPData,
+    legs: number,
 }

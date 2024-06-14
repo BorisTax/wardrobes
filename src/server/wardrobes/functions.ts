@@ -1,3 +1,4 @@
+import { rmSync } from "fs";
 import { WardrobeDetailSchema } from "../../types/schemas";
 import { SpecificationItem } from "../../types/specification";
 import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeData, WardrobeDetailTable, WardrobeIntermediateData } from "../../types/wardrobe";
@@ -22,8 +23,8 @@ export function hasEdge05(detail: DETAIL_NAME): boolean {
 export async function getWardrobeIntermediateData(data: WardrobeData): Promise<WardrobeIntermediateData> {
     const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
     const dvpData = await getDVPData(data.width, data.height, data.depth)
-
-    return { details, dvpData }
+    const legs =  await getLegs(data)
+    return { details, dvpData, legs }
 }
 
 export async function getCoef(item: SpecificationItem): Promise<number> {
@@ -155,14 +156,12 @@ export function getKarton(width: number, height: number){
     return 0
 }
 
-export function getLegs(width: number) {
-    const sizes = [
-        { width: 1400, value: 6 },
-        { width: 2200, value: 8 },
-        { width: 2800, value: 10 },
-        { width: 3001, value: 16 },
-    ]
-    return sizes.find((s => s.width > width))?.value || 0
+export async function getLegs({wardKind, width, height, depth}: WardrobeData) {
+    const service = new SpecificationService(specServiceProvider)
+    const result = await service.getFurnitureTable({kind: wardKind, item: SpecificationItem.Leg})
+    const legs = result.data || []
+    const leg = legs.find(l => (width >= l.minwidth) && (width <= l.maxwidth) && (height >= l.minheight) && (height <= l.maxheight)&& (depth >= l.mindepth) && (depth <= l.maxdepth))
+    return leg?.count || 0
 };
 
 export function getNails(width: number) {
@@ -194,8 +193,8 @@ export function getEdge05(details: Detail[]): number {
     return details.filter(d => d.name !== DETAIL_NAME.STAND).reduce((a, d) => a + ((d.name === DETAIL_NAME.ROOF) ? d.width * 2 : d.length) * d.count, 0) / 1000
 };
 
-export function getGlue(details: Detail[]) {
-    return (getEdge2(details) + getEdge05(details)) * 0.008
+export function getGlue(details: Detail[], coef2: number, coef05: number) {
+    return (getEdge2(details) * coef2 + getEdge05(details) * coef05) * 0.008
 };
 
 export function getConfirmat(details: Detail[]){

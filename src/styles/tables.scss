@@ -19,6 +19,9 @@ table {
     font-size: 0.8rem;
     max-height: 300px;
     overflow: scroll;
+    -width: fit-content;
+    max-width: 90svw;
+    -margin: auto;
     background-color: $defaultBackColor;
   }
   .table-data-cell{

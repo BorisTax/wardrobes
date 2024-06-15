@@ -33,6 +33,5 @@ export default function WardrobeSpecification() {
         </div>
         <hr/>
         <SpecificationTable purposes={[purpose, MAT_PURPOSE.BOTH]} specification={spec} />
-        
     </div>
 }

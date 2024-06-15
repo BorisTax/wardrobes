@@ -1,14 +1,8 @@
 @import "./App.scss";
 
 .main-container {
-  background-image: url('../images/background/back1.png');
-  background-size: cover;
-  background-repeat: repeat;
-}
-.main-container-background {
-  position: absolute;
   background: linear-gradient(45deg, #88dffae1, #96e0f3de);
-  width: 100%;
+  min-height: 100svh;
 }
 
 .header {

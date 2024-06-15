@@ -90,13 +90,11 @@ function App() {
       <BrowserRouter>
       <Header />
       <div className="main-container">
-          <div className='main-container-background'>
             <Routes>
               <Route path="/" element={<Select />}></Route>
               <Route path="/combi" element={<CombiFasades />} />
               <Route path="/calculator" element={<WardrobeCalculator /> } />
              </Routes>
-          </div>
       </div>
       </BrowserRouter>
       <CopyFasadDialog />

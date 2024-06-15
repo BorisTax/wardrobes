@@ -17,12 +17,14 @@ dialog {
 }
 
 html {
-  height: 100%;
 }
 
 body {
-  background-color: $defaultBackColor !important;
-  height: 100%;
+  background-image: url('../images/background/back1.png');
+  background-size: cover;
+  background-repeat: repeat;
+  background-attachment: fixed;
+  min-height: 100svh;
 }
 
 #root {

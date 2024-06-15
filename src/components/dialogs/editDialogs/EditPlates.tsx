@@ -6,13 +6,13 @@ import { ExtMaterial } from "../../../types/materials"
 import { MAT_PURPOSE, FasadMaterial } from "../../../types/enums"
 import { Materials } from "../../../functions/materials"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials/materials"
-import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
+import Container from "../../Container"
 
-export default function EditPlates(props: EditDialogProps) {
+export default function EditPlates() {
     const materialList = useAtomValue(materialListAtom)
     const [{ baseMaterial, extMaterialIndex }, setState] = useState({ baseMaterial: FasadMaterial.DSP, extMaterialIndex: 0 })
     const deleteMaterial = useSetAtom(deleteMaterialAtom)
@@ -29,12 +29,14 @@ export default function EditPlates(props: EditDialogProps) {
         { caption: "Назначение:", value: extMaterial.purpose || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
         { caption: "Изображение:", value: extMaterial.image || "", message: "Выберите изображение", type: InputType.FILE },
     ]
-    return <>
-        <div className="d-flex flex-nowrap gap-2 align-items-start">
-            <ComboBox title="Материал: " value={baseMaterial} items={Materials} onChange={(_, value: string) => { setState((prev) => ({ ...prev, baseMaterial: getFasadMaterial(value), extMaterialIndex: 0 })); }} />
+    return <Container>
+        <div>
+            <div className="d-flex flex-nowrap gap-2 align-items-start">
+                <ComboBox title="Материал: " value={baseMaterial} items={Materials} onChange={(_, value: string) => { setState((prev) => ({ ...prev, baseMaterial: getFasadMaterial(value), extMaterialIndex: 0 })); }} />
+            </div>
+            <hr />
+            <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
         </div>
-        <hr />
-        <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
         <EditDataSection name={extMaterial.name} items={editItems}
             onUpdate={async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
@@ -58,5 +60,5 @@ export default function EditPlates(props: EditDialogProps) {
                 const result = await addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file)
                 return result
             }} />
-    </>
+    </Container>
 }

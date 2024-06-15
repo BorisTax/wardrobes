@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { specificationDialogAtom } from "../../atoms/dialogs"
 import { specificationCombiAtom } from "../../atoms/specification"
 import { MAT_PURPOSE } from "../../types/enums"
@@ -11,7 +11,7 @@ import SpecificationTable from "../SpecificationTable"
 export default function SpecificationDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const saveToExcel = useSetAtom(saveToExcelAtom)
-    const [specifications] = useAtom(specificationCombiAtom)
+    const specifications = useAtomValue(specificationCombiAtom)
     const [fasadIndex, setFasadIndex] = useState(0)
     const [, setSpecificationDialogRef] = useAtom(specificationDialogAtom)
     const specification = specifications[fasadIndex]
@@ -26,6 +26,6 @@ export default function SpecificationDialog() {
         <div className="d-flex flex-row flex-nowrap justify-content-center align-items-center gap-1">
             {fasades}
         </div>
-        <SpecificationTable purposes={[MAT_PURPOSE.FASAD, MAT_PURPOSE.BOTH]} specification={specification}/>
+        <SpecificationTable purposes={[MAT_PURPOSE.FASAD, MAT_PURPOSE.BOTH]} specification={specification} />
     </DialogWindow>
 }

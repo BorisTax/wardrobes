@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import useMessage from "../../custom-hooks/useMessage"
-import useConfirm from "../../custom-hooks/useConfirm"
-import { rusMessages } from "../../functions/messages"
 import { loadPriceListAtom, priceListAtom, updatePriceListAtom } from "../../atoms/prices"
 import { PriceData } from "../../types/server"
 import { specificationDataAtom } from "../../atoms/specification"
@@ -11,9 +8,9 @@ import { UnitCaptions } from "../../functions/materials"
 import TableData from "../TableData"
 import { SpecificationItem } from "../../types/specification"
 import { InputType, PropertyType } from "../../types/property"
+import Container from "../Container"
 type ExtPriceData = PriceData & { units: string, caption: string }
 export default function EditPriceDialog() {
-    const [loading, setLoading] = useState(false)
     const loadPriceList = useSetAtom(loadPriceListAtom)
     const priceList = useAtomValue(priceListAtom)
     const specList = useAtomValue(specificationDataAtom)
@@ -22,8 +19,6 @@ export default function EditPriceDialog() {
     const def = { name: "", caption: "", price: "", markup: "" }
     const { name, caption, price, markup } = (extPriceList && extPriceList[selectedIndex]) ? ({ ...(extPriceList[selectedIndex] || def) }) : def
     const updatePriceList = useSetAtom(updatePriceListAtom)
-    const showMessage = useMessage()
-    const showConfirm = useConfirm()
     const heads = ['Наименование', 'Ед', 'Цена', 'Наценка']
     const contents = extPriceList.map((i: ExtPriceData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.price || ""}`, `${i.markup || ""}`])
     const editItems: EditDataItem[] = [
@@ -34,18 +29,14 @@ export default function EditPriceDialog() {
     useEffect(() => {
         loadPriceList()
     }, [])
-    return <div>
-        Редактор цен
-        <div className="overflow-scroll">
-            <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
-            <EditDataSection items={editItems} onUpdate={async (checked, values) => {
-                const data: PriceData = { name: name as SpecificationItem }
-                if (checked[1]) data.price = +values[1]
-                if (checked[2]) data.markup = +values[2]
-                const result = await updatePriceList(data)
-                return result
-            }} />
-        </div>
-        {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
-    </div>
+    return <Container>
+        <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
+        <EditDataSection items={editItems} onUpdate={async (checked, values) => {
+            const data: PriceData = { name: name as SpecificationItem }
+            if (checked[1]) data.price = +values[1]
+            if (checked[2]) data.markup = +values[2]
+            const result = await updatePriceList(data)
+            return result
+        }} />
+    </Container>
 }

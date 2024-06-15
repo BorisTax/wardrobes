@@ -5,12 +5,12 @@ import { addZaglushkaAtom, deleteZaglushkaAtom, zaglushkaListAtom, updateZaglush
 import messages from "../../../server/messages"
 import { materialListAtom } from "../../../atoms/materials/materials"
 import { FasadMaterial } from "../../../types/enums"
-import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
+import Container from "../../Container"
 
-export default function EditZaglushka(props: EditDialogProps) {
+export default function EditZaglushka() {
     const zaglushkaNoSortedList = useAtomValue(zaglushkaListAtom)
     const zaglushkaList = useMemo(() => zaglushkaNoSortedList.toSorted((i1, i2) => i1.name > i2.name ? 1 : -1), [zaglushkaNoSortedList])
     const materialList = useAtomValue(materialListAtom)
@@ -30,7 +30,7 @@ export default function EditZaglushka(props: EditDialogProps) {
     useEffect(() => {
         setSelectedIndex(0)
     }, [zaglushkaList])
-    return <>
+    return <Container>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
             onUpdate={async (checked, values) => {
@@ -53,5 +53,5 @@ export default function EditZaglushka(props: EditDialogProps) {
                 const result = await addZaglushka({ name, dsp, code })
                 return result
             }} />
-    </>
+    </Container>
 }

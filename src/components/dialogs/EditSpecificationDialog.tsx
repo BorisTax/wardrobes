@@ -9,6 +9,7 @@ import { loadSpecificationListAtom, specificationDataAtom, updateSpecificationLi
 import TableData from "../TableData"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { InputType, PropertyType } from "../../types/property"
+import Container from "../Container"
 
 export default function EditSpecificationDialog() {
     const [loading, setLoading] = useState(false)
@@ -31,18 +32,17 @@ export default function EditSpecificationDialog() {
     useEffect(() => {
         loadSpecList()
     }, [])
-    return <div className="container">
-        <div className="row">
-            <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
-            <EditDataSection items={editItems} onUpdate={async (checked, values) => {
-                const data: SpecificationData = { name: specList[selectedIndex].name }
-                if (checked[0]) data.caption = values[0]
-                if (checked[1]) data.coef = +values[1]
-                if (checked[2]) data.code = values[2]
-                if (checked[3]) data.id = values[3]
-                const result = await updateSpecList(data)
-                return result
-            }} />
-        </div>
-    </div>
+    return <Container>
+                <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
+                <EditDataSection items={editItems} onUpdate={async (checked, values) => {
+                    const data: SpecificationData = { name: specList[selectedIndex].name }
+                    if (checked[0]) data.caption = values[0]
+                    if (checked[1]) data.coef = +values[1]
+                    if (checked[2]) data.code = values[2]
+                    if (checked[3]) data.id = values[3]
+                    const result = await updateSpecList(data)
+                    return result
+                }} />
+            </Container>
+ 
 }

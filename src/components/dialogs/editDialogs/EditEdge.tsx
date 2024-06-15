@@ -5,12 +5,12 @@ import { addEdgeAtom, deleteEdgeAtom, edgeListAtom, updateEdgeAtom } from "../..
 import messages from "../../../server/messages"
 import { materialListAtom } from "../../../atoms/materials/materials"
 import { FasadMaterial } from "../../../types/enums"
-import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
+import Container from "../../Container"
 
-export default function EditEdge(props: EditDialogProps) {
+export default function EditEdge() {
     const edgeNotSortedList = useAtomValue(edgeListAtom)
     const edgeList = useMemo(() => edgeNotSortedList.toSorted((e1, e2) => e1.name > e2.name ? 1 : -1), [edgeNotSortedList])
     const materialList = useAtomValue(materialListAtom)
@@ -27,7 +27,7 @@ export default function EditEdge(props: EditDialogProps) {
         { caption: "Код:", value: code, message: "Введите код", type: InputType.TEXT },
         { caption: "Соответствие ДСП:", value: dsp, list: mList, message: "Выберите ДСП", type: InputType.LIST },
     ]
-    return <>
+    return <Container>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={edgeList[selectedIndex].name} items={editItems}
             onUpdate={async (checked, values) => {
@@ -52,7 +52,7 @@ export default function EditEdge(props: EditDialogProps) {
                 return result
             }} />
 
-    </>
+    </Container>
 }
 
 

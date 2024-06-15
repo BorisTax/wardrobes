@@ -5,13 +5,13 @@ import ComboBox from "../../ComboBox"
 import { Profile, ProfileType } from "../../../types/materials"
 import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../../../atoms/materials/profiles"
 import messages from "../../../server/messages"
-import { EditDialogProps } from "../EditMaterialDialog"
 import { brushListAtom } from "../../../atoms/materials/brush"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
+import Container from "../../Container"
 
-export default function EditProfile(props: EditDialogProps) {
+export default function EditProfile() {
     const profileAllList = useAtomValue(profileListAtom)
     const [{ type, profileIndex }, setState] = useState({ type: profileAllList[0].type, profileIndex: 0 })
     const profileList = profileAllList.filter(p => p.type === type)
@@ -29,12 +29,14 @@ export default function EditProfile(props: EditDialogProps) {
         { caption: "Код:", value: profile.code, message: "Введите код", type: InputType.TEXT },
         { caption: "Щетка:", value: profile.brush, list: brushList, message: "Выберите щетку", type: InputType.LIST },
     ]
-    return <>
-        <div className="d-flex flex-nowrap gap-2 align-items-start">
-            <ComboBox title="Тип: " value={type || ""} items={Profiles} onChange={(_, value: string) => { setState({ type: value as ProfileType, profileIndex: 0 }); }} />
+    return <Container>
+        <div>
+            <div className="d-flex flex-nowrap gap-2 align-items-start">
+                <ComboBox title="Тип: " value={type || ""} items={Profiles} onChange={(_, value: string) => { setState({ type: value as ProfileType, profileIndex: 0 }); }} />
+            </div>
+            <hr />
+            <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, profileIndex: index })) }} />
         </div>
-        <hr />
-        <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, profileIndex: index })) }} />
         <EditDataSection name={profile.name} items={editItems}
             onUpdate={async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
@@ -56,5 +58,5 @@ export default function EditProfile(props: EditDialogProps) {
                 const result = await addProfile({ name, type, code, brush })
                 return result
             }} />
-    </>
+    </Container>
 }

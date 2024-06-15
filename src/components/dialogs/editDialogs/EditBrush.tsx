@@ -3,12 +3,12 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { Brush } from "../../../types/materials"
 import { addBrushAtom, deleteBrushAtom, brushListAtom, updateBrushAtom } from "../../../atoms/materials/brush"
 import messages from "../../../server/messages"
-import { EditDialogProps } from "../EditMaterialDialog"
 import { InputType } from "../../../types/property"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
+import Container from "../../Container"
 
-export default function EditBrush(props: EditDialogProps) {
+export default function EditBrush() {
     const brushNoSortedList = useAtomValue(brushListAtom)
     const brushList = useMemo(() => brushNoSortedList.toSorted((b1, b2) => b1.name > b2.name ? 1 : -1), [brushNoSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -25,7 +25,7 @@ export default function EditBrush(props: EditDialogProps) {
     useEffect(() => {
         setSelectedIndex(0)
     }, [brushList])
-    return <>
+    return <Container>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
             onUpdate={async (checked, values) => {
@@ -47,5 +47,5 @@ export default function EditBrush(props: EditDialogProps) {
                 const result = await addBrush({ name, code })
                 return result
             }} />
-    </>
+    </Container>
 }

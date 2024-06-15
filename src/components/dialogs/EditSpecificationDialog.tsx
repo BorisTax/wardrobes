@@ -31,22 +31,18 @@ export default function EditSpecificationDialog() {
     useEffect(() => {
         loadSpecList()
     }, [])
-    return <>
-        <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
-        <EditDataSection items={editItems} onUpdate={(checked, values, message) => {
-            const data: SpecificationData = { name: specList[selectedIndex].name }
-            if (checked[0]) data.caption = values[0]
-            if (checked[1]) data.coef = +values[1]
-            if (checked[2]) data.code = values[2]
-            if (checked[3]) data.id = values[3]
-            showConfirm(message, () => {
-                setLoading(true)
-                updateSpecList(data, (result) => {
-                    setLoading(false)
-                    showMessage(rusMessages[result.message])
-                })
-            })
-        }} />
-        {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
-    </>
+    return <div className="container">
+        <div className="row">
+            <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
+            <EditDataSection items={editItems} onUpdate={async (checked, values) => {
+                const data: SpecificationData = { name: specList[selectedIndex].name }
+                if (checked[0]) data.caption = values[0]
+                if (checked[1]) data.coef = +values[1]
+                if (checked[2]) data.code = values[2]
+                if (checked[3]) data.id = values[3]
+                const result = await updateSpecList(data)
+                return result
+            }} />
+        </div>
+    </div>
 }

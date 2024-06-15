@@ -9,8 +9,8 @@ import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { SpecificationData, TableFields } from "../types/server";
 import { getInitSpecification } from "../functions/specification";
-import { AtomCallbackResult } from "../types/atoms";
 import { wardrobeDataAtom } from "./wardrobe";
+import messages from "../server/messages";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])
@@ -27,7 +27,7 @@ export const loadSpecificationListAtom = atom(null, async (get, set) => {
     } catch (e) { console.error(e) }
 })
 
-export const updateSpecificationListAtom = atom(null, async (get, set, { name, caption, code, coef, id, purpose }: SpecificationData, callback: AtomCallbackResult) => {
+export const updateSpecificationListAtom = atom(null, async (get, set, { name, caption, code, coef, id, purpose }: SpecificationData) => {
     const user = get(userAtom)
     const formData: any = {}
     formData[TableFields.NAME] = name
@@ -42,8 +42,11 @@ export const updateSpecificationListAtom = atom(null, async (get, set, { name, c
         await set(loadSpecificationListAtom)
         const data = get(wardrobeDataAtom)
         set(calculateSpecificationsAtom, data)
-        callback({success: result.success as boolean, message: result.message as string})
-    } catch (e) { console.error(e) }
+        return {success: result.success as boolean, message: result.message as string}
+    } catch (e) { 
+        console.error(e) 
+        return { success: false, message: messages.QUERY_ERROR }
+    }
 })
 
 export const coefListAtom = atom<Map<SpecificationItem, number>>((get) => {

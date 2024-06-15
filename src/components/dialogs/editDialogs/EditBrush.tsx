@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { Brush } from "../../../types/materials"
-import useMessage from "../../../custom-hooks/useMessage"
-import useConfirm from "../../../custom-hooks/useConfirm"
 import { addBrushAtom, deleteBrushAtom, brushListAtom, updateBrushAtom } from "../../../atoms/materials/brush"
-import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
 import { EditDialogProps } from "../EditMaterialDialog"
 import { InputType } from "../../../types/property"
@@ -19,8 +16,6 @@ export default function EditBrush(props: EditDialogProps) {
     const deleteBrush = useSetAtom(deleteBrushAtom)
     const addBrush = useSetAtom(addBrushAtom)
     const updateBrush = useSetAtom(updateBrushAtom)
-    const showMessage = useMessage()
-    const showConfirm = useConfirm()
     const heads = ['Наименование', 'Код']
     const contents = brushList.map((i: Brush) => [i.name, i.code])
     const editItems: EditDataItem[] = [
@@ -33,39 +28,24 @@ export default function EditBrush(props: EditDialogProps) {
     return <>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
-            onUpdate={(checked, values, message) => {
+            onUpdate={async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    updateBrush({ name, newName: usedName, code: usedCode }, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    })
-                })
+                const result = await updateBrush({ name, newName: usedName, code: usedCode })
+                return result
             }}
-            onDelete={(name, message) => {
+            onDelete={async (name) => {
                 const index = brushList.findIndex((p: Brush) => p.name === name)
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    deleteBrush(brushList[index], (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    });
-                    setSelectedIndex(0)
-                })
+                const result = await deleteBrush(brushList[index])
+                setSelectedIndex(0)
+                return result
             }}
-            onAdd={(checked, values, message) => {
+            onAdd={async (checked, values) => {
                 const name = values[0]
                 const code = values[1]
-                if (brushList.find((p: Brush) => p.name === name)) { showMessage(rusMessages[messages.BRUSH_EXIST]); return }
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    addBrush({ name, code }, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    });
-                })
+                if (brushList.find((p: Brush) => p.name === name)) { return { success: false, message: messages.BRUSH_EXIST } }
+                const result = await addBrush({ name, code })
+                return result
             }} />
     </>
 }

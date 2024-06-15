@@ -6,7 +6,7 @@ import { appDataAtom } from "../app";
 import Fasad from "../../classes/Fasad";
 import { FasadMaterial } from "../../types/enums";
 import { TableFields } from "../../types/server";
-import { AtomCallbackResult } from "../../types/atoms";
+import messages from "../../server/messages";
 
 export const materialListAtom = atom<ExtMaterial[]>([])
 
@@ -27,14 +27,19 @@ export const imageUrlAtom = atom((get) => {
     get(materialListAtom)
 })
 
-export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial, callback: AtomCallbackResult) => {
+export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial) => {
     const user = get(userAtom)
-    const result = await fetchData("api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
-    await set(loadMaterialListAtom)
-    callback({ success: result.success as boolean, message: result.message as string })
+    try{
+        const result = await fetchData("api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
+        await set(loadMaterialListAtom)
+        return { success: result.success as boolean, message: result.message as string }
+    }catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+     }
 })
 
-export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: string, callback: AtomCallbackResult) => {
+export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: string) => {
     const user = get(userAtom)
     const data = {
         [TableFields.NAME]: material.name,
@@ -47,11 +52,14 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
     try {
         const result = await fetchData("api/materials/material", "POST", JSON.stringify(data))
         await set(loadMaterialListAtom)
-        callback({ success: result.success as boolean, message: result.message as string })
-    } catch (e) { console.error(e) }
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
 })
 
-export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image, purpose }, callback: AtomCallbackResult) => {
+export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image, purpose }) => {
     const user = get(userAtom)
     const data = {
         [TableFields.NAME]: name,
@@ -65,8 +73,11 @@ export const updateMaterialAtom = atom(null, async (get, set, { name, material, 
     try {
         const result = await fetchData("api/materials/material", "PUT", JSON.stringify(data))
         await set(loadMaterialListAtom)
-        callback({ success: result.success as boolean, message: result.message as string })
-    } catch (e) { console.error(e) }
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR}
+     }
 })
 
 export function setInitialMaterials(rootFasades: Fasad[], material: FasadMaterial, extMaterial: string) {

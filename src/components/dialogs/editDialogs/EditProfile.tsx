@@ -3,10 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { Profiles } from "../../../functions/materials"
 import ComboBox from "../../ComboBox"
 import { Profile, ProfileType } from "../../../types/materials"
-import useMessage from "../../../custom-hooks/useMessage"
-import useConfirm from "../../../custom-hooks/useConfirm"
 import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../../../atoms/materials/profiles"
-import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
 import { EditDialogProps } from "../EditMaterialDialog"
 import { brushListAtom } from "../../../atoms/materials/brush"
@@ -24,14 +21,12 @@ export default function EditProfile(props: EditDialogProps) {
     const deleteProfile = useSetAtom(deleteProfileAtom)
     const addProfile = useSetAtom(addProfileAtom)
     const updateProfile = useSetAtom(updateProfileAtom)
-    const showMessage = useMessage()
-    const showConfirm = useConfirm()
     const profile = profileList[profileIndex]
     const heads = ['Наименование', 'Код', 'Щетка']
     const contents = profileList.map((i: Profile) => [i.name, i.code, i.brush])
     const editItems: EditDataItem[] = [
         { caption: "Наименование:", value: profile.name, message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Код:", value: profile.code, message: "Введите код", type: InputType.TEXT  },
+        { caption: "Код:", value: profile.code, message: "Введите код", type: InputType.TEXT },
         { caption: "Щетка:", value: profile.brush, list: brushList, message: "Выберите щетку", type: InputType.LIST },
     ]
     return <>
@@ -41,40 +36,25 @@ export default function EditProfile(props: EditDialogProps) {
         <hr />
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, profileIndex: index })) }} />
         <EditDataSection name={profile.name} items={editItems}
-            onUpdate={(checked, values, message) => {
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    const usedName = checked[0] ? values[0] : ""
-                    const usedCode = checked[1] ? values[1] : ""
-                    const usedBrush = checked[2] ? values[2] : ""
-                    updateProfile({ name, type, newName: usedName, newCode: usedCode, newBrush: usedBrush }, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    })
-                })
+            onUpdate={async (checked, values) => {
+                const usedName = checked[0] ? values[0] : ""
+                const usedCode = checked[1] ? values[1] : ""
+                const usedBrush = checked[2] ? values[2] : ""
+                const result = await updateProfile({ name, type, newName: usedName, newCode: usedCode, newBrush: usedBrush })
+                return result
             }}
-            onDelete={(name, message) => {
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    deleteProfile(profile, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    });
-                    setState((prev) => ({ ...prev, profileIndex: 0 }))
-                })
+            onDelete={async (name) => {
+                const result = await deleteProfile(profile)
+                setState((prev) => ({ ...prev, profileIndex: 0 }))
+                return result
             }}
-            onAdd={(checked, values, message) => {
+            onAdd={async (checked, values) => {
                 const name = values[0]
                 const code = values[1]
                 const brush = values[2]
-                if (profileList.find((p: Profile) => p.name === name && p.type === type)) { showMessage(rusMessages[messages.PROFILE_EXIST]); return }
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    addProfile({ name, type, code, brush }, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    });
-                })
+                if (profileList.find((p: Profile) => p.name === name && p.type === type)) { return { success: false, message: messages.PROFILE_EXIST } }
+                const result = await addProfile({ name, type, code, brush })
+                return result
             }} />
     </>
 }

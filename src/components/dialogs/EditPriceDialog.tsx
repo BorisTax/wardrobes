@@ -38,17 +38,12 @@ export default function EditPriceDialog() {
         Редактор цен
         <div className="overflow-scroll">
             <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
-            <EditDataSection items={editItems} onUpdate={(checked, values, message) => {
+            <EditDataSection items={editItems} onUpdate={async (checked, values) => {
                 const data: PriceData = { name: name as SpecificationItem }
                 if (checked[1]) data.price = +values[1]
                 if (checked[2]) data.markup = +values[2]
-                showConfirm(message, () => {
-                    setLoading(true)
-                    updatePriceList(data, (result) => {
-                        setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    })
-                })
+                const result = await updatePriceList(data)
+                return result
             }} />
         </div>
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}

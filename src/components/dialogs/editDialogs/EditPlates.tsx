@@ -6,13 +6,11 @@ import { ExtMaterial } from "../../../types/materials"
 import { MAT_PURPOSE, FasadMaterial } from "../../../types/enums"
 import { Materials } from "../../../functions/materials"
 import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials/materials"
-import useMessage from "../../../custom-hooks/useMessage"
-import useConfirm from "../../../custom-hooks/useConfirm"
-import { rusMessages } from "../../../functions/messages"
 import { EditDialogProps } from "../EditMaterialDialog"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
+import messages from "../../../server/messages"
 
 export default function EditPlates(props: EditDialogProps) {
     const materialList = useAtomValue(materialListAtom)
@@ -23,13 +21,11 @@ export default function EditPlates(props: EditDialogProps) {
     const extMaterials: ExtMaterial[] = useMemo(() => (materialList.filter(m => m.material === baseMaterial) || [{ name: "", material: "" }]).toSorted((m1, m2) => (m1.name > m2.name) ? 1 : -1), [materialList, baseMaterial]);
     const extMaterial = extMaterials[extMaterialIndex] || { name: "", code: "", image: "", material: FasadMaterial.DSP, purpose: MAT_PURPOSE.BOTH }
     const purposeEnabled = extMaterial?.material === FasadMaterial.DSP
-    const showMessage = useMessage()
-    const showConfirm = useConfirm()
     const heads = ['Наименование', 'Код', 'Назначение']
     const contents = extMaterials.map((i: ExtMaterial) => [i.name, i.code, MATPurpose.get(i.purpose) || ""])
     const editItems: EditDataItem[] = [
         { caption: "Наименование:", value: extMaterial.name || "", message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Код:", value: extMaterial.code, message: "Введите код", type: InputType.TEXT  },
+        { caption: "Код:", value: extMaterial.code, message: "Введите код", type: InputType.TEXT },
         { caption: "Назначение:", value: extMaterial.purpose || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
         { caption: "Изображение:", value: extMaterial.image || "", message: "Выберите изображение", type: InputType.FILE },
     ]
@@ -40,42 +36,27 @@ export default function EditPlates(props: EditDialogProps) {
         <hr />
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
         <EditDataSection name={extMaterial.name} items={editItems}
-            onUpdate={(checked, values, message) => {
-                showConfirm(message, () => {
-                    const usedName = checked[0] ? values[0] : ""
-                    const usedCode = checked[1] ? values[1] : ""
-                    const usedPurpose = checked[2] ? values[2] : MAT_PURPOSE.FASAD
-                    const usedFile = checked[3] ? values[3] : ""
-                    props.setLoading(true)
-                    updateMaterial({ name: extMaterial.name, material: baseMaterial, newName: usedName, newCode: usedCode, image: usedFile, purpose: usedPurpose }, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    })
-                })
+            onUpdate={async (checked, values) => {
+                const usedName = checked[0] ? values[0] : ""
+                const usedCode = checked[1] ? values[1] : ""
+                const usedPurpose = checked[2] ? values[2] : MAT_PURPOSE.FASAD
+                const usedFile = checked[3] ? values[3] : ""
+                const result = await updateMaterial({ name: extMaterial.name, material: baseMaterial, newName: usedName, newCode: usedCode, image: usedFile, purpose: usedPurpose })
+                return result
             }}
-            onDelete={(name, message) => {
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    deleteMaterial(extMaterial, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    });
-                    setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
-                })
+            onDelete={async (name) => {
+                const result = await deleteMaterial(extMaterial)
+                setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
+                return result
             }}
-            onAdd={(checked, values, message) => {
+            onAdd={async (checked, values) => {
                 const name = values[0]
                 const code = values[1]
                 const purpose = getMATPurpose(values[2])
                 const file = values[3]
-                if (existMaterial(name, baseMaterial, materialList)) { showMessage("Материал уже существует"); return }
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    });
-                })
+                if (existMaterial(name, baseMaterial, materialList)) { return { success: false, message: messages.MATERIAL_EXIST } }
+                const result = await addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file)
+                return result
             }} />
-        </>
+    </>
 }

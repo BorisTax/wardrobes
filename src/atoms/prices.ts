@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { PriceData, TableFields } from "../types/server";
-import { AtomCallbackResult } from "../types/atoms";
+import messages from "../server/messages";
 
 export const priceListAtom = atom<PriceData[]>([])
 export const activeProfileIndexAtom = atom(0)
@@ -17,7 +17,7 @@ export const loadPriceListAtom = atom(null, async (get, set) => {
 })
 
 
-export const updatePriceListAtom = atom(null, async (get, set, { name, price, markup }: PriceData, callback: AtomCallbackResult) => {
+export const updatePriceListAtom = atom(null, async (get, set, { name, price, markup }: PriceData) => {
     const user = get(userAtom)
     const formData: any = {}
     formData[TableFields.NAME] = name
@@ -27,6 +27,9 @@ export const updatePriceListAtom = atom(null, async (get, set, { name, price, ma
     try {
         const result = await fetchData("api/prices/pricelist", "PUT", JSON.stringify(formData))
         await set(loadPriceListAtom)
-        callback({success: result.success as boolean, message: result.message as string})
-    } catch (e) { console.error(e) }
+        return {success: result.success as boolean, message: result.message as string}
+    } catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+     }
 })

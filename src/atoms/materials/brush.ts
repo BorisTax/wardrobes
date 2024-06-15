@@ -4,6 +4,7 @@ import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
 import { TableFields } from "../../types/server";
 import { AtomCallbackResult } from "../../types/atoms";
+import messages from "../../server/messages";
 
 export const brushListAtom = atom<Brush[]>([])
 
@@ -14,14 +15,19 @@ export const loadBrushListAtom = atom(null, async (_, set) => {
     } catch (e) { console.error(e) }
 })
 
-export const deleteBrushAtom = atom(null, async (get, set, brush: Brush, callback: AtomCallbackResult) => {
+export const deleteBrushAtom = atom(null, async (get, set, brush: Brush) => {
     const user = get(userAtom)
-    const result = await fetchData("api/materials/brush", "DELETE", JSON.stringify({ name: brush.name, token: user.token }))
-    await set(loadBrushListAtom)
-    callback({ success: result.success as boolean, message: result.message as string })
+    try {
+        const result = await fetchData("api/materials/brush", "DELETE", JSON.stringify({ name: brush.name, token: user.token }))
+        await set(loadBrushListAtom)
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+    }
 })
 
-export const addBrushAtom = atom(null, async (get, set, {name, code}: Brush, callback: AtomCallbackResult) => {
+export const addBrushAtom = atom(null, async (get, set, {name, code}: Brush) => {
     const user = get(userAtom)
     const data = {
         [TableFields.NAME]: name,
@@ -31,11 +37,14 @@ export const addBrushAtom = atom(null, async (get, set, {name, code}: Brush, cal
     try {
         const result = await fetchData("api/materials/brush", "POST", JSON.stringify(data))
         await set(loadBrushListAtom)
-        callback({ success: result.success as boolean, message: result.message as string })
-    } catch (e) { console.error(e) }
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+     }
 })
 
-export const updateBrushAtom = atom(null, async (get, set, { name, newName, code }, callback: AtomCallbackResult) => {
+export const updateBrushAtom = atom(null, async (get, set, { name, newName, code }) => {
     const user = get(userAtom)
     const data = {
         [TableFields.NAME]: name,
@@ -46,6 +55,9 @@ export const updateBrushAtom = atom(null, async (get, set, { name, newName, code
     try {
         const result = await fetchData("api/materials/brush", "PUT", JSON.stringify(data))
         await set(loadBrushListAtom)
-        callback({ success: result.success as boolean, message: result.message as string })
-    } catch (e) { console.error(e) }
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+     }
 })

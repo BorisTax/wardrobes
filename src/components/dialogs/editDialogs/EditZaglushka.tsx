@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { Zaglushka, ExtMaterial } from "../../../types/materials"
-import useMessage from "../../../custom-hooks/useMessage"
-import useConfirm from "../../../custom-hooks/useConfirm"
 import { addZaglushkaAtom, deleteZaglushkaAtom, zaglushkaListAtom, updateZaglushkaAtom } from "../../../atoms/materials/zaglushka"
-import { rusMessages } from "../../../functions/messages"
 import messages from "../../../server/messages"
 import { materialListAtom } from "../../../atoms/materials/materials"
 import { FasadMaterial } from "../../../types/enums"
@@ -23,8 +20,6 @@ export default function EditZaglushka(props: EditDialogProps) {
     const deleteZaglushka = useSetAtom(deleteZaglushkaAtom)
     const addZaglushka = useSetAtom(addZaglushkaAtom)
     const updateZaglushka = useSetAtom(updateZaglushkaAtom)
-    const showMessage = useMessage()
-    const showConfirm = useConfirm()
     const heads = ['Наименование', 'Код', 'Соответствие ДСП']
     const contents = zaglushkaList.map((i: Zaglushka) => [i.name, i.code, i.dsp])
     const editItems: EditDataItem[] = [
@@ -38,40 +33,25 @@ export default function EditZaglushka(props: EditDialogProps) {
     return <>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
-            onUpdate={(checked, values, message) => {
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    const usedName = checked[0] ? values[0] : ""
-                    const usedCode = checked[1] ? values[1] : ""
-                    const usedDSP = checked[2] ? values[2] : ""
-                    updateZaglushka({ name, newName: usedName, code: usedCode, dsp: usedDSP }, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    })
-                })
+            onUpdate={async (checked, values) => {
+                const usedName = checked[0] ? values[0] : ""
+                const usedCode = checked[1] ? values[1] : ""
+                const usedDSP = checked[2] ? values[2] : ""
+                const result = await updateZaglushka({ name, newName: usedName, code: usedCode, dsp: usedDSP })
+                return result
             }}
-            onDelete={(name, message) => {
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    deleteZaglushka(zaglushkaList[selectedIndex], (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    });
-                    setSelectedIndex(0)
-                })
+            onDelete={async (name) => {
+                const result = await deleteZaglushka(zaglushkaList[selectedIndex])
+                setSelectedIndex(0)
+                return result
             }}
-            onAdd={(checked, values, message) => {
+            onAdd={async (checked, values) => {
                 const name = values[0]
                 const code = values[1]
                 const dsp = values[2]
-                if (zaglushkaList.find((p: Zaglushka) => p.name === name)) { showMessage(rusMessages[messages.ZAGLUSHKA_EXIST]); return }
-                showConfirm(message, () => {
-                    props.setLoading(true)
-                    addZaglushka({ name, dsp, code }, (result) => {
-                        props.setLoading(false)
-                        showMessage(rusMessages[result.message])
-                    });
-                })
+                if (zaglushkaList.find((p: Zaglushka) => p.name === name)) { return { success: false, message: messages.ZAGLUSHKA_EXIST } }
+                const result = await addZaglushka({ name, dsp, code })
+                return result
             }} />
     </>
 }

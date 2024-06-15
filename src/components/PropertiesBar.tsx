@@ -21,6 +21,7 @@ import { TEMPLATE_TABLES } from "../types/enums"
 import { hasFasadImage } from "../functions/fasades"
 import TextBox from "./TextBox"
 import { useMemo } from "react"
+import ImageLink from "./ImageLink"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 const directions: Map<string, string> = new Map()
 export default function PropertiesBar() {
@@ -59,7 +60,7 @@ export default function PropertiesBar() {
                 {isClientAtLeast(role) &&
                     <>
                         <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
-                        <ImageButton title="Cхема" icon="schemaButton" onClick={() => { showSchemaDialog() }} />
+                        <ImageLink link={"schema"} title="Cхема" icon="schemaButton" />
                     </>}
                 {isEditorAtLeast(role) && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
                 {isClientAtLeast(role) && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}

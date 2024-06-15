@@ -1,5 +1,5 @@
 import { Getter, Setter, atom } from 'jotai';
-import { AppData, AppState, HistoryState, SetAtomComfirm, WardType } from "../types/app";
+import { AppData, AppState, HistoryState, SetAtomComfirm } from "../types/app";
 import { createAppState, getAppDataFromState, getAppState, getFasadHeight, getFasadWidth, getInitialAppState } from "../functions/wardrobe";
 import { Profile } from "../types/materials";
 import Fasad from "../classes/Fasad";
@@ -10,6 +10,7 @@ import { FasadMaterial } from '../types/enums';
 import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
+import { WARDROBE_TYPE } from '../types/wardrobe';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
@@ -115,7 +116,7 @@ export const setWardHeightAtom = atom(null, async (get, set, [wardHeight, confir
     await setAppDataAtom(setHeight, newAppData, newRootFasades, set, confirmCallback, true)
 })
 
-export const setWardTypeAtom = atom(null, async (get, set, [wardType, confirmCallback]: SetAtomComfirm<WardType>) => {
+export const setWardTypeAtom = atom(null, async (get, set, [wardType, confirmCallback]: SetAtomComfirm<WARDROBE_TYPE>) => {
     const { order, wardWidth, wardHeight, fasadCount, profile, rootFasades } = get(appDataAtom)
     const { minSize } = get(settingsAtom)
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardType, profile.type)

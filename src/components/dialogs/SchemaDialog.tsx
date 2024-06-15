@@ -1,21 +1,19 @@
 import '../../styles/schema.scss'
 import { useEffect, useLayoutEffect, useRef } from "react"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue } from "jotai"
 // @ts-ignore
 import * as  html2image from 'html-to-image'
 import download from 'downloadjs'
 import jsPDF from 'jspdf'
-import { rerenderDialogAtom, schemaDialogAtom } from "../../atoms/dialogs"
+import { rerenderDialogAtom } from "../../atoms/dialogs"
 import { appDataAtom } from "../../atoms/app"
 import { combineColors } from "../../functions/schema"
 import { FasadMaterial } from "../../types/enums"
 import Fasad from '../../classes/Fasad'
 import FasadSchemaSection from '../fasad/FasadSchemaSection'
 import ImageButton from '../ImageButton'
-import DialogWindow from './DialogWindow'
 
 export default function SchemaDialog() {
-    const dialogRef = useRef<HTMLDialogElement>(null)
     const rerender = useAtomValue(rerenderDialogAtom)
     const tableRef = useRef<HTMLDivElement>(null)
     const viewRef = useRef<HTMLDivElement>(null)
@@ -25,7 +23,6 @@ export default function SchemaDialog() {
     const { rootFasades, fasadCount, order, profile, type, wardHeight, wardWidth } = useAtomValue(appDataAtom)
     const totalWidth = rootFasades.reduce((prev, r: Fasad) => r.Width + prev, 0) + 5
     const ratio = totalWidth / rootFasades[0].Height
-    const setSchemaDialogRef = useSetAtom(schemaDialogAtom)
     const DSPColors = [...combineColors(rootFasades, FasadMaterial.DSP)].join(", ")
     const mirrorColors = [...combineColors(rootFasades, FasadMaterial.MIRROR)].join(", ")
     const lacobelColors = [...combineColors(rootFasades, FasadMaterial.LACOBEL), ...combineColors(rootFasades, FasadMaterial.LACOBELGLASS)].join(", ")
@@ -43,10 +40,7 @@ export default function SchemaDialog() {
             if (viewRef.current) viewRef.current.style.height = height - padding * 2 + "px"
         }
     }, [rerender])
-    useEffect(() => {
-        setSchemaDialogRef(dialogRef)
-    }, [dialogRef])
-    return <DialogWindow dialogRef={dialogRef} menuButtons={
+    return <div>
             <div>
                 <ImageButton icon="pdf" title="Сохранить в PDF" onClick={() => {
                     html2image.toPng(sheetRef.current as HTMLDivElement)
@@ -63,7 +57,6 @@ export default function SchemaDialog() {
                         });
                 }} />
             </div>
-    }>
             <div className='schema-background'>
                 <div ref={sheetRef} className='schema-sheet'>
                     <div className="schema-container">
@@ -111,5 +104,5 @@ export default function SchemaDialog() {
                     </div>
                 </div>
             </div>
-    </DialogWindow>
+    </div>
 }

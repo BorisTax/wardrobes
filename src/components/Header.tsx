@@ -7,6 +7,7 @@ import MenuSeparator from "./MenuSeparator"
 import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { downloadDatabaseAtom } from "../atoms/database"
 import { Link } from "react-router-dom"
+import ImageLink from "./ImageLink"
 export default function Header() {
   const user = useAtomValue(userAtom)
   const editMaterialDialog = useAtomValue(editMaterialDialogAtom)
@@ -21,15 +22,15 @@ export default function Header() {
       {isEditorAtLeast(user.role) ?
         <>
           <MenuSeparator />
-          <ImageButton title="База материалов" icon="editMaterials" onClick={() => { editMaterialDialog?.current?.showModal() }} />
-          <ImageButton title="Редактор цен" icon="editPrice" onClick={() => { editPriceDialog?.current?.showModal() }} />
-          <ImageButton title="Редактор спецификации" icon="editSpecification" onClick={() => { editSpecificationDialog?.current?.showModal() }} />
+          <ImageLink link={"materials"} title="База материалов" icon="editMaterials" />
+          <ImageLink link={"pricelist"} title="Редактор цен" icon="editPrice" />
+          <ImageLink link={"specification"} title="Редактор спецификации" icon="editSpecification" />
         </>
         : <></>}
       {isAdminAtLeast(user.role) ?
         <>
           <MenuSeparator />
-          <ImageButton title="Список пользователей" icon="userlistButton" onClick={() => { showUserListDialog() }} />
+          <ImageLink link={"users"} title="Список пользователей" icon="userlistButton" />
           <ImageButton title="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
         </>
         : <></>}

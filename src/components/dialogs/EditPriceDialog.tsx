@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import { editPriceDialogAtom } from "../../atoms/dialogs"
+import { useEffect, useMemo, useState } from "react"
+import { useAtomValue, useSetAtom } from "jotai"
 import useMessage from "../../custom-hooks/useMessage"
 import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
 import { loadPriceListAtom, priceListAtom, updatePriceListAtom } from "../../atoms/prices"
 import { PriceData } from "../../types/server"
-import DialogWindow from "./DialogWindow"
 import { specificationDataAtom } from "../../atoms/specification"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { UnitCaptions } from "../../functions/materials"
@@ -15,7 +13,6 @@ import { SpecificationItem } from "../../types/specification"
 import { InputType, PropertyType } from "../../types/property"
 type ExtPriceData = PriceData & { units: string, caption: string }
 export default function EditPriceDialog() {
-    const dialogRef = useRef<HTMLDialogElement>(null)
     const [loading, setLoading] = useState(false)
     const loadPriceList = useSetAtom(loadPriceListAtom)
     const priceList = useAtomValue(priceListAtom)
@@ -24,7 +21,6 @@ export default function EditPriceDialog() {
     const [selectedIndex, setSelectedIndex] = useState(0)
     const def = { name: "", caption: "", price: "", markup: "" }
     const { name, caption, price, markup } = (extPriceList && extPriceList[selectedIndex]) ? ({ ...(extPriceList[selectedIndex] || def) }) : def
-    const [, setPriceDialogRef] = useAtom(editPriceDialogAtom)
     const updatePriceList = useSetAtom(updatePriceListAtom)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
@@ -37,9 +33,9 @@ export default function EditPriceDialog() {
     ]
     useEffect(() => {
         loadPriceList()
-        setPriceDialogRef(dialogRef)
-    }, [setPriceDialogRef, dialogRef])
-    return <DialogWindow dialogRef={dialogRef} title="Редактор цен">
+    }, [])
+    return <div>
+        Редактор цен
         <div className="overflow-scroll">
             <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
             <EditDataSection items={editItems} onUpdate={(checked, values, message) => {
@@ -56,5 +52,5 @@ export default function EditPriceDialog() {
             }} />
         </div>
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
-    </DialogWindow>
+    </div>
 }

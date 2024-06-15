@@ -18,12 +18,9 @@ import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
 import { loadProfileListAtom } from './atoms/materials/profiles'
 import EditPriceDialog from './components/dialogs/EditPriceDialog'
-import SpecificationDialog from './components/dialogs/SpecificationDialog'
-import { isAdminAtLeast, isClientAtLeast, isEditorAtLeast} from './server/functions/user'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
-import SchemaDialog from './components/dialogs/SchemaDialog'
 import EditUsersDialog from './components/dialogs/EditUsersDialog'
 import EventListener from './components/EventListener'
 import SettingsDialog from './components/dialogs/SettingsDialog'
@@ -38,6 +35,8 @@ import { BrowserRouter, Link, Route, Routes, createBrowserRouter, createRoutesFr
 import WardrobeCalculator from './components/WardrobeCalculator'
 import EditSpecificationDialog from './components/dialogs/EditSpecificationDialog'
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
+import SchemaDialog from './components/dialogs/SchemaDialog'
+import { loadSpecificationListAtom } from './atoms/specification'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -52,6 +51,7 @@ const router = createBrowserRouter(
 function App() {
   const user = useAtomValue(userAtom)
   const loadMaterialList = useSetAtom(loadMaterialListAtom)
+  const loadSpecification = useSetAtom(loadSpecificationListAtom)
   const loadProfileList = useSetAtom(loadProfileListAtom)
   const loadEdgeList = useSetAtom(loadEdgeListAtom)
   const loadBrushList = useSetAtom(loadBrushListAtom)
@@ -65,6 +65,7 @@ function App() {
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
     setAppData(getAppDataFromState(appState), false)
     loadMaterialList(!storage)
+    loadSpecification()
     loadProfileList()
     loadEdgeList()
     loadBrushList()
@@ -94,6 +95,11 @@ function App() {
               <Route path="/" element={<Select />}></Route>
               <Route path="/combi" element={<CombiFasades />} />
               <Route path="/calculator" element={<WardrobeCalculator /> } />
+              <Route path="/combi/schema" element={<SchemaDialog /> } />
+              <Route path="/specification" element={<EditSpecificationDialog /> } />
+              <Route path="/materials" element={<EditMaterialDialog /> } />
+              <Route path="/pricelist" element={<EditPriceDialog /> } />
+              <Route path="/users" element={<EditUsersDialog /> } />
              </Routes>
       </div>
       </BrowserRouter>
@@ -101,12 +107,6 @@ function App() {
       <FasadTemplatesDialog />
       <SettingsDialog />
       <LoginDialog />
-      {isEditorAtLeast(user.role) ? <EditMaterialDialog /> : <></>}
-      {isEditorAtLeast(user.role) ? <EditPriceDialog /> : <></>}
-      {isEditorAtLeast(user.role) ? <EditSpecificationDialog /> : <></>}
-      {isClientAtLeast(user.role) ? <SpecificationDialog /> : <></>}
-      {isClientAtLeast(user.role) ? <SchemaDialog /> : <></>}
-      {isAdminAtLeast(user.role) ? <EditUsersDialog /> : <></>}
       <VerboseDataDialog />
       <MessageDialog />
       <ConfirmDialog />

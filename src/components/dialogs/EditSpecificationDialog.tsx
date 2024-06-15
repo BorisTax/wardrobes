@@ -1,26 +1,22 @@
-import { useEffect, useRef, useState } from "react"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import { editSpecificationDialogAtom } from "../../atoms/dialogs"
+import { useEffect, useState } from "react"
+import { useAtomValue, useSetAtom } from "jotai"
 import useMessage from "../../custom-hooks/useMessage"
 import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
 import { SpecificationData } from "../../types/server"
 import { UnitCaptions } from "../../functions/materials"
-import DialogWindow from "./DialogWindow"
 import { loadSpecificationListAtom, specificationDataAtom, updateSpecificationListAtom } from "../../atoms/specification"
 import TableData from "../TableData"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { InputType, PropertyType } from "../../types/property"
 
 export default function EditSpecificationDialog() {
-    const dialogRef = useRef<HTMLDialogElement>(null)
     const [loading, setLoading] = useState(false)
     const loadSpecList = useSetAtom(loadSpecificationListAtom)
     const specList = useAtomValue(specificationDataAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const def = { name: "", caption: "", coef: 1, price: "", code: "", id: "", markup: "" }
     const { name, caption, coef, code, id } = (specList && specList[selectedIndex]) ? ({ ...(specList[selectedIndex] || def) }) : def
-    const [, setDialogRef] = useAtom(editSpecificationDialogAtom)
     const updateSpecList = useSetAtom(updateSpecificationListAtom)
     const showMessage = useMessage()
     const showConfirm = useConfirm()
@@ -34,9 +30,8 @@ export default function EditSpecificationDialog() {
     ]
     useEffect(() => {
         loadSpecList()
-        setDialogRef(dialogRef)
-    }, [setDialogRef, dialogRef])
-    return <DialogWindow dialogRef={dialogRef} title="Редактор спецификации">
+    }, [])
+    return <>
         <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
         <EditDataSection items={editItems} onUpdate={(checked, values, message) => {
             const data: SpecificationData = { name: specList[selectedIndex].name }
@@ -53,5 +48,5 @@ export default function EditSpecificationDialog() {
             })
         }} />
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
-    </DialogWindow>
+    </>
 }

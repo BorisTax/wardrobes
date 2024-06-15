@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { editUsersDialogAtom } from "../../atoms/dialogs"
 import useMessage from "../../custom-hooks/useMessage"
 import useConfirm from "../../custom-hooks/useConfirm"
 import ImageButton from "../ImageButton"
@@ -10,7 +9,6 @@ import AddUserDialog from "./AddUserDialog"
 import { UserRoles } from "../../types/server"
 import { AtomCallbackResult } from "../../types/atoms"
 import { rusMessages } from "../../functions/messages"
-import DialogWindow from "./DialogWindow"
 
 enum ListType {
     REGISTERED = "REGISTERED",
@@ -18,10 +16,8 @@ enum ListType {
 }
 
 export default function EditUsersDialog() {
-    const dialogRef = useRef<HTMLDialogElement>(null)
     const [loading, setLoading] = useState(false)
     const addUserDialogRef = useRef<HTMLDialogElement>(null)
-    const setEditUsersDialogRef = useSetAtom(editUsersDialogAtom)
     const { token } = useAtomValue(userAtom)
     const users = useAtomValue(allUsersAtom)
     const activeUsers = useAtomValue(activeUsersAtom)
@@ -57,15 +53,11 @@ export default function EditUsersDialog() {
         </>
     }
     )
-    useEffect(() => {
-        setEditUsersDialogRef(dialogRef)
-    }, [setEditUsersDialogRef, dialogRef])
-    return <DialogWindow dialogRef={dialogRef} menuButtons={
+    return <div >
             <div className="d-flex gap-2">
                 <ImageButton title="Обновить" icon='update' onClick={() => { loadUsers(); loadActiveUsers() }} />
                 <ImageButton title="Добавить" icon='add' onClick={() => { addUserDialogRef.current?.showModal() }} />
             </div>
-    }>
         <div className="d-flex jistify-content-around">
             <div className={`tab-button ${listType === ListType.REGISTERED ? "tab-button-active" : ""}`} onClick={()=>{setListType(ListType.REGISTERED)}}>Зарегистрированные</div>
             <div className={`tab-button ${listType === ListType.ACTIVE ? "tab-button-active" : ""}`} onClick={()=>{setListType(ListType.ACTIVE)}}>Активные ({activeUsers.length})</div>
@@ -82,7 +74,7 @@ export default function EditUsersDialog() {
         </div>
         <AddUserDialog dialogRef={addUserDialogRef} setLoading={(state: boolean) => setLoading(state)}/>
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
-    </DialogWindow>
+    </div>
 }
 
 function TimeField({ time }: { time: number }) {

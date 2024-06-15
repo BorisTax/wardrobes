@@ -17,11 +17,9 @@ table {
   }
   .table-data{
     font-size: 0.8rem;
-    max-height: 300px;
     overflow: scroll;
-    -width: fit-content;
-    max-width: 90svw;
     -margin: auto;
+    max-height: 100svh;
     background-color: $defaultBackColor;
   }
   .table-data-cell{
@@ -44,7 +42,6 @@ table {
       -display: grid;
       -grid-template-columns: auto auto auto auto auto auto;
       overflow: scroll;
-      max-height: 50svh;
     }
 
     .table-grid {
@@ -53,6 +50,7 @@ table {
         grid-template-columns: auto auto;
         gap: 0.2rem;
         background-color: $defaultBackColor;
+        
       }
       
     .edit-section-grid {

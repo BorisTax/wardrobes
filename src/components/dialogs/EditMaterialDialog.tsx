@@ -1,6 +1,4 @@
-import { useEffect, useRef, useState } from "react"
-
-import DialogWindow from "./DialogWindow"
+import { useRef, useState } from "react"
 import { MaterialGroup } from "../../types/enums"
 import { useAtom } from "jotai"
 import { editMaterialDialogAtom } from "../../atoms/dialogs"
@@ -17,8 +15,6 @@ export type EditDialogProps = {
 }
 
 export default function EditMaterialDialog() {
-    const dialogRef = useRef<HTMLDialogElement>(null)
-    const [, setMaterialDialogRef] = useAtom(editMaterialDialogAtom)
     const [group, setGroup] = useState<MaterialGroup>(MaterialGroup.PLATE)
     const [loading, setLoading] = useState(false)
     const className = "p-1 border"
@@ -46,13 +42,11 @@ export default function EditMaterialDialog() {
             break;
         default:
     }
-    useEffect(() => {
-        setMaterialDialogRef(dialogRef)
-    }, [setMaterialDialogRef, dialogRef])
-    return <DialogWindow dialogRef={dialogRef} title="База материалов">
+    return <div>
+        База материалов
         <div className="d-flex">{header}</div>
         <br />
         {content}
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
-    </DialogWindow>
+    </div>
 }

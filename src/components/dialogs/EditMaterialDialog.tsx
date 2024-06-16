@@ -10,35 +10,23 @@ import EditTrempel from "./editDialogs/EditTrempel"
 
 export default function EditMaterialDialog() {
     const [group, setGroup] = useState<MaterialGroup>(MaterialGroup.PLATE)
-    const className = "p-1 border"
-    const active = `${className} fw-bold`
-    const header = [...MaterialGroupCaptions.entries()].map((item, index) => <div key={index} className={(group === item[0] ? active : className)} onClick={() => { setGroup(item[0] as MaterialGroup) }} role="button">{item[1]}</div>)
-    let content = <></>
-    switch (group) {
-        case MaterialGroup.PLATE:
-            content = <EditPlates />
-            break;
-        case MaterialGroup.PROFILE:
-            content = <EditProfile />
-            break;
-        case MaterialGroup.EDGE:
-            content = <EditEdge />
-            break;
-        case MaterialGroup.ZAGLUSHKI:
-            content = <EditZaglushka />
-            break;
-        case MaterialGroup.BRUSH:
-            content = <EditBrush />
-            break;
-        case MaterialGroup.TREMPEL:
-            content = <EditTrempel />
-            break;
-        default:
-    }
+    const header = [...MaterialGroupCaptions.entries()].map((item, index) => <div key={index} className={(group === item[0] ? "tab-button-active" : "tab-button-inactive")} onClick={() => { setGroup(item[0] as MaterialGroup) }} role="button">{item[1]}</div>)
+    const content = getGroup(group)
     return <div>
-        База материалов
-        <div className="d-flex">{header}</div>
+        <div className="d-flex justify-content-center">{header}</div>
         <br />
         {content}
     </div>
+}
+
+function getGroup(group: MaterialGroup) {
+    const groups = {
+        [MaterialGroup.PLATE]: <EditPlates />,
+        [MaterialGroup.PROFILE]: <EditProfile />,
+        [MaterialGroup.EDGE]: <EditEdge />,
+        [MaterialGroup.ZAGLUSHKI]: <EditZaglushka />,
+        [MaterialGroup.BRUSH]: <EditBrush />,
+        [MaterialGroup.TREMPEL]: <EditTrempel />,
+    }
+    return groups[group] || <></>
 }

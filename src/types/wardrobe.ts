@@ -61,7 +61,7 @@ export type DVPData = {
     dvpPlankaCount: number
 }
 
-export type SpecificationRow = {
+export type SpecificationResultItem = {
     name: SpecificationItem
     code_char: string
     amount: number

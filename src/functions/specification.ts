@@ -75,7 +75,7 @@ export function getFasadSpecification(fasad: Fasad, profileType: ProfileType, co
     spec.set(SpecificationItem.ProfileSoedStandart, profileType === ProfileType.STANDART ? calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedStandart) || 1) : 0)
     spec.set(SpecificationItem.ProfileVertStandart, profileType === ProfileType.STANDART ? calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertStandart) || 1) : 0)
     spec.set(SpecificationItem.ProfileHorTopStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopStandart) || 1) : 0)
-    spec.set(SpecificationItem.ProfileHorBottomStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomStandart) || 0) : 0)
+    spec.set(SpecificationItem.ProfileHorBottomStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomStandart) || 1) : 0)
     spec.set(SpecificationItem.ProfileSoedBavaria, profileType === ProfileType.BAVARIA ? calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedBavaria) || 1) : 0)
     spec.set(SpecificationItem.ProfileVertBavaria, profileType === ProfileType.BAVARIA ? calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertBavaria) || 1) : 0)
     spec.set(SpecificationItem.ProfileHorTopBavaria, profileType === ProfileType.BAVARIA ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopBavaria) || 1) : 0)

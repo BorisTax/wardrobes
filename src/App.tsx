@@ -37,6 +37,7 @@ import EditSpecificationDialog from './components/dialogs/EditSpecificationDialo
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
 import { loadSpecificationListAtom } from './atoms/specification'
+import SpecificationDialog from './components/dialogs/SpecificationDialog'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -103,6 +104,7 @@ function App() {
              </Routes>
       </div>
       </BrowserRouter>
+      <SpecificationDialog />
       <CopyFasadDialog />
       <FasadTemplatesDialog />
       <SettingsDialog />

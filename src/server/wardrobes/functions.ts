@@ -135,7 +135,7 @@ export async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
     const total = dvpData.dvpPlanka * dvpData.dvpPlankaCount / 1000
     const totalCoef = total * coef
     verbose.push({ data: [(dvpData.dvpPlanka / 1000).toFixed(3), dvpData.dvpPlankaCount, total.toFixed(3)] })
-    if (coef !== 1) verbose.push({ data: ["", "", `${total.toFixed(3)} x ${coef} = ${totalCoef}`] })
+    if (coef !== 1) verbose.push({ data: ["", "", `${total.toFixed(3)} x ${coef} = ${totalCoef.toFixed(3)}`] })
     return { amount: totalCoef, verbose }
 }
 

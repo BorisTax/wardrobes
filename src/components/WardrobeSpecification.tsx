@@ -24,7 +24,7 @@ export default function WardrobeSpecification() {
     const spec = useMemo(() => getSpecification(specification.spec), [specification])
     const purpose = Object.keys(FasadMaterial).find(k => k === specification.type) ? MAT_PURPOSE.FASAD : MAT_PURPOSE.CORPUS
     useEffect(() => {
-        setSpecIndex(0)
+        if (specIndex >= specifications.length) setSpecIndex(0)
     }, [specifications])
     return <div>
         <ImageButton icon="excel" title="Сохранить в Excel" onClick={() => saveToExcel(new Map(specification.spec), captions[specIndex] as string)} />

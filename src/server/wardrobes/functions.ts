@@ -1,10 +1,14 @@
-import { rmSync } from "fs";
 import { WardrobeDetailSchema, WardrobeFurnitureTableSchema } from "../../types/schemas";
 import { SpecificationItem } from "../../types/specification";
-import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeData, WardrobeDetailTable, WardrobeIntermediateData } from "../../types/wardrobe";
-import { materialServiceProvider, specServiceProvider } from "../options";
+import { DETAIL_NAME, DVPData, Detail, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "../../types/wardrobe";
+import { materialServiceProvider, materialsPath, specServiceProvider } from "../options";
 import { SpecificationService } from "../services/specificationService";
 import { FullData, VerboseData } from "../../types/server";
+import { MaterialExtService } from "../services/materialExtService";
+import { MaterialService } from "../services/materialService";
+import { Edge, ExtMaterial } from "../../types/materials";
+import EdgeServiceSQLite from "../services/extServices/edgeServiceSQLite";
+import { FasadMaterial } from "../../types/enums";
 
 function getFineRange(min: number, max: number): string {
     const maxValue = 3000
@@ -101,6 +105,10 @@ function calcFunction(func: string, { width, height, shelfSize, standCount }: { 
 }
 
 export async function getDSP(data: WardrobeData): Promise<FullData> {
+    const matService = new MaterialService(materialServiceProvider)
+    const materials = (await matService.getExtMaterials({ material: FasadMaterial.DSP, name: "", code: "" })).data as ExtMaterial[]
+    const mat = materials.find(m => m.name === data.dspName) || {code: "", name: ""}
+    const {code, name: caption} = mat
     const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
     const detailNames = await getDetailNames()
     const verbose = [{data: ["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""], active: false}]
@@ -113,7 +121,7 @@ export async function getDSP(data: WardrobeData): Promise<FullData> {
     })
     const coef = await getCoef(SpecificationItem.DSP)
     verbose.push({ data: ["", "", "", "", totalArea.toFixed(3), `x ${coef} = ${(totalArea * coef).toFixed(3)}`], active: false })
-    return { amount: totalArea * coef, verbose }
+    return { data: { amount: totalArea * coef, char: { code, caption } }, verbose }
 }
 
 export async function getDVP(data: WardrobeData): Promise<FullData>{
@@ -124,7 +132,7 @@ export async function getDVP(data: WardrobeData): Promise<FullData>{
     const verbose = [{data: ["", "", ""], active: false}]
     verbose.push({data: ["Расчетные размеры", `${dvp.dvpRealLength}x${dvp.dvpRealWidth} - ${dvp.dvpCount}шт`, ``], active: false})
     verbose.push({data: ["Распиловочные размеры", `${dvp.dvpLength}x${dvp.dvpWidth} - ${dvp.dvpCount}шт`, `${area.toFixed(3)} x ${coef}= ${areaCoef.toFixed(3)}`], active: false})
-    return { amount: areaCoef, verbose }
+    return { data: { amount: areaCoef, char: {code:"", caption: ""} }, verbose }
 }
 
 export async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
@@ -136,7 +144,7 @@ export async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
     const totalCoef = total * coef
     verbose.push({ data: [(dvpData.dvpPlanka / 1000).toFixed(3), dvpData.dvpPlankaCount, total.toFixed(3)] })
     if (coef !== 1) verbose.push({ data: ["", "", `${total.toFixed(3)} x ${coef} = ${totalCoef.toFixed(3)}`] })
-    return { amount: totalCoef, verbose }
+    return { data: { amount: totalCoef, char: {code:"", caption: ""} }, verbose }
 }
 
 export async function getDVPData(width: number, height: number, depth: number): Promise<DVPData> {
@@ -184,7 +192,7 @@ export async function getKarton(data: WardrobeData): Promise<FullData> {
         const active = isDataFit(width, height, depth, item)
         if (active) verbose.push({ data: [getFineRange(item.minwidth, item.maxwidth), getFineRange(item.minheight, item.maxheight), getFineRange(item.mindepth, item.maxdepth), `${item.count}`], active: false })
     })
-    return { amount: current * coef, verbose }
+    return { data: { amount: current * coef, char: {code:"", caption: ""}  }, verbose }
 }
 
 export async function getLegs(data: WardrobeData): Promise<FullData> {
@@ -197,7 +205,7 @@ export async function getLegs(data: WardrobeData): Promise<FullData> {
     list.forEach(item => {
         verbose.push({ data: [getFineRange(item.minwidth, item.maxwidth), `${item.count}`], active: current === item.count })
     })
-    return {amount: current, verbose}
+    return { data: { amount: current, char: {code:"", caption: ""}  }, verbose }
 }
 
 export async function getConfirmat(data: WardrobeData): Promise<FullData> {
@@ -212,7 +220,7 @@ export async function getConfirmat(data: WardrobeData): Promise<FullData> {
         total += conf
     })
     verbose.push({data: ["", "Итого:", total], active: false})
-    return {amount: total, verbose}
+    return { data: { amount: total, char: {code:"", caption: ""}  }, verbose }
 }
 
 
@@ -228,7 +236,7 @@ export async function getMinifix(data: WardrobeData): Promise<FullData> {
         total += count
     })
     verbose.push({data: ["", "Итого:", total], active: false})
-    return {amount: total, verbose}
+    return { data: { amount: total, char: {code:"", caption: ""}  }, verbose }
 }
 
 export async function getNails(data: WardrobeData): Promise<FullData> {
@@ -242,7 +250,7 @@ export async function getNails(data: WardrobeData): Promise<FullData> {
         const active = isDataFit(width, height, depth, item)
         if (active) verbose.push({ data: [getFineRange(item.minwidth, item.maxwidth), `${item.count}`] })
     })
-    return {amount: current, verbose}
+    return { data: { amount: current, char: {code:"", caption: ""}  }, verbose }
 }
 
 export function getSamorez16(width: number) {
@@ -255,6 +263,10 @@ export function getSamorez16(width: number) {
 };
 
 export async function getEdge2(data: WardrobeData): Promise<FullData> {
+    const edgeService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath))
+    const list = (await edgeService.getExtData()).data as Edge[]
+    const edge = list.find(m => m.dsp === data.dspName) || {code: "", name: ""}
+    const {code, name: caption} = edge
     const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => hasEdge2(d.name))
     const detailNames = await getDetailNames()
     const verbose = [{data: ["Деталь", "Длина", "Ширина", "Кол-во", "Длина кромки", ""], active: false}]
@@ -267,10 +279,14 @@ export async function getEdge2(data: WardrobeData): Promise<FullData> {
     })
     const coef = await getCoef(SpecificationItem.Kromka2)
     verbose.push({data: ["", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`], active: false})
-    return { amount: totalEdge * coef, verbose }
+    return { data: {amount: totalEdge * coef, char: {code, caption} }, verbose }
 }
 
 export async function getEdge05(data: WardrobeData): Promise<FullData> {
+    const edgeService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath))
+    const list = (await edgeService.getExtData()).data as Edge[]
+    const edge = list.find(m => m.dsp === data.dspName) || {code: "", name: ""}
+    const {code, name: caption} = edge
     const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => hasEdge05(d.name))
     const detailNames = await getDetailNames()
     const verbose = [{data: ["Деталь", "Длина", "Ширина", "Кол-во", "Длина кромки", ""], active: false}]
@@ -283,17 +299,17 @@ export async function getEdge05(data: WardrobeData): Promise<FullData> {
     })
     const coef = await getCoef(SpecificationItem.Kromka2)
     verbose.push({data: ["", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`], active: false})
-    return {amount: totalEdge * coef, verbose}
+    return { data: { amount: totalEdge * coef, char: {code, caption} }, verbose }
 }
 
 export async function getGlue(data: WardrobeData): Promise<FullData> {
     const coefGlue = await getCoef(SpecificationItem.Glue)
-    const edge2 = (await getEdge2(data)).amount
-    const edge05 = (await getEdge05(data)).amount
+    const edge2 = (await getEdge2(data)).data.amount
+    const edge05 = (await getEdge05(data)).data.amount
     const glue = (edge2 + edge05) * coefGlue * 0.008
     const verbose = [{data: ["Кромка 2мм", "Кромка 0.45мм", "Итого", "Клей"], active: false}]
     verbose.push({data: [edge2.toFixed(3), edge05.toFixed(3), (edge2 + edge05).toFixed(3), `x 0.008 = ${glue.toFixed(3)}`], active: false})
-    return {amount: glue, verbose}
+    return { data: { amount: glue, char: { code: "", caption: "" } }, verbose }
 }
 
 

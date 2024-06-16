@@ -1,4 +1,5 @@
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "../../types/materials"
+import { ExtMaterialQuery } from "../../types/server"
 import { IMaterialService, IMaterialServiceProvider } from "../../types/services"
 
 export class MaterialService implements IMaterialService {
@@ -6,8 +7,8 @@ export class MaterialService implements IMaterialService {
     constructor(provider: IMaterialServiceProvider) {
         this.provider = provider
     }
-    async getExtMaterials() {
-        return await this.provider.getExtMaterials()
+    async getExtMaterials(matQuery: ExtMaterialQuery) { 
+        return await this.provider.getExtMaterials(matQuery)
     }
     async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial) {
         return await this.provider.addExtMaterial({ name, material, image, code, purpose })

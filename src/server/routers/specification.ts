@@ -6,6 +6,7 @@ import { WardrobeData } from "../../types/wardrobe.js";
 import { isEditorAtLeast } from "../functions/user.js";
 import { accessDenied, incorrectData, noExistData } from "../functions/other.js";
 import messages from "../messages.js";
+import { AppState } from "../../types/app.js";
 
 const router = express.Router();
 export default router
@@ -29,6 +30,12 @@ router.post("/data", async (req: MyRequest, res) => {
   res.json(result);
 });
 
+router.post("/combidata", async (req: MyRequest, res) => {
+  //if (!isClientAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { data } = req.body
+  const result = await getSpecCombiData(data);
+  res.json(result);
+});
 export async function getSpecList() {
   const specService = new SpecificationService(specServiceProvider, materialServiceProvider)
   return await specService.getSpecList()
@@ -49,3 +56,7 @@ export async function getSpecData(data: WardrobeData) {
   return await specService.getSpecData(data)
 }
 
+export async function getSpecCombiData(data: AppState) {
+  const specService = new SpecificationService(specServiceProvider, materialServiceProvider)
+  return await specService.getSpecCombiData(data)
+}

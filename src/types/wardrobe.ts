@@ -62,10 +62,13 @@ export type DVPData = {
 
 export type SpecificationResultItem = {
     amount: number
-    code_char?: string
+    char?: {
+        code: string
+        caption: string
+    }
 }
 
-export type SpecificationResultFasades = [
+export type SpecificationMultiResultFasades = [
     { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
     { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
     { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
@@ -73,7 +76,13 @@ export type SpecificationResultFasades = [
     { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
     { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
 ]
-export type SpecificationResult = { type: SPEC_GROUP, spec: [SpecificationItem, SpecificationResultItem][] }[]
+
+export type SpecificationResult = [SpecificationItem, SpecificationResultItem]
+
+export type SpecificationMultiResult = { 
+    type: SPEC_GROUP, 
+    spec: SpecificationResult[] 
+}[]
 
 export enum WARDROBE_TYPE {
     WARDROBE = 'WARDROBE',

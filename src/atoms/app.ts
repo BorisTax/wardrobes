@@ -25,7 +25,7 @@ export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state)
     localStorage.setItem('appState', JSON.stringify(state))
     if (useHistory) set(appAtom, { previous: app, state, next: null });
     else set(appAtom, { ...app, state })
-    set(calculateCombiSpecificationsAtom)
+    set(calculateCombiSpecificationsAtom, app.state)
 })
 export const saveToStorageAtom = atom(null, (get, set) => {
     const app = get(appAtom)

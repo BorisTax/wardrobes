@@ -1,17 +1,18 @@
 import { ExtMaterial, ExtNewMaterial, NewBrush, NewEdge, NewProfile, Profile } from '../../types/materials.js';
-import { Result } from '../../types/server.js';
+import { ExtMaterialQuery, Result } from '../../types/server.js';
 import { IMaterialService } from '../../types/services.js';
 import { dataBaseQuery } from '../functions/other.js';
 import messages from '../messages.js';
 import { MAT_TABLE_NAMES } from '../functions/other.js';
+import { FasadMaterial } from '../../types/enums.js';
 const { EXTMATERIALS, PROFILE_COLORS } = MAT_TABLE_NAMES
 export default class MaterialServiceSQLite implements IMaterialService {
     dbFile: string;
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
-    async getExtMaterials(): Promise<Result<ExtMaterial[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${EXTMATERIALS} order by material, name;`, {successStatusCode: 200})
+    async getExtMaterials({ material, name, code }: ExtMaterialQuery): Promise<Result<ExtMaterial[]>> {
+        return dataBaseQuery(this.dbFile, getQuery({ material, name, code }), {successStatusCode: 200})
     }
 
     async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial): Promise<Result<null>> {
@@ -19,7 +20,7 @@ export default class MaterialServiceSQLite implements IMaterialService {
     }
 
     async updateExtMaterial({ name, material, newName, image, code, purpose }: ExtNewMaterial): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getQuery({ newName, image, code, name, material, purpose }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
+        return dataBaseQuery(this.dbFile, getUpdateQuery({ newName, image, code, name, material, purpose }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
     }
 
     async deleteExtMaterial(name: string, material: string): Promise<Result<null>> {
@@ -40,7 +41,18 @@ export default class MaterialServiceSQLite implements IMaterialService {
     }
 }
 
-function getQuery({ newName, image, code, name, material, purpose }: ExtNewMaterial) {
+function getQuery({ material, name, code }: ExtMaterialQuery): string {
+    const parts = []
+    if (material !== undefined) parts.push(`material`)
+    if (name !== undefined) parts.push(`name`)
+    if (code !== undefined) parts.push(`code`)
+    if (parts.length === 0) parts.push("*")
+    const mat = material ? `where material='${material}'` : ""
+    const query = parts.length > 0 ? `select ${parts.join(", ")} from ${EXTMATERIALS} ${mat} order by material, name;` : ""
+    return query
+}
+
+function getUpdateQuery({ newName, image, code, name, material, purpose }: ExtNewMaterial) {
     const parts = []
     if (newName) parts.push(`name='${newName}'`)
     if (image) parts.push(`image='${image || ""}'`)

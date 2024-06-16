@@ -48,7 +48,7 @@ router.put("/profile", async (req: MyRequest, res) => {
 
 
 router.get("/material", async (req, res) => {
-  const result = await getExtMaterials();
+  const result = await getExtMaterials({});
   if (!result.success) return res.sendStatus(result.status)
   res.status(result.status).json(result);
 });

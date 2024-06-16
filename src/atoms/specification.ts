@@ -4,18 +4,19 @@ import { getFasadSpecification } from "../functions/specification";
 import { appDataAtom } from "./app";
 import Fasad from "../classes/Fasad";
 import { priceListAtom } from "./prices";
-import { SpecificationResult, SpecificationResultItem, WardrobeData } from "../types/wardrobe";
+import { SpecificationMultiResult, SpecificationResultItem, WardrobeData } from "../types/wardrobe";
 import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { SpecificationData, TableFields } from "../types/server";
 import { getInitSpecification } from "../functions/specification";
 import { wardrobeDataAtom } from "./wardrobe";
 import messages from "../server/messages";
+import { AppState } from "../types/app";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])
 export const specificationCombiAtom = atom<Map<SpecificationItem, SpecificationResultItem>[]>([])
-export const specificationAtom = atom<SpecificationResult>(getInitSpecification())
+export const specificationAtom = atom<SpecificationMultiResult>(getInitSpecification())
 export const specificationInProgress = atom(false)
 
 export const loadSpecificationListAtom = atom(null, async (get, set) => {
@@ -64,14 +65,30 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, data: War
     formData[TableFields.TOKEN] = token
     set(specificationInProgress, true)
     try {
-        const result: FetchResult<SpecificationResult> = await fetchData('api/specification/data', "POST", JSON.stringify(formData))
+        const result: FetchResult<SpecificationMultiResult> = await fetchData('api/specification/data', "POST", JSON.stringify(formData))
         if (!result.success) set(specificationAtom, [...getInitSpecification()]); else
-            set(specificationAtom, result.data as SpecificationResult)
+            set(specificationAtom, result.data as SpecificationMultiResult)
             set(specificationInProgress, false)
     } catch (e) { console.error(e) }
 })
 
-export const calculateCombiSpecificationsAtom = atom(null, (get, set) => {
+export const calculateCombiSpecificationsAtom = atom(null, async (get, set, data: AppState) => {
+    const { token } = get(userAtom)
+    const formData: any = {}
+    formData[TableFields.DATA] = data
+    formData[TableFields.TOKEN] = token
+    set(specificationInProgress, true)
+    try {
+        const result: FetchResult<SpecificationMultiResult> = await fetchData('api/specification/combidata', "POST", JSON.stringify(formData))
+        if (result.success) {
+            const data = (result.data as SpecificationMultiResult).map(r => new Map(r.spec))
+            set(specificationCombiAtom, data)
+            set(specificationInProgress, false)
+        }
+    } catch (e) { console.error(e) }
+})
+
+export const calculateCombiSpecificationsAtom2 = atom(null, (get, set) => {
     const { rootFasades, profile } = get(appDataAtom)
     const coefList = get(coefListAtom)
     const spec = rootFasades.map((f: Fasad) => getFasadSpecification(f, profile.type, coefList))

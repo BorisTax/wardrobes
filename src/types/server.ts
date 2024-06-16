@@ -1,5 +1,7 @@
 import { Request } from "express"
 import { SpecificationItem } from "./specification"
+import { SpecificationResultItem } from "./wardrobe"
+import { FasadMaterial } from "./enums"
 export type Token = {
     token: string
     username: string
@@ -81,5 +83,12 @@ export type Result<T> = {
     error?: Error
 }
 
+
+export type ExtMaterialQuery = {
+    material?: FasadMaterial
+    name?: string
+    code?: string
+}
+
 export type VerboseData = { data: (string | number)[], active?: boolean }[]
-export type FullData = { amount: number, verbose: VerboseData }
+export type FullData = { data: SpecificationResultItem, verbose: VerboseData }

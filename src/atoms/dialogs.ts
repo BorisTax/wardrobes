@@ -7,6 +7,7 @@ import { loadTemplateListAtom } from "./templates";
 import { WardrobeData } from "../types/wardrobe";
 import { SpecificationItem } from "../types/specification";
 import { loadVerboseDataAtom } from "./verbose";
+import { appAtom } from "./app";
 
 type MessageAtom = {
     dialogRef: React.RefObject<HTMLDialogElement> | null
@@ -45,8 +46,9 @@ export const showVerboseDialogAtom = atom(null, (get, set, data: WardrobeData, i
 export const specificationDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const showSpecificationDialogAtom = atom(null, (get, set) => {
     const dialogRef = get(specificationDialogAtom)
+    const appState = get(appAtom)
     set(loadPriceListAtom)
-    set(calculateCombiSpecificationsAtom)
+    set(calculateCombiSpecificationsAtom, appState.state)
     dialogRef?.current?.showModal()
 })
 export const showEditSpecificationDialogAtom = atom(null, (get, set) => {

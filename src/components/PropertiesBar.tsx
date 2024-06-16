@@ -16,7 +16,7 @@ import { userAtom } from "../atoms/users"
 import { isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { getInitialBackImageProps } from "../classes/FasadState"
 import { settingsAtom } from "../atoms/settings"
-import { copyFasadDialogAtom, showSchemaDialogAtom, showSpecificationDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
+import { copyFasadDialogAtom, showSpecificationDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
 import { TEMPLATE_TABLES } from "../types/enums"
 import { hasFasadImage } from "../functions/fasades"
 import TextBox from "./TextBox"
@@ -47,9 +47,8 @@ export default function PropertiesBar() {
     const copyFasadDialogRef =  useAtomValue(copyFasadDialogAtom)
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
     const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
-    const showSchemaDialog = useSetAtom(showSchemaDialogAtom)
     const extMaterialsName = useMemo(() => (materialList.filter(mat => mat.material === material) || [{ name: "", material: "" }]).map((m: ExtMaterial) => m.name), [materialList, material])
-    const fasadValue = fasad && totalPrice[rootFasadIndex].toFixed(2)
+    const fasadValue = fasad && totalPrice[rootFasadIndex]?.toFixed(2)
     const fasadPrice = isClientAtLeast(role) ? <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div> : <></>
     const onlyFasad = !!fasad && fasad.Children.length === 0
     const stretchImage = fasad?.BackImageProps.size === "100% 100%"

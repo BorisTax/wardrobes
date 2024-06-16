@@ -1,8 +1,8 @@
 import { SpecificationItem } from "./specification"
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
-import { SpecificationData, Result, Token, User, PriceData } from "./server"
+import { SpecificationData, Result, Token, User, PriceData, ExtMaterialQuery } from "./server"
 import { NewTemplate, Template } from "./templates"
-import { DETAIL_NAME, SpecificationResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
+import { DETAIL_NAME, SpecificationMultiResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from "./schemas"
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User[]>>
@@ -15,7 +15,7 @@ interface IUserAbstractService {
     deleteUser: (user: User) => Promise<Result<null>>
 }
 export interface IMaterialService {
-    getExtMaterials: () => Promise<Result<ExtMaterial[]>>
+    getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<ExtMaterial[]>>
     addExtMaterial: ({ }: ExtMaterial) => Promise<Result<null>>
     updateExtMaterial: ({ }: ExtNewMaterial) => Promise<Result<null>>
     deleteExtMaterial: (name: string, base: string) => Promise<Result<null>>

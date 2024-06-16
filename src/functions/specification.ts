@@ -3,9 +3,9 @@ import { Division, FasadMaterial } from "../types/enums";
 import { CORPUS_SPECS } from "../types/specification";
 import { SpecificationItem } from "../types/specification";
 import { ProfileType } from "../types/materials";
-import { SpecificationResult, SpecificationResultItem } from "../types/wardrobe";
+import { SpecificationMultiResult, SpecificationResultItem } from "../types/wardrobe";
 
-export function getInitSpecification(): SpecificationResult {
+export function getInitSpecification(): SpecificationMultiResult {
     return [
         { type: CORPUS_SPECS.CORPUS, spec: [] },
         { type: FasadMaterial.DSP, spec: [] },
@@ -60,7 +60,7 @@ export function filterEmptySpecification(spec: Map<SpecificationItem, Specificat
 
 export function getSpecificationPattern(): Map<SpecificationItem, SpecificationResultItem> {
     const spec = new Map<SpecificationItem, SpecificationResultItem>()
-    Object.keys(SpecificationItem).forEach(k => { spec.set(k as SpecificationItem, { amount: 0, code_char: "" }) })
+    Object.keys(SpecificationItem).forEach(k => { spec.set(k as SpecificationItem, { amount: 0, char: {code: "", caption: ""} }) })
     return spec
 }
 
@@ -69,8 +69,8 @@ export function getFasadSpecification(fasad: Fasad, profileType: ProfileType, co
     if (profileType === ProfileType.STANDART) {
         const uplot = (spec.get(SpecificationItem.Uplot)?.amount || 0) * (coefList.get(SpecificationItem.Uplot) || 1)
         const uplotSoed = (spec.get(SpecificationItem.UplotSoed)?.amount || 0) * (coefList.get(SpecificationItem.UplotSoed) || 1)
-        spec.set(SpecificationItem.Uplot, { amount: uplot + uplotSoed, code_char: "" })
-        spec.set(SpecificationItem.UplotSoed, { amount: 0, code_char: "" })
+        spec.set(SpecificationItem.Uplot, { amount: uplot + uplotSoed })
+        spec.set(SpecificationItem.UplotSoed, { amount: 0 })
     }
     spec.set(SpecificationItem.ProfileSoedStandart, profileType === ProfileType.STANDART ? { amount: calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedStandart) || 1) } : { amount: 0 })
     spec.set(SpecificationItem.ProfileVertStandart, profileType === ProfileType.STANDART ? { amount: calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertStandart) || 1) } : { amount: 0 })

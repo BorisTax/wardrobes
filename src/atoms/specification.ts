@@ -1,10 +1,7 @@
 import { atom } from "jotai";
 import { SpecificationItem } from "../types/specification";
-import { getFasadSpecification } from "../functions/specification";
-import { appDataAtom } from "./app";
-import Fasad from "../classes/Fasad";
 import { priceListAtom } from "./prices";
-import { SpecificationMultiResult, SpecificationResultItem, WardrobeData } from "../types/wardrobe";
+import { FullData, SpecificationMultiResult, SpecificationResult, SpecificationResultItem, WardrobeData } from "../types/wardrobe";
 import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { SpecificationData, TableFields } from "../types/server";
@@ -15,7 +12,7 @@ import { AppState } from "../types/app";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])
-export const specificationCombiAtom = atom<Map<SpecificationItem, SpecificationResultItem>[]>([])
+export const specificationCombiAtom = atom<SpecificationResult[][]>([[]])
 export const specificationAtom = atom<SpecificationMultiResult>(getInitSpecification())
 export const specificationInProgress = atom(false)
 
@@ -68,6 +65,7 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, data: War
         const result: FetchResult<SpecificationMultiResult> = await fetchData('api/specification/data', "POST", JSON.stringify(formData))
         if (!result.success) set(specificationAtom, [...getInitSpecification()]); else
             set(specificationAtom, result.data as SpecificationMultiResult)
+            console.log(result.data)
             set(specificationInProgress, false)
     } catch (e) { console.error(e) }
 })
@@ -79,20 +77,13 @@ export const calculateCombiSpecificationsAtom = atom(null, async (get, set, data
     formData[TableFields.TOKEN] = token
     set(specificationInProgress, true)
     try {
-        const result: FetchResult<SpecificationMultiResult> = await fetchData('api/specification/combidata', "POST", JSON.stringify(formData))
+        const result: FetchResult<SpecificationResult[][]> = await fetchData('api/specification/combidata', "POST", JSON.stringify(formData))
         if (result.success) {
-            const data = (result.data as SpecificationMultiResult).map(r => new Map(r.spec))
-            set(specificationCombiAtom, data)
+            //const data = (result.data as SpecificationMultiResult).map(r => new Map(r.spec))
+            set(specificationCombiAtom, result.data as SpecificationResult[][])
             set(specificationInProgress, false)
         }
     } catch (e) { console.error(e) }
-})
-
-export const calculateCombiSpecificationsAtom2 = atom(null, (get, set) => {
-    const { rootFasades, profile } = get(appDataAtom)
-    const coefList = get(coefListAtom)
-    const spec = rootFasades.map((f: Fasad) => getFasadSpecification(f, profile.type, coefList))
-    set(specificationCombiAtom, spec)
 })
 
 export const totalPriceAtom = atom((get) => {
@@ -101,8 +92,9 @@ export const totalPriceAtom = atom((get) => {
     const totalPrice = specifications.map(s => {
         let sum: number = 0
         priceList.forEach(p => {
-            const item = s.get(p.name as SpecificationItem) || {amount: 0}
-            sum = sum + item.amount * (p.price || 0) * (p.markup || 1)
+            s.forEach(sp => {
+                sum += sp[1].data.amount
+            })
         })
         return sum
     })

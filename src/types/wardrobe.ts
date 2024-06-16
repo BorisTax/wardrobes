@@ -1,4 +1,5 @@
 import { FasadMaterial } from "./enums"
+import { PriceData, SpecificationData } from "./server"
 import { SPEC_GROUP } from "./specification"
 import { SpecificationItem } from "./specification"
 
@@ -60,6 +61,8 @@ export type DVPData = {
     dvpPlankaCount: number
 }
 
+export type TotalData = PriceData & SpecificationData & SpecificationResultItem
+
 export type SpecificationResultItem = {
     amount: number
     char?: {
@@ -67,6 +70,9 @@ export type SpecificationResultItem = {
         caption: string
     }
 }
+
+export type VerboseData = (string | number)[][]
+export type FullData = { data: SpecificationResultItem; verbose?: VerboseData}
 
 export type SpecificationMultiResultFasades = [
     { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
@@ -77,7 +83,7 @@ export type SpecificationMultiResultFasades = [
     { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
 ]
 
-export type SpecificationResult = [SpecificationItem, SpecificationResultItem]
+export type SpecificationResult = [SpecificationItem, FullData]
 
 export type SpecificationMultiResult = { 
     type: SPEC_GROUP, 
@@ -132,13 +138,4 @@ export enum DETAIL_NAME {
     CONSOLE_SHELF = 'SHELF',
 }
 
-export type WardrobeIntermediateData = {
-    details: Detail[],
-    dsp: number,
-    dvpData: DVPData,
-    edge2: number,
-    edge05: number,
-    glue: number,
-    legs: number,
-    karton: number,
-}
+

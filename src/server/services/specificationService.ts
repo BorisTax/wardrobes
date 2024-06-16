@@ -1,11 +1,11 @@
-import { filterEmptySpecification, getFasadSpecification } from '../../functions/specification.js'
-import { CORPUS_SPECS } from "../../types/specification.js"
+import { filterEmptySpecification, flattenSpecification, getFasadSpecification } from "../wardrobes/specifications/fasades.js"
+import { CORPUS_SPECS, SPEC_GROUP } from "../../types/specification.js"
 import { SpecificationItem } from "../../types/specification"
 import { materialsPath } from '../options.js'
 import { Brush, Profile, ProfileType } from '../../types/materials.js'
 import { SpecificationData, Result } from '../../types/server.js'
 import { IMaterialServiceProvider, ISpecificationService, ISpecificationServiceProvider } from '../../types/services.js'
-import { DETAIL_NAME, SpecificationMultiResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from '../../types/wardrobe.js'
+import { DETAIL_NAME, SpecificationMultiResult, SpecificationResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from '../../types/wardrobe.js'
 import { getCorpusSpecification, getWardrobe } from '../wardrobes/specifications/corpus.js'
 import { createFasades } from '../wardrobes/specifications/fasades.js'
 import BrushServiceSQLite from './extServices/brushServiceSQLite.js'
@@ -42,24 +42,29 @@ export class SpecificationService implements ISpecificationService {
     const brush: Brush | undefined = brushes?.find(b => b.name === profile?.brush)
     const fasades = createFasades(data, profile?.type as ProfileType)
     const corpus = await getCorpusSpecification(wardrobe, data, profile?.type as ProfileType, coefList)
-    result.push({ type: CORPUS_SPECS.CORPUS, spec: [...(filterEmptySpecification(corpus)).entries()] })
-    fasades.forEach(f => { 
-      const fasadSpec = getFasadSpecification(f, profile?.type as ProfileType, coefList)
-      result.push({ type: f.Material, spec: [...(filterEmptySpecification(fasadSpec)).entries()] })
+    const corpusConverted = flattenSpecification(filterEmptySpecification(corpus))
+    result.push({ type: CORPUS_SPECS.CORPUS, spec: corpusConverted })
+    fasades.forEach(async (f) => { 
+      const fasadSpec = await getFasadSpecification(f, profile?.type as ProfileType, coefList)
+      const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
+      //console.log([...(filtered).entries()])
+      result.push({ type: f.Material, spec: fasadSpecConverted })
      }) 
+    
     return {success: true, status: 200, data: result}
   }
-  async getSpecCombiData(data: AppState): Promise<Result<SpecificationMultiResult>> {
+  async getSpecCombiData(data: AppState): Promise<Result<(SpecificationResult[])[]>> {
     if(!this.matProvider) throw new Error('Material service provider not provided')
-    const result: SpecificationMultiResult = []
+    const result: (SpecificationResult[])[] = []
     const specList = (await this.provider.getSpecList()).data || []
     const coefList: Map<SpecificationItem, number> = new Map(specList.map((p: SpecificationData) => [p.name as SpecificationItem, p.coef as number]))
     const profiles = (await this.matProvider.getProfiles()).data
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profile.name)
     const fasades = data.rootFasadesState.map(r => newFasadFromState(r))
-    fasades.forEach(f => { 
-      const fasadSpec = getFasadSpecification(f, profile?.type as ProfileType, coefList)
-      result.push({ type: f.Material, spec: [...(filterEmptySpecification(fasadSpec)).entries()] })
+    fasades.forEach(async (f, index) => { 
+      const fasadSpec = await getFasadSpecification(f, profile?.type as ProfileType, coefList)
+      const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
+      result.push(fasadSpecConverted)
      }) 
     return {success: true, status: 200, data: result}
   }

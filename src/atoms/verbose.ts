@@ -1,7 +1,8 @@
 import { atom } from "jotai";
 import { fetchData } from "../functions/fetch";
 import { userAtom } from "./users";
-import { TableFields, VerboseData } from "../types/server";
+import { TableFields } from "../types/server";
+import { VerboseData } from "../types/wardrobe";
 import { WardrobeData } from "../types/wardrobe";
 import { SpecificationItem } from "../types/specification";
 import { specificationDataAtom } from "./specification";
@@ -22,7 +23,7 @@ export function getRoute(item: SpecificationItem): string{
     return routes.get(item)
 }
 
-export const verboseDataAtom = atom<{ data: VerboseData, title: string }>({ data: [{ data: [], active: false }], title: "" })
+export const verboseDataAtom = atom<{ data: VerboseData, title: string }>({ data: [[]], title: "" })
 
 export const loadVerboseDataAtom = atom(null, async (get, set, data: WardrobeData, item: SpecificationItem) => {
     const { token } = get(userAtom)

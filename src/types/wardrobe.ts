@@ -3,7 +3,6 @@ import { SPEC_GROUP } from "./specification"
 import { SpecificationItem } from "./specification"
 
 export interface IWardrobe {
-
     getTrempel: () => {length: number, count: number}
     getTruba: () => {length: number, count: number}
     getSamorez16: () => number
@@ -62,20 +61,19 @@ export type DVPData = {
 }
 
 export type SpecificationResultItem = {
-    name: SpecificationItem
-    code_char: string
     amount: number
+    code_char?: string
 }
 
 export type SpecificationResultFasades = [
-    { type: FasadMaterial, spec: [SpecificationItem, number][] },
-    { type: FasadMaterial, spec: [SpecificationItem, number][] },
-    { type: FasadMaterial, spec: [SpecificationItem, number][] },
-    { type: FasadMaterial, spec: [SpecificationItem, number][] },
-    { type: FasadMaterial, spec: [SpecificationItem, number][] },
-    { type: FasadMaterial, spec: [SpecificationItem, number][] },
+    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
 ]
-export type SpecificationResult = { type: SPEC_GROUP, spec: [SpecificationItem, number][] }[]
+export type SpecificationResult = { type: SPEC_GROUP, spec: [SpecificationItem, SpecificationResultItem][] }[]
 
 export enum WARDROBE_TYPE {
     WARDROBE = 'WARDROBE',

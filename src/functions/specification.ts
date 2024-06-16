@@ -3,7 +3,7 @@ import { Division, FasadMaterial } from "../types/enums";
 import { CORPUS_SPECS } from "../types/specification";
 import { SpecificationItem } from "../types/specification";
 import { ProfileType } from "../types/materials";
-import { SpecificationResult } from "../types/wardrobe";
+import { SpecificationResult, SpecificationResultItem } from "../types/wardrobe";
 
 export function getInitSpecification(): SpecificationResult {
     return [
@@ -46,56 +46,56 @@ SpecGroups.set(CORPUS_SPECS.EXT_TUBE, "Труба")
 SpecGroups.set(CORPUS_SPECS.EXT_TREMPEL, "Тремпель")
 SpecGroups.set(CORPUS_SPECS.EXT_LIGHT, "Точки света")
 
-export function getSpecification(data: [SpecificationItem, number][]): Map<SpecificationItem, number>{
+export function getSpecification(data: [SpecificationItem, SpecificationResultItem][]): Map<SpecificationItem, SpecificationResultItem>{
     const m = new Map()
     data.forEach(i => m.set(i[0], i[1]))
     return m
 } 
 
-export function filterEmptySpecification(spec: Map<SpecificationItem, number>): Map<SpecificationItem, number>{
-    const newSpec = new Map<SpecificationItem, number>()
-    spec.forEach((v, k) => { if (v !== 0) newSpec.set(k, v) })
+export function filterEmptySpecification(spec: Map<SpecificationItem, SpecificationResultItem>): Map<SpecificationItem, SpecificationResultItem>{
+    const newSpec = new Map<SpecificationItem, SpecificationResultItem>()
+    spec.forEach((v, k) => { if (v.amount !== 0) newSpec.set(k, { ...v }) })
     return newSpec
 }
 
-export function getSpecificationPattern(): Map<SpecificationItem, number> {
-    const spec = new Map<SpecificationItem, number>()
-    Object.keys(SpecificationItem).forEach(k => { spec.set(k as SpecificationItem, 0) })
+export function getSpecificationPattern(): Map<SpecificationItem, SpecificationResultItem> {
+    const spec = new Map<SpecificationItem, SpecificationResultItem>()
+    Object.keys(SpecificationItem).forEach(k => { spec.set(k as SpecificationItem, { amount: 0, code_char: "" }) })
     return spec
 }
 
-export function getFasadSpecification(fasad: Fasad, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
+export function getFasadSpecification(fasad: Fasad, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, SpecificationResultItem> {
     const spec = combineSpecifications(fasad, coefList)
     if (profileType === ProfileType.STANDART) {
-        const uplot = (spec.get(SpecificationItem.Uplot) || 0) * (coefList.get(SpecificationItem.Uplot) || 1)
-        const uplotSoed = (spec.get(SpecificationItem.UplotSoed) || 0) * (coefList.get(SpecificationItem.UplotSoed) || 1)
-        spec.set(SpecificationItem.Uplot, uplot + uplotSoed)
-        spec.set(SpecificationItem.UplotSoed, 0)
+        const uplot = (spec.get(SpecificationItem.Uplot)?.amount || 0) * (coefList.get(SpecificationItem.Uplot) || 1)
+        const uplotSoed = (spec.get(SpecificationItem.UplotSoed)?.amount || 0) * (coefList.get(SpecificationItem.UplotSoed) || 1)
+        spec.set(SpecificationItem.Uplot, { amount: uplot + uplotSoed, code_char: "" })
+        spec.set(SpecificationItem.UplotSoed, { amount: 0, code_char: "" })
     }
-    spec.set(SpecificationItem.ProfileSoedStandart, profileType === ProfileType.STANDART ? calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedStandart) || 1) : 0)
-    spec.set(SpecificationItem.ProfileVertStandart, profileType === ProfileType.STANDART ? calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertStandart) || 1) : 0)
-    spec.set(SpecificationItem.ProfileHorTopStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopStandart) || 1) : 0)
-    spec.set(SpecificationItem.ProfileHorBottomStandart, profileType === ProfileType.STANDART ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomStandart) || 1) : 0)
-    spec.set(SpecificationItem.ProfileSoedBavaria, profileType === ProfileType.BAVARIA ? calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedBavaria) || 1) : 0)
-    spec.set(SpecificationItem.ProfileVertBavaria, profileType === ProfileType.BAVARIA ? calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertBavaria) || 1) : 0)
-    spec.set(SpecificationItem.ProfileHorTopBavaria, profileType === ProfileType.BAVARIA ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopBavaria) || 1) : 0)
-    spec.set(SpecificationItem.ProfileHorBottomBavaria, profileType === ProfileType.BAVARIA ? calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomBavaria) || 1) : 0)
-    spec.set(SpecificationItem.Streich, 12)
-    spec.set(SpecificationItem.Roliki, profileType === ProfileType.STANDART ? 1 : 0)
-    spec.set(SpecificationItem.RolikiBavaria, profileType === ProfileType.BAVARIA ? 1 : 0)
-    spec.set(SpecificationItem.Karton, 0.25)
-    spec.set(SpecificationItem.Skotch, 5)
+    spec.set(SpecificationItem.ProfileSoedStandart, profileType === ProfileType.STANDART ? { amount: calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedStandart) || 1) } : { amount: 0 })
+    spec.set(SpecificationItem.ProfileVertStandart, profileType === ProfileType.STANDART ? { amount: calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertStandart) || 1) } : { amount: 0 })
+    spec.set(SpecificationItem.ProfileHorTopStandart, profileType === ProfileType.STANDART ? { amount: calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopStandart) || 1) } : { amount: 0 })
+    spec.set(SpecificationItem.ProfileHorBottomStandart, profileType === ProfileType.STANDART ? { amount: calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomStandart) || 1) } : { amount: 0 })
+    spec.set(SpecificationItem.ProfileSoedBavaria, profileType === ProfileType.BAVARIA ? { amount: calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedBavaria) || 1) } : { amount: 0 })
+    spec.set(SpecificationItem.ProfileVertBavaria, profileType === ProfileType.BAVARIA ? { amount: calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertBavaria) || 1) } : { amount: 0 })
+    spec.set(SpecificationItem.ProfileHorTopBavaria, profileType === ProfileType.BAVARIA ? { amount: calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopBavaria) || 1) } : { amount: 0 })
+    spec.set(SpecificationItem.ProfileHorBottomBavaria, profileType === ProfileType.BAVARIA ? { amount: calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomBavaria) || 1) } : { amount: 0 })
+    spec.set(SpecificationItem.Streich, { amount: 12 })
+    spec.set(SpecificationItem.Roliki, profileType === ProfileType.STANDART ? { amount: 1 } : { amount: 0 })
+    spec.set(SpecificationItem.RolikiBavaria, profileType === ProfileType.BAVARIA ? { amount: 1 } : { amount: 0 })
+    spec.set(SpecificationItem.Karton, { amount: 0.25 })
+    spec.set(SpecificationItem.Skotch, { amount: 5 })
     return spec
 }
 
-function combineSpecifications(fasad: Fasad, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
+function combineSpecifications(fasad: Fasad, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, SpecificationResultItem> {
     if (fasad.Children.length > 0) {
-        const spec: Map<SpecificationItem, number> = getSpecificationPattern()
+        const spec: Map<SpecificationItem, SpecificationResultItem> = getSpecificationPattern()
         fasad.Children.forEach((f: Fasad) => {
             const s = combineSpecifications(f, coefList)
             s.forEach((value, key) => {
-                const prev = spec.get(key) || 0
-                spec.set(key, prev + value)
+                const prev = spec.get(key) || { amount: 0, code_char: "" }
+                spec.set(key, {...prev, amount: prev.amount + value.amount})
             })
         })
         return spec
@@ -103,21 +103,21 @@ function combineSpecifications(fasad: Fasad, coefList: Map<SpecificationItem, nu
     return calcSpecification(fasad, coefList)
 }
 
-function calcSpecification(fasad: Fasad, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, number> {
+function calcSpecification(fasad: Fasad, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, SpecificationResultItem> {
     const spec = getSpecificationPattern()
-    spec.set(SpecificationItem.DSP10, calcDSP10(fasad) * (coefList.get(SpecificationItem.DSP10) || 1))
-    spec.set(SpecificationItem.Mirror, calcMirror(fasad) * (coefList.get(SpecificationItem.Mirror) || 1))
-    spec.set(SpecificationItem.Arakal, calcArakal(fasad) * (coefList.get(SpecificationItem.Arakal) || 1))
-    spec.set(SpecificationItem.Hydro, calcHydro(fasad) * (coefList.get(SpecificationItem.Hydro) || 1))
-    spec.set(SpecificationItem.Lacobel, calcLacobel(fasad) * (coefList.get(SpecificationItem.Lacobel) || 1))
-    spec.set(SpecificationItem.Ritrama, calcRitrama(fasad) * (coefList.get(SpecificationItem.Ritrama) || 1))
-    spec.set(SpecificationItem.Armirovka, calcArmirovka(fasad) * (coefList.get(SpecificationItem.Armirovka) || 1))
-    spec.set(SpecificationItem.FMPPaper, calcFMPPaper(fasad) * (coefList.get(SpecificationItem.FMPPaper) || 1))
-    spec.set(SpecificationItem.FMPGlass, calcFMPGlass(fasad) * (coefList.get(SpecificationItem.FMPGlass) || 1))
-    spec.set(SpecificationItem.Paint, calcPaint(fasad) * (coefList.get(SpecificationItem.Paint) || 1))
-    spec.set(SpecificationItem.EVA, calcEva(fasad) * (coefList.get(SpecificationItem.EVA) || 1))
-    spec.set(SpecificationItem.Uplot, calcUplotnitel(fasad) * (coefList.get(SpecificationItem.Uplot) || 1))
-    spec.set(SpecificationItem.UplotSoed, calcUplotnitelSoed(fasad) * (coefList.get(SpecificationItem.UplotSoed) || 1))
+    spec.set(SpecificationItem.DSP10, {amount: calcDSP10(fasad) * (coefList.get(SpecificationItem.DSP10) || 1)})
+    spec.set(SpecificationItem.Mirror, {amount: calcMirror(fasad) * (coefList.get(SpecificationItem.Mirror) || 1)})
+    spec.set(SpecificationItem.Arakal, {amount: calcArakal(fasad) * (coefList.get(SpecificationItem.Arakal) || 1)})
+    spec.set(SpecificationItem.Hydro, {amount: calcHydro(fasad) * (coefList.get(SpecificationItem.Hydro) || 1)})
+    spec.set(SpecificationItem.Lacobel, {amount: calcLacobel(fasad) * (coefList.get(SpecificationItem.Lacobel) || 1)})
+    spec.set(SpecificationItem.Ritrama, {amount: calcRitrama(fasad) * (coefList.get(SpecificationItem.Ritrama) || 1)})
+    spec.set(SpecificationItem.Armirovka, {amount: calcArmirovka(fasad) * (coefList.get(SpecificationItem.Armirovka) || 1)})
+    spec.set(SpecificationItem.FMPPaper, {amount: calcFMPPaper(fasad) * (coefList.get(SpecificationItem.FMPPaper) || 1)})
+    spec.set(SpecificationItem.FMPGlass, {amount: calcFMPGlass(fasad) * (coefList.get(SpecificationItem.FMPGlass) || 1)})
+    spec.set(SpecificationItem.Paint, {amount: calcPaint(fasad) * (coefList.get(SpecificationItem.Paint) || 1)})
+    spec.set(SpecificationItem.EVA, {amount: calcEva(fasad) * (coefList.get(SpecificationItem.EVA) || 1)})
+    spec.set(SpecificationItem.Uplot, {amount: calcUplotnitel(fasad) * (coefList.get(SpecificationItem.Uplot) || 1)})
+    spec.set(SpecificationItem.UplotSoed, {amount: calcUplotnitelSoed(fasad) * (coefList.get(SpecificationItem.UplotSoed) || 1)})
     return spec
 }
 

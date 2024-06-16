@@ -4,7 +4,7 @@ import { getFasadSpecification } from "../functions/specification";
 import { appDataAtom } from "./app";
 import Fasad from "../classes/Fasad";
 import { priceListAtom } from "./prices";
-import { SpecificationResult, WardrobeData } from "../types/wardrobe";
+import { SpecificationResult, SpecificationResultItem, WardrobeData } from "../types/wardrobe";
 import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { SpecificationData, TableFields } from "../types/server";
@@ -14,7 +14,7 @@ import messages from "../server/messages";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])
-export const specificationCombiAtom = atom<Map<SpecificationItem, number>[]>([])
+export const specificationCombiAtom = atom<Map<SpecificationItem, SpecificationResultItem>[]>([])
 export const specificationAtom = atom<SpecificationResult>(getInitSpecification())
 export const specificationInProgress = atom(false)
 
@@ -84,8 +84,8 @@ export const totalPriceAtom = atom((get) => {
     const totalPrice = specifications.map(s => {
         let sum: number = 0
         priceList.forEach(p => {
-            const item = s.get(p.name as SpecificationItem) || 0
-            sum = sum + item * (p.price || 0) * (p.markup || 1)
+            const item = s.get(p.name as SpecificationItem) || {amount: 0}
+            sum = sum + item.amount * (p.price || 0) * (p.markup || 1)
         })
         return sum
     })

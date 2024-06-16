@@ -13,10 +13,11 @@ import { getRoute } from "../atoms/verbose"
 import { wardrobeDataAtom } from "../atoms/wardrobe"
 import { showVerboseDialogAtom } from "../atoms/dialogs"
 import { verbose } from "sqlite3"
+import { SpecificationResultItem } from "../types/wardrobe"
 
 type SpecificationTableProps = {
     purposes: MAT_PURPOSE[],
-    specification: Map<SpecificationItem, number>
+    specification: Map<SpecificationItem, SpecificationResultItem>
 }
 type TotalData = PriceData & SpecificationData
 export default function SpecificationTable(props: SpecificationTableProps) {
@@ -27,8 +28,8 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     const showVerbose = useSetAtom(showVerboseDialogAtom)
     const list: TotalData[] = useMemo(() => specList.map(s => ({ ...s, ...priceList.find(p => p.name === s.name) })), [specList, priceList])
     const [showAll, setShowAll] = useState(false)
-    const contents = list?.filter(i => props.purposes.some(p => i.purpose === p) && (props.specification.get(i.name as SpecificationItem) || showAll)).map((i: TotalData, index: number) => {
-        const amount = props.specification.get(i.name as SpecificationItem) || 0
+    const contents = list?.filter(i => props.purposes.some(p => i.purpose === p) && (props.specification.get(i.name as SpecificationItem)?.amount || showAll)).map((i: TotalData, index: number) => {
+        const amount = props.specification.get(i.name as SpecificationItem)?.amount || 0
         const price = i.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"
         const verbose = getRoute(i.name) ? {className:"table-data-cell table-data-cell-hover", role: "button", onClick: () => { showVerbose(wardrobeData, i.name) } } : {}

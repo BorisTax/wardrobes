@@ -33,3 +33,9 @@ const initState: WardrobeData = {
 }
 
 export const wardrobeDataAtom = atom<WardrobeData>(initState)
+
+export const setWardrobeDataAtom = atom(null, (get, set, setter: (prev: WardrobeData) => WardrobeData) => {
+    const prev = get(wardrobeDataAtom)
+    const result = setter(prev)
+    set(wardrobeDataAtom, result)
+})

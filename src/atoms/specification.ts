@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { SpecificationItem } from "../types/specification";
 import { priceListAtom } from "./prices";
-import { FullData, SpecificationMultiResult, SpecificationResult, SpecificationResultItem, WardrobeData } from "../types/wardrobe";
+import { SpecificationMultiResult, SpecificationResult, WardrobeData } from "../types/wardrobe";
 import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { SpecificationData, TableFields } from "../types/server";

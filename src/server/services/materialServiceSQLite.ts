@@ -54,20 +54,20 @@ function getQuery({ material, name, code }: ExtMaterialQuery): string {
 
 function getUpdateQuery({ newName, image, code, name, material, purpose }: ExtNewMaterial) {
     const parts = []
-    if (newName) parts.push(`name='${newName}'`)
-    if (image) parts.push(`image='${image || ""}'`)
-    if (code) parts.push(`code='${code}'`)
-    if (purpose) parts.push(`purpose='${purpose}'`)
+    if (newName !== undefined) parts.push(`name='${newName}'`)
+    if (image !== undefined) parts.push(`image='${image || ""}'`)
+    if (code !== undefined) parts.push(`code='${code}'`)
+    if (purpose !== undefined) parts.push(`purpose='${purpose}'`)
     const query = parts.length > 0 ? `update ${EXTMATERIALS} set ${parts.join(', ')} where name='${name}' and material='${material}';` : ""
     return query
 }
 
 function getProfileQuery({ newName, code, name, type, brush }: NewProfile) {
     const parts = []
-    if (newName) parts.push(`name='${newName}'`)
-    if (code) parts.push(`code='${code}'`)
-    if (type) parts.push(`type='${type}'`)
-    if (brush) parts.push(`brush='${brush}'`)
+    if (newName !== undefined) parts.push(`name='${newName}'`)
+    if (code !== undefined) parts.push(`code='${code}'`)
+    if (type !== undefined) parts.push(`type='${type}'`)
+    if (brush !== undefined) parts.push(`brush='${brush}'`)
     const query = parts.length > 0 ? `update ${PROFILE_COLORS} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

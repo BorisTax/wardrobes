@@ -1,22 +1,22 @@
 import { atom } from "jotai";
 import { specificationDataAtom } from "./specification";
 import writeToExcel from 'write-excel-file';
-import { SpecificationItem } from "../types/specification";
 import { UnitCaptions } from "../functions/materials";
 import { SpecificationData } from "../types/server";
 import { appDataAtom } from "./app";
-import { FullData, SpecificationResult, SpecificationResultItem, TotalData } from "../types/wardrobe";
-import { specificationToArray } from "../functions/specification";
+import { SpecificationResult, TotalData } from "../types/wardrobe";
 
 export const saveToExcelAtom = atom(null, async (get, set, specification: SpecificationResult[], fileName: string) => {
     const specData = get(specificationDataAtom)
-    //const spec = specificationToArray(specData, specification)
     const { order } = get(appDataAtom)
     const orderCaption = order.trim() ? order.trim() + " " : ""
-    const specList = specification.map(s => {
-        const sp = specData.find(sd => sd.name === s[0]) as SpecificationData
-        return { ...sp, charCode: s[1].data.char?.code || "", amount: s[1].data.amount }})
-    //const specList = spec.map(s=>({code: s.item.char}))
+    const specList: (SpecificationData & { amount: number, charCode: string })[] = []
+    specData.forEach(sd => {
+        const spec = specification.filter(s => s[0] === sd.name)
+        spec.forEach(sp => {
+            specList.push({ ...sd, amount: sp[1].data.amount || 0, charCode: sp[1].data.char?.code || "" })
+        })
+    })
     const schema = [
         { column: "Код", type: String, value: (p: SpecificationData) => p.code, width: 20 },
         { column: "Наименование", type: String, value: (p: SpecificationData) => p.caption, width: 40 },

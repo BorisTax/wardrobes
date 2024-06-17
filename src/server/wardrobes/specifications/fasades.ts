@@ -180,6 +180,10 @@ async function calcDSP10(fasad: Fasad, materials: ExtMaterial[]): Promise<FullDa
             prev.data.amount += area * coef
             prev.verbose = [...prev.verbose as VerboseData, [`${fasad.cutHeight}`, `${fasad.cutWidth}`, area.toFixed(3), ""]]
         }
+        if (fasad.Parent === null) {
+            const finalResult = result.map(r => ({ ...r, verbose: [["Длина", "Ширина", "Площадь", ""], ...r.verbose as VerboseData] }))
+            return finalResult
+        }
     }
     return result
 }

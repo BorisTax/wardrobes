@@ -20,8 +20,8 @@ export default class PriceServiceSQLite implements IPriceServiceProvider {
 
 function getPriceQuery({ name, price, markup }: PriceData) {
     const parts = []
-    if (price) parts.push(`price=${price}`)
-    if (markup) parts.push(`markup=${markup}`)
+    if (price !== undefined) parts.push(`price=${price}`)
+    if (markup !== undefined) parts.push(`markup=${markup}`)
     const query = parts.length > 0 ? `update ${PRICELIST} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

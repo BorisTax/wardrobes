@@ -39,11 +39,11 @@ export default class SpecificationServiceSQLite implements ISpecificationService
 
 function getQuery({ name, caption, code, coef, id, purpose }: SpecificationData) {
     const parts = []
-    if (caption) parts.push(`caption='${caption}'`)
-    if (code) parts.push(`code='${code}'`)
-    if (coef) parts.push(`coef=${coef}`)
-    if (id) parts.push(`id='${id}'`)
-    if (purpose) parts.push(`purpose='${purpose}'`)
+    if (caption !== undefined) parts.push(`caption='${caption}'`)
+    if (code !== undefined) parts.push(`code='${code}'`)
+    if (coef !== undefined) parts.push(`coef=${coef}`)
+    if (id !== undefined) parts.push(`id='${id}'`)
+    if (purpose !== undefined) parts.push(`purpose='${purpose}'`)
     const query = parts.length > 0 ? `update ${MATERIALS} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

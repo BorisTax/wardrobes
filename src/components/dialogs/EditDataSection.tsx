@@ -60,7 +60,8 @@ export default function EditDataSection(props: EditDataSectionProps) {
             </div>
             <div className="editmaterial-buttons-container">
                 {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every(c => c))} onClick={() => {
-                    if (!checkFields({ checked, items: props.items, newValues }, showMessage)) return
+                    const check = checkFields({ checked, items: props.items, newValues })
+                    if (!check.success) { showMessage(check.message); return }
                     const message = getAddMessage({ checked, items: props.items, newValues })
                     showConfirm(message, async () => {
                         if (!props.onAdd) return
@@ -71,7 +72,8 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     })
                 }} />}
                 {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some(c => c))} onClick={() => {
-                    if (!checkFields({ checked, items: props.items, newValues }, showMessage)) return
+                    const check = checkFields({ checked, items: props.items, newValues })
+                    if (!check.success) { showMessage(check.message); return }
                     const message = getMessage({ checked, items: props.items, newValues, extValue })
                     showConfirm(message, async () => {
                         if (!props.onUpdate) return
@@ -97,14 +99,17 @@ export default function EditDataSection(props: EditDataSectionProps) {
     </>
 }
 
-function checkFields({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: string[] }, showMessage: (message: string) => void) {
-    checked.forEach((c, index) => {
-        if (c && newValues[index].trim() === "") {
-            showMessage(items[index].message)
+function checkFields({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: string[] }): { success: boolean, message: string } {
+    let message = ""
+    const success = checked.every((c, index) => {
+        if (c === false) return true
+        if (newValues[index].trim() === "") {
+            message = items[index].message
             return false
         }
+        return true
     })
-    return true
+    return {success, message}
 }
 
 function getMessage({ checked, items, newValues, extValue }: { checked: boolean[], items: EditDataItem[], newValues: string[], extValue?: string }): string {

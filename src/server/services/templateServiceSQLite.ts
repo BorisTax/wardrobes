@@ -25,8 +25,8 @@ export default class TemplateServiceSQLite implements ITemplateServiceProvider {
 
 function getQuery(table: string, { newName, name, data }: NewTemplate) {
     const parts = []
-    if (newName) parts.push(`name='${newName}'`)
-    if (data) parts.push(`data='${data}'`)
+    if (newName !== undefined) parts.push(`name='${newName}'`)
+    if (data !== undefined) parts.push(`data='${data}'`)
     const query = parts.length > 0 ? `update ${table} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

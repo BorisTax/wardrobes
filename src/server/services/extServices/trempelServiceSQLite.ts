@@ -24,10 +24,10 @@ export default class TrempelServiceSQLite implements IMaterialExtService<Trempel
     }
 }
 
-function getQuery({ newName, code, name }: Trempel & {newName: string}) {
+function getQuery({ newName, code, name }: Trempel & { newName: string }) {
     const parts = []
-    if (newName) parts.push(`name='${newName}'`)
-    if (code) parts.push(`code='${code}'`)
+    if (newName !== undefined) parts.push(`name='${newName}'`)
+    if (code !== undefined) parts.push(`code='${code}'`)
     const query = parts.length > 0 ? `update ${TREMPEL} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

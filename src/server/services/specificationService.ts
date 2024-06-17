@@ -44,13 +44,11 @@ export class SpecificationService implements ISpecificationService {
     const corpus = await getCorpusSpecification(wardrobe, data, profile?.type as ProfileType, coefList)
     const corpusConverted = flattenSpecification(filterEmptySpecification(corpus))
     result.push({ type: CORPUS_SPECS.CORPUS, spec: corpusConverted })
-    fasades.forEach(async (f) => { 
+    for(let f of fasades){ 
       const fasadSpec = await getFasadSpecification(f, profile?.type as ProfileType, coefList)
       const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
-      //console.log([...(filtered).entries()])
       result.push({ type: f.Material, spec: fasadSpecConverted })
-     }) 
-    
+     }
     return {success: true, status: 200, data: result}
   }
   async getSpecCombiData(data: AppState): Promise<Result<(SpecificationResult[])[]>> {
@@ -61,11 +59,11 @@ export class SpecificationService implements ISpecificationService {
     const profiles = (await this.matProvider.getProfiles()).data
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profile.name)
     const fasades = data.rootFasadesState.map(r => newFasadFromState(r))
-    fasades.forEach(async (f, index) => { 
+    for (let f of fasades) {
       const fasadSpec = await getFasadSpecification(f, profile?.type as ProfileType, coefList)
       const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
       result.push(fasadSpecConverted)
-     }) 
+    }
     return {success: true, status: 200, data: result}
   }
   async getDetailTable({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }): Promise<Result<WardrobeDetailTable[]>> {

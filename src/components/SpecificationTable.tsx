@@ -10,6 +10,7 @@ import { specificationDataAtom } from "../atoms/specification"
 import { setVerboseDataAtom } from "../atoms/verbose"
 import { showVerboseDialogAtom } from "../atoms/dialogs"
 import { SpecificationResult, TotalData, VerboseData } from "../types/wardrobe"
+import { spec } from "node:test/reporters"
 
 type SpecificationTableProps = {
     purposes: MAT_PURPOSE[],
@@ -18,18 +19,21 @@ type SpecificationTableProps = {
 
 export default function SpecificationTable(props: SpecificationTableProps) {
     const { role } = useAtomValue(userAtom)
-    const specList = useAtomValue(specificationDataAtom)
+    const specData = useAtomValue(specificationDataAtom)
     const priceList = useAtomValue(priceListAtom)
     const showVerbose = useSetAtom(showVerboseDialogAtom)
     const setVerboseData = useSetAtom(setVerboseDataAtom)
     const list: TotalData[] = useMemo(() => {
-        return specList.map(sl => {
-            const specItem = (props.specification.find(s => s[0] === sl.name) || ["", { data: { amount: 0, char: { code: "", caption: "" } }, verbose: [[]] }])[1]
-            const priceItem = priceList.find(p => p.name === sl.name) as PriceData
-            return { ...sl, ...specItem.data, ...priceItem, amount: specItem.data.amount, char: specItem.data.char, verbose: specItem.verbose as VerboseData }
+        const specList: TotalData[] = []
+        specData.forEach(sd => {
+            const spec = props.specification.filter(s => s[0] === sd.name)
+            const priceItem = priceList.find(p => p.name === sd.name) as PriceData
+            spec.forEach(sp => {
+                specList.push({ ...sd, ...sp[1].data, ...priceItem, amount: sp[1].data.amount, char: sp[1].data.char, verbose: sp[1].verbose as VerboseData })
+            })
         })
-    }, []) 
-    //const list: TotalData[] = useMemo(() => props.specification?.map(s => ({ ...s[1].data, ...priceList.find(p => p.name === s[0]) as PriceData, ...specList.find(sl => sl.name === s[0]) as SpecificationData, verbose: s[1].verbose as VerboseData }) || []), [specList, priceList, props.specification]) || []
+        return [...specList]
+    }, [specData, priceList, props.specification]) 
     const [showAll, setShowAll] = useState(false)
     const contents = list.filter(i => props.purposes.some(p => i.purpose === p) && (i.amount !== 0 || showAll)).map((item: TotalData, index: number) => {
         const amount = item.amount || 0

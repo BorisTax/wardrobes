@@ -150,7 +150,20 @@ async function calcSpecification(fasad: Fasad, coefList: Map<SpecificationItem, 
     return spec;
 }
 async function calcDSP10(fasad: Fasad, materials: ExtMaterial[]): Promise<FullData[]> {
-    const result:  FullData[] = []
+    const result: FullData[] = []
+    if (fasad.Material !== FasadMaterial.DSP) return result
+    if (fasad.Children.length === 0) {
+        const mat = materials.find(m => m.material === FasadMaterial.DSP && m.name === fasad.ExtMaterial) || { code: "", name: "" }
+        const { code, name: caption } = mat
+        const area = fasad.Material === FasadMaterial.DSP ? fasad.cutWidth * fasad.cutHeight / 1000000 : 0;
+        const prev = result.find(p => p.data.char?.caption === caption)
+        if (!prev) result.push({ data: { amount: area, char: { code, caption } }, verbose: [[`${fasad.cutHeight}`, `${fasad.cutWidth}`, area.toFixed(3), ""]] });
+        else {
+            prev.data.amount += area
+            prev.verbose = [...prev.verbose as VerboseData, [`${fasad.cutHeight}`, `${fasad.cutWidth}`, area.toFixed(3), ""]]
+        }
+        if (fasad.Parent !== null) return result
+    }
     for (let c of fasad.Children) {
         const res = await calcDSP10(c, materials)
         res.forEach(r => {
@@ -162,31 +175,18 @@ async function calcDSP10(fasad: Fasad, materials: ExtMaterial[]): Promise<FullDa
             }
         })
     }
-    if (fasad.Children.length > 0) {
-        if (fasad.Parent === null) {
-            const finalResult = result.map(r => ({ ...r, verbose: [["Длина", "Ширина", "Площадь", ""], ...r.verbose as VerboseData] }))
-            return finalResult
-        }
-        return result
-    }
-    if (fasad.Material === FasadMaterial.DSP) {
-        const mat = materials.find(m => m.material === FasadMaterial.DSP && m.name === fasad.ExtMaterial) || { code: "", name: "" }
+    if (fasad.Parent === null) {
         const coef = await getCoef(SpecificationItem.DSP10)
-        const { code, name: caption } = mat
-        const area = fasad.Material === FasadMaterial.DSP ? fasad.cutWidth * fasad.cutHeight / 1000000 : 0;
-        const prev = result.find(p => p.data.char?.caption === caption)
-        if (!prev) result.push({ data: { amount: area * coef, char: { code, caption } }, verbose: [[`${fasad.cutHeight}`, `${fasad.cutWidth}`, area.toFixed(3), ""]] });
-        else {
-            prev.data.amount += area * coef
-            prev.verbose = [...prev.verbose as VerboseData, [`${fasad.cutHeight}`, `${fasad.cutWidth}`, area.toFixed(3), ""]]
-        }
-        if (fasad.Parent === null) {
-            const finalResult = result.map(r => ({ ...r, verbose: [["Длина", "Ширина", "Площадь", ""], ...r.verbose as VerboseData] }))
-            return finalResult
-        }
+        const finalResult = result.map(r => {
+            const area = r.data.amount
+            r.data.amount = area * coef
+            return { ...r, verbose: [["Длина", "Ширина", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, `x ${coef} = ${(area * coef).toFixed(3)}`]] }
+        })
+        return finalResult
     }
     return result
 }
+
 async function calcMirror(fasad: Fasad, materials: ExtMaterial[]): Promise<FullData[]>  {
     const result:  FullData[] = []
     for (let c of fasad.Children) {

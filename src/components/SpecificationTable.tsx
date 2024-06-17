@@ -10,7 +10,6 @@ import { specificationDataAtom } from "../atoms/specification"
 import { setVerboseDataAtom } from "../atoms/verbose"
 import { showVerboseDialogAtom } from "../atoms/dialogs"
 import { SpecificationResult, TotalData, VerboseData } from "../types/wardrobe"
-import { spec } from "node:test/reporters"
 
 type SpecificationTableProps = {
     purposes: MAT_PURPOSE[],
@@ -27,6 +26,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
         const specList: TotalData[] = []
         specData.forEach(sd => {
             const spec = props.specification.filter(s => s[0] === sd.name)
+            if (spec.length === 0) spec.push([sd.name, { data: { amount: 0, char: { code: "", caption: "" } } }])
             const priceItem = priceList.find(p => p.name === sd.name) as PriceData
             spec.forEach(sp => {
                 specList.push({ ...sd, ...sp[1].data, ...priceItem, amount: sp[1].data.amount, char: sp[1].data.char, verbose: sp[1].verbose as VerboseData })

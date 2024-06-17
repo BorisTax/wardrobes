@@ -49,7 +49,7 @@ export function getAppDataFromState(state: AppState): AppData {
 export function getInitialAppState(): AppState {
     const wardWidth = 2400
     const wardHeight = 2400
-    const fasadCount = 2
+    const fasadCount = 3
     const profile: Profile = { type: ProfileType.STANDART, name: "", code: "", brush: "" }
     const wardType: WARDROBE_TYPE = WARDROBE_TYPE.WARDROBE
     return createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType)

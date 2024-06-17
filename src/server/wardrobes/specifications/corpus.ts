@@ -1,6 +1,6 @@
 import { getSpecificationPattern } from "./fasades"
 import { SpecificationItem } from "../../../types/specification"
-import { Detail, FullData, SpecificationResultItem, WARDROBE_KIND } from "../../../types/wardrobe"
+import { Detail, FullData, WARDROBE_KIND } from "../../../types/wardrobe"
 import { ProfileType } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"

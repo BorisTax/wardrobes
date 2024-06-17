@@ -65,7 +65,6 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, data: War
         const result: FetchResult<SpecificationMultiResult> = await fetchData('api/specification/data', "POST", JSON.stringify(formData))
         if (!result.success) set(specificationAtom, [...getInitSpecification()]); else
             set(specificationAtom, result.data as SpecificationMultiResult)
-            console.log(result.data)
             set(specificationInProgress, false)
     } catch (e) { console.error(e) }
 })
@@ -79,7 +78,6 @@ export const calculateCombiSpecificationsAtom = atom(null, async (get, set, data
     try {
         const result: FetchResult<SpecificationResult[][]> = await fetchData('api/specification/combidata', "POST", JSON.stringify(formData))
         if (result.success) {
-            //const data = (result.data as SpecificationMultiResult).map(r => new Map(r.spec))
             set(specificationCombiAtom, result.data as SpecificationResult[][])
             set(specificationInProgress, false)
         }

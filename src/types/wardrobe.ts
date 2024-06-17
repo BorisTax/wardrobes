@@ -61,7 +61,7 @@ export type DVPData = {
     dvpPlankaCount: number
 }
 
-export type TotalData = PriceData & SpecificationData & SpecificationResultItem
+export type TotalData = PriceData & SpecificationData & SpecificationResultItem & {verbose: VerboseData}
 
 export type SpecificationResultItem = {
     amount: number

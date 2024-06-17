@@ -27,7 +27,7 @@ export default function WardrobeSpecification() {
     }, [specifications])
     return <div>
         <ImageButton icon="excel" title="Сохранить в Excel" onClick={() => saveToExcel(specification.spec, captions[specIndex] as string)} />
-        <div className="d-flex flex-row flex-nowrap justify-content-center align-items-center gap-1">
+        <div className="d-flex flex-row flex-wrap justify-content-center align-items-center gap-1">
             {heads}
         </div>
         <hr/>

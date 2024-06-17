@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { priceListAtom } from "../atoms/prices"
-import { PriceData, SpecificationData } from "../types/server"
+import { PriceData } from "../types/server"
 import { UnitCaptions } from "../functions/materials"
 import { MAT_PURPOSE } from "../types/enums"
 import { userAtom } from "../atoms/users"
@@ -22,7 +22,14 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     const priceList = useAtomValue(priceListAtom)
     const showVerbose = useSetAtom(showVerboseDialogAtom)
     const setVerboseData = useSetAtom(setVerboseDataAtom)
-    const list: TotalData[] = useMemo(() => props.specification?.map(s => ({ ...s[1].data, ...priceList.find(p => p.name === s[0]) as PriceData, ...specList.find(sl => sl.name === s[0]) as SpecificationData, verbose: s[1].verbose as VerboseData }) || []), [specList, priceList, props.specification]) || []
+    const list: TotalData[] = useMemo(() => {
+        return specList.map(sl => {
+            const specItem = (props.specification.find(s => s[0] === sl.name) || ["", { data: { amount: 0, char: { code: "", caption: "" } }, verbose: [[]] }])[1]
+            const priceItem = priceList.find(p => p.name === sl.name) as PriceData
+            return { ...sl, ...specItem.data, ...priceItem, amount: specItem.data.amount, char: specItem.data.char, verbose: specItem.verbose as VerboseData }
+        })
+    }, []) 
+    //const list: TotalData[] = useMemo(() => props.specification?.map(s => ({ ...s[1].data, ...priceList.find(p => p.name === s[0]) as PriceData, ...specList.find(sl => sl.name === s[0]) as SpecificationData, verbose: s[1].verbose as VerboseData }) || []), [specList, priceList, props.specification]) || []
     const [showAll, setShowAll] = useState(false)
     const contents = list.filter(i => props.purposes.some(p => i.purpose === p) && (i.amount !== 0 || showAll)).map((item: TotalData, index: number) => {
         const amount = item.amount || 0

@@ -250,6 +250,7 @@ async function calcArmirovka(fasad: Fasad, tolerance = 5): Promise<FullData[]> {
 }
 async function calcFMPPaper(fasad: Fasad, widthLimit = 700): Promise<FullData[]> {
     const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
+    const coef = await getCoef(SpecificationItem.FMPPaper)
     const verbose: VerboseData = [["Высота", "Ширина", "Размер бумаги", "", "Площадь"]]
     let total = 0
     const sizes = [610, 914, 1067];
@@ -260,30 +261,58 @@ async function calcFMPPaper(fasad: Fasad, widthLimit = 700): Promise<FullData[]>
         total += area
         verbose.push([d.height, d.width, size, `(${d.height}+100) x ${size}`, area.toFixed(3)])
     }
-    verbose.push(["", "", "", `Итого:`, total.toFixed(3)])
+    const result = total * coef
+    const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed}` : ""
+    verbose.push(["", "", "", `Итого:`, total.toFixed(3), coefString])
     return [{ data: { amount: total }, verbose }]
 }
 
 async function calcFMPGlass(fasad: Fasad): Promise<FullData[]> {
     const dims = await calcDimensions(fasad, [FasadMaterial.FMP, FasadMaterial.LACOBEL])
-    const verbose: VerboseData = [["Высота", "Ширина", "Площадь"]]
+    const verbose: VerboseData = [["Высота", "Ширина", "Площадь",""]]
+    let total = 0
+    const coef = await getCoef(SpecificationItem.FMPGlass)
+    for (let d of dims) {
+        let area = (d.height * d.width) / 1000000;
+        total += area
+        verbose.push([d.height, d.width, area.toFixed(3)])
+    }
+    const result = total * coef
+    const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed}` : ""
+    verbose.push(["", `Итого:`, total.toFixed(3), coefString])
+    return [{ data: { amount: result }, verbose }]
+}
+
+async function calcPaint(fasad: Fasad): Promise<FullData[]> {
+    const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
+    const coef = await getCoef(SpecificationItem.Paint)
+    const verbose: VerboseData = [["Высота", "Ширина", "Площадь",""]]
+    let total = 0
+    const mult = 13.8
+    for (let d of dims) {
+        let area = (d.height * d.width) / 1000000;
+        total += area
+        verbose.push([d.height, d.width, area.toFixed(3)])
+    }
+    const coefString = coef!==1?`x ${coef}`:""
+    const result =  total * coef * mult * 0.001
+    verbose.push(["", `Итого:`, total.toFixed(3), `x 13.8 x 0.001 ${coefString} = ${(result.toFixed(3))}`])
+    return [{ data: { amount: result }, verbose }]
+}
+async function calcEva(fasad: Fasad): Promise<FullData[]>  {
+    const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
+    const coef = await getCoef(SpecificationItem.EVA)
+    const verbose: VerboseData = [["Высота", "Ширина", "Площадь",""]]
     let total = 0
     for (let d of dims) {
         let area = (d.height * d.width) / 1000000;
         total += area
         verbose.push([d.height, d.width, area.toFixed(3)])
     }
-    verbose.push(["", `Итого:`, total.toFixed(3)])
-    return [{ data: { amount: total }, verbose }]
-}
-
-async function calcPaint(fasad: Fasad): Promise<FullData[]> {
-    return [{data: {amount: 0}}]
-    //return fasad.Material === FasadMaterial.FMP ? fasad.cutWidth * fasad.cutHeight / 1000000 * 13.8 * 0.001 : 0;
-}
-async function calcEva(fasad: Fasad): Promise<FullData[]>  {
-    return [{data: {amount: 0}}]
-    //return fasad.Material === FasadMaterial.FMP ? fasad.cutWidth * fasad.cutHeight / 1000000 : 0;
+    const result = total * coef
+    const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed}` : ""
+    verbose.push(["", `Итого:`, total.toFixed(3), coefString])
+    return [{ data: { amount: result }, verbose }]
 }
 async function calcUplotnitel(fasad: Fasad): Promise<FullData[]>  {
     return [{data: {amount: 0}}]

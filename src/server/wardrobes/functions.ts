@@ -6,9 +6,10 @@ import { SpecificationService } from "../services/specificationService";
 import { FullData, VerboseData } from "../../types/wardrobe";
 import { MaterialExtService } from "../services/materialExtService";
 import { MaterialService } from "../services/materialService";
-import { Edge, ExtMaterial } from "../../types/materials";
+import { Edge, ExtMaterial, Zaglushka } from "../../types/materials";
 import EdgeServiceSQLite from "../services/extServices/edgeServiceSQLite";
 import { FasadMaterial } from "../../types/enums";
+import ZagluskaServiceSQLite from "../services/extServices/zaglushkaServiceSQLite";
 
 function getFineRange(min: number, max: number): string {
     const maxValue = 3000
@@ -222,6 +223,14 @@ export async function getConfirmat(data: WardrobeData): Promise<FullData> {
     verbose.push(["", "Итого:", total])
     return { data: { amount: total, char: {code:"", caption: ""}  }, verbose }
 }
+export async function  getZagConfirmat(data: WardrobeData): Promise<FullData> {
+    const service = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath))
+    const list = (await service.getExtData()).data as Zaglushka[]
+    const zaglushka = list.find(m => m.dsp === data.dspName) || {code: "", name: ""}
+    const {code, name: caption} = zaglushka
+    const conf = await getConfirmat(data)
+    return { data: { amount: conf.data.amount, char: { code, caption } } }
+}
 
 
 export async function getMinifix(data: WardrobeData): Promise<FullData> {
@@ -238,7 +247,14 @@ export async function getMinifix(data: WardrobeData): Promise<FullData> {
     verbose.push(["", "Итого:", total])
     return { data: { amount: total, char: {code:"", caption: ""}  }, verbose }
 }
-
+export async function  getZagMinifix(data: WardrobeData): Promise<FullData> {
+    const service = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath))
+    const list = (await service.getExtData()).data as Zaglushka[]
+    const zaglushka = list.find(m => m.dsp === data.dspName) || {code: "", name: ""}
+    const {code, name: caption} = zaglushka
+    const conf = await getMinifix(data)
+    return { data: { amount: conf.data.amount, char: { code, caption } } }
+}
 export async function getNails(data: WardrobeData): Promise<FullData> {
     const {wardKind, width, height, depth} = data
     const service = new SpecificationService(specServiceProvider, materialServiceProvider)

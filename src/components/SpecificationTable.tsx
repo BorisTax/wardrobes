@@ -37,7 +37,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     const [showAll, setShowAll] = useState(false)
     const contents = list.filter(i => props.purposes.some(p => i.purpose === p) && (i.amount !== 0 || showAll)).map((item: TotalData, index: number) => {
         const amount = item.amount || 0
-        const char = item.char || { code: "", caption: "" }
+        const char = item.char ? `${item.char.caption} ${item.char.code}` : ""
         const price = item.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"
         const verbose = (item.verbose) ? { className: "table-data-cell table-data-cell-hover", role: "button", onClick: () => { setVerboseData(item.verbose, item.name); showVerbose() } } : {}
@@ -45,7 +45,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             <td className="table-data-cell" {...verbose}>{item.caption}</td>
             <td className="table-data-cell">{Number(amount.toFixed(3))}</td>
             <td className="table-data-cell">{UnitCaptions.get(item.units || "")}</td>
-            <td className="table-data-cell">{char.caption}</td>
+            <td className="table-data-cell">{char}</td>
             {isManagerAtLeast(role) ? <td className="table-data-cell">{price.toFixed(2)}</td> : <></>}
             {isManagerAtLeast(role) ? <td className="table-data-cell">{(amount * price).toFixed(2)}</td> : <></>}
             {isManagerAtLeast(role) ? <td className="table-data-cell">{item.markup}</td> : <></>}

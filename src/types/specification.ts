@@ -13,7 +13,7 @@ export enum SpecificationItem {
     Paint = "Paint",
     EVA = "EVA",
     Uplot = "Uplot",
-    UplotSoed = "UplotSoed",
+    UplotSoedBavaria = "UplotSoedBavaria",
     ProfileSoedStandart = "ProfileSoedStandart",
     ProfileVertStandart = "ProfileVertStandart",
     ProfileHorTopStandart = "ProfileHorTopStandart",

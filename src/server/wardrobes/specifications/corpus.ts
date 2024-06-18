@@ -4,24 +4,22 @@ import { Detail, FullData, WARDROBE_KIND } from "../../../types/wardrobe"
 import { Profile, ProfileType } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"
-import { getConfirmat, getDSP, getDVP, getDVPPlanka, getEdge05, getEdge2, getGlue, getKarton, getLegs, getMinifix, getNails } from "../functions"
+import { getConfirmat, getDSP, getDVP, getDVPPlanka, getEdge05, getEdge2, getGlue, getKarton, getLegs, getMinifix, getNails, getZagConfirmat, getZagMinifix } from "../functions"
 
 export async function getCorpusSpecification(wardrobe: IWardrobe, data: WardrobeData, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = getSpecificationPattern()
     //const { details, dsp, dvpData, legs, karton } = intermediateData
     const truba = wardrobe.getTruba()
     const trempel = wardrobe.getTrempel()
-    const confirmat = [await getConfirmat(data)]
-    const minifix = [await getMinifix(data)]
     const karton = [await getKarton(data)]
     spec.set(SpecificationItem.DSP, [await getDSP(data)])
     spec.set(SpecificationItem.DVP, [await getDVP(data)])
     spec.set(SpecificationItem.Kromka2, [await getEdge2(data)])
     spec.set(SpecificationItem.Kromka05, [await getEdge05(data)])
-    spec.set(SpecificationItem.Confirmat, confirmat)
-    spec.set(SpecificationItem.ZagConfirmat, confirmat)
-    spec.set(SpecificationItem.Minifix, minifix)
-    spec.set(SpecificationItem.ZagMinifix, minifix)
+    spec.set(SpecificationItem.Confirmat, [await getConfirmat(data)])
+    spec.set(SpecificationItem.ZagConfirmat, [await getZagConfirmat(data)])
+    spec.set(SpecificationItem.Minifix, [await getMinifix(data)])
+    spec.set(SpecificationItem.ZagMinifix, [await getZagMinifix(data)])
     spec.set(SpecificationItem.Glue, [await getGlue(data)])
     spec.set(SpecificationItem.Planka, [await getDVPPlanka(data)])
     spec.set(SpecificationItem.Leg, [await getLegs(data)])

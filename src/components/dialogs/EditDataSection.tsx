@@ -94,8 +94,8 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     })
                 }} />}
             </div>
-        </div>
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
+        </div>
     </>
 }
 

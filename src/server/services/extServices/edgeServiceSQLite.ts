@@ -26,9 +26,9 @@ export default class EdgeServiceSQLite implements IMaterialExtService<Edge> {
 
 function getEdgeQuery({ newName, dsp, code, name }: NewEdge) {
     const parts = []
-    if (newName !== undefined) parts.push(`name='${newName}'`)
-    if (code !== undefined) parts.push(`code='${code}'`)
-    if (dsp !== undefined) parts.push(`dsp='${dsp}'`)
+    if (newName) parts.push(`name='${newName}'`)
+    if (code) parts.push(`code='${code}'`)
+    if (dsp) parts.push(`dsp='${dsp}'`)
     const query = parts.length > 0 ? `update ${EDGE} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

@@ -12,7 +12,8 @@ export enum MAT_TABLE_NAMES {
     BRUSH = 'brush',
     EDGE = 'edge',
     TREMPEL = 'trempel',
-    ZAGLUSHKA = 'zaglushka'
+    ZAGLUSHKA = 'zaglushka',
+    UPLOTNITEL = 'uplotnitel'
 }
 
 export enum SPEC_TABLE_NAMES {
@@ -36,17 +37,23 @@ export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusC
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
             if (!query) { resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.close(); return }
-            db.all(query, (err: Error, rows: []) => {
-                if (err) {
-                    resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
-                    console.log(query)
-                    console.log(err.message)
-                    db.close();
-                    return
-                }
-                else { resolve({ success: true, status: successStatusCode, data: rows as T, message: successMessage }) }
-                db.close()
-            });
+            try {
+                db.all(query, (err: Error, rows: []) => {
+                    if (err) {
+                        resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
+                        console.log(query)
+                        console.log(err.message)
+                        db.close();
+                        return
+                    }
+                    else { resolve({ success: true, status: successStatusCode, data: rows as T, message: successMessage }) }
+                    db.close()
+                });
+            } catch (e: any) {
+                resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: e });
+                console.log(query)
+                db.close();
+            }
         });
     }
     )

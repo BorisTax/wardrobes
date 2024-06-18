@@ -7,6 +7,7 @@ import EditEdge from "./editDialogs/EditEdge"
 import EditZaglushka from "./editDialogs/EditZaglushka"
 import EditBrush from "./editDialogs/EditBrush"
 import EditTrempel from "./editDialogs/EditTrempel"
+import EditUplotnitel from "./editDialogs/EditUplotnitel"
 
 export default function EditMaterialDialog() {
     const [group, setGroup] = useState<MaterialGroup>(MaterialGroup.PLATE)
@@ -27,6 +28,7 @@ function getGroup(group: MaterialGroup) {
         [MaterialGroup.ZAGLUSHKI]: <EditZaglushka />,
         [MaterialGroup.BRUSH]: <EditBrush />,
         [MaterialGroup.TREMPEL]: <EditTrempel />,
+        [MaterialGroup.UPLOTNITEL]: <EditUplotnitel />,
     }
     return groups[group] || <></>
 }

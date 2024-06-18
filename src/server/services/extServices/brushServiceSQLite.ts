@@ -27,8 +27,8 @@ export default class BrushServiceSQLite implements IMaterialExtService<Brush> {
 
 function getBrushQuery({ newName, code, name }: NewBrush) {
     const parts = []
-    if (newName !== undefined) parts.push(`name='${newName}'`)
-    if (code !== undefined) parts.push(`code='${code}'`)
+    if (newName) parts.push(`name='${newName}'`)
+    if (code) parts.push(`code='${code}'`)
     const query = parts.length > 0 ? `update ${BRUSH} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

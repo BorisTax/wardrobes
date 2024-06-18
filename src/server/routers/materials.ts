@@ -8,8 +8,9 @@ import { addExtMaterial, deleteExtMaterial, getExtMaterials, updateExtMaterial }
 import { MyRequest, UserRoles } from '../../types/server.js';
 import { addEdge, deleteEdge, getEdges, updateEdge } from './materials/edges.js';
 import { addZaglushka, deleteZaglushka, getZaglushkas, updateZaglushka } from './materials/zaglushka.js';
-import { addBrush, deleteBrush, getBrushes, updateBrush } from './materials/brush.js';
+import { addBrush, deleteBrush, getBrushes } from './materials/brush.js';
 import { addTrempel, deleteTrempel, getTrempels, updateTrempel } from './materials/trempel.js';
+import { addUplotnitel, deleteUplotnitel, getUplotnitels, updateUplotnitel } from './materials/uplotnitel.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -158,8 +159,8 @@ router.post("/brush", async (req: MyRequest, res) => {
 
 router.put("/trempel", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { name, newName, code } = req.body
-  const result = await updateTrempel({ name, newName, code });
+  const { name, caption, code } = req.body
+  const result = await updateTrempel({ name, caption, code });
   res.status(result.status).json(result);
 });
 
@@ -179,15 +180,45 @@ router.delete("/trempel", async (req: MyRequest, res) => {
 
 router.post("/trempel", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { name, code } = req.body
-  const result = await addTrempel({ name, code });
+  const { name, caption, code } = req.body
+  const result = await addTrempel({ name, code, caption });
   const status = result.success ? 201 : 409
   res.status(status).json(result);
 });
 
 router.put("/trempel", async (req: MyRequest, res) => {
   if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
-  const { name, newName, code } = req.body
-  const result = await updateTrempel({ name, newName, code });
+  const { name, caption, code } = req.body
+  const result = await updateTrempel({ name, caption, code });
+  res.status(result.status).json(result);
+});
+
+
+router.get("/uplotnitel", async (req, res) => {
+  const result = await getUplotnitels();
+  if (!result.success) return res.json(result)
+  res.status(result.status).json(result);
+});
+router.delete("/uplotnitel", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name } = req.body
+  let result
+  result = await deleteUplotnitel(name);
+  const status = result.success ? 200 : 404
+  res.status(status).json(result);  
+});
+
+router.post("/uplotnitel", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name, code } = req.body
+  const result = await addUplotnitel({ name, code });
+  const status = result.success ? 201 : 409
+  res.status(status).json(result);
+});
+
+router.put("/uplotnitel", async (req: MyRequest, res) => {
+  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+  const { name, code } = req.body
+  const result = await updateUplotnitel({ name, code });
   res.status(result.status).json(result);
 });

@@ -23,6 +23,7 @@ export enum MaterialGroup {
     ZAGLUSHKI = 'zaglushki',
     BRUSH = 'brush',
     TREMPEL = 'trempel',
+    UPLOTNITEL = 'uplotnitel'
 }
 
 export enum MAT_PURPOSE {

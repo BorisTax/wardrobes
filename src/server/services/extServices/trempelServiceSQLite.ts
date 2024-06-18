@@ -19,15 +19,15 @@ export default class TrempelServiceSQLite implements IMaterialExtService<Trempel
     async deleteExtData(name: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM ${TREMPEL} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
     }
-    async updateExtData({ newName, code, name }: Trempel & {newName: string}): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getQuery({ newName, code, name }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
+    async updateExtData({ caption, code, name }: Trempel ): Promise<Result<null>> {
+        return dataBaseQuery(this.dbFile, getQuery({ caption, code, name }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
     }
 }
 
-function getQuery({ newName, code, name }: Trempel & { newName: string }) {
+function getQuery({ caption, code, name }: Trempel) {
     const parts = []
-    if (newName !== undefined) parts.push(`name='${newName}'`)
-    if (code !== undefined) parts.push(`code='${code}'`)
+    if (caption) parts.push(`caption='${caption}'`)
+    if (code) parts.push(`code='${code}'`)
     const query = parts.length > 0 ? `update ${TREMPEL} set ${parts.join(', ')} where name='${name}';` : ""
     return query
 }

@@ -38,6 +38,7 @@ import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
 import { loadSpecificationListAtom } from './atoms/specification'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
+import { loadUplotnitelListAtom } from './atoms/materials/uplotnitel'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -58,6 +59,7 @@ function App() {
   const loadBrushList = useSetAtom(loadBrushListAtom)
   const loadTrempelList = useSetAtom(loadTrempelListAtom)
   const loadZaglushkaList = useSetAtom(loadZaglushkaListAtom)
+  const loadUplotnitelList = useSetAtom(loadUplotnitelListAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
@@ -72,6 +74,7 @@ function App() {
     loadBrushList()
     loadTrempelList()
     loadZaglushkaList()
+    loadUplotnitelList()
     loadVersion()
   }, [])
   useEffect(() => {

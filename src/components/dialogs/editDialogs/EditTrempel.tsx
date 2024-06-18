@@ -9,14 +9,14 @@ import Container from "../../Container"
 
 export default function EditTrempel() {
     const trempelNoSortedList = useAtomValue(trempelListAtom)
-    const trempelList = useMemo(() => trempelNoSortedList.toSorted((b1, b2) => b1.name > b2.name ? 1 : -1), [trempelNoSortedList])
+    const trempelList = useMemo(() => trempelNoSortedList.toSorted((b1, b2) => b1.caption > b2.caption ? 1 : -1), [trempelNoSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name, code } = trempelList[selectedIndex]
+    const { name, caption, code } = trempelList[selectedIndex]
     const updateTrempel = useSetAtom(updateTrempelAtom)
     const heads = ['Наименование', 'Код']
-    const contents = trempelList.map((i: Trempel) => [i.name, i.code])
+    const contents = trempelList.map((i: Trempel) => [i.caption, i.code])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: name, message: "Введите наименование", type: InputType.TEXT },
+        { caption: "Наименование:", value: caption, message: "Введите наименование", type: InputType.TEXT },
         { caption: "Код:", value: code, message: "Введите код", type: InputType.TEXT },
     ]
     useEffect(() => {
@@ -26,9 +26,9 @@ export default function EditTrempel() {
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
             onUpdate={async (checked, values) => {
-                const usedName = checked[0] ? values[0] : ""
+                const usedCaption = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
-                const result = await updateTrempel({ name, newName: usedName, code: usedCode })
+                const result = await updateTrempel({ name, caption: usedCaption, code: usedCode })
                 return result
             }}
         />

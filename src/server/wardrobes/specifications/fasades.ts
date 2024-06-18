@@ -5,9 +5,11 @@ import { Edge, ExtMaterial, Profile, ProfileType } from "../../../types/material
 import { FullData, SpecificationResult, VerboseData } from "../../../types/wardrobe";
 import { SpecificationItem } from "../../../types/specification";
 import { WardrobeData } from "../../../types/wardrobe";
-import { materialServiceProvider } from "../../options";
+import { materialServiceProvider, materialsPath } from "../../options";
 import { MaterialService } from "../../services/materialService";
 import { getCoef } from "../functions";
+import { MaterialExtService } from "../../services/materialExtService";
+import UplotnitelServiceSQLite from "../../services/extServices/uplotnitelServiceSQLite";
 
 export function createFasades(data: WardrobeData, profileType: ProfileType): Fasad[]{
     const fasades: Fasad[] = []
@@ -122,7 +124,7 @@ async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<Sp
     spec.set(SpecificationItem.Paint, await calcPaint(fasad));
     spec.set(SpecificationItem.EVA, await calcEva(fasad)); 
     spec.set(SpecificationItem.Uplot, await calcUplotnitel(fasad, profile.type));
-    spec.set(SpecificationItem.UplotSoed, await calcUplotnitelSoed(fasad, profile.type));
+    spec.set(SpecificationItem.UplotSoedBavaria, await calcUplotnitelSoed(fasad, profile.type));
     spec.set(SpecificationItem.ProfileSoedStandart, profile.type === ProfileType.STANDART ? await calcProfileSoed(fasad, profile) : emptyFullData())
     spec.set(SpecificationItem.ProfileVertStandart, profile.type === ProfileType.STANDART ? await calcProfileVert(fasad, profile) : emptyFullData())
     spec.set(SpecificationItem.ProfileHorTopStandart, profile.type === ProfileType.STANDART ? await calcProfileHor(fasad, profile, true) : emptyFullData())
@@ -374,6 +376,9 @@ async function calcEdges(fasad: Fasad): Promise<{ outer: EdgesData[], inner: Edg
 }
 
 async function calcUplotnitel(fasad: Fasad, profileType: ProfileType): Promise<FullData[]> {
+    const service = new MaterialExtService(new UplotnitelServiceSQLite(materialsPath))
+    const uplotList = (await (service.getExtData())).data
+    const { code, name } = (uplotList && uplotList[0]) || { code: "", caption: "" }
     const edges = (profileType === ProfileType.STANDART) ? (await calcEdges(fasad)).full : (await calcEdges(fasad)).outer
     const verbose = [["Высота", "Ширина", "Уплотнитель", "Длина,м", ""]]
     let sum = 0
@@ -387,11 +392,14 @@ async function calcUplotnitel(fasad: Fasad, profileType: ProfileType): Promise<F
     const result = sum * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     verbose.push(["", "", "", `${sum.toFixed(3)}`, coefString])
-    return [{ data: { amount: result }, verbose }]
+    return [{ data: { amount: result, char: { code, caption: name as string } }, verbose }]
 }
 
 async function calcUplotnitelSoed(fasad: Fasad, profileType: ProfileType): Promise<FullData[]> {
     if (profileType === ProfileType.STANDART) return emptyFullData()
+    const service = new MaterialExtService(new UplotnitelServiceSQLite(materialsPath))
+    const uplotList = (await (service.getExtData())).data
+    const { code, name } = (uplotList && uplotList[0]) || { code: "", caption: "" }
     const edges = (await calcEdges(fasad)).inner
     const verbose = [["Высота", "Ширина", "Уплотнитель", "Длина,м", ""]]
     let sum = 0
@@ -401,11 +409,11 @@ async function calcUplotnitelSoed(fasad: Fasad, profileType: ProfileType): Promi
         const sides = e.edges.map(i => EdgeSideCaptions[i.side]).join(", ")
         verbose.push([`${e.height}`, `${e.width}`, `${sides} (${e.edges.map(i => i.length).join("+")})`, `${s.toFixed(3)}`])
     })
-    const coef = await getCoef(SpecificationItem.UplotSoed)
+    const coef = await getCoef(SpecificationItem.UplotSoedBavaria)
     const result = sum * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     verbose.push(["", "", "", `${sum.toFixed(3)}`, coefString])
-    return [{ data: { amount: result }, verbose }]
+    return [{ data: { amount: result, char: { code, caption: name as string } }, verbose }]
 }
 
 async function calcProfileSoed(fasad: Fasad, profile: Profile): Promise<FullData[]> {

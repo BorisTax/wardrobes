@@ -11,7 +11,7 @@ import { createFasades } from '../wardrobes/specifications/fasades.js'
 import BrushServiceSQLite from './extServices/brushServiceSQLite.js'
 import { MaterialExtService } from './materialExtService.js'
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from '../../types/schemas.js'
-import { getDetails } from '../wardrobes/functions.js'
+import { getDetails } from "../wardrobes/specifications/corpus.js"
 import { AppState } from '../../types/app.js'
 import { newFasadFromState } from '../../functions/fasades.js'
 

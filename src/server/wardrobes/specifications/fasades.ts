@@ -7,13 +7,17 @@ import { SpecificationItem } from "../../../types/specification";
 import { WardrobeData } from "../../../types/wardrobe";
 import { materialServiceProvider, materialsPath } from "../../options";
 import { MaterialService } from "../../services/materialService";
-import { getCoef } from "../functions";
+import { getCoef } from "./corpus";
 import { MaterialExtService } from "../../services/materialExtService";
 import UplotnitelServiceSQLite from "../../services/extServices/uplotnitelServiceSQLite";
 
+export function getFasadCount(data: WardrobeData): number{
+    return Object.values(data.fasades).reduce((a, f) => f.count + a, 0)
+}
+
 export function createFasades(data: WardrobeData, profileType: ProfileType): Fasad[]{
     const fasades: Fasad[] = []
-    const count = Object.values(data.fasades).reduce((a, f) => f.count + a, 0)
+    const count = getFasadCount(data)
     const width = getFasadWidth(data.width, count, data.wardType, profileType)
     const height = getFasadHeight(data.height, data.wardType, profileType)
     data.fasades.dsp.names.forEach(n => {

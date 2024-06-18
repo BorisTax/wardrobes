@@ -12,7 +12,7 @@ import { ConsoleTypes, WardKinds, WardTypes } from "../functions/wardrobe"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import { calculateSpecificationsAtom } from "../atoms/specification"
 import WardrobeSpecification from "./WardrobeSpecification"
-import { initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
+import { initFasades, loadedInitialWardrobeDataAtom, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
 
 const numbers = [0, 1, 2, 3, 4, 5, 6]
 const styles = { fontStyle: "italic", color: "gray" }
@@ -22,6 +22,7 @@ export default function WardrobeCalculator() {
     const setData = useSetAtom(setWardrobeDataAtom)
     const calculate = useSetAtom(calculateSpecificationsAtom)
     const materialList = useAtomValue(materialListAtom)
+    const loadedInitialWardrobeData = useAtomValue(loadedInitialWardrobeDataAtom)
     const dspList = useMemo(() => materialList.filter(m => m.purpose !== MAT_PURPOSE.FASAD).map(m => m.name), [materialList])
     const dsp10List = useMemo(() => materialList.filter(m => m.material === FasadMaterial.DSP && m.purpose !== MAT_PURPOSE.CORPUS).map(m => m.name), [materialList])
     const mirrorList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.MIRROR).map(m => m.name), [materialList])
@@ -35,8 +36,8 @@ export default function WardrobeCalculator() {
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const maxFasades = 6
     useEffect(() => {
-        calculate(data)
-    }, [data])
+        if (loadedInitialWardrobeData) calculate(data)
+    }, [data, loadedInitialWardrobeData])
     return <div className="container">
         <div className="row">
             <div className="container col-xs-12 col-sm-12 col-md-4 col-lg-6">

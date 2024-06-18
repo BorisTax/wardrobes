@@ -50,8 +50,12 @@ export enum SpecificationItem {
     NapravBottom = "NapravBottom",
     Stopor = "Stopor",
     ConfKluch = "ConfKluch",
-    Box = "Box"
-}export enum CORPUS_SPECS {
+    Box = "Box",
+    Brush = "Brush",
+    BrushBavaria = "BrushBavaria",
+}
+
+export enum CORPUS_SPECS {
     CORPUS = "corpus",
     EXT_TEL = "telescope",
     EXT_SHELF = "shelf",

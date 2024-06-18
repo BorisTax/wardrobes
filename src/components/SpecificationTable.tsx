@@ -29,7 +29,9 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             if (spec.length === 0) spec.push([sd.name, { data: { amount: 0, char: { code: "", caption: "" } } }])
             const priceItem = priceList.find(p => p.name === sd.name) as PriceData
             spec.forEach(sp => {
-                specList.push({ ...sd, ...sp[1].data, ...priceItem, amount: sp[1].data.amount, char: sp[1].data.char, verbose: sp[1].verbose as VerboseData })
+                const code = sp[1].data.useCharAsCode ? sp[1].data.char?.code : sd.code //для щетки
+                const caption = sp[1].data.useCharAsCode ? sp[1].data.char?.caption : sd.caption //для щетки
+                specList.push({ ...sd, code, caption, ...sp[1].data, ...priceItem, amount: sp[1].data.amount, char: sp[1].data.char, verbose: sp[1].verbose as VerboseData })
             })
         })
         return [...specList]

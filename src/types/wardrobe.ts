@@ -6,7 +6,6 @@ import { SpecificationItem } from "./specification"
 export interface IWardrobe {
     getTrempel: () => {length: number, count: number}
     getTruba: () => {length: number, count: number}
-    getSamorez16: () => number
     getStyagka: () => number
     getNaprav: () => number
 }
@@ -69,6 +68,7 @@ export type SpecificationResultItem = {
         code: string
         caption: string
     }
+    useCharAsCode?: boolean //для щетки
 }
 
 export type VerboseData = (string | number)[][]

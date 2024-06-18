@@ -1,6 +1,5 @@
 import { DETAIL_NAME, Detail } from "../../types/wardrobe";
 import { IWardrobe, WardrobeData } from "../../types/wardrobe";
-import { getKarton, getLegs, getNails, getSamorez16 } from "./functions";
 
 export default class StandartWardrobe implements IWardrobe {
     private details: Detail[] = []
@@ -25,9 +24,7 @@ export default class StandartWardrobe implements IWardrobe {
         this.calcTruba()
         this.calcTrempel()
     }
-    public getSamorez16(){
-        return getSamorez16(this.width)
-    };
+
     public getStyagka(){
         return this.section === 2 ? 3 : 0
     };

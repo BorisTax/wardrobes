@@ -1,5 +1,6 @@
 import { atom } from "jotai"
 import { CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
+import { FetchResult, fetchGetData } from "../functions/fetch"
 
 export const initFasades = {
     dsp: { count: 0, names: [] },
@@ -9,6 +10,7 @@ export const initFasades = {
     lacobel: { count: 0, names: [] },
     lacobelGlass: { count: 0, names: [] }
 }
+
 const initState: WardrobeData = {
     wardKind: WARDROBE_KIND.STANDART,
     wardType: WARDROBE_TYPE.WARDROBE,
@@ -38,4 +40,15 @@ export const setWardrobeDataAtom = atom(null, (get, set, setter: (prev: Wardrobe
     const prev = get(wardrobeDataAtom)
     const result = setter(prev)
     set(wardrobeDataAtom, result)
+})
+
+export const loadedInitialWardrobeDataAtom = atom(false)
+export const loadInitialWardrobeDataAtom = atom(null, async (get, set) => {
+    set(loadedInitialWardrobeDataAtom, false)
+    const result: FetchResult<WardrobeData> = await fetchGetData(`api/wardrobe/initialWardrobeData`)
+    const data = result.data as WardrobeData
+    if (result.success) {
+        set(setWardrobeDataAtom, () => data)
+        set(loadedInitialWardrobeDataAtom, true)
+    }
 })

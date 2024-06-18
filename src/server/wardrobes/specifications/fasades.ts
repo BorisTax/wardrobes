@@ -133,6 +133,10 @@ async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<Sp
     spec.set(SpecificationItem.ProfileVertBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileVert(fasad, profile) : emptyFullData())
     spec.set(SpecificationItem.ProfileHorTopBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileHor(fasad, profile, true) : emptyFullData())
     spec.set(SpecificationItem.ProfileHorBottomBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileHor(fasad, profile, false) : emptyFullData())
+    spec.set(SpecificationItem.Streich, await calcStreich(fasad))
+    spec.set(SpecificationItem.Karton, await calcKarton(fasad))
+    spec.set(SpecificationItem.Roliki, await calcRoliki(fasad, profile))
+    spec.set(SpecificationItem.RolikiBavaria, await calcRolikiBavaria(fasad, profile))
     return spec;
 }
 async function calcArea(fasad: Fasad, materials: ExtMaterial[], material: FasadMaterial[], useChar: boolean = true): Promise<FullData[]> {
@@ -454,7 +458,17 @@ async function calcProfileVert(fasad: Fasad, profile: Profile): Promise<FullData
 async function calcStreich(fasad: Fasad): Promise<FullData[]>  {
     return [{ data: { amount: 12 } }]
 }
-
+async function calcKarton(fasad: Fasad): Promise<FullData[]>  {
+    return [{ data: { amount: 0.25 } }]
+}
+async function calcRoliki(fasad: Fasad, profile: Profile): Promise<FullData[]>  {
+    if (profile.type === ProfileType.BAVARIA) return emptyFullData()
+    return [{ data: { amount: 1 } }]
+}
+async function calcRolikiBavaria(fasad: Fasad, profile: Profile): Promise<FullData[]>  {
+    if (profile.type === ProfileType.STANDART) return emptyFullData()
+    return [{ data: { amount: 1 } }]
+}
 export function emptyFullData(): FullData[]{
     return [{ data: { amount: 0 } }]
 }

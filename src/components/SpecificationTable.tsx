@@ -41,7 +41,8 @@ export default function SpecificationTable(props: SpecificationTableProps) {
         const price = item.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"
         const verbose = (item.verbose) ? { className: "table-data-cell table-data-cell-hover", role: "button", onClick: () => { setVerboseData(item.verbose, item.name); showVerbose() } } : {}
-        return <tr key={index} className={className}>
+        return <tr key={index} className={"table-data-row " + className}>
+            <td className="table-data-cell" >{item.code}</td>
             <td className="table-data-cell" {...verbose}>{item.caption}</td>
             <td className="table-data-cell">{Number(amount.toFixed(3))}</td>
             <td className="table-data-cell">{UnitCaptions.get(item.units || "")}</td>
@@ -57,6 +58,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             <table>
                 <thead>
                     <tr>
+                        <th className="table-header">Код</th>
                         <th className="table-header">Наименование</th>
                         <th className="table-header">Кол-во</th>
                         <th className="table-header">Ед</th>

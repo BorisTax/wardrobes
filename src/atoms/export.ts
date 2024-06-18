@@ -14,7 +14,10 @@ export const saveToExcelAtom = atom(null, async (get, set, specification: Specif
     specData.forEach(sd => {
         const spec = specification.filter(s => s[0] === sd.name)
         spec.forEach(sp => {
-            specList.push({ ...sd, amount: sp[1].data.amount || 0, charCode: sp[1].data.char?.code || "" })
+            const code = sp[1].data.useCharAsCode ? sp[1].data.char?.code : sd.code //для щетки
+            const caption = sp[1].data.useCharAsCode ? sp[1].data.char?.caption : sd.caption //для щетки
+            const charCode = (!sp[1].data.useCharAsCode && sp[1].data.char?.code) || ""
+            specList.push({ ...sd, code, caption, amount: sp[1].data.amount || 0, charCode })
         })
     })
     const schema = [

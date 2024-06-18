@@ -39,7 +39,8 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     const [showAll, setShowAll] = useState(false)
     const contents = list.filter(i => props.purposes.some(p => i.purpose === p) && (i.amount !== 0 || showAll)).map((item: TotalData, index: number) => {
         const amount = item.amount || 0
-        const char = item.char ? `${item.char.caption} ${item.char.code}` : ""
+        const charCode = item?.char?.code ? `(${item.char.code})` : ""
+        const char = item.char && !item.useCharAsCode ? `${item.char.caption} ${charCode}` : ""
         const price = item.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"
         const verbose = (item.verbose) ? { className: "table-data-cell table-data-cell-hover", role: "button", onClick: () => { setVerboseData(item.verbose, item.name); showVerbose() } } : {}

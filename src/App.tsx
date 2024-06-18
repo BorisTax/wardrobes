@@ -20,7 +20,7 @@ import { loadProfileListAtom } from './atoms/materials/profiles'
 import EditPriceDialog from './components/dialogs/EditPriceDialog'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
-import { appDataAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
+import { appDataAtom, loadInitialStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import EditUsersDialog from './components/dialogs/EditUsersDialog'
 import EventListener from './components/EventListener'
 import SettingsDialog from './components/dialogs/SettingsDialog'
@@ -62,6 +62,7 @@ function App() {
   const loadUplotnitelList = useSetAtom(loadUplotnitelListAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
+  const loadInitialAppState = useSetAtom(loadInitialStateAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
     const storage = localStorage.getItem('appState')
@@ -75,6 +76,7 @@ function App() {
     loadTrempelList()
     loadZaglushkaList()
     loadUplotnitelList()
+    loadInitialAppState()
     loadVersion()
   }, [])
   useEffect(() => {

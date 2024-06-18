@@ -380,12 +380,12 @@ async function getBrush(data: WardrobeData, profile: Profile, type: ProfileType)
     const brushList = (await (service.getExtData())).data
     const brush = brushList && brushList.find(b => b.name === profile.brush) || { name: "", code: "" }
     const { code, name: caption } = brush
-    const coef = await getCoef(SpecificationItem.Brush);
+    const coef = await getCoef(type === ProfileType.STANDART ? SpecificationItem.Brush : SpecificationItem.BrushBavaria);
     const verbose = [["Высота стойки", "Кол-во фасадов", ""]]
     const fasadCount = getFasadCount(data)
     const height = (data.height - 62)
     const result = height / 1000 * coef * fasadCount * 2
-    verbose.push([`${data.height}-62=${height}`, `x ${fasadCount}`, `x 2 ${coef}`, `${result.toFixed(3)}м`])
+    verbose.push([`${data.height}-62=${height}`, `x ${fasadCount}`, `x 2 x ${coef}`, `=${result.toFixed(3)}м`])
     return { data: { amount: result, char: { code, caption }, useCharAsCode: true }, verbose }
 }
 

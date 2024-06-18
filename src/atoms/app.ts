@@ -1,5 +1,5 @@
 import { Getter, Setter, atom } from 'jotai';
-import { AppData, AppState, HistoryState, SetAtomComfirm } from "../types/app";
+import { AppData, AppState, HistoryState, InitialAppState, SetAtomComfirm } from "../types/app";
 import { createAppState, getAppDataFromState, getAppState, getFasadHeight, getFasadWidth, getInitialAppState } from "../functions/wardrobe";
 import { Profile } from "../types/materials";
 import Fasad from "../classes/Fasad";
@@ -17,6 +17,17 @@ export const loadVersionAtom = atom(null, async (get, set) => {
     const result: FetchResult<[] | string> = await fetchGetData(`api/version`)
     if (result.success) set(versionAtom, result.data as string)
 })
+export const loadedInitialStateAtom = atom(false)
+export const loadInitialStateAtom = atom(null, async (get, set) => {
+    set(loadedInitialStateAtom, false)
+    const result: FetchResult<InitialAppState> = await fetchGetData(`api/wardrobe/initial`)
+    const { wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial } = result.data as InitialAppState
+    const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial)
+    if (result.success){
+         set(appAtom, { state, next: null, previous: null })
+         set(loadedInitialStateAtom, true)
+        }
+})
 export const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
 export const historyAppAtom = atom((get: Getter) => { const data = get(appAtom); return { next: data.next, previous: data.previous } })
 export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state), (get, set, appData: AppData, useHistory: boolean) => {
@@ -25,7 +36,7 @@ export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state)
     localStorage.setItem('appState', JSON.stringify(state))
     if (useHistory) set(appAtom, { previous: app, state, next: null });
     else set(appAtom, { ...app, state })
-    set(calculateCombiSpecificationsAtom, app.state)
+    if (get(loadedInitialStateAtom)) set(calculateCombiSpecificationsAtom, app.state)
 })
 export const saveToStorageAtom = atom(null, (get, set) => {
     const app = get(appAtom)
@@ -64,7 +75,7 @@ export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmC
     const { order, wardWidth, wardHeight, profile, type, rootFasades } = get(appDataAtom)
     const prevCount = rootFasades.length
     const { minSize } = get(settingsAtom)
-    const newAppData = getAppDataFromState(createAppState(order, wardWidth, wardHeight, newCount, profile, type))
+    const newAppData = getAppDataFromState(createAppState(order, wardWidth, wardHeight, newCount, profile, type), true)
     const fasadWidth = getFasadWidth(wardWidth, newCount, type, profile.type)
     const newRootFasades = rootFasades.filter((_, index) => index < newCount).map((f: Fasad) => f.clone())
     newAppData.rootFasades = newRootFasades.map((f: Fasad) => { const r = f.clone(); r.Children = []; return r })

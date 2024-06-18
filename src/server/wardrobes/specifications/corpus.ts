@@ -1,12 +1,12 @@
 import { getSpecificationPattern } from "./fasades"
 import { SpecificationItem } from "../../../types/specification"
 import { Detail, FullData, WARDROBE_KIND } from "../../../types/wardrobe"
-import { ProfileType } from "../../../types/materials"
+import { Profile, ProfileType } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"
 import { getConfirmat, getDSP, getDVP, getDVPPlanka, getEdge05, getEdge2, getGlue, getKarton, getLegs, getMinifix, getNails } from "../functions"
 
-export async function getCorpusSpecification(wardrobe: IWardrobe, data: WardrobeData, profileType: ProfileType, coefList: Map<SpecificationItem, number>): Promise<Map<SpecificationItem, FullData[]>> {
+export async function getCorpusSpecification(wardrobe: IWardrobe, data: WardrobeData, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = getSpecificationPattern()
     //const { details, dsp, dvpData, legs, karton } = intermediateData
     const truba = wardrobe.getTruba()
@@ -26,7 +26,7 @@ export async function getCorpusSpecification(wardrobe: IWardrobe, data: Wardrobe
     spec.set(SpecificationItem.Planka, [await getDVPPlanka(data)])
     spec.set(SpecificationItem.Leg, [await getLegs(data)])
     spec.set(SpecificationItem.Karton, karton)
-    spec.set(SpecificationItem.Skotch, [{data: { amount: karton[0].data.amount * 20 * (coefList.get(SpecificationItem.Skotch) || 1) }}])
+    spec.set(SpecificationItem.Skotch, [{ data: { amount: karton[0].data.amount * 20 } }])
     spec.set(SpecificationItem.Nails, [await getNails(data)])
     //spec.set(SpecificationItem.NapravTop, { amount: wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravTop) || 1) })
     //spec.set(SpecificationItem.NapravBottom, { amount: wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravBottom) || 1) })

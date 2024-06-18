@@ -22,6 +22,7 @@ import { hasFasadImage } from "../functions/fasades"
 import TextBox from "./TextBox"
 import { useMemo } from "react"
 import ImageLink from "./ImageLink"
+import { loadedInitialStateAtom } from "../atoms/app"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 const directions: Map<string, string> = new Map()
 export default function PropertiesBar() {
@@ -32,6 +33,7 @@ export default function PropertiesBar() {
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
     const matList = useAtomValue(materialListAtom)
+    const loadedInitialState = useAtomValue(loadedInitialStateAtom)
     const materialList = useMemo(() => matList.filter(m => m.purpose !== MAT_PURPOSE.CORPUS), [matList])
     const totalPrice = useAtomValue(totalPriceAtom)
     const setHeight = useSetAtom(setHeightAtom)

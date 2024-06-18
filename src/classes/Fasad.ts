@@ -10,10 +10,10 @@ export default class Fasad {
     private extMaterial = ''
     private sandBase = SandBase.MIRROR
     private division = Division.HEIGHT
-    private outerRightEdge = false
-    private outerLeftEdge = false
-    private outerTopEdge = false
-    private outerBottomEdge = false
+    private outerRightEdge = true
+    private outerLeftEdge = true
+    private outerTopEdge = true
+    private outerBottomEdge = true
     public Children: Fasad[]
     private width = 0
     private height = 0

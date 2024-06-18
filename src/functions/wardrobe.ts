@@ -33,7 +33,7 @@ export function getFasadHeight(wardHeight: number, wardType: WARDROBE_TYPE, prof
     return wardHeight - offset
 }
 
-export function getAppDataFromState(state: AppState): AppData {
+export function getAppDataFromState(state: AppState, keepOriginalMaterial: boolean = false): AppData {
     const data: AppData = {
         order: state.order,
         wardHeight: state.wardHeight,
@@ -41,7 +41,7 @@ export function getAppDataFromState(state: AppState): AppData {
         fasadCount: state.fasadCount,
         profile: { ...state.profile },
         type: state.type,
-        rootFasades: state.rootFasadesState.map((s: FasadState) => newFasadFromState(s))
+        rootFasades: state.rootFasadesState.map((s: FasadState) => newFasadFromState(s, keepOriginalMaterial))
     }
     return data
 }
@@ -52,10 +52,10 @@ export function getInitialAppState(): AppState {
     const fasadCount = 3
     const profile: Profile = { type: ProfileType.STANDART, name: "", code: "", brush: "" }
     const wardType: WARDROBE_TYPE = WARDROBE_TYPE.WARDROBE
-    return createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType)
+    return createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, FasadMaterial.EMPTY, "")
 }
 
-export function createAppState(order:string, wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WARDROBE_TYPE): AppState {
+export function createAppState(order: string, wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WARDROBE_TYPE, material: FasadMaterial = FasadMaterial.EMPTY, extMaterial: string = ""): AppState {
     const fasadHeight = getFasadHeight(wardHeight, wardType, profile.type)
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardType, profile.type)
     const state: AppState = {
@@ -65,7 +65,7 @@ export function createAppState(order:string, wardWidth: number, wardHeight: numb
         fasadCount,
         profile,
         type: wardType,
-        rootFasadesState: new Array(fasadCount).fill(null).map(() => getFasadState(fasadWidth, fasadHeight, Division.HEIGHT, FasadMaterial.EMPTY))
+        rootFasadesState: new Array(fasadCount).fill(null).map(() => getFasadState(fasadWidth, fasadHeight, Division.HEIGHT, material, extMaterial))
     }
     return state
 }

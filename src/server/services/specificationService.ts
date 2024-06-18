@@ -41,11 +41,11 @@ export class SpecificationService implements ISpecificationService {
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
     const brush: Brush | undefined = brushes?.find(b => b.name === profile?.brush)
     const fasades = createFasades(data, profile?.type as ProfileType)
-    const corpus = await getCorpusSpecification(wardrobe, data, profile?.type as ProfileType, coefList)
+    const corpus = await getCorpusSpecification(wardrobe, data, profile as Profile)
     const corpusConverted = flattenSpecification(filterEmptySpecification(corpus))
     result.push({ type: CORPUS_SPECS.CORPUS, spec: corpusConverted })
     for(let f of fasades){ 
-      const fasadSpec = await getFasadSpecification(f, profile?.type as ProfileType, coefList)
+      const fasadSpec = await getFasadSpecification(f, profile as Profile)
       const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
       result.push({ type: f.Material, spec: fasadSpecConverted })
      }
@@ -55,12 +55,12 @@ export class SpecificationService implements ISpecificationService {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: (SpecificationResult[])[] = []
     const specList = (await this.provider.getSpecList()).data || []
-    const coefList: Map<SpecificationItem, number> = new Map(specList.map((p: SpecificationData) => [p.name as SpecificationItem, p.coef as number]))
     const profiles = (await this.matProvider.getProfiles()).data
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profile.name)
+    //console.log(data.rootFasadesState[0])
     const fasades = data.rootFasadesState.map(r => newFasadFromState(r))
     for (let f of fasades) {
-      const fasadSpec = await getFasadSpecification(f, profile?.type as ProfileType, coefList)
+      const fasadSpec = await getFasadSpecification(f, profile  as Profile)
       const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
       result.push(fasadSpecConverted)
     }

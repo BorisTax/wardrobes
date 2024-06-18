@@ -5,7 +5,7 @@ import priceRouter from './routers/prices.js'
 import specificationRouter from './routers/specification.js'
 import databaseRouter from './routers/database.js'
 import templateRouter from './routers/templates.js'
-import verboseRouter from './routers/verbose.js'
+import wardrobeRouter from './routers/wardrobe.js'
 export const router = express.Router();
 
 router.use('/users', userRouter)
@@ -14,7 +14,7 @@ router.use('/templates', templateRouter)
 router.use('/specification', specificationRouter)
 router.use('/prices', priceRouter)
 router.use('/database', databaseRouter)
-router.use('/verbose', verboseRouter)
+router.use('/wardrobe', wardrobeRouter)
 router.get('/version', (req, res) => {
     res.status(200).json({ success: true, data: "0.1.14" })
 })

@@ -1,6 +1,7 @@
 import Fasad from "../classes/Fasad"
 import FasadState from "../classes/FasadState"
 import { Division, FasadMaterial } from "../types/enums"
+import { ExtMaterial } from "../types/materials"
 
 export function trySetWidth(fasad: Fasad | null, width: number, minSize: number): boolean {
     if (!fasad) return false
@@ -36,12 +37,13 @@ export function trySetHeight(fasad: Fasad | null, height: number, minSize: numbe
         return fasad.Parent.DistributePartsOnHeight(fasad, height, false, minSize) || false
 }
 
-export function getFasadState(width: number, height: number, division: Division, material: FasadMaterial) {
+export function getFasadState(width: number, height: number, division: Division, material: FasadMaterial, extMaterial: string) {
     const state = new FasadState()
     state.height = height
     state.width = width
     state.division = division
     state.material = material
+    state.extMaterial = extMaterial
     return state
 }
 

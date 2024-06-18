@@ -17,7 +17,7 @@ export default function VerboseDataDialog() {
     }, [setVerboseDialogAtomRef, dialogRef])
     return <DialogWindow dialogRef={dialogRef} title={title}>
         <div className="overflow-scroll">
-            <TableData heads={heads} content={contents} />
+            <TableData heads={heads} content={contents} rowNumbers={false} />
         </div>
     </DialogWindow>
 }

@@ -4,18 +4,18 @@ import useMessage from "../../custom-hooks/useMessage"
 import useConfirm from "../../custom-hooks/useConfirm"
 import ImageButton from "../ImageButton"
 import ComboBox from "../ComboBox"
-import { UserRolesCaptions, allUsersAtom, createUserAtom } from "../../atoms/users"
+import { UserRolesCaptions, createUserAtom } from "../../atoms/users"
 import { UserRoles } from "../../types/server"
 import { rusMessages } from "../../functions/messages"
-import { EditDialogProps } from "./EditMaterialDialog"
 type DialogProps = {
     dialogRef: React.RefObject<HTMLDialogElement>
+    setLoading: (state: boolean) => void
 }
 
 const roles = [UserRoles.CLIENT, UserRoles.MANAGER, UserRoles.EDITOR]
 const minNameLen = 3
 const minPassLen = 6
-export default function AddUserDialog({ dialogRef, setLoading }: DialogProps & EditDialogProps) {
+export default function AddUserDialog({ dialogRef, setLoading }: DialogProps ) {
     const closeDialog = () => { dialogRef.current?.close() }
     const [{ name, password }, setState] = useState({ name: "", password: "" })
     const [roleIndex, setRoleIndex] = useState(0)

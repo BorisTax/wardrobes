@@ -196,34 +196,20 @@ async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
 }
 
 async function getDVPData(width: number, height: number, depth: number): Promise<DVPData> {
-    const lines = [3, 4, 5, 6, 7, 8];
-    const dvpLayers = lines.map(l => ({ width: Math.round((height - 30 - 2 * (l - 1)) / l), count: l }));
-    const service = new SpecificationService(specServiceProvider);
-    const result = await service.getDVPTemplates();
-    if (!result.success) return { dvpWidth: 0, dvpLength: 0, dvpRealWidth: 0, dvpRealLength: 0, dvpCount: 0, dvpPlanka: 0, dvpPlankaCount: 0 };
-    if (!result.data) return { dvpWidth: 0, dvpLength: 0, dvpRealWidth: 0, dvpRealLength: 0, dvpCount: 0, dvpPlanka: 0, dvpPlankaCount: 0 };
-    const dvpTemplates592 = result.data.filter(d => d.width === 592).map(i => i.length);
-    const dvpTemplates393 = result.data.filter(d => d.width === 393).map(i => i.length);
-    const found = dvpLayers.find(d => d.width <= depth) || { count: 1, width: height };
+    let dvpRealWidth
+    let dvpCount = 0
+    do {
+        dvpCount++
+        dvpRealWidth = Math.round((height - 30 - 2 * (dvpCount - 1)) / dvpCount)
+    } while (dvpRealWidth > depth)
     const section = width > 2750 ? 2 : 1;
     const roof = width / section;
-    const dvpRealWidth = found.width;
     const dvpRealLength = roof - 3;
-    const length592 = dvpTemplates592.find(t => t >= dvpRealLength);
-    const length393 = dvpTemplates393.find(t => t >= dvpRealLength);
-    let dvpWidth;
-    let dvpLength;
-    if (found.width <= 393 && length393) {
-        dvpWidth = 393;
-        dvpLength = length393;
-    } else {
-        dvpWidth = 592;
-        dvpLength = length592 || 0;
-    }
-    const dvpCount = found.count * section;
+    const service = new SpecificationService(specServiceProvider);
+    const data = (await service.getDVPTemplates()).data || [{ width: 0, length: 0 }];
+    const { width: dvpWidth, length: dvpLength } = data.filter(d => d.width >= dvpRealWidth && d.length >= dvpRealLength).sort((i1, i2) => ((i1.width - dvpRealWidth) + (i1.length - dvpRealLength)) < ((i2.width - dvpRealWidth) + (i2.length - dvpRealLength)) ? -1 : 1)[0]
     const dvpPlanka = roof - 32;
     const dvpPlankaCount = section === 1 ? (dvpCount - 1) : (dvpCount / 2 - 1) * 2;
-
     return { dvpWidth, dvpLength, dvpRealWidth, dvpRealLength, dvpCount, dvpPlanka, dvpPlankaCount };
 }
 

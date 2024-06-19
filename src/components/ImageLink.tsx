@@ -17,7 +17,7 @@ export default function ImageLink({ title, caption, icon, link, disabled = false
         let className = disabled ? "button-disabled" : "button"
         className += pressed ? " button-down" : " button-up";
         className += " " + classes
-        const { onMouseOver, onMouseLeave } = useToolTip(title);
+        const { onMouseOver, onMouseLeave } = useToolTip(caption ? "" : title);
         return <Link
                 to={link}
                 style={{ visibility: visible ? "visible" : "hidden" }}

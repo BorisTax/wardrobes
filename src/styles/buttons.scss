@@ -1,4 +1,4 @@
-@import "./App.scss";
+@import "./vars.scss";
 
 .user-logout-button:hover{
   color: blue;
@@ -74,7 +74,7 @@
 
 .separator {
   align-self: stretch;
-  width: 1px;
+  height: 1px;
   box-sizing: border-box;
   border: 1px solid black;
 }
@@ -239,6 +239,14 @@ $header_button_height: 32px;
 }
 .downloadButton {
   background-image: url($icon-url+'download.png');
+  @include header_button();
+}
+.combiButton {
+  background-image: url($icon-url+'combi.png');
+  @include header_button();
+}
+.wardrobeButton {
+  background-image: url($icon-url+'wardrobe.png');
   @include header_button();
 }
 

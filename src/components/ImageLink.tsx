@@ -21,12 +21,16 @@ export default function ImageLink({ title, icon, link, disabled = false, visible
         return <Link
                 to={link}
                 style={{ visibility: visible ? "visible" : "hidden" }}
-                className={`${className} ${icon} noselect`}
-                onMouseDown={() => { setPressed(true) }}
-                onMouseUp={() => { setPressed(false) }}
-                onMouseOver={(e) => { onMouseOver(e, { disabled }) }}
-                onMouseLeave={() => { setPressed(false); onMouseLeave() }}
-                onContextMenu={(e) => { e.preventDefault(); }}
         >
+                <div className='data-navbar-button'>
+                        <div className={`${className} ${icon} noselect`}
+                                onMouseDown={() => { setPressed(true) }}
+                                onMouseUp={() => { setPressed(false) }}
+                                onMouseOver={(e) => { onMouseOver(e, { disabled }) }}
+                                onMouseLeave={() => { setPressed(false); onMouseLeave() }}
+                                onContextMenu={(e) => { e.preventDefault(); }}>
+                        </div>
+                        <div className='data-navbar-button-title'>{title}</div>
+                </div>
         </Link>
 }

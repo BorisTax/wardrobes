@@ -1,4 +1,4 @@
-@import "./App.scss";
+@import "./vars.scss";
 
 .main-container {
   -background: linear-gradient(45deg, #88dffae1, #96e0f3de);
@@ -22,6 +22,31 @@
   gap: 1em;
   padding: 0.8em;
 }
+
+.data-navbar{
+  position: sticky;
+  top: 0px;
+  border: 1px solid black;
+  padding: 0.5rem;
+}
+.data-navbar-button{
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+ 
+}
+.data-navbar-button-title{
+  text-decoration: none !important;
+}
+@media (max-width: 1200px) {
+
+  .data-navbar-button-title{
+    display: none;
+  }
+}
+
+
 .status-bar{
   font-size: 0.8rem;
   display: flex;

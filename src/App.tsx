@@ -7,6 +7,7 @@ import './styles/messages.scss'
 import './styles/inputs.scss'
 import './styles/templates.scss'
 import './styles/tables.scss'
+import './styles/navbar.scss'
 import Header from './components/Header'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/dialogs/LoginDialog'
@@ -40,6 +41,7 @@ import { loadSpecificationListAtom } from './atoms/specification'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { loadUplotnitelListAtom } from './atoms/materials/uplotnitel'
 import { loadInitialWardrobeDataAtom } from './atoms/wardrobe'
+import NavBar from './components/NavBar'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -99,17 +101,18 @@ function App() {
     <>
       <BrowserRouter>
       <Header />
-      <div className="main-container">
-            <Routes>
-              <Route path="/" element={<Select />}></Route>
-              <Route path="/combi" element={<CombiFasades />} />
-              <Route path="/calculator" element={<WardrobeCalculator /> } />
-              <Route path="/combi/schema" element={<SchemaDialog /> } />
-              <Route path="/specification" element={<EditSpecificationDialog /> } />
-              <Route path="/materials" element={<EditMaterialDialog /> } />
-              <Route path="/pricelist" element={<EditPriceDialog /> } />
-              <Route path="/users" element={<EditUsersDialog /> } />
-             </Routes>
+      <div className='d-flex flex-nowrap'>
+        <NavBar />
+              <Routes>
+                <Route path="/" element={<Select />}></Route>
+                <Route path="/combi" element={<CombiFasades />} />
+                <Route path="/calculator" element={<WardrobeCalculator /> } />
+                <Route path="/combi/schema" element={<SchemaDialog /> } />
+                <Route path="/specification" element={<EditSpecificationDialog /> } />
+                <Route path="/materials" element={<EditMaterialDialog /> } />
+                <Route path="/pricelist" element={<EditPriceDialog /> } />
+                <Route path="/users" element={<EditUsersDialog /> } />
+               </Routes>
       </div>
       </BrowserRouter>
       <SpecificationDialog />
@@ -132,7 +135,7 @@ function Select(){
     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "stretch" }}>
       <Link to="combi">
         <div style={{display: "flex", flexDirection:"column", justifyContent:"flex-end", border: "1px solid", borderRadius: "5px", padding: "2em", height:"100%"}}>
-          <div className='d-flex flex-no-wrap gap-1 justify-content-center'>
+          <div className='d-flex flex-nowrap gap-1 justify-content-center'>
             <div className='combi1'></div>
             <div className='combi2'></div>
             <div className='combi3'></div>
@@ -143,7 +146,7 @@ function Select(){
       <br/>
       <Link to="calculator">
         <div style={{display: "flex", flexDirection:"column", justifyContent:"flex-end", border: "1px solid", borderRadius: "5px", padding: "2em", height:"100%"}}>
-        <div className='d-flex flex-no-wrap gap-1 justify-content-center'>
+        <div className='d-flex flex-nowrap gap-1 justify-content-center'>
             <div className='wardrobe'></div>
           </div>
           <div>Калькулятор шкафов</div>

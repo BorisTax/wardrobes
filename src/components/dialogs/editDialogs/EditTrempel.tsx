@@ -5,7 +5,7 @@ import { trempelListAtom, updateTrempelAtom } from "../../../atoms/materials/tre
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
-import Container from "../../Container"
+import EditContainer from "../../EditContainer"
 
 export default function EditTrempel() {
     const trempelNoSortedList = useAtomValue(trempelListAtom)
@@ -22,7 +22,7 @@ export default function EditTrempel() {
     useEffect(() => {
         setSelectedIndex(0)
     }, [trempelNoSortedList])
-    return <Container>
+    return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
             onUpdate={async (checked, values) => {
@@ -32,5 +32,5 @@ export default function EditTrempel() {
                 return result
             }}
         />
-    </Container>
+    </EditContainer>
 }

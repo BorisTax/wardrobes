@@ -9,7 +9,7 @@ import { brushListAtom } from "../../../atoms/materials/brush"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
-import Container from "../../Container"
+import EditContainer from "../../EditContainer"
 
 export default function EditProfile() {
     const profileAllList = useAtomValue(profileListAtom)
@@ -29,7 +29,7 @@ export default function EditProfile() {
         { caption: "Код:", value: profile.code, message: "Введите код", type: InputType.TEXT },
         { caption: "Щетка:", value: profile.brush, list: brushList, message: "Выберите щетку", type: InputType.LIST },
     ]
-    return <Container>
+    return <EditContainer>
         <div>
             <div className="d-flex flex-nowrap gap-2 align-items-start">
                 <ComboBox title="Тип: " value={type || ""} items={Profiles} onChange={(_, value: string) => { setState({ type: value as ProfileType, profileIndex: 0 }); }} />
@@ -58,5 +58,5 @@ export default function EditProfile() {
                 const result = await addProfile({ name, type, code, brush })
                 return result
             }} />
-    </Container>
+    </EditContainer>
 }

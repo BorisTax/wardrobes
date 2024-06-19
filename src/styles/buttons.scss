@@ -46,6 +46,15 @@
   opacity: 50%;
 }
 
+.image-button{
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  padding: 0.2rem;
+}
+.image-button:hover{
+  background-color: $hoverColor;
+}
 .image-text-button {
   display: flex;
   flex-wrap: nowrap;
@@ -313,32 +322,14 @@ $header_button_height: 32px;
   @include instruments_button();
 }
 
-@mixin combi{
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 100px;
-  height: 258px;
-  -padding-top: 66.64%;
-}
-.combi1 {
-  @include combi;
-  background-image: url($image-url+'combi1.png');
-}
 
-.combi2 {
-  @include combi;
-  background-image: url($image-url+'combi2.png');
+.image{
+  width: 500px;
+  height: 500px;
 }
-
-.combi3 {
-  @include combi;
-  background-image: url($image-url+'combi3.png');
+@media (max-width: 960px){
+.image{
+  width: 50%;
+  height: auto;
 }
-
-.wardrobe{
-  background-image: url($image-url+'wardrobe.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 200px;
-  height: 250px;
 }

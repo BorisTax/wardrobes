@@ -25,8 +25,7 @@
 .data-navbar-button-title:hover{
     -background-color: $hoverColor;
 }
-@media (max-width: 1200px) {
-
+@media (max-width: 768px) {
   .data-navbar-button-title{
     display: none;
   }

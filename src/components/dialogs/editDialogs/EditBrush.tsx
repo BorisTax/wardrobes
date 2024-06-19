@@ -6,7 +6,7 @@ import messages from "../../../server/messages"
 import { InputType } from "../../../types/property"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
-import Container from "../../Container"
+import EditContainer from "../../EditContainer"
 
 export default function EditBrush() {
     const brushNoSortedList = useAtomValue(brushListAtom)
@@ -25,7 +25,7 @@ export default function EditBrush() {
     useEffect(() => {
         setSelectedIndex(0)
     }, [brushList])
-    return <Container>
+    return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
             onUpdate={async (checked, values) => {
@@ -47,5 +47,5 @@ export default function EditBrush() {
                 const result = await addBrush({ name, code })
                 return result
             }} />
-    </Container>
+    </EditContainer>
 }

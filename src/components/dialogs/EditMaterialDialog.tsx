@@ -13,9 +13,8 @@ export default function EditMaterialDialog() {
     const [group, setGroup] = useState<MaterialGroup>(MaterialGroup.PLATE)
     const header = [...MaterialGroupCaptions.entries()].map((item, index) => <div key={index} className={(group === item[0] ? "tab-button-active" : "tab-button-inactive")} onClick={() => { setGroup(item[0] as MaterialGroup) }} role="button">{item[1]}</div>)
     const content = getGroup(group)
-    return <div>
+    return <div className="p-2">
         <div className="d-flex justify-content-center gap-1">{header}</div>
-        <br />
         {content}
     </div>
 }

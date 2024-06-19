@@ -1,7 +1,7 @@
 @import "./vars.scss";
 
 .main-container {
-  -background: linear-gradient(45deg, #88dffae1, #96e0f3de);
+  flex: 1;
   min-height: 100svh;
 }
 .header {
@@ -21,29 +21,6 @@
   align-items: center;
   gap: 1em;
   padding: 0.8em;
-}
-
-.data-navbar{
-  position: sticky;
-  top: 0px;
-  border: 1px solid black;
-  padding: 0.5rem;
-}
-.data-navbar-button{
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 0.5rem;
- 
-}
-.data-navbar-button-title{
-  text-decoration: none !important;
-}
-@media (max-width: 1200px) {
-
-  .data-navbar-button-title{
-    display: none;
-  }
 }
 
 

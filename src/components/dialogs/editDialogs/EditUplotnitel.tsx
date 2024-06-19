@@ -2,13 +2,11 @@ import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { Uplotnitel } from "../../../types/materials"
 import messages from "../../../server/messages"
-import { materialListAtom } from "../../../atoms/materials/materials"
-import { FasadMaterial } from "../../../types/enums"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
-import Container from "../../Container"
 import { addUplotnitelAtom, deleteUplotnitelAtom, updateUplotnitelAtom, uplotnitelListAtom } from "../../../atoms/materials/uplotnitel"
+import EditContainer from "../../EditContainer"
 
 export default function EditUplotnitel() {
     const noSortedList = useAtomValue(uplotnitelListAtom)
@@ -27,7 +25,7 @@ export default function EditUplotnitel() {
     useEffect(() => {
         setSelectedIndex(0)
     }, [noSortedList])
-    return <Container>
+    return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
             onUpdate={async (checked, values) => {
@@ -48,5 +46,5 @@ export default function EditUplotnitel() {
                 const result = await addUplotnitel({ name, code })
                 return result
             }} />
-    </Container>
+    </EditContainer>
 }

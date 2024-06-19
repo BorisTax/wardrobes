@@ -445,11 +445,11 @@ async function calcProfileHor(fasad: Fasad, profile: Profile, top: boolean): Pro
     const itemStandart = top ? SpecificationItem.ProfileHorTopStandart : SpecificationItem.ProfileHorBottomStandart
     const itemBavaria = top ? SpecificationItem.ProfileHorTopBavaria : SpecificationItem.ProfileHorBottomBavaria
     const coef = await getCoef(profile.type === ProfileType.STANDART ? itemStandart : itemBavaria)
-    const width = (fasad.Width - 13) / 1000
-    const result = width * coef
+    const width = fasad.Width - 13
+    const result = (width / 1000) * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
-    const verbose = [['Ширина фасада', '', '']]
-    verbose.push([`(${fasad.Width} - 13) =`, `${width.toFixed(3)}м`, coefString])
+    const verbose = [['Длина', '', '']]
+    verbose.push([`(${fasad.Width} - 13) = ${width}`, `${(width / 1000).toFixed(3)}м`, coefString])
     return [{ data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose }]
 }
 

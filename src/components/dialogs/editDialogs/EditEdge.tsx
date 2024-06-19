@@ -8,7 +8,7 @@ import { FasadMaterial } from "../../../types/enums"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
-import Container from "../../Container"
+import EditContainer from "../../EditContainer"
 
 export default function EditEdge() {
     const edgeNotSortedList = useAtomValue(edgeListAtom)
@@ -27,7 +27,7 @@ export default function EditEdge() {
         { caption: "Код:", value: code, message: "Введите код", type: InputType.TEXT },
         { caption: "Соответствие ДСП:", value: dsp, list: mList, message: "Выберите ДСП", type: InputType.LIST },
     ]
-    return <Container>
+    return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={edgeList[selectedIndex].name} items={editItems}
             onUpdate={async (checked, values) => {
@@ -52,7 +52,7 @@ export default function EditEdge() {
                 return result
             }} />
 
-    </Container>
+    </EditContainer>
 }
 
 

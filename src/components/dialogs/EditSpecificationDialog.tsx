@@ -9,18 +9,15 @@ import { loadSpecificationListAtom, specificationDataAtom, updateSpecificationLi
 import TableData from "../TableData"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { InputType, PropertyType } from "../../types/property"
-import Container from "../Container"
+import EditContainer from "../EditContainer"
 
 export default function EditSpecificationDialog() {
-    const [loading, setLoading] = useState(false)
     const loadSpecList = useSetAtom(loadSpecificationListAtom)
     const specList = useAtomValue(specificationDataAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const def = { name: "", caption: "", coef: 1, price: "", code: "", id: "", markup: "" }
     const { name, caption, coef, code, id } = (specList && specList[selectedIndex]) ? ({ ...(specList[selectedIndex] || def) }) : def
     const updateSpecList = useSetAtom(updateSpecificationListAtom)
-    const showMessage = useMessage()
-    const showConfirm = useConfirm()
     const heads = ['Наименование', 'Ед', 'Коэф-т', 'Код', 'Идентификатор']
     const contents = specList.map((i: SpecificationData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.coef}`, i.code || "", i.id || ""])
     const editItems: EditDataItem[] = [
@@ -32,7 +29,7 @@ export default function EditSpecificationDialog() {
     useEffect(() => {
         loadSpecList()
     }, [])
-    return <Container>
+    return <EditContainer>
                 <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
                 <EditDataSection items={editItems} onUpdate={async (checked, values) => {
                     const data: SpecificationData = { name: specList[selectedIndex].name }
@@ -43,6 +40,6 @@ export default function EditSpecificationDialog() {
                     const result = await updateSpecList(data)
                     return result
                 }} />
-            </Container>
+            </EditContainer>
  
 }

@@ -40,9 +40,9 @@ export default function SchemaDialog() {
             if (viewRef.current) viewRef.current.style.height = height - padding * 2 + "px"
         }
     }, [rerender])
-    return <div>
+    return <div className='p-2'>
             <div>
-                <ImageButton icon="pdf" title="Сохранить в PDF" onClick={() => {
+                <ImageButton icon="pdf" title="Сохранить в PDF" caption="Сохранить в PDF" onClick={() => {
                     html2image.toPng(sheetRef.current as HTMLDivElement)
                         .then(function (dataUrl) {
                             const doc = new jsPDF({ orientation: "landscape" });
@@ -50,7 +50,7 @@ export default function SchemaDialog() {
                             doc.save('Схема.pdf');
                         });
                 }} />
-                <ImageButton icon="png" title="Сохранить как изображение" onClick={() => {
+            <ImageButton icon="png" title="Сохранить как изображение" caption="Сохранить как изображение" onClick={() => {
                     html2image.toPng(sheetRef.current as HTMLDivElement)
                         .then(function (dataUrl) {
                             download(dataUrl, 'Схема.png');

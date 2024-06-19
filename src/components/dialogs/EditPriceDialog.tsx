@@ -8,7 +8,7 @@ import { UnitCaptions } from "../../functions/materials"
 import TableData from "../TableData"
 import { SpecificationItem } from "../../types/specification"
 import { InputType, PropertyType } from "../../types/property"
-import Container from "../Container"
+import EditContainer from "../EditContainer"
 type ExtPriceData = PriceData & { units: string, caption: string }
 export default function EditPriceDialog() {
     const loadPriceList = useSetAtom(loadPriceListAtom)
@@ -29,7 +29,7 @@ export default function EditPriceDialog() {
     useEffect(() => {
         loadPriceList()
     }, [])
-    return <Container>
+    return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
         <EditDataSection items={editItems} onUpdate={async (checked, values) => {
             const data: PriceData = { name: name as SpecificationItem }
@@ -38,5 +38,5 @@ export default function EditPriceDialog() {
             const result = await updatePriceList(data)
             return result
         }} />
-    </Container>
+    </EditContainer>
 }

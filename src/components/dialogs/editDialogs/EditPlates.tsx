@@ -10,7 +10,7 @@ import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
-import Container from "../../Container"
+import EditContainer from "../../EditContainer"
 
 export default function EditPlates() {
     const materialList = useAtomValue(materialListAtom)
@@ -29,7 +29,7 @@ export default function EditPlates() {
         { caption: "Назначение:", value: extMaterial.purpose || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
         { caption: "Изображение:", value: extMaterial.image || "", message: "Выберите изображение", type: InputType.FILE },
     ]
-    return <Container>
+    return <EditContainer>
         <div>
             <div className="d-flex flex-nowrap gap-2 align-items-start">
                 <ComboBox title="Материал: " value={baseMaterial} items={Materials} onChange={(_, value: string) => { setState((prev) => ({ ...prev, baseMaterial: getFasadMaterial(value), extMaterialIndex: 0 })); }} />
@@ -60,5 +60,5 @@ export default function EditPlates() {
                 const result = await addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file)
                 return result
             }} />
-    </Container>
+    </EditContainer>
 }

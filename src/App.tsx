@@ -8,6 +8,9 @@ import './styles/inputs.scss'
 import './styles/templates.scss'
 import './styles/tables.scss'
 import './styles/navbar.scss'
+import combi from './images/combi.png';
+import wardrobe from './images/wardrobe.png';
+
 import Header from './components/Header'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/dialogs/LoginDialog'
@@ -134,24 +137,18 @@ function Select(){
   return <div style={{fontSize: "1.5em", height: "100%", display: "flex", flexDirection: "column"}}>
     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "stretch" }}>
       <Link to="combi">
-        <div style={{display: "flex", flexDirection:"column", justifyContent:"flex-end", border: "1px solid", borderRadius: "5px", padding: "2em", height:"100%"}}>
-          <div className='d-flex flex-nowrap gap-1 justify-content-center'>
-            <div className='combi1'></div>
-            <div className='combi2'></div>
-            <div className='combi3'></div>
-          </div>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end",alignItems:"center", border: "1px solid", borderRadius: "5px", padding: "2em", height: "100%" }}>
+          <img className='image' src={combi}/>
           <div>Калькулятор комби фасадов</div>
-          </div>
-        </Link>
-      <br/>
+        </div>
+      </Link>
+      <br />
       <Link to="calculator">
-        <div style={{display: "flex", flexDirection:"column", justifyContent:"flex-end", border: "1px solid", borderRadius: "5px", padding: "2em", height:"100%"}}>
-        <div className='d-flex flex-nowrap gap-1 justify-content-center'>
-            <div className='wardrobe'></div>
-          </div>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", alignItems:"center", border: "1px solid", borderRadius: "5px", padding: "2em", height: "100%" }}>
+          <img className='image' src={wardrobe} />
           <div>Калькулятор шкафов</div>
-          </div>
-        </Link>
+        </div>
+      </Link>
     </div>
   </div>
 }

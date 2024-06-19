@@ -12,7 +12,7 @@ type ImageLinkProps = {
         classes?: string
 }
 
-export default function ImageLink({ title, icon, link, disabled = false, visible = true, classes = "" }: ImageLinkProps) {
+export default function ImageLink({ title, caption, icon, link, disabled = false, visible = true, classes = "" }: ImageLinkProps) {
         const [pressed, setPressed] = useState(false)
         let className = disabled ? "button-disabled" : "button"
         className += pressed ? " button-down" : " button-up";
@@ -30,7 +30,7 @@ export default function ImageLink({ title, icon, link, disabled = false, visible
                                 onMouseLeave={() => { setPressed(false); onMouseLeave() }}
                                 onContextMenu={(e) => { e.preventDefault(); }}>
                         </div>
-                        <div className='data-navbar-button-title'>{title}</div>
+                        <div className='data-navbar-button-title'>{caption}</div>
                 </div>
         </Link>
 }

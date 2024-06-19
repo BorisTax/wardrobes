@@ -8,7 +8,7 @@ import { FasadMaterial } from "../../../types/enums"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
-import Container from "../../Container"
+import EditContainer from "../../EditContainer"
 
 export default function EditZaglushka() {
     const zaglushkaNoSortedList = useAtomValue(zaglushkaListAtom)
@@ -30,7 +30,7 @@ export default function EditZaglushka() {
     useEffect(() => {
         setSelectedIndex(0)
     }, [zaglushkaList])
-    return <Container>
+    return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
             onUpdate={async (checked, values) => {
@@ -54,5 +54,5 @@ export default function EditZaglushka() {
                 const result = await addZaglushka({ name, dsp, code })
                 return result
             }} />
-    </Container>
+    </EditContainer>
 }

@@ -13,30 +13,9 @@ export type RequestBody = {
     password?: string
 }
 export interface MyRequest extends Request {
-    userRole?: string
-    files?: { image: { path: string } }
+    userRole: string
     token?: string
 }
-export type User = {
-    name: string
-    role: string
-    password: string
-}
-export enum UserRoles {
-    ADMIN = 'ADMIN',
-    EDITOR = 'EDITOR',
-    MANAGER = 'MANAGER',
-    CLIENT = 'CLIENT',
-    ANONYM = 'ANONYM'
-}
-export type ActiveUser = {
-    name: string
-    role: string
-    token: string
-    time: number
-    lastActionTime: number
-}
-
 export enum TableFields {
     NAME = 'name',
     DATA = 'data',

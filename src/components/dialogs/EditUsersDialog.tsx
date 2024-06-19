@@ -6,7 +6,7 @@ import ImageButton from "../ImageButton"
 import { UserRolesCaptions, activeUsersAtom, allUsersAtom, deleteUserAtom, loadActiveUsersAtom, loadUsersAtom, logoutUserAtom, userAtom } from "../../atoms/users"
 import { timeToString } from "../../functions/user"
 import AddUserDialog from "./AddUserDialog"
-import { UserRoles } from "../../types/server"
+import { UserRoles } from "../../types/user"
 import { AtomCallbackResult } from "../../types/atoms"
 import { rusMessages } from "../../functions/messages"
 

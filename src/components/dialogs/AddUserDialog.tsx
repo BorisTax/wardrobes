@@ -5,7 +5,7 @@ import useConfirm from "../../custom-hooks/useConfirm"
 import ImageButton from "../ImageButton"
 import ComboBox from "../ComboBox"
 import { UserRolesCaptions, createUserAtom } from "../../atoms/users"
-import { UserRoles } from "../../types/server"
+import { UserRoles } from "../../types/user"
 import { rusMessages } from "../../functions/messages"
 type DialogProps = {
     dialogRef: React.RefObject<HTMLDialogElement>

@@ -3,7 +3,8 @@ import bcrypt from "bcrypt";
 import sqlite3 from "sqlite3";
 import messages from '../messages.js';
 import { Response } from "express"
-import { MyRequest, Result, UserRoles } from '../../types/server.js';
+import { MyRequest, Result } from '../../types/server.js';
+import { UserRoles } from "../../types/user.js";
 
 export enum MAT_TABLE_NAMES {
     MATERIALS = 'materials',
@@ -30,7 +31,11 @@ export enum SPEC_TABLE_NAMES {
 export enum USER_TABLE_NAMES {
     USERS = 'users',
     USERROLES = 'userroles',
-    TOKENS = 'tokens'
+    TOKENS = 'tokens',
+    ROLES = 'roles',
+    RESOURCES = 'resources',
+    PERMISSIONS = 'permissions',
+    USER_ROLES = 'user_roles',
 }
 export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
     return new Promise((resolve) => {

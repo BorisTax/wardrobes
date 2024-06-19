@@ -1,9 +1,11 @@
 import { dataBaseQuery, hashData } from '../functions/other.js'
 import { IUserServiceProvider } from '../../types/services.js';
-import { Result, Token, User } from '../../types/server.js';
+import { Result, Token } from '../../types/server.js';
+import { User } from "../../types/user.js";
 import messages from '../messages.js';
 import { USER_TABLE_NAMES } from '../functions/other.js';
-const { USERS, TOKENS } = USER_TABLE_NAMES
+import { Permissions, RESOURCE, UserRole } from '../../types/user.js';
+const { USERS, TOKENS, PERMISSIONS, USER_ROLES} = USER_TABLE_NAMES
 export default class UserServiceSQLite implements IUserServiceProvider {
     dbFile: string;
     constructor(dbFile: string) {
@@ -29,12 +31,25 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         return dataBaseQuery(this.dbFile, `DELETE FROM ${TOKENS}`, {successStatusCode: 200})
     }
 
-    async registerUser(user: User): Promise<Result<null>> {
-        const result = await hashData(user.password);
-        return dataBaseQuery<null>(this.dbFile, `INSERT INTO ${USERS} (name, role, password) VALUES('${user.name}', '${user.role}', '${result.data}')`, {successStatusCode: 201, successMessage: messages.USER_ADDED})
+    async registerUser(userName: string, password: string): Promise<Result<null>> {
+        const result = await hashData(password);
+        return dataBaseQuery<null>(this.dbFile, `INSERT INTO ${USERS} (name, password) VALUES('${userName}', '${result.data}')`, {successStatusCode: 201, successMessage: messages.USER_ADDED})
     }
 
     async deleteUser(user: User): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM ${USERS} where name='${user.name}';`, {successStatusCode: 200, successMessage: messages.USER_DELETED})
+    }
+
+    async getPermissions(role: string, resource: RESOURCE): Promise<Permissions>{
+        const result = await dataBaseQuery(this.dbFile, `SELECT FROM ${PERMISSIONS} where role='${role}' and resource='${resource}';`, { successStatusCode: 200 })
+        return (result.data as Permissions[])[0] || { create: false, delete: false, read: false, update: false }
+    }
+    async getAllUserPermissions(role: string): Promise<[RESOURCE, Permissions][]>{
+        const result = await dataBaseQuery(this.dbFile, `SELECT FROM ${PERMISSIONS} where role='${role}';`, {successStatusCode: 200})
+        return result.data as [RESOURCE, Permissions][] || []
+    }
+    async getUserRole(username: string) : Promise<UserRole>{
+        const result = await dataBaseQuery(this.dbFile, `SELECT FROM ${USER_ROLES} where user='${username}';`, {successStatusCode: 200})
+        return (result?.data as UserRole[])[0] || { name: "", caption: "" }
     }
 }

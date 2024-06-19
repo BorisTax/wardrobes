@@ -4,7 +4,8 @@ import archiver from 'archiver'
 import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/other.js';
-import { MyRequest, Result, UserRoles } from '../../types/server.js';
+import { MyRequest, Result } from '../../types/server.js';
+import { UserRoles } from "../../types/user.js";
 import { isAdminAtLeast } from '../functions/user.js';
 import { databaseFolder, databaseZipFile } from '../options.js';
 

@@ -1,6 +1,7 @@
 import express from "express";
 import { accessDenied } from '../functions/other.js';
-import { MyRequest, Result, UserRoles } from '../../types/server.js';
+import { MyRequest, Result } from '../../types/server.js';
+import { UserRoles } from "../../types/user.js";
 import { materialServiceProvider, specificationPath } from '../options.js';
 import { isManagerAtLeast } from '../functions/user.js';
 import { CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from '../../types/wardrobe.js';

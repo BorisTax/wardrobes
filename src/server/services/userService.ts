@@ -1,9 +1,11 @@
 import EventEmitter from 'events'
-import { Result, Token, User } from '../../types/server.js'
+import { Result, Token } from '../../types/server.js'
+import { User } from "../../types/user.js"
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
 import { SERVER_EVENTS } from "../../types/enums.js"
+import { Permissions, RESOURCE, UserRole } from '../../types/user.js'
 
 export const activeTokens: { tokenList: Token[] } = { tokenList: [] }
 export const events: Map<string, EventEmitter> = new Map()
@@ -85,10 +87,10 @@ export class UserService implements IUserService {
     if (result.success) activeTokens.tokenList = []
     return result
   }
-  async registerUser(user: User) {
-    const result = await this.isUserNameExist(user.name)
+  async registerUser(userName: string, password: string) {
+    const result = await this.isUserNameExist(userName)
     if (!result.success) return result
-    return this.provider.registerUser(user)
+    return this.provider.registerUser(userName, password)
   }
   async deleteUser(user: User) {
     const result = await this.provider.deleteUser(user)
@@ -106,6 +108,16 @@ export class UserService implements IUserService {
     const user = (userList as User[]).find(u => u.name === name)
     if (user) return { success: false, status: 409, message: messages.USER_NAME_EXIST }
     return { success: true, status: 200, message: messages.USER_NAME_ALLOWED }
+  }
+  async getPermissions(role: string, resource: RESOURCE): Promise<Permissions>{
+    return this.provider.getPermissions(role, resource)
+  }
+  async getAllUserPermissions(role: string): Promise<[RESOURCE, Permissions][]>{
+    return this.provider.getAllUserPermissions(role)
+}
+  async getUserRole(username: string): Promise<UserRole> {
+    const result = await this.provider.getUserRole(username)
+    return result
   }
 }
 

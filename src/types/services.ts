@@ -1,9 +1,11 @@
 import { SpecificationItem } from "./specification"
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
-import { SpecificationData, Result, Token, User, PriceData, ExtMaterialQuery } from "./server"
+import { SpecificationData, Result, Token, PriceData, ExtMaterialQuery } from "./server"
+import { User } from "./user"
 import { NewTemplate, Template } from "./templates"
 import { DETAIL_NAME, SpecificationMultiResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from "./schemas"
+import { Permissions, RESOURCE, UserRole } from "./user"
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User[]>>
     getTokens: () => Promise<Result<Token[]>>
@@ -11,8 +13,11 @@ interface IUserAbstractService {
     updateToken: (token: string, lastActionTime: number) => Promise<Result<null>>
     deleteToken: (token: string) => Promise<Result<null>>
     clearAllTokens: () => Promise<Result<null>>
-    registerUser: (user: User) => Promise<Result<null>>
+    registerUser: (userName: string, password: string) => Promise<Result<null>>
     deleteUser: (user: User) => Promise<Result<null>>
+    getPermissions: (role: string, resource: RESOURCE) => Promise<Permissions>
+    getAllUserPermissions: (role: string) => Promise<[RESOURCE, Permissions][]>
+    getUserRole: (username: string) => Promise<UserRole>
 }
 export interface IMaterialService {
     getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<ExtMaterial[]>>

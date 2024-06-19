@@ -1,7 +1,7 @@
 import { useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { loadActiveUsersAtom, standbyUserAtom, userAtom, verifyUserAtom } from "../atoms/users";
-import { UserRoles } from "../types/server";
+import { UserRoles } from "../types/user";
 import { waitForMessageFromServer } from "../functions/user";
 import useMessage from "../custom-hooks/useMessage";
 import { SERVER_EVENTS } from "../types/enums";

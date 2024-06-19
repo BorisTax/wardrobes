@@ -1,7 +1,8 @@
 import messages from '../messages.js'
 import express from "express";
 import { accessDenied, incorrectData, noExistData } from '../functions/other.js';
-import { MyRequest, PriceData, UserRoles } from '../../types/server.js';
+import { MyRequest, PriceData } from '../../types/server.js';
+import { UserRoles } from "../../types/user.js";
 import { priceServiceProvider } from '../options.js';
 import { PriceService } from '../services/priceService.js';
 import { isClientAtLeast, isEditorAtLeast } from '../functions/user.js';

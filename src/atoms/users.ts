@@ -1,10 +1,9 @@
 import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { UserRoles } from "../types/server"
+import { Permissions, RESOURCE, UserRoles } from "../types/user"
 import { loadPriceListAtom } from "./prices"
 import { AtomCallbackResult } from "../types/atoms"
-import { isClientAtLeast } from "../server/functions/user"
 
 export const UserRolesCaptions = {
     [UserRoles.ANONYM]: "",
@@ -16,8 +15,9 @@ export const UserRolesCaptions = {
 
 export type UserState = {
     name: string
-    role: UserRoles
+    role: string
     token: string
+    permissions: Map<RESOURCE, Permissions>
 }
 export type ActiveUserState = UserState & {
     time: number
@@ -27,8 +27,9 @@ export type ActiveUserState = UserState & {
 export const allUsersAtom = atom<UserState[]>([])
 export const activeUsersAtom = atom<ActiveUserState[]>([])
 export const loadUsersAtom = atom(null, async (get,set)=>{
-    const { token, role } = get(userAtom)
-    if (role !== UserRoles.ADMIN) return
+    const { token, permissions } = get(userAtom)
+    const perm = permissions.get(RESOURCE.USERS)
+    if (!perm?.read) return
     const result = await fetchGetData(`api/users/users?token=${token}`)
     if(result.success){
         set(allUsersAtom, result.data as UserState[])
@@ -43,13 +44,13 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
     }
 })
 
-export const userAtom = atom<UserState>({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+export const userAtom = atom<UserState>({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "", permissions: getInitialPermissions() })
 
 export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const { token } = get(userAtom)
         const result = await fetchGetData(`api/users/verify?token=${token}`)
         if (!result.success) {
-            set(userAtom, { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+            set(userAtom, { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "", permissions: getInitialPermissions() })
             return
         }
 })
@@ -61,20 +62,23 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
     if (verify) {
         const result = await fetchGetData(`api/users/verify?token=${token}`)
         if(!result.success){
-            set(userAtom, { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+            set(userAtom, { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "", permissions: getInitialPermissions()  })
             return
         }
     }
     let storeUser: UserState
+    let perm: Map<RESOURCE, Permissions> = new Map()
     try {
-        const { name, role } = jwtDecode(token) as UserState
-        storeUser = { name, role, token }
+        const { name, role, permissions } = jwtDecode(token) as UserState
+        storeUser = { name, role, token, permissions }
+        perm = new Map(permissions)
     } catch (e) {
-        storeUser = { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" }
+        storeUser = { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "", permissions: getInitialPermissions()  }
     }
     localStorage.setItem('token', storeUser.token)
+    const p = perm.get(RESOURCE.PRICES)
     set(userAtom, storeUser)
-    if (isClientAtLeast(storeUser.role)) set(loadPriceListAtom)
+    if (p?.read) set(loadPriceListAtom)
 })
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")
@@ -112,13 +116,21 @@ export function getInitialUser(): UserState {
         storeUser = {
             name: UserRoles.ANONYM,
             role: UserRoles.ANONYM,
-            token
+            token,
+            permissions: getInitialPermissions()
         }
     }
     const user = {
         name: UserRolesCaptions[storeUser.role as UserRoles],
         role: storeUser.role as UserRoles,
-        token
+        token,
+        permissions: new Map(storeUser.permissions)
     }
     return user
+}
+
+export function getInitialPermissions(): Map<RESOURCE, Permissions> {
+    const m = new Map<RESOURCE, Permissions>()
+    Object.keys(RESOURCE).forEach(k => m.set(k as RESOURCE, { create: false, update: false, read: false, remove: false }))
+    return m
 }

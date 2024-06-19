@@ -39,6 +39,7 @@ import SchemaDialog from './components/dialogs/SchemaDialog'
 import { loadSpecificationListAtom } from './atoms/specification'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { loadUplotnitelListAtom } from './atoms/materials/uplotnitel'
+import { loadInitialWardrobeDataAtom } from './atoms/wardrobe'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -63,6 +64,7 @@ function App() {
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
   const loadInitialAppState = useSetAtom(loadInitialStateAtom)
+  const loadInitialWardrobeData = useSetAtom(loadInitialWardrobeDataAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
     const storage = localStorage.getItem('appState')
@@ -77,6 +79,7 @@ function App() {
     loadZaglushkaList()
     loadUplotnitelList()
     loadInitialAppState()
+    loadInitialWardrobeData()
     loadVersion()
   }, [])
   useEffect(() => {
@@ -125,11 +128,27 @@ function App() {
 export default App
 
 function Select(){
-  return <div style={{height: "100%", display: "flex", flexDirection: "column"}}>
-    <div style={{display: "flex", justifyContent: "center", alignItems: "stretch"}}>
-      <Link to="combi"><div style={{fontSize: "2em", border: "1px solid", borderRadius: "5px", padding: "2em"}}>Калькулятор комби фасадов</div></Link>
+  return <div style={{fontSize: "1.5em", height: "100%", display: "flex", flexDirection: "column"}}>
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "stretch" }}>
+      <Link to="combi">
+        <div style={{display: "flex", flexDirection:"column", justifyContent:"flex-end", border: "1px solid", borderRadius: "5px", padding: "2em", height:"100%"}}>
+          <div className='d-flex flex-no-wrap gap-1 justify-content-center'>
+            <div className='combi1'></div>
+            <div className='combi2'></div>
+            <div className='combi3'></div>
+          </div>
+          <div>Калькулятор комби фасадов</div>
+          </div>
+        </Link>
       <br/>
-      <Link to="calculator"><div style={{fontSize: "2em", border: "1px solid", borderRadius: "5px", padding: "2em"}}>Калькулятор шкафов</div></Link>
+      <Link to="calculator">
+        <div style={{display: "flex", flexDirection:"column", justifyContent:"flex-end", border: "1px solid", borderRadius: "5px", padding: "2em", height:"100%"}}>
+        <div className='d-flex flex-no-wrap gap-1 justify-content-center'>
+            <div className='wardrobe'></div>
+          </div>
+          <div>Калькулятор шкафов</div>
+          </div>
+        </Link>
     </div>
   </div>
 }

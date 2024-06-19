@@ -175,9 +175,10 @@ async function getDVP(data: WardrobeData): Promise<FullData> {
     const coef = await getCoef(SpecificationItem.DVP);
     const area = dvp.dvpLength * dvp.dvpWidth * dvp.dvpCount / 1000000;
     const areaCoef = area * coef;
-    const verbose = [["", "", ""]];
-    verbose.push(["Расчетные размеры", `${dvp.dvpRealLength}x${dvp.dvpRealWidth} - ${dvp.dvpCount}шт`, ``]);
-    verbose.push(["Распиловочные размеры", `${dvp.dvpLength}x${dvp.dvpWidth} - ${dvp.dvpCount}шт`, `${area.toFixed(3)} x ${coef}= ${areaCoef.toFixed(3)}`]);
+    const verbose = [["", "Длина", "Ширина", "Кол-во", ""]];
+    const count = dvp.dvpCount
+    verbose.push(["Расчетные", `${dvp.dvpRealLength}`, `${dvp.dvpRealWidth} =((${data.height}-30-2x${count - 1})/${count})`, `${dvp.dvpCount}`, ``]);
+    verbose.push(["Распиловочные", `${dvp.dvpLength}`, `${dvp.dvpWidth}`, `${dvp.dvpCount}`, `${area.toFixed(3)} x ${coef}= ${areaCoef.toFixed(3)}`]);
     return { data: { amount: areaCoef, char: { code: "", caption: "" } }, verbose };
 }
 
@@ -185,10 +186,11 @@ async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
     const { width, height, depth } = data;
     const dvpData = await getDVPData(width, height, depth);
     const coef = await getCoef(SpecificationItem.Planka);
-    const verbose: VerboseData = [["Длина", "Кол-во", "Итого"]];
+    const verbose: VerboseData = [["Длина планки", "Кол-во", "Итого"]];
     const total = dvpData.dvpPlanka * dvpData.dvpPlankaCount / 1000;
+    const dvpLength = dvpData.dvpRealLength + 3
     const totalCoef = total * coef;
-    verbose.push([(dvpData.dvpPlanka / 1000).toFixed(3), dvpData.dvpPlankaCount, total.toFixed(3)]);
+    verbose.push([`${dvpData.dvpPlanka} = (${dvpLength}-32)`, dvpData.dvpPlankaCount, `${(dvpData.dvpPlanka / 1000).toFixed(3)} x ${dvpData.dvpPlankaCount} = ${total.toFixed(3)}`]);
     if (coef !== 1) verbose.push(["", "", `${total.toFixed(3)} x ${coef} = ${totalCoef.toFixed(3)}`]);
     return { data: { amount: totalCoef, char: { code: "", caption: "" } }, verbose };
 }
@@ -218,7 +220,7 @@ async function getDVPData(width: number, height: number, depth: number): Promise
         dvpWidth = 592;
         dvpLength = length592 || 0;
     }
-    const dvpCount = found.count;
+    const dvpCount = found.count * section;
     const dvpPlanka = roof - 32;
     const dvpPlankaCount = section === 1 ? (dvpCount - 1) : (dvpCount / 2 - 1) * 2;
 
@@ -232,7 +234,7 @@ async function getKarton(data: WardrobeData): Promise<FullData> {
     const caption = await getWardrobeKind(data.wardKind);
     const coef = await getCoef(SpecificationItem.Karton) || 1;
     const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0;
-    const verbose = [["Ширина", "Высота", "Глубина", "Кол-во"]];
+    const verbose = [["Ширина шкафа", "Высота шкафа", "Глубина шкафа", "Кол-во"]];
 
     list.forEach(item => {
         const active = isDataFit(width, height, depth, item);
@@ -247,7 +249,7 @@ async function getLegs(data: WardrobeData): Promise<FullData> {
     const list = (await service.getFurnitureTable({ kind: data.wardKind, item: SpecificationItem.Leg })).data || [];
     const caption = await getWardrobeKind(data.wardKind);
     const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0;
-    const verbose = [["Ширина", "Кол-во"]];
+    const verbose = [["Ширина шкафа", "Кол-во"]];
     list.forEach(item => {
         verbose.push([getFineRange(item.minwidth, item.maxwidth), `${item.count}`]);
     });
@@ -306,7 +308,7 @@ async function getNails(data: WardrobeData): Promise<FullData> {
     const list = (await service.getFurnitureTable({ kind: data.wardKind, item: SpecificationItem.Nails })).data || [];
     const caption = await getWardrobeKind(data.wardKind);
     const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0;
-    const verbose: VerboseData = [["Ширина", "Кол-во"]];
+    const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
     list.forEach(item => {
         const active = isDataFit(width, height, depth, item);
         if (active) verbose.push([getFineRange(item.minwidth, item.maxwidth), `${item.count}`]);

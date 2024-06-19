@@ -12,13 +12,12 @@ import { ConsoleTypes, WardKinds, WardTypes } from "../functions/wardrobe"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import { calculateSpecificationsAtom } from "../atoms/specification"
 import WardrobeSpecification from "./WardrobeSpecification"
-import { initFasades, loadInitialWardrobeDataAtom, loadedInitialWardrobeDataAtom, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
+import { initFasades, loadedInitialWardrobeDataAtom, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
 
 const numbers = [0, 1, 2, 3, 4, 5, 6]
 const styles = { fontStyle: "italic", color: "gray" }
 
 export default function WardrobeCalculator() {
-    const loadInitialWardrobeData = useSetAtom(loadInitialWardrobeDataAtom)
     const data = useAtomValue(wardrobeDataAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
     const calculate = useSetAtom(calculateSpecificationsAtom)
@@ -36,9 +35,6 @@ export default function WardrobeCalculator() {
     const { wardKind, wardType, width, depth, height, dspName, fasades, profileName, extComplect } = data
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const maxFasades = 6
-    useEffect(() => {
-        loadInitialWardrobeData()
-    }, [])
     useEffect(() => {
         if (loadedInitialWardrobeData) calculate(data)
     }, [data, loadedInitialWardrobeData])

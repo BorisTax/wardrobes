@@ -304,3 +304,33 @@ $header_button_height: 32px;
   background-size: 100% 100%;
   @include instruments_button();
 }
+
+@mixin combi{
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100px;
+  height: 258px;
+  -padding-top: 66.64%;
+}
+.combi1 {
+  @include combi;
+  background-image: url($image-url+'combi1.png');
+}
+
+.combi2 {
+  @include combi;
+  background-image: url($image-url+'combi2.png');
+}
+
+.combi3 {
+  @include combi;
+  background-image: url($image-url+'combi3.png');
+}
+
+.wardrobe{
+  background-image: url($image-url+'wardrobe.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 200px;
+  height: 250px;
+}

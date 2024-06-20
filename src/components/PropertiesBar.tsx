@@ -26,7 +26,7 @@ import { RESOURCE } from "../types/user"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 const directions: Map<string, string> = new Map()
 export default function PropertiesBar() {
-    const { role, permissions } = useAtomValue(userAtom)
+    const { permissions } = useAtomValue(userAtom)
     const permPrice = permissions.get(RESOURCE.PRICES)
     const permSpec = permissions.get(RESOURCE.SPECIFICATION)
     const permTemp = permissions.get(RESOURCE.TEMPLATE)

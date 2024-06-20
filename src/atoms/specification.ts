@@ -87,11 +87,10 @@ export const totalPriceAtom = atom((get) => {
     const specifications = get(specificationCombiAtom)
     const totalPrice = specifications.map(s => {
         let sum: number = 0
-        priceList.forEach(p => {
             s.forEach(sp => {
-                sum += sp[1].data.amount
+                const priceItem = priceList.find(pl => pl.name === sp[0]) || { price: 0, markup: 0, name: "" }
+                sum += sp[1].data.amount * (priceItem.price || 0) * (priceItem.markup || 0)
             })
-        })
         return sum
     })
     return totalPrice

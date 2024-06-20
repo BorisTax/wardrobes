@@ -54,8 +54,6 @@ export const coefListAtom = atom<Map<SpecificationItem, number>>((get) => {
 })
 
 export const calculateSpecificationsAtom = atom(null, async (get, set, data: WardrobeData) => {
-    const fasadCount = Object.values(data.fasades).reduce((a, f) => f.count + a, 0)
-    if (fasadCount === 1 || fasadCount > 6) return
     const { token } = get(userAtom)
     const formData: any = {}
     formData[TableFields.DATA] = data

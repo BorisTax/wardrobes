@@ -5,7 +5,7 @@ import { PriceData } from "../types/server"
 import { UnitCaptions } from "../functions/materials"
 import { MAT_PURPOSE } from "../types/enums"
 import { userAtom } from "../atoms/users"
-import { specificationDataAtom } from "../atoms/specification"
+import { specificationDataAtom, specificationInProgress } from "../atoms/specification"
 import { setVerboseDataAtom } from "../atoms/verbose"
 import { showVerboseDialogAtom } from "../atoms/dialogs"
 import { SpecificationResult, TotalData, VerboseData } from "../types/wardrobe"
@@ -17,7 +17,8 @@ type SpecificationTableProps = {
 }
 
 export default function SpecificationTable(props: SpecificationTableProps) {
-    const { role, permissions } = useAtomValue(userAtom)
+    const { permissions } = useAtomValue(userAtom)
+    const loading = useAtomValue(specificationInProgress)
     const permPrice =  permissions.get(RESOURCE.PRICES)
     const permSpec =  permissions.get(RESOURCE.SPECIFICATION)
     const specData = useAtomValue(specificationDataAtom)
@@ -58,7 +59,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             {permPrice?.read ? <td className="table-data-cell">{item.id || ""}</td> : <></>}
         </tr >
     })
-    return <div>
+    return <div className="specification-table">
         <div className="table-data">
             <table>
                 <thead>
@@ -82,7 +83,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             <input id="showAll" type="checkbox" checked={showAll} onChange={() => { setShowAll(!showAll) }} />
             <label htmlFor="showAll" >Показать все позиции</label>
         </div>
-
+        {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
     </div>
 }
 

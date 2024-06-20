@@ -6,7 +6,9 @@ table {
   border-collapse: collapse;
   background-color: $defaultBackColor;
 }
-
+.specification-table{
+  position: relative;
+}
 .table-data tr:hover {
   background-color: #88dffa;
 

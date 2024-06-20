@@ -1,4 +1,4 @@
-import { emptyFullData, getFasadCount, getSpecificationPattern } from "./fasades"
+import { correctFasadCount, emptyFullData, getFasadCount, getSpecificationPattern } from "./fasades"
 import { SpecificationItem } from "../../../types/specification"
 import { DETAIL_NAME, DVPData, Detail, FullData, VerboseData, WARDROBE_KIND, WardrobeDetailTable } from "../../../types/wardrobe"
 import { Edge, ExtMaterial, Profile, ProfileType, Zaglushka } from "../../../types/materials"
@@ -364,13 +364,14 @@ async function getGlue(data: WardrobeData): Promise<FullData> {
 
 async function getBrush(data: WardrobeData, profile: Profile, type: ProfileType): Promise<FullData> {
     if (profile.type !== type) return emptyFullData()[0]
+    const fasadCount = getFasadCount(data)
+    if(!correctFasadCount(fasadCount)) return emptyFullData()[0]
     const service = new MaterialExtService(new BrushServiceSQLite(materialsPath))
     const brushList = (await (service.getExtData())).data
     const brush = brushList && brushList.find(b => b.name === profile.brush) || { name: "", code: "" }
     const { code, name: caption } = brush
     const coef = await getCoef(type === ProfileType.STANDART ? SpecificationItem.Brush : SpecificationItem.BrushBavaria);
     const verbose = [["Высота стойки", "Кол-во фасадов", ""]]
-    const fasadCount = getFasadCount(data)
     const height = (data.height - 62)
     const result = height / 1000 * coef * fasadCount * 2
     verbose.push([`${data.height}-62=${height}`, `x ${fasadCount}`, `x 2 x ${coef}`, `=${result.toFixed(3)}м`])

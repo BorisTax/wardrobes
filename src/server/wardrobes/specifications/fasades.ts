@@ -14,10 +14,13 @@ import UplotnitelServiceSQLite from "../../services/extServices/uplotnitelServic
 export function getFasadCount(data: WardrobeData): number{
     return Object.values(data.fasades).reduce((a, f) => f.count + a, 0)
 }
-
+export function correctFasadCount(count: number): boolean{
+    return count > 1 && count < 7
+}
 export function createFasades(data: WardrobeData, profileType: ProfileType): Fasad[]{
     const fasades: Fasad[] = []
     const count = getFasadCount(data)
+    if (!correctFasadCount(count)) return fasades
     const width = getFasadWidth(data.width, count, data.wardType, profileType)
     const height = getFasadHeight(data.height, data.wardType, profileType)
     data.fasades.dsp.names.forEach(n => {

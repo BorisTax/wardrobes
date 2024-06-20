@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { UserService } from './services/userService.js'
 import { MyRequest, RequestBody } from '../types/server.js'
-import { Response, NextFunction } from "express"
+import { Response, NextFunction, Request } from "express"
 import UserServiceSQLite from './services/userServiceSQLite.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -26,15 +26,15 @@ export const priceServiceProvider = new PriceServiceSQLite(specificationPath)
 export const specServiceProvider = new SpecificationServiceSQLite(specificationPath)
 export const templateServiceProvider = new TemplateServiceSQLite(templatePath)
 
-export const userRoleParser = async (req: MyRequest, res: Response, next: NextFunction) => {
+export const userRoleParser = async (req: Request, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)
   let token = req.query.token as string
-  token = (req.body as RequestBody).token || token || ""
-  req.token = token
+  token = (req.body as RequestBody).token || token || "";
+  (req as MyRequest).token = token
   const user = await userService.getUser(token)
   if (user) {
-    const role = await userService.getUserRole(user?.name)
-    req.userRole = role.name
+    const role = await userService.getUserRole(user?.name);
+    (req as MyRequest).userRole = role
   }
   next()
 }

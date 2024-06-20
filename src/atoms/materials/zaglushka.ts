@@ -7,9 +7,10 @@ import messages from "../../server/messages";
 
 export const zaglushkaListAtom = atom<Zaglushka[]>([])
 
-export const loadZaglushkaListAtom = atom(null, async (_, set) => {
+export const loadZaglushkaListAtom = atom(null, async (get, set) => {
+    const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData('api/materials/zaglushka')
+        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/zaglushka?token=${token}`)
         if(result.success) set(zaglushkaListAtom, result.data as Zaglushka[]);
     } catch (e) { console.error(e) }
 })

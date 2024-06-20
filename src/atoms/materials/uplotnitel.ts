@@ -7,9 +7,10 @@ import messages from "../../server/messages";
 
 export const uplotnitelListAtom = atom<Uplotnitel[]>([])
 
-export const loadUplotnitelListAtom = atom(null, async (_, set) => {
+export const loadUplotnitelListAtom = atom(null, async (get, set) => {
+    const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData('api/materials/uplotnitel')
+        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/uplotnitel?token=${token}`)
         if (result.success) set(uplotnitelListAtom, result.data as Uplotnitel[]);
     } catch (e) { console.error(e) }
 })

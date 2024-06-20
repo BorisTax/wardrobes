@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { UserService, events, getTokens, logoutUser, notifyActiveUsers } from '../services/userService.js';
 import { accessDenied, hashData, incorrectData } from '../functions/other.js';
 import { MyRequest, Result, Token } from '../../types/server.js';
-import { ActiveUser, User } from "../../types/user.js";
+import { ActiveUser, PERMISSION, User } from "../../types/user.js";
 import { JWT_SECRET, userServiceProvider } from '../options.js';
 import EventEmitter from 'events';
 import { SERVER_EVENTS } from "../../types/enums.js";
@@ -66,20 +66,16 @@ router.post("/logout", async (req, res) => {
 });
 
 router.post("/logoutuser", async (req, res) => {
-  const userRole = (req as MyRequest).userRole as string;
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const { update } = (await userService.getPermissions(userRole, RESOURCE.USERS))
-  if (!update) return accessDenied(res)
   const user = req.body;
   const result = await userService.deleteToken(user.usertoken, () => { logoutUser(user.usertoken) })
   res.json(result);
 });
 
 router.get("/active", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { read } = (await userService.getPermissions(userRole, RESOURCE.USERS))
-  if (!read) return accessDenied(res)
   const result: Result<ActiveUser[]> = { success: true, status: 200, data: [] }
   const tokens = await getTokens();
   const users = await userService.getUsers();
@@ -87,17 +83,15 @@ router.get("/active", async (req, res) => {
     const user = (users.data as User[]).find((u: User) => u.name === t.username)
     if (user) {
       const userRole = await userService.getUserRole(user.name)
-      result.data?.push({ token: t.token, name: user.name, role: userRole.caption, time: t.time, lastActionTime: t.lastActionTime })
+      result.data?.push({ token: t.token, name: user.name, role: userRole, time: t.time, lastActionTime: t.lastActionTime })
     }
   }
   res.status(result.status).json(result);
 });
 
 router.post("/logoutall", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { update } = (await userService.getPermissions(userRole, RESOURCE.USERS))
-  if (!update) return accessDenied(res)
   userService.clearAllTokens()
   notifyActiveUsers()
   events.clear()
@@ -105,10 +99,8 @@ router.post("/logoutall", async (req, res) => {
 });
 
 router.post("/add", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { create } = (await userService.getPermissions(userRole, RESOURCE.USERS))
-  if (!create) return accessDenied(res)
   const user = req.body;
   if (!user.name || !user.password) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.registerUser(user.name, user.password);
@@ -116,10 +108,8 @@ router.post("/add", async (req, res) => {
 });
 
 router.delete("/delete", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { remove } = (await userService.getPermissions(userRole, RESOURCE.USERS))
-  if (!remove) return accessDenied(res)
   const user = req.body;
   if (!user.name) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.deleteUser(user);
@@ -127,21 +117,18 @@ router.delete("/delete", async (req, res) => {
 });
 
 router.get("/users", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { read } = (await userService.getPermissions(userRole, RESOURCE.USERS))
-  if (!read) return accessDenied(res)
   let result = await userService.getUsers()
   res.status(result.status).json(result)
 });
 router.get("/roles", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { read } = (await userService.getPermissions(userRole, RESOURCE.USERS))
-  if (!read) return accessDenied(res)
   let result = await userService.getRoles()
   res.status(result.status).json(result)
 });
+
 async function loginUser(user: User): Promise<Result<string | null>> {
   const userService = new UserService(userServiceProvider)
   const result = await userService.getUsers()
@@ -151,9 +138,21 @@ async function loginUser(user: User): Promise<Result<string | null>> {
   if (!foundUser) return incorrectData(messages.INVALID_USER_DATA)
   if (!bcrypt.compareSync(user.password, foundUser.password)) return incorrectData(messages.INVALID_USER_DATA)
   const userRole = await userService.getUserRole(foundUser.name)
-  const permissions = await userService.getAllUserPermissions(userRole.name)
-  const token = jwt.sign({ name: foundUser.name, role: userRole.caption, permissions }, JWT_SECRET, { expiresIn: 1440 });
+  const role = (await userService.getRoles()).data?.find(r => r.name === userRole) || {name: "", caption: ""}
+  const permissions = await userService.getAllUserPermissions(userRole)
+  const token = jwt.sign({ name: foundUser.name, role, permissions }, JWT_SECRET, { expiresIn: 1440 });
   return { success: true, status: 200, message: messages.LOGIN_SUCCEED, data: token };
 }
 
 
+export async function hasPermission(req: MyRequest, resource: RESOURCE, permissions: PERMISSION[]): Promise<boolean>{
+  const userRole = req.userRole as string;
+  const userService = new UserService(userServiceProvider)
+  const { read, create, update, remove } = (await userService.getPermissions(userRole, resource))
+  return permissions.every(p => {
+    if (p === PERMISSION.CREATE) return create
+    if (p === PERMISSION.READ) return read
+    if (p === PERMISSION.UPDATE) return update
+    if (p === PERMISSION.REMOVE) return remove
+  })
+}

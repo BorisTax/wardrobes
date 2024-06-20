@@ -5,9 +5,9 @@ import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/other.js';
 import { MyRequest, Result } from '../../types/server.js';
-import { UserRoles } from "../../types/user.js";
-import { isAdminAtLeast } from '../functions/user.js';
+import { PERMISSION, RESOURCE, UserRoles } from "../../types/user.js";
 import { databaseFolder, databaseZipFile } from '../options.js';
+import { hasPermission } from './users.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,8 +15,8 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 export default router
 
-router.get("/download", async (req: MyRequest, res) => {
-  if (!isAdminAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+router.get("/download", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.DATABASE, [PERMISSION.READ]))) return accessDenied(res)
   const result = await zipDirectory(databaseFolder, databaseZipFile)
   if(result.success) res.download(databaseZipFile, 'database.zip')
 });

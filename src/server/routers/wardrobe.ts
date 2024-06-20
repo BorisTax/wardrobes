@@ -1,9 +1,6 @@
 import express from "express";
-import { accessDenied } from '../functions/other.js';
-import { MyRequest, Result } from '../../types/server.js';
-import { UserRoles } from "../../types/user.js";
+import { Result } from '../../types/server.js';
 import { materialServiceProvider, specificationPath } from '../options.js';
-import { isManagerAtLeast } from '../functions/user.js';
 import { CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from '../../types/wardrobe.js';
 import SpecificationServiceSQLite from "../services/specificationServiceSQLite.js";
 import { Profile, ProfileType } from "../../types/materials.js";
@@ -14,11 +11,11 @@ import { FasadMaterial, MAT_PURPOSE } from "../../types/enums.js";
 const router = express.Router();
 export default router
 
-router.get("/initial", async (req: MyRequest, res) => {
+router.get("/initial", async (req, res) => {
   const result = await getInitialState();
   res.json(result);
 });
-router.get("/initialWardrobeData", async (req: MyRequest, res) => {
+router.get("/initialWardrobeData", async (req, res) => {
   const result = await getInitialWardrobeData();
   res.json(result);
 });

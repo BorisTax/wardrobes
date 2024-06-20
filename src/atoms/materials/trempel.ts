@@ -7,9 +7,10 @@ import messages from "../../server/messages";
 
 export const trempelListAtom = atom<Trempel[]>([])
 
-export const loadTrempelListAtom = atom(null, async (_, set) => {
+export const loadTrempelListAtom = atom(null, async (get, set) => {
+    const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData('api/materials/trempel')
+        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/trempel?token=${token}`)
         if (result.success) set(trempelListAtom, result.data as Trempel[]);
     } catch (e) { console.error(e) }
 })

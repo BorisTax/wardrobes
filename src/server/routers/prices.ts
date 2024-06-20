@@ -2,22 +2,22 @@ import messages from '../messages.js'
 import express from "express";
 import { accessDenied, incorrectData, noExistData } from '../functions/other.js';
 import { MyRequest, PriceData } from '../../types/server.js';
-import { UserRoles } from "../../types/user.js";
+import { PERMISSION, RESOURCE, UserRoles } from "../../types/user.js";
 import { priceServiceProvider } from '../options.js';
 import { PriceService } from '../services/priceService.js';
-import { isClientAtLeast, isEditorAtLeast } from '../functions/user.js';
+import { hasPermission } from './users.js';
 
 const router = express.Router();
 export default router
 
-router.get("/pricelist", async (req: MyRequest, res) => {
-  if (!isClientAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+router.get("/pricelist", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.PRICES, [PERMISSION.READ]))) return accessDenied(res)
   const result = await getPriceList();
   res.json(result);
 });
 
-router.put("/pricelist", async (req: MyRequest, res) => {
-  if (!isEditorAtLeast(req.userRole as UserRoles)) return accessDenied(res)
+router.put("/pricelist", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.PRICES, [PERMISSION.UPDATE]))) return accessDenied(res)
   const { name, caption, coef, price, code, id, markup } = req.body
   const result = await updatePriceList({ name, price, markup });
   res.status(result.status).json(result);

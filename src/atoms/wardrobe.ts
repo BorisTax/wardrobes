@@ -1,6 +1,7 @@
 import { atom } from "jotai"
 import { CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { FetchResult, fetchGetData } from "../functions/fetch"
+import { userAtom } from "./users"
 
 export const initFasades = {
     dsp: { count: 0, names: [] },
@@ -44,8 +45,9 @@ export const setWardrobeDataAtom = atom(null, (get, set, setter: (prev: Wardrobe
 
 export const loadedInitialWardrobeDataAtom = atom(false)
 export const loadInitialWardrobeDataAtom = atom(null, async (get, set) => {
+    const { token } = get(userAtom)
     set(loadedInitialWardrobeDataAtom, false)
-    const result: FetchResult<WardrobeData> = await fetchGetData(`api/wardrobe/initialWardrobeData`)
+    const result: FetchResult<WardrobeData> = await fetchGetData(`api/wardrobe/initialWardrobeData?token=${token}`)
     const data = result.data as WardrobeData
     if (result.success) {
         set(setWardrobeDataAtom, () => data)

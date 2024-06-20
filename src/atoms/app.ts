@@ -12,8 +12,6 @@ import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
 import { WARDROBE_TYPE } from '../types/wardrobe';
 
-const copyState = (state: AppState): AppState => JSON.parse(JSON.stringify(state))
-
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
     const result: FetchResult<[] | string> = await fetchGetData(`api/version`)

@@ -1,7 +1,7 @@
 import { SpecificationItem } from "./specification"
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
 import { SpecificationData, Result, Token, PriceData, ExtMaterialQuery } from "./server"
-import { User } from "./user"
+import { PERMISSIONS_SCHEMA, User } from "./user"
 import { NewTemplate, Template } from "./templates"
 import { DETAIL_NAME, SpecificationMultiResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from "./schemas"
@@ -16,8 +16,8 @@ interface IUserAbstractService {
     registerUser: (userName: string, password: string) => Promise<Result<null>>
     deleteUser: (user: User) => Promise<Result<null>>
     getPermissions: (role: string, resource: RESOURCE) => Promise<Permissions>
-    getAllUserPermissions: (role: string) => Promise<[RESOURCE, Permissions][]>
-    getUserRole: (username: string) => Promise<UserRole>
+    getAllUserPermissions: (role: string) => Promise<PERMISSIONS_SCHEMA[]>
+    getUserRole: (username: string) => Promise<string>
     getRoles: () => Promise<Result<UserRole[]>>
 }
 export interface IMaterialService {

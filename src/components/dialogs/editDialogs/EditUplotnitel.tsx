@@ -16,7 +16,7 @@ export default function EditUplotnitel() {
     const noSortedList = useAtomValue(uplotnitelListAtom)
     const list = useMemo(() => noSortedList.toSorted((i1, i2) => i1.name > i2.name ? 1 : -1), [noSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name, code } = list[selectedIndex]
+    const { name, code } = list[selectedIndex] || { name: "", code: "" }
     const deleteUplotnitel = useSetAtom(deleteUplotnitelAtom)
     const addUplotnitel = useSetAtom(addUplotnitelAtom)
     const updateUplotnitel = useSetAtom(updateUplotnitelAtom)

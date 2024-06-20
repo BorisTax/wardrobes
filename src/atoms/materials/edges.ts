@@ -8,9 +8,10 @@ import messages from "../../server/messages";
 
 export const edgeListAtom = atom<Edge[]>([])
 
-export const loadEdgeListAtom = atom(null, async (_, set) => {
+export const loadEdgeListAtom = atom(null, async (get, set) => {
+    const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData('api/materials/edge')
+        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/edge?token=${token}`)
         if(result.success) set(edgeListAtom, result.data as Edge[]);
     } catch (e) { console.error(e) }
 })

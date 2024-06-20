@@ -20,7 +20,7 @@ export default function EditZaglushka() {
     const materialList = useAtomValue(materialListAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const mList = useMemo(() => materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name), [materialList])
-    const { name, dsp, code } = zaglushkaList[selectedIndex]
+    const { name, dsp, code } = zaglushkaList[selectedIndex] || { name: "", dsp: "", code: "" }
     const deleteZaglushka = useSetAtom(deleteZaglushkaAtom)
     const addZaglushka = useSetAtom(addZaglushkaAtom)
     const updateZaglushka = useSetAtom(updateZaglushkaAtom)

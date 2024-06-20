@@ -16,11 +16,11 @@ export default function EditEdge() {
     const { permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.MATERIALS)
     const edgeNotSortedList = useAtomValue(edgeListAtom)
-    const edgeList = useMemo(() => edgeNotSortedList.toSorted((e1, e2) => e1.name > e2.name ? 1 : -1), [edgeNotSortedList])
+    const edgeList = useMemo(() => edgeNotSortedList.toSorted((e1, e2) => e1?.name > e2?.name ? 1 : -1), [edgeNotSortedList])
     const materialList = useAtomValue(materialListAtom)
     const mList = useMemo(() => materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name), [materialList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name: edgeName, dsp, code } = { ...(edgeList[selectedIndex] || { name: "", dsp: "", code: "" }) }
+    const { name: edgeName, dsp, code } = edgeList[selectedIndex] || { name: "", dsp: "", code: "" } 
     const deleteEdge = useSetAtom(deleteEdgeAtom)
     const addEdge = useSetAtom(addEdgeAtom)
     const updateEdge = useSetAtom(updateEdgeAtom)
@@ -33,7 +33,7 @@ export default function EditEdge() {
     ]
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        <EditDataSection name={edgeList[selectedIndex].name} items={editItems}
+        <EditDataSection name={edgeName} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""

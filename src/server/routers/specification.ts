@@ -1,50 +1,38 @@
 import express from "express";
 import { MyRequest, SpecificationData } from '../../types/server.js';
-import { RESOURCE } from "../../types/user.js";
-import { materialServiceProvider, specServiceProvider, userServiceProvider } from '../options.js';
+import { PERMISSION, RESOURCE } from "../../types/user.js";
+import { materialServiceProvider, specServiceProvider } from '../options.js';
 import { SpecificationService } from '../services/specificationService.js';
 import { WardrobeData } from "../../types/wardrobe.js";
 import { accessDenied, incorrectData, noExistData } from "../functions/other.js";
 import messages from "../messages.js";
 import { AppState } from "../../types/app.js";
-import { UserService } from "../services/userService.js";
+import { hasPermission } from "./users.js";
 
 const router = express.Router();
 export default router
 
 router.get("/", async (req, res) => {
-  const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { read } = (await userService.getPermissions(userRole, RESOURCE.SPECIFICATION))
-  if (!read) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
   const { data } = req.body
   const result = await getSpecList();
   res.json(result);
 });
 router.put("/", async (req, res) => {
-  const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { update } = (await userService.getPermissions(userRole, RESOURCE.SPECIFICATION))
-  if (!update) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.UPDATE]))) return accessDenied(res)
   const { name, caption, coef, code, id } = req.body
   const result = await updateSpecList({ name, caption, coef, code, id });
   res.status(result.status).json(result);
 });
 router.post("/data", async (req, res) => {
-  const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { read } = (await userService.getPermissions(userRole, RESOURCE.SPECIFICATION))
-  if (!read) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
   const { data } = req.body
   const result = await getSpecData(data);
   res.json(result);
 });
 
 router.post("/combidata", async (req, res) => {
-  const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { read } = (await userService.getPermissions(userRole, RESOURCE.SPECIFICATION))
-  if (!read) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
   const { data } = req.body
   const result = await getSpecCombiData(data);
   res.json(result);

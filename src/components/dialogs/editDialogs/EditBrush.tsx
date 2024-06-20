@@ -16,7 +16,7 @@ export default function EditBrush() {
     const brushNoSortedList = useAtomValue(brushListAtom)
     const brushList = useMemo(() => brushNoSortedList.toSorted((b1, b2) => b1.name > b2.name ? 1 : -1), [brushNoSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const {name, code} = brushList[selectedIndex]
+    const { name, code } = brushList[selectedIndex] || { name: "", code: "" }
     const deleteBrush = useSetAtom(deleteBrushAtom)
     const addBrush = useSetAtom(addBrushAtom)
     const updateBrush = useSetAtom(updateBrushAtom)

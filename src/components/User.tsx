@@ -1,16 +1,14 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { UserRolesCaptions, getInitialUser, logoutAtom, setUserAtom, userAtom } from "../atoms/users";
+import { getInitialUser, logoutAtom, setUserAtom, userAtom, userRolesAtom } from "../atoms/users";
 import { loginDialogAtom } from "../atoms/dialogs";
 import useConfirm from "../custom-hooks/useConfirm";
-import { UserRoles } from "../types/user";
 import { versionAtom } from "../atoms/app";
 
 export default function User() {
-    const [user] = useAtom(userAtom)
+    const user = useAtomValue(userAtom)
     const logout = useSetAtom(logoutAtom)
     const setUser = useSetAtom(setUserAtom)
-    const role = UserRolesCaptions[user.role as UserRoles]
     const dialogRef = useAtomValue(loginDialogAtom)
     const showConfirm = useConfirm()
     const version = useAtomValue(versionAtom)
@@ -24,10 +22,10 @@ export default function User() {
       setUser(token, true);
     }, []);
     return <div className="user">
-        {user.role === UserRoles.ANONYM ? loginButton :<>
+        {user.role.name === "" ? loginButton :<>
             <div className="d-flex flex-column align-items-center p-0">
                 <div>{user.name}</div>
-                <div>{role}</div>
+                <div>{user.role.caption}</div>
             </div>
              {logoutButton}
         </>}

@@ -10,9 +10,13 @@ import TableData from "../TableData"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { InputType, PropertyType } from "../../types/property"
 import EditContainer from "../EditContainer"
+import { userAtom } from "../../atoms/users"
+import { RESOURCE } from "../../types/user"
 
 export default function EditSpecificationDialog() {
     const loadSpecList = useSetAtom(loadSpecificationListAtom)
+    const { permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.SPECIFICATION)
     const specList = useAtomValue(specificationDataAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const def = { name: "", caption: "", coef: 1, price: "", code: "", id: "", markup: "" }
@@ -20,7 +24,7 @@ export default function EditSpecificationDialog() {
     const updateSpecList = useSetAtom(updateSpecificationListAtom)
     const heads = ['Наименование', 'Ед', 'Коэф-т', 'Код', 'Идентификатор']
     const contents = specList.map((i: SpecificationData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.coef}`, i.code || "", i.id || ""])
-    const editItems: EditDataItem[] = [
+    const editItems: EditDataItem[] =  [
         { caption: "Наименование:", value: caption || "", message: "Введите наименование", type: InputType.TEXT },
         { caption: "Коэф-т:", value: `${coef}`, message: "Введите коэф-т", type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
         { caption: "Код:", value: code || "", message: "Введите код", type: InputType.TEXT },

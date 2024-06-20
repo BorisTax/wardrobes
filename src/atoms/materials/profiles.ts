@@ -10,8 +10,9 @@ export const profileListAtom = atom<Profile[]>([initProfile])
 export const activeProfileIndexAtom = atom(0)
 
 export const loadProfileListAtom = atom(null, async (get, set) => {
+    const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData('api/materials/profile')
+        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/profile?token=${token}`)
         if(result.success) set(profileListAtom, result.data as Profile[]);
     } catch (e) { console.error(e) }
 })

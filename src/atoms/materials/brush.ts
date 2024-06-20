@@ -8,9 +8,10 @@ import messages from "../../server/messages";
 
 export const brushListAtom = atom<Brush[]>([])
 
-export const loadBrushListAtom = atom(null, async (_, set) => {
+export const loadBrushListAtom = atom(null, async (get, set) => {
+    const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData('api/materials/brush')
+        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/brush?token=${token}`)
         if(result.success) set(brushListAtom, result.data as Brush[]);
     } catch (e) { console.error(e) }
 })

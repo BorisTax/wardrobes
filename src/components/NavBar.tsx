@@ -17,7 +17,7 @@ export default function NavBar() {
     <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />
     <>
       <MenuSeparator />
-      {permMat?.read && <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />}
+      {permMat?.update && <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />}
       {permPrice?.read && <ImageLink link={"pricelist"} caption="Редактор цен" icon="editPrice" />}
       {permSpec?.read && <ImageLink link={"specification"} caption="Редактор спецификации" icon="editSpecification" />}
     </>

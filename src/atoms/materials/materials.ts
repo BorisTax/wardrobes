@@ -11,8 +11,9 @@ import messages from "../../server/messages";
 export const materialListAtom = atom<ExtMaterial[]>([])
 
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
+    const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData('api/materials/material')
+        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/material?token=${token}`)
         if (!result.success) return
         set(materialListAtom, result.data as ExtMaterial[])
         const { rootFasades } = get(appDataAtom)

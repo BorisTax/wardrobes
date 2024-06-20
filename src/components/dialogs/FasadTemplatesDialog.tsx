@@ -13,8 +13,8 @@ import { Template } from "../../types/templates"
 import FasadPreviewContainer from "../fasad/FasadPreviewContainer"
 import Fasad from "../../classes/Fasad"
 import { newFasadFromState } from "../../functions/fasades"
-import { isEditorAtLeast } from "../../server/functions/user"
 import { userAtom } from "../../atoms/users"
+import { RESOURCE } from "../../types/user"
 
 export default function FasadTemplatesDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
@@ -31,8 +31,8 @@ export default function FasadTemplatesDialog() {
     const deleteTemplate = useSetAtom(deleteTemplateAtom)
     const updateTemplate = useSetAtom(updateFasadTemplateAtom)
     const applyTemplate = useSetAtom(applyTemplateAtom)
-    const { role } = useAtomValue(userAtom)
-    const editor = isEditorAtLeast(role)
+    const { role, permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.TEMPLATE)
     useMemo(() => {
         setNewName((curTemplate && curTemplate.name) || "")
     }, [curTemplate])
@@ -40,7 +40,7 @@ export default function FasadTemplatesDialog() {
     const showMessage = useMessage()
     const showConfirm = useConfirm()
     useLayoutEffect(() => {
-        if(!templatePreviewContainerRef.current) return
+        if (!templatePreviewContainerRef.current) return
         const height = getComputedStyle(templatePreviewContainerRef.current).height
         if (templateListRef.current) templateListRef.current.style.maxHeight = height
     }, [curTemplate])
@@ -52,8 +52,8 @@ export default function FasadTemplatesDialog() {
             <div className="d-flex flex-column align-self-stretch">
                 <div className="text-center">Шаблоны</div>
                 <div ref={templateListRef} className="template-list">
-                    {templates.map((t: Template) => 
-                    <div key={t.name} className={curTemplate && (t.name === curTemplate.name) ? "template-item template-item-selected" : "template-item"} onClick={() => { setTemplate(t) }}>{t.name}</div>)}
+                    {templates.map((t: Template) =>
+                        <div key={t.name} className={curTemplate && (t.name === curTemplate.name) ? "template-item template-item-selected" : "template-item"} onClick={() => { setTemplate(t) }}>{t.name}</div>)}
                 </div>
             </div>
             <div className="d-flex flex-column align-items-center">
@@ -62,21 +62,21 @@ export default function FasadTemplatesDialog() {
             </div>
         </div>
         <hr />
-        {editor && editMode ? <div className="d-flex flex-column gap-1">
+        {perm?.read && editMode ? <div className="d-flex flex-column gap-1">
             <div className="d-flex gap-1 align-items-baseline">
                 <span className="text-end text-nowrap">Название шаблона:</span>
                 <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewName(e.target.value) }} />
             </div>
             <div className="d-flex gap-1">
-                <input type="button" value="Удалить" disabled={!curTemplate} onClick={() => {
+                {perm.remove && <input type="button" value="Удалить" disabled={!curTemplate} onClick={() => {
                     const message = `Удалить шаблон: "${newName}" ?`
                     showConfirm(message, () => {
                         deleteTemplate({ name: newName, table: TEMPLATE_TABLES.FASAD }, (result) => {
                             showMessage(rusMessages[result.message])
                         });
                     })
-                }} />
-                <Button caption="Добавить" onClick={() => {
+                }} />}
+                {perm.create && <Button caption="Добавить" onClick={() => {
                     if (!newName.trim()) return showMessage("Введите имя шаблона")
                     const message = `Добавить шаблон: "${newName}" ?`
                     showConfirm(message, () => {
@@ -84,8 +84,8 @@ export default function FasadTemplatesDialog() {
                             showMessage(rusMessages[result.message])
                         });
                     })
-                }} />
-                <input type="button" value="Заменить" disabled={!curTemplate} onClick={() => {
+                }} />}
+                {perm.update && <input type="button" value="Заменить" disabled={!curTemplate} onClick={() => {
                     const name = curTemplate.name
                     const message = `Заменить шаблон: "${newName}" ?`
                     showConfirm(message, () => {
@@ -93,8 +93,8 @@ export default function FasadTemplatesDialog() {
                             showMessage(rusMessages[result.message])
                         })
                     })
-                }} />
-                <input type="button" value="Переименовать" disabled={!curTemplate} onClick={() => {
+                }} />}
+                {perm.update && <input type="button" value="Переименовать" disabled={!curTemplate} onClick={() => {
                     const name = curTemplate.name
                     const message = `Переименовать шаблон "${name}" в "${newName}" ?`
                     showConfirm(message, () => {
@@ -102,17 +102,18 @@ export default function FasadTemplatesDialog() {
                             showMessage(rusMessages[result.message])
                         })
                     })
-                }} />
+                }} />}
             </div>
         </div> : <div>
             <input type="button" value="Применить" disabled={!curTemplate} onClick={() => {
                 const message = `Применить шаблон "${newName}" к выбранному фасаду?`
                 showConfirm(message, () => {
                     applyTemplate(data, (result) => {
-                        if(!result.success) return showMessage(rusMessages[result.message])
+                        if (!result.success) return showMessage(rusMessages[result.message])
                         dialogRef.current?.close()
                     })
                 })
-            }} /></div>}
-        </DialogWindow>        
+            }} />
+        </div>}
+    </DialogWindow>
 }

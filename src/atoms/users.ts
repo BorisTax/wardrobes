@@ -1,14 +1,14 @@
 import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { Permissions, RESOURCE, UserRole } from "../types/user"
+import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserRole } from "../types/user"
 import { loadPriceListAtom } from "./prices"
 import { AtomCallbackResult } from "../types/atoms"
 
 
 export type UserState = {
     name: string
-    role: string
+    role: { name: string, caption: string }
     token: string
     permissions: Map<RESOURCE, Permissions>
 }
@@ -46,13 +46,13 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
     }
 })
 
-export const userAtom = atom<UserState>({ name: "", role: "", token: "", permissions: getInitialPermissions() })
+export const userAtom = atom<UserState>({ name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions() })
 
 export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const { token } = get(userAtom)
         const result = await fetchGetData(`api/users/verify?token=${token}`)
         if (!result.success) {
-            set(userAtom, { name: "", role: "", token: "", permissions: getInitialPermissions() })
+            set(userAtom, { name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions() })
             return
         }
 })
@@ -64,21 +64,20 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
     if (verify) {
         const result = await fetchGetData(`api/users/verify?token=${token}`)
         if(!result.success){
-            set(userAtom, { name: "", role: "", token: "", permissions: getInitialPermissions()  })
+            set(userAtom, { name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions()  })
             return
         }
     }
-    let storeUser: UserState
-    let perm: Map<RESOURCE, Permissions> = new Map()
+    let storeUser: UserState = { name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions() }
     try {
-        const { name, role, permissions } = jwtDecode(token) as UserState
+        const { name, role, permissions } = jwtDecode(token) as UserState & { permissions: PERMISSIONS_SCHEMA[] }
         storeUser = { name, role, token, permissions }
-        perm = new Map(permissions)
+        storeUser.permissions = permissionsToMap(permissions)
     } catch (e) {
-        storeUser = { name: "", role: "", token: "", permissions: getInitialPermissions()  }
+        storeUser = { name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions()  }
     }
     localStorage.setItem('token', storeUser.token)
-    const p = perm.get(RESOURCE.PRICES)
+    const p = storeUser.permissions.get(RESOURCE.PRICES)
     set(userAtom, storeUser)
     if (p?.read) set(loadPriceListAtom)
 })
@@ -109,6 +108,7 @@ export const deleteUserAtom = atom(null, async (get: Getter, set: Setter, { name
     }
     callback({ success: result.success as boolean, message: result.message  as string })
 })
+
 export function getInitialUser(): UserState {
     const token = localStorage.getItem("token") || ""
     let storeUser: UserState
@@ -117,7 +117,7 @@ export function getInitialUser(): UserState {
     } catch (e) {
         storeUser = {
             name: "",
-            role: "",
+            role: { name: "", caption: "" },
             token,
             permissions: getInitialPermissions()
         }
@@ -134,5 +134,13 @@ export function getInitialUser(): UserState {
 export function getInitialPermissions(): Map<RESOURCE, Permissions> {
     const m = new Map<RESOURCE, Permissions>()
     Object.keys(RESOURCE).forEach(k => m.set(k as RESOURCE, { create: false, update: false, read: false, remove: false }))
+    return m
+}
+
+export function permissionsToMap(permissions: PERMISSIONS_SCHEMA[]): Map<RESOURCE, Permissions> {
+    const m = new Map<RESOURCE, Permissions>()
+    permissions.forEach(p => {
+        m.set(p.resource, { create: !!p.create, read: !!p.read, update: !!p.update, remove: !!p.remove })
+    })
     return m
 }

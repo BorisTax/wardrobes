@@ -15,7 +15,7 @@ export default function EditTrempel() {
     const trempelNoSortedList = useAtomValue(trempelListAtom)
     const trempelList = useMemo(() => trempelNoSortedList.toSorted((b1, b2) => b1.caption > b2.caption ? 1 : -1), [trempelNoSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name, caption, code } = trempelList[selectedIndex]
+    const { name, caption, code } = trempelList[selectedIndex] || { name: "", caption: "", code: "" }
     const updateTrempel = useSetAtom(updateTrempelAtom)
     const heads = ['Наименование', 'Код']
     const contents = trempelList.map((i: Trempel) => [i.caption, i.code])

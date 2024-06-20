@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import { Result, Token } from '../../types/server.js'
-import { User } from "../../types/user.js"
+import { PERMISSIONS_SCHEMA, User } from "../../types/user.js"
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
@@ -112,10 +112,10 @@ export class UserService implements IUserService {
   async getPermissions(role: string, resource: RESOURCE): Promise<Permissions>{
     return this.provider.getPermissions(role, resource)
   }
-  async getAllUserPermissions(role: string): Promise<[RESOURCE, Permissions][]>{
+  async getAllUserPermissions(role: string): Promise<PERMISSIONS_SCHEMA[]>{
     return this.provider.getAllUserPermissions(role)
 }
-  async getUserRole(username: string): Promise<UserRole> {
+  async getUserRole(username: string): Promise<string> {
     const result = await this.provider.getUserRole(username)
     return result
   }

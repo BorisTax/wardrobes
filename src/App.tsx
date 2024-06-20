@@ -17,7 +17,7 @@ import LoginDialog from './components/dialogs/LoginDialog'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { loadMaterialListAtom } from './atoms/materials/materials'
 import EditMaterialDialog from './components/dialogs/EditMaterialDialog'
-import {  userAtom } from './atoms/users'
+import {  loadUserRolesAtom, userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
 import { loadProfileListAtom } from './atoms/materials/profiles'
@@ -70,6 +70,7 @@ function App() {
   const loadVersion = useSetAtom(loadVersionAtom)
   const loadInitialAppState = useSetAtom(loadInitialStateAtom)
   const loadInitialWardrobeData = useSetAtom(loadInitialWardrobeDataAtom)
+  const loadUserRoles = useSetAtom(loadUserRolesAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
     const storage = localStorage.getItem('appState')
@@ -85,8 +86,9 @@ function App() {
     loadUplotnitelList()
     loadInitialAppState()
     loadInitialWardrobeData()
+    loadUserRoles()
     loadVersion()
-  }, [])
+  }, [user])
   useEffect(() => {
     const onContextMenu = (e: Event) => { e.preventDefault() }
     const onBeforeUnload = (e: Event) => { saveToStorage() }

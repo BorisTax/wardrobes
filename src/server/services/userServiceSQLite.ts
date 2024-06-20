@@ -1,7 +1,7 @@
 import { dataBaseQuery, hashData } from '../functions/other.js'
 import { IUserServiceProvider } from '../../types/services.js';
 import { Result, Token } from '../../types/server.js';
-import { User } from "../../types/user.js";
+import { PERMISSIONS_SCHEMA, USER_ROLE_SCHEMA, User } from "../../types/user.js";
 import messages from '../messages.js';
 import { USER_TABLE_NAMES } from '../functions/other.js';
 import { Permissions, RESOURCE, UserRole } from '../../types/user.js';
@@ -41,18 +41,20 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     }
 
     async getPermissions(role: string, resource: RESOURCE): Promise<Permissions>{
-        const result = await dataBaseQuery(this.dbFile, `SELECT FROM ${PERMISSIONS} where role='${role}' and resource='${resource}';`, { successStatusCode: 200 })
-        return (result.data as Permissions[])[0] || { create: false, delete: false, read: false, update: false }
+        const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS} where role='${role}' and resource='${resource}';`, { successStatusCode: 200 })
+        const perm = result.data as Permissions[]
+        return (perm && perm[0]) || { create: false, remove: false, read: false, update: false }
     }
-    async getAllUserPermissions(role: string): Promise<[RESOURCE, Permissions][]>{
-        const result = await dataBaseQuery(this.dbFile, `SELECT FROM ${PERMISSIONS} where role='${role}';`, {successStatusCode: 200})
-        return result.data as [RESOURCE, Permissions][] || []
+    async getAllUserPermissions(role: string): Promise<PERMISSIONS_SCHEMA[]>{
+        const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS} where role='${role}';`, {successStatusCode: 200})
+        return result.data as PERMISSIONS_SCHEMA[] || []
     }
-    async getUserRole(username: string) : Promise<UserRole>{
-        const result = await dataBaseQuery(this.dbFile, `SELECT FROM ${USER_ROLES} where user='${username}';`, {successStatusCode: 200})
-        return (result?.data as UserRole[])[0] || { name: "", caption: "" }
+    async getUserRole(username: string) : Promise<string>{
+        const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${USER_ROLES} where user='${username}';`, {successStatusCode: 200})
+        const users = result?.data as USER_ROLE_SCHEMA[]
+        return users && users[0].role || ""
     }
     async getRoles(): Promise<Result<UserRole[]>>{
-        return await dataBaseQuery(this.dbFile, `SELECT FROM ${ROLES};`, {successStatusCode: 200})
+        return await dataBaseQuery(this.dbFile, `SELECT * FROM ${ROLES};`, {successStatusCode: 200})
     }
 }

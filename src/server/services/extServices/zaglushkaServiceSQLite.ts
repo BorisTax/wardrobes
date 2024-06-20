@@ -14,13 +14,13 @@ export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglus
         return dataBaseQuery(this.dbFile, `select * from ${ZAGLUSHKA};`, {successStatusCode: 200})
     }
     async addExtData({ name, dsp, code }: Zaglushka): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.ZAGLUSHKA_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
     }
     async updateExtData({ newName, dsp, code, name }: NewZaglushka): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getZaglushkaQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.ZAGLUSHKA_UPDATED})
+        return dataBaseQuery(this.dbFile, getZaglushkaQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
     }
 }
 

@@ -14,7 +14,7 @@ export async function addUplotnitel({ name, code }: Uplotnitel) {
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const list = result.data
-  if ((list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: 409, message: messages.ZAGLUSHKA_EXIST }
+  if ((list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: 409, message: messages.MATERIAL_EXIST }
   return await materialExtService.addExtData({ name, code })
 }
 
@@ -23,7 +23,7 @@ export async function updateUplotnitel({ name, code }: Uplotnitel) {
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const list = result.data
-  if (!(list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.ZAGLUSHKA_NO_EXIST }
+  if (!(list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
   return await materialExtService.updateExtData({ name, newName: "", code })
 }
 
@@ -32,6 +32,6 @@ export async function deleteUplotnitel(name: string) {
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const list = result.data
-  if (!(list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.ZAGLUSHKA_NO_EXIST }
+  if (!(list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
   return await materialExtService.deleteExtData(name)
 }

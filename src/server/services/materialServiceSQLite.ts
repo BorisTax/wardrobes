@@ -31,13 +31,13 @@ export default class MaterialServiceSQLite implements IMaterialService {
         return dataBaseQuery(this.dbFile, `select * from ${PROFILE_COLORS};`, {successStatusCode: 200})
     }
     async addProfile({ name, code, type, brush }: Profile): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${PROFILE_COLORS} (name, type, code, brush) values('${name}', '${type}', '${code}', '${brush}');`, {successStatusCode: 201, successMessage: messages.PROFILE_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${PROFILE_COLORS} (name, type, code, brush) values('${name}', '${type}', '${code}', '${brush}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteProfile(name: string, type: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${PROFILE_COLORS} WHERE name='${name}' and type='${type}';`, {successStatusCode: 200, successMessage: messages.PROFILE_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${PROFILE_COLORS} WHERE name='${name}' and type='${type}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
     }
     async updateProfile({ newName, code, type, name, brush }: NewProfile): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getProfileQuery({ newName, code, name, type, brush }), {successStatusCode: 200, successMessage: messages.PROFILE_UPDATED})
+        return dataBaseQuery(this.dbFile, getProfileQuery({ newName, code, name, type, brush }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
     }
 }
 

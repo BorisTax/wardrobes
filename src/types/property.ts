@@ -7,6 +7,7 @@ export enum PropertyType {
 };
 export enum InputType {
     TEXT = 'TEXT',
+    CHECKBOX = 'CHECKBOX',
     LIST = 'LIST',
     FILE = 'FILE',
     IMAGE = 'IMAGE', 

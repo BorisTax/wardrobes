@@ -56,10 +56,10 @@ export default function EditPlates() {
                 return result
             } : undefined}
             onAdd={perm?.create ? async (checked, values) => {
-                const name = values[0]
-                const code = values[1]
-                const purpose = getMATPurpose(values[2])
-                const file = values[3]
+                const name = values[0] as string
+                const code = values[1] as string
+                const purpose = getMATPurpose(values[2] as string)
+                const file = values[3] as string
                 if (existMaterial(name, baseMaterial, materialList)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file)
                 return result

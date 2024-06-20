@@ -1,5 +1,6 @@
 import express from "express";
 import userRouter from './routers/users.js'
+import permissionRouter from './routers/permissions.js'
 import materialRouter from './routers/materials.js'
 import priceRouter from './routers/prices.js'
 import specificationRouter from './routers/specification.js'
@@ -9,6 +10,7 @@ import wardrobeRouter from './routers/wardrobe.js'
 export const router = express.Router();
 
 router.use('/users', userRouter)
+router.use('/users/permissions', permissionRouter)
 router.use('/materials', materialRouter)
 router.use('/templates', templateRouter)
 router.use('/specification', specificationRouter)

@@ -1,11 +1,12 @@
 import { SpecificationItem } from "./specification"
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
 import { SpecificationData, Result, Token, PriceData, ExtMaterialQuery } from "./server"
-import { PERMISSIONS_SCHEMA, User } from "./user"
+import { PERMISSIONS_SCHEMA, Resource, User } from "./user"
 import { NewTemplate, Template } from "./templates"
 import { DETAIL_NAME, SpecificationMultiResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from "./schemas"
 import { Permissions, RESOURCE, UserRole } from "./user"
+
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User[]>>
     getTokens: () => Promise<Result<Token[]>>
@@ -55,6 +56,13 @@ export interface ISpecificationAbstractService {
     getDetailNames: () => Promise<Result<WardrobeDetailSchema[]>>
     getWardobeKinds: ()=> Promise<Result<WardrobeTableSchema[]>>
 }
+interface IPermissionAbstractService {
+    getPermissions: (role: string) => Promise<Result<PERMISSIONS_SCHEMA[]>>
+    addPermissions: (role: string, resource: RESOURCE, permissions: Permissions) => Promise<Result<null>>
+    deletePermissions: (role: string, resource: RESOURCE) => Promise<Result<null>>
+    updatePermissions: (role: string, resource: RESOURCE, permissions: Permissions) => Promise<Result<null>>
+    getResourceList: () => Promise<Result<Resource>>
+}
 export interface IMaterialServiceProvider extends IMaterialService {
     dbFile: string
 }
@@ -87,4 +95,11 @@ export interface ISpecificationServiceProvider extends ISpecificationAbstractSer
 }
 export interface ISpecificationService extends ISpecificationAbstractService {
     provider: ISpecificationServiceProvider
+}
+
+export interface IPermissionServiceProvider extends IPermissionAbstractService {
+    dbFile: string
+}
+export interface IPermissionService extends IPermissionAbstractService {
+    provider: IPermissionServiceProvider
 }

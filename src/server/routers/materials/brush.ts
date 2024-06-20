@@ -15,7 +15,7 @@ export async function addBrush({ name, code }: Brush) {
   const result = await materialService.getExtData()
   if (!result.success) return result
   const brushes = result.data
-  if ((brushes as Brush[]).find(m => m.name === name)) return { success: false, status: 409, message: messages.BRUSH_EXIST }
+  if ((brushes as Brush[]).find(m => m.name === name)) return { success: false, status: 409, message: messages.MATERIAL_EXIST }
   return await materialService.addExtData({ name, code })
 }
 
@@ -24,7 +24,7 @@ export async function updateBrush({ name, newName, code }: NewBrush) {
   const result = await materialService.getExtData()
   if (!result.success) return result
   const brushes = result.data
-  if (!(brushes as Brush[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.BRUSH_NO_EXIST }
+  if (!(brushes as Brush[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
   return await materialService.updateExtData({ name, newName, code })
 }
 
@@ -33,10 +33,10 @@ export async function deleteBrush(name: string) {
   const result = await materialService.getExtData()
   if (!result.success) return result
   const brushes = result.data
-  if (!(brushes as Brush[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.BRUSH_NO_EXIST }
+  if (!(brushes as Brush[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
   const {success, data: profiles} = await getProfiles()
   if(success){
-    if(profiles?.find(p => p.brush === name)) return { success: false, status: 409, message: messages.BRUSH_LINKED }
+    if(profiles?.find(p => p.brush === name)) return { success: false, status: 409, message: messages.MATERIAL_LINKED }
   }
   return await materialService.deleteExtData(name)
 }

@@ -40,10 +40,10 @@ export default function EditSpecificationDialog() {
                 <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
                 <EditDataSection items={editItems} onUpdate={async (checked, values) => {
                     const data: SpecificationData = { name: specList[selectedIndex].name }
-                    if (checked[0]) data.caption = values[0]
+                    if (checked[0]) data.caption = values[0] as string
                     if (checked[1]) data.coef = +values[1]
-                    if (checked[2]) data.code = values[2]
-                    if (checked[3]) data.id = values[3]
+                    if (checked[2]) data.code = values[2] as string
+                    if (checked[3]) data.id = values[3] as string
                     const result = await updateSpecList(data)
                     return result
                 }} />

@@ -35,6 +35,9 @@ export enum TableFields {
     MARKUP = 'markup',
     TABLE = 'table',
     KIND = 'kind',
+    ROLE = 'role',
+    RESOURCE = 'resource',
+    PERMISSIONS = 'permissions'
 }
 
 export type SpecificationData = {

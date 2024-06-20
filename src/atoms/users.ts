@@ -17,6 +17,12 @@ export type ActiveUserState = UserState & {
     lastActionTime: number
 }
 export const userRolesAtom = atom<UserRole[]>([])
+export const userRolesAsMap = atom((get) => {
+    const userRoles = get(userRolesAtom)
+    const m = new Map()
+    userRoles.forEach(u => m.set(u.name, u.caption))
+    return m
+})
 export const loadUserRolesAtom = atom(null, async (get,set)=>{
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)

@@ -14,7 +14,7 @@ export async function addProfile({ name, type, code, brush }: Profile) {
   const result = await materialService.getProfiles()
   if (!result.success) return result
   const profiles = result.data
-  if ((profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 409, message: messages.PROFILE_EXIST }
+  if ((profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 409, message: messages.MATERIAL_EXIST }
   return await materialService.addProfile({ name, type, code, brush })
 }
 
@@ -23,7 +23,7 @@ export async function updateProfile({ name, newName, type, code, brush }: NewPro
   const result = await materialService.getProfiles()
   if (!result.success) return result
   const profiles = result.data
-  if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 404, message: messages.PROFILE_NO_EXIST }
+  if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
   return await materialService.updateProfile({ name, type, newName, code, brush })
 }
 
@@ -32,7 +32,7 @@ export async function deleteProfile(name: string, type: string) {
   const result = await materialService.getProfiles()
   if (!result.success) return result
   const profiles = result.data
-  if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 404, message: messages.PROFILE_NO_EXIST }
+  if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
   return await materialService.deleteProfile(name, type)
 }
 

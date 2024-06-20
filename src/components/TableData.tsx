@@ -1,6 +1,8 @@
+import { ReactNode } from "react"
+
 export type TableDataProps = {
     heads: (string | number)[]
-    content: (string | number)[][]
+    content: (string | number | boolean | ReactNode)[][]
     styles?: object[][]
     rowNumbers?: boolean
     onSelectRow?: (index: number) => void

@@ -14,14 +14,14 @@ export default class BrushServiceSQLite implements IMaterialExtService<Brush> {
         return dataBaseQuery(this.dbFile, `select * from ${BRUSH};`, {successStatusCode: 200})
     }
     async addExtData({ name, code }: Brush): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${BRUSH} (name, code) values('${name}', '${code}');`, {successStatusCode: 201, successMessage: messages.BRUSH_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${BRUSH} (name, code) values('${name}', '${code}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
         
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${BRUSH} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.BRUSH_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${BRUSH} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
     }
     async updateExtData({ newName, code, name }: NewBrush): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getBrushQuery({ newName, code, name }), {successStatusCode: 200, successMessage: messages.BRUSH_UPDATED})
+        return dataBaseQuery(this.dbFile, getBrushQuery({ newName, code, name }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
     }
 }
 

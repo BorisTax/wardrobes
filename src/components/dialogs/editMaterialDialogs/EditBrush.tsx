@@ -45,9 +45,9 @@ export default function EditBrush() {
                 return result
             } : undefined}
             onAdd={perm?.create ? async (checked, values) => {
-                const name = values[0]
-                const code = values[1]
-                if (brushList.find((p: Brush) => p.name === name)) { return { success: false, message: messages.BRUSH_EXIST } }
+                const name = values[0] as string
+                const code = values[1] as string
+                if (brushList.find((p: Brush) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addBrush({ name, code })
                 return result
             } : undefined} />

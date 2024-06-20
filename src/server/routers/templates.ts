@@ -4,11 +4,11 @@ import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/other.js';
 import { MyRequest } from '../../types/server.js';
-import { RESOURCE } from "../../types/user.js";
-import { templateServiceProvider, userServiceProvider } from '../options.js';
+import { PERMISSION, RESOURCE } from "../../types/user.js";
+import { templateServiceProvider } from '../options.js';
 import { TemplateService } from '../services/templateService.js';
 import { NewTemplate, Template } from '../../types/templates.js';
-import { UserService } from '../services/userService.js';
+import { hasPermission } from './users.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,19 +17,13 @@ const router = express.Router();
 export default router
 
 router.get("/", async (req, res) => {
-  const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { read } = (await userService.getPermissions(userRole, RESOURCE.TEMPLATE))
-  if (!read) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.TEMPLATE, [PERMISSION.READ]))) return accessDenied(res)
   const result = await getTemplates(req.query.table as string);
   if (!result.success) return res.json(result)
   res.status(result.status).json(result);
 });
 router.delete("/", async (req, res) => {
-  const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { remove } = (await userService.getPermissions(userRole, RESOURCE.TEMPLATE))
-  if (!remove) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.TEMPLATE, [PERMISSION.REMOVE]))) return accessDenied(res)
   const { name, table } = req.body
   let result
   result = await deleteTemplate(table, name);
@@ -38,10 +32,7 @@ router.delete("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { create } = (await userService.getPermissions(userRole, RESOURCE.TEMPLATE))
-  if (!create) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.TEMPLATE, [PERMISSION.CREATE]))) return accessDenied(res)
   const { name, data, table } = req.body
   const result = await addTemplate(table, { name, data });
   const status = result.success ? 201 : 409
@@ -49,10 +40,7 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/", async (req, res) => {
-  const userService = new UserService(userServiceProvider)
-  const userRole = (req as MyRequest).userRole as string;
-  const { update } = (await userService.getPermissions(userRole, RESOURCE.TEMPLATE))
-  if (!update) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.TEMPLATE, [PERMISSION.UPDATE]))) return accessDenied(res)
   const { name, newName, data, table } = req.body
   const result = await updateTemplate(table, { name, newName, data });
   res.status(result.status).json(result);

@@ -16,7 +16,7 @@ export async function addZaglushka({ name, dsp, code }: Zaglushka) {
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const zaglushkas = result.data
-  if ((zaglushkas as Zaglushka[]).find(m => m.name === name)) return { success: false, status: 409, message: messages.ZAGLUSHKA_EXIST }
+  if ((zaglushkas as Zaglushka[]).find(m => m.name === name)) return { success: false, status: 409, message: messages.MATERIAL_EXIST }
   return await materialExtService.addExtData({ name, dsp, code })
 }
 
@@ -25,7 +25,7 @@ export async function updateZaglushka({ name, newName, dsp, code }: NewZaglushka
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const zaglushkas = result.data
-  if (!(zaglushkas as Zaglushka[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.ZAGLUSHKA_NO_EXIST }
+  if (!(zaglushkas as Zaglushka[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
   return await materialExtService.updateExtData({ name, dsp, newName, code })
 }
 
@@ -34,6 +34,6 @@ export async function deleteZaglushka(name: string) {
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const zaglushkas = result.data
-  if (!(zaglushkas as Zaglushka[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.ZAGLUSHKA_NO_EXIST }
+  if (!(zaglushkas as Zaglushka[]).find(m => m.name === name)) return { success: false, status: 404, message: messages.MATERIAL_NO_EXIST }
   return await materialExtService.deleteExtData(name)
 }

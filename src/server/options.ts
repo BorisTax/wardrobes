@@ -9,6 +9,7 @@ import PriceServiceSQLite from './services/priceServiceSQLite.js'
 import TemplateServiceSQLite from './services/templateServiceSQLite.js'
 import SpecificationServiceSQLite from './services/specificationServiceSQLite.js'
 import MaterialServiceSQLite from './services/materialServiceSQLite.js'
+import PermissionServiceSQLite from './services/permissionServiceSQLite.js'
 
 export const JWT_SECRET = "secretkey"
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +26,7 @@ export const userServiceProvider = new UserServiceSQLite(usersPath)
 export const priceServiceProvider = new PriceServiceSQLite(specificationPath)
 export const specServiceProvider = new SpecificationServiceSQLite(specificationPath)
 export const templateServiceProvider = new TemplateServiceSQLite(templatePath)
+export const permissionServiceProvider = new PermissionServiceSQLite(usersPath)
 
 export const userRoleParser = async (req: Request, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)

@@ -55,10 +55,10 @@ export default function EditProfile() {
                 return result
             } : undefined}
             onAdd={perm?.create ? async (checked, values) => {
-                const name = values[0]
-                const code = values[1]
-                const brush = values[2]
-                if (profileList.find((p: Profile) => p.name === name && p.type === type)) { return { success: false, message: messages.PROFILE_EXIST } }
+                const name = values[0] as string
+                const code = values[1] as string
+                const brush = values[2] as string
+                if (profileList.find((p: Profile) => p.name === name && p.type === type)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addProfile({ name, type, code, brush })
                 return result
             } : undefined} />

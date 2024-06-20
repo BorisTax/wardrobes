@@ -5,9 +5,10 @@ import TextBox from "../TextBox"
 import ComboBox from "../ComboBox"
 import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
+import CheckBox from "../CheckBox"
 export type EditDataItem = {
     caption: string
-    value: string
+    value: string | boolean
     list?: string[] | Map<string, string>
     message: string
     readonly?: boolean
@@ -17,8 +18,8 @@ export type EditDataItem = {
 export type EditDataSectionProps = {
     items: EditDataItem[]
     name?: string
-    onUpdate?: (checked: boolean[], values: string[]) => Promise<{ success: boolean, message: string }>
-    onAdd?: (checked: boolean[], values: string[]) => Promise<{ success: boolean, message: string }>
+    onUpdate?: (checked: boolean[], values: (string | boolean)[]) => Promise<{ success: boolean, message: string }>
+    onAdd?: (checked: boolean[], values: (string | boolean)[]) => Promise<{ success: boolean, message: string }>
     onDelete?: (name: string | number) => Promise<{ success: boolean, message: string }>
 }
 export default function EditDataSection(props: EditDataSectionProps) {
@@ -40,10 +41,11 @@ export default function EditDataSection(props: EditDataSectionProps) {
             <div className="edit-section-grid">
                 {props.items.map((i, index) => <Fragment key={i.caption}><span className="text-end text-nowrap">{i.caption}</span>
                     {i.readonly ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
-                    {i.type === InputType.TEXT && <TextBox value={newValues[index]} disabled={!checked[index]} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
-                    {i.list && <ComboBox value={newValues[index]} items={i.list} disabled={!checked[index] || i.readonly} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
+                    {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index]} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
+                    {i.type === InputType.CHECKBOX && <CheckBox checked={newValues[index] as boolean} disabled={!checked[index]} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; return [...p] }) }} />}
+                    {i.list && <ComboBox value={newValues[index] as string} items={i.list} disabled={!checked[index] || i.readonly} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
                     {i.type === InputType.FILE && <div>
-                        <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index]} onChange={(e) => {
+                        <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]
                             let reader = new FileReader();
                             reader.onload = function () {
@@ -53,7 +55,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                             reader.readAsDataURL(file as Blob);
                         }}
                         />
-                        <input style={{ width: "200px", height: "200px", border: "1px solid black" }} name="image" type="image" alt="Нет изображения" src={newValues[index]} onClick={() => imageRef.current?.click()} />
+                        <input style={{ width: "200px", height: "200px", border: "1px solid black" }} name="image" type="image" alt="Нет изображения" src={newValues[index] as string} onClick={() => imageRef.current?.click()} />
                     </div>}
                 </Fragment>
                 )}
@@ -99,11 +101,11 @@ export default function EditDataSection(props: EditDataSectionProps) {
     </>
 }
 
-function checkFields({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: string[] }): { success: boolean, message: string } {
+function checkFields({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: (string | boolean)[] }): { success: boolean, message: string } {
     let message = ""
     const success = checked.every((c, index) => {
         if (c === false) return true
-        if (newValues[index].trim() === "") {
+        if (typeof newValues[index] === 'string' && (newValues[index] as string).trim() === "") {
             message = items[index].message
             return false
         }
@@ -112,7 +114,7 @@ function checkFields({ checked, items, newValues }: { checked: boolean[], items:
     return {success, message}
 }
 
-function getMessage({ checked, items, newValues, extValue }: { checked: boolean[], items: EditDataItem[], newValues: string[], extValue?: string }): string {
+function getMessage({ checked, items, newValues, extValue }: { checked: boolean[], items: EditDataItem[], newValues: (string | boolean)[], extValue?: string }): string {
     const msg: string[] = []
     checked.forEach((c, index) => {
         if (c) msg.push(`${items[index].caption} "${extValue || newValues[index]}"`)
@@ -120,7 +122,7 @@ function getMessage({ checked, items, newValues, extValue }: { checked: boolean[
     return `Обновить - ${msg.join(' ')} ?`
 }
 
-function getAddMessage({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: string[] }): string {
+function getAddMessage({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: (string|boolean)[] }): string {
     const msg: string[] = []
     checked.forEach((c, index) => {
         if (c) msg.push(`${items[index].caption} "${newValues[index]}"`)

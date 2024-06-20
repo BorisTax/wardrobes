@@ -5,11 +5,12 @@ import jwt from 'jsonwebtoken';
 import { UserService, events, getTokens, logoutUser, notifyActiveUsers } from '../services/userService.js';
 import { accessDenied, hashData, incorrectData } from '../functions/other.js';
 import { MyRequest, Result, Token } from '../../types/server.js';
-import { ActiveUser, PERMISSION, User } from "../../types/user.js";
+import { ActiveUser, PERMISSION, User, UserData } from "../../types/user.js";
 import { JWT_SECRET, userServiceProvider } from '../options.js';
 import EventEmitter from 'events';
 import { SERVER_EVENTS } from "../../types/enums.js";
 import { RESOURCE } from '../../types/user.js';
+import { UserState } from '../../atoms/users.js';
 
 const router = express.Router();
 export default router
@@ -83,7 +84,8 @@ router.get("/active", async (req, res) => {
     const user = (users.data as User[]).find((u: User) => u.name === t.username)
     if (user) {
       const userRole = await userService.getUserRole(user.name)
-      result.data?.push({ token: t.token, name: user.name, role: userRole, time: t.time, lastActionTime: t.lastActionTime })
+      const role = (await userService.getRoles()).data?.find(r => r.name === userRole) || {name: "", caption: ""}
+      result.data?.push({ token: t.token, name: user.name, role, time: t.time, lastActionTime: t.lastActionTime })
     }
   }
   res.status(result.status).json(result);
@@ -119,9 +121,18 @@ router.delete("/delete", async (req, res) => {
 router.get("/users", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  let result = await userService.getUsers()
-  res.status(result.status).json(result)
+  const users = (await userService.getUsers()).data || []
+  const roles = (await userService.getRoles()).data || []
+  const result: UserData[] = []
+  for(let u of users){
+    const userRole = await userService.getUserRole(u.name)
+    const role = roles.find(r => r.name === userRole) || { name: "", caption: "" }
+    const permissions = await userService.getAllUserPermissions(userRole)
+    result.push({ name: u.name, role, permissions })
+  }
+  res.status(200).json({ success: true, data: result })
 });
+
 router.get("/roles", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)

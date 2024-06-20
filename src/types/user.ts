@@ -34,8 +34,8 @@ export type User = {
 }
 export type UserData = {
     name: string
-    role: string
-    permissions: [RESOURCE, Permissions][]
+    role: UserRole
+    permissions: PERMISSIONS_SCHEMA[]
 }
 export enum UserRoles {
     ADMIN = 'ADMIN',
@@ -46,7 +46,7 @@ export enum UserRoles {
 }
 export type ActiveUser = {
     name: string
-    role: string
+    role: UserRole
     token: string
     time: number
     lastActionTime: number

@@ -33,6 +33,9 @@ export default function EditSpecificationDialog() {
     useEffect(() => {
         loadSpecList()
     }, [])
+    useEffect(() => {
+        if (!perm?.read) window.location.replace('/')
+    }, [perm])
     return <EditContainer>
                 <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
                 <EditDataSection items={editItems} onUpdate={async (checked, values) => {

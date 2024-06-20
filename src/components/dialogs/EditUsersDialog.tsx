@@ -37,24 +37,27 @@ export default function EditUsersDialog() {
                                     <div></div></>
     const onDelete: AtomCallbackResult = (result) => { showMessage(rusMessages[result.message]) }
     const userlist = users.map(u => {
-        const removeUser = u.permissions.get(RESOURCE.USERS)?.remove
+        const removeUser = perm?.remove
         const deleteButton = <div className={removeUser ? "text-center" : " text-center user-logout-button"} onClick={() => { if (removeUser) showConfirm(`Удалить пользователя ${u.name}?`, () => deleteUser({ name: u.name }, onDelete)) }}>{removeUser ? "" : "Удалить"}</div>
         return <><div>{u.name}</div>
-            <div>{u.role}</div>
+            <div>{u.role.caption}</div>
             <div>{deleteButton}</div>
         </>
     })
     const activeuserlist = activeUsers.map(u => {
         const you = u.token === token
         return <><div>{u.name}</div>
-            <div>{u.role}</div>
+            <div>{u.role.caption}</div>
             <TimeField time={u.time} />
             <TimeField time={u.lastActionTime} />
             <div className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>
         </>
     }
     )
-    return <div >
+    useEffect(() => {
+        if (!perm?.read) window.location.replace('/')
+    }, [perm])
+    return <div>
             <div className="d-flex gap-2">
                 <ImageButton title="Обновить" icon='update' onClick={() => { loadUsers(); loadActiveUsers() }} />
             {perm?.create && <ImageButton title="Добавить" icon='add' onClick={() => { addUserDialogRef.current?.showModal() }} />}

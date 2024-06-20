@@ -13,11 +13,15 @@ import { WARDROBE_KIND } from "../types/wardrobe"
 import { calculateSpecificationsAtom } from "../atoms/specification"
 import WardrobeSpecification from "./WardrobeSpecification"
 import { initFasades, loadedInitialWardrobeDataAtom, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
+import { RESOURCE } from "../types/user"
+import { userAtom } from "../atoms/users"
 
 const numbers = [0, 1, 2, 3, 4, 5, 6]
 const styles = { fontStyle: "italic", color: "gray" }
 
 export default function WardrobeCalculator() {
+    const { permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.SPECIFICATION)
     const data = useAtomValue(wardrobeDataAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
     const calculate = useSetAtom(calculateSpecificationsAtom)
@@ -40,7 +44,7 @@ export default function WardrobeCalculator() {
     }, [data, loadedInitialWardrobeData])
     return <div className="container">
         <div className="row">
-            <div className="container col-xs-12 col-sm-12 col-md-6 col-lg-4">
+            <div className={`container col-xs-12 col-sm-12 ${perm?.read ? "col-md-6 col-lg-4" : "col-md-12 col-lg-12"}`}>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
                         <div className="text-center">Основные параметры</div>
@@ -111,9 +115,9 @@ export default function WardrobeCalculator() {
                     </div>
                 </div>
             </div>
-            <div className="col-xs-12 col-sm-12 col-md-6 col-lg-8">
+            {perm?.read && <div className="col-xs-12 col-sm-12 col-md-6 col-lg-8">
                 <WardrobeSpecification />
-            </div>
+            </div>}
         </div>
     </div>
 }

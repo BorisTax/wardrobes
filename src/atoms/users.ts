@@ -1,7 +1,7 @@
 import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserRole } from "../types/user"
+import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserData, UserRole } from "../types/user"
 import { loadPriceListAtom } from "./prices"
 import { AtomCallbackResult } from "../types/atoms"
 
@@ -26,19 +26,19 @@ export const loadUserRolesAtom = atom(null, async (get,set)=>{
         set(userRolesAtom, result.data as UserRole[])
     }
 })
-export const allUsersAtom = atom<UserState[]>([])
+export const allUsersAtom = atom<UserData[]>([])
 export const activeUsersAtom = atom<ActiveUserState[]>([])
-export const loadUsersAtom = atom(null, async (get,set)=>{
+export const loadUsersAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     if (!perm?.read) return
     const result = await fetchGetData(`api/users/users?token=${token}`)
-    if(result.success){
-        set(allUsersAtom, result.data as UserState[])
+    if (result.success) {
+        set(allUsersAtom, result.data as UserData[])
     }
 })
 export const loadActiveUsersAtom = atom(null, async (get, set) => {
-    const { token, role,permissions } = get(userAtom)
+    const { token, permissions } = get(userAtom)
     if (!permissions.get(RESOURCE.USERS)?.read) return
     const result = await fetchGetData(`api/users/active?token=${token}`)
     if(result.success){

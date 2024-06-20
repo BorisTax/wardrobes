@@ -9,8 +9,12 @@ import TableData from "../TableData"
 import { SpecificationItem } from "../../types/specification"
 import { InputType, PropertyType } from "../../types/property"
 import EditContainer from "../EditContainer"
+import { userAtom } from "../../atoms/users"
+import { RESOURCE } from "../../types/user"
 type ExtPriceData = PriceData & { units: string, caption: string }
 export default function EditPriceDialog() {
+    const { permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.PRICES)
     const loadPriceList = useSetAtom(loadPriceListAtom)
     const priceList = useAtomValue(priceListAtom)
     const specList = useAtomValue(specificationDataAtom)
@@ -29,6 +33,9 @@ export default function EditPriceDialog() {
     useEffect(() => {
         loadPriceList()
     }, [])
+    useEffect(() => {
+        if (!perm?.read) window.location.replace('/')
+    }, [perm])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
         <EditDataSection items={editItems} onUpdate={async (checked, values) => {

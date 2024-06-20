@@ -6,8 +6,12 @@ import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
 import EditContainer from "../../EditContainer"
+import { userAtom } from "../../../atoms/users"
+import { RESOURCE } from "../../../types/user"
 
 export default function EditTrempel() {
+    const { permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.MATERIALS)
     const trempelNoSortedList = useAtomValue(trempelListAtom)
     const trempelList = useMemo(() => trempelNoSortedList.toSorted((b1, b2) => b1.caption > b2.caption ? 1 : -1), [trempelNoSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -25,12 +29,12 @@ export default function EditTrempel() {
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
-            onUpdate={async (checked, values) => {
+            onUpdate={perm?.update ? async (checked, values) => {
                 const usedCaption = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
                 const result = await updateTrempel({ name, caption: usedCaption, code: usedCode })
                 return result
-            }}
+            } : undefined}
         />
     </EditContainer>
 }

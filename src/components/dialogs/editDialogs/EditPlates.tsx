@@ -11,8 +11,12 @@ import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
 import EditContainer from "../../EditContainer"
+import { userAtom } from "../../../atoms/users"
+import { RESOURCE } from "../../../types/user"
 
 export default function EditPlates() {
+    const { permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.MATERIALS)
     const materialList = useAtomValue(materialListAtom)
     const [{ baseMaterial, extMaterialIndex }, setState] = useState({ baseMaterial: FasadMaterial.DSP, extMaterialIndex: 0 })
     const deleteMaterial = useSetAtom(deleteMaterialAtom)
@@ -38,20 +42,20 @@ export default function EditPlates() {
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
         </div>
         <EditDataSection name={extMaterial.name} items={editItems}
-            onUpdate={async (checked, values) => {
+            onUpdate={perm?.update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
                 const usedPurpose = checked[2] ? values[2] : MAT_PURPOSE.FASAD
                 const usedFile = checked[3] ? values[3] : ""
                 const result = await updateMaterial({ name: extMaterial.name, material: baseMaterial, newName: usedName, newCode: usedCode, image: usedFile, purpose: usedPurpose })
                 return result
-            }}
-            onDelete={async (name) => {
+            } : undefined}
+            onDelete={perm?.remove ? async (name) => {
                 const result = await deleteMaterial(extMaterial)
                 setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
                 return result
-            }}
-            onAdd={async (checked, values) => {
+            } : undefined}
+            onAdd={perm?.create ? async (checked, values) => {
                 const name = values[0]
                 const code = values[1]
                 const purpose = getMATPurpose(values[2])
@@ -59,6 +63,6 @@ export default function EditPlates() {
                 if (existMaterial(name, baseMaterial, materialList)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file)
                 return result
-            }} />
+            } : undefined} />
     </EditContainer>
 }

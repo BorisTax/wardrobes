@@ -5,7 +5,7 @@ import { User } from "../../types/user.js";
 import messages from '../messages.js';
 import { USER_TABLE_NAMES } from '../functions/other.js';
 import { Permissions, RESOURCE, UserRole } from '../../types/user.js';
-const { USERS, TOKENS, PERMISSIONS, USER_ROLES} = USER_TABLE_NAMES
+const { USERS, TOKENS, PERMISSIONS, USER_ROLES, ROLES} = USER_TABLE_NAMES
 export default class UserServiceSQLite implements IUserServiceProvider {
     dbFile: string;
     constructor(dbFile: string) {
@@ -51,5 +51,8 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     async getUserRole(username: string) : Promise<UserRole>{
         const result = await dataBaseQuery(this.dbFile, `SELECT FROM ${USER_ROLES} where user='${username}';`, {successStatusCode: 200})
         return (result?.data as UserRole[])[0] || { name: "", caption: "" }
+    }
+    async getRoles(): Promise<Result<UserRole[]>>{
+        return await dataBaseQuery(this.dbFile, `SELECT FROM ${ROLES};`, {successStatusCode: 200})
     }
 }

@@ -18,6 +18,7 @@ interface IUserAbstractService {
     getPermissions: (role: string, resource: RESOURCE) => Promise<Permissions>
     getAllUserPermissions: (role: string) => Promise<[RESOURCE, Permissions][]>
     getUserRole: (username: string) => Promise<UserRole>
+    getRoles: () => Promise<Result<UserRole[]>>
 }
 export interface IMaterialService {
     getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<ExtMaterial[]>>

@@ -119,6 +119,9 @@ export class UserService implements IUserService {
     const result = await this.provider.getUserRole(username)
     return result
   }
+  async getRoles(): Promise<Result<UserRole[]>>{
+    return await this.provider.getRoles()
+}
 }
 
 

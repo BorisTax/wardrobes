@@ -5,11 +5,10 @@ import jwt from 'jsonwebtoken';
 import { UserService, events, getTokens, logoutUser, notifyActiveUsers } from '../services/userService.js';
 import { accessDenied, hashData, incorrectData } from '../functions/other.js';
 import { MyRequest, Result, Token } from '../../types/server.js';
-import { ActiveUser, User, UserRoles } from "../../types/user.js";
+import { ActiveUser, User } from "../../types/user.js";
 import { JWT_SECRET, userServiceProvider } from '../options.js';
 import EventEmitter from 'events';
 import { SERVER_EVENTS } from "../../types/enums.js";
-import { isAdminAtLeast } from '../functions/user.js';
 import { RESOURCE } from '../../types/user.js';
 
 const router = express.Router();
@@ -135,7 +134,14 @@ router.get("/users", async (req, res) => {
   let result = await userService.getUsers()
   res.status(result.status).json(result)
 });
-
+router.get("/roles", async (req, res) => {
+  const userService = new UserService(userServiceProvider)
+  const userRole = (req as MyRequest).userRole as string;
+  const { read } = (await userService.getPermissions(userRole, RESOURCE.USERS))
+  if (!read) return accessDenied(res)
+  let result = await userService.getRoles()
+  res.status(result.status).json(result)
+});
 async function loginUser(user: User): Promise<Result<string | null>> {
   const userService = new UserService(userServiceProvider)
   const result = await userService.getUsers()

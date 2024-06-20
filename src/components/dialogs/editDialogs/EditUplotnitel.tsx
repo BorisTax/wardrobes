@@ -7,8 +7,12 @@ import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
 import { addUplotnitelAtom, deleteUplotnitelAtom, updateUplotnitelAtom, uplotnitelListAtom } from "../../../atoms/materials/uplotnitel"
 import EditContainer from "../../EditContainer"
+import { userAtom } from "../../../atoms/users"
+import { RESOURCE } from "../../../types/user"
 
 export default function EditUplotnitel() {
+    const { permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.MATERIALS)
     const noSortedList = useAtomValue(uplotnitelListAtom)
     const list = useMemo(() => noSortedList.toSorted((i1, i2) => i1.name > i2.name ? 1 : -1), [noSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -28,17 +32,17 @@ export default function EditUplotnitel() {
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
-            onUpdate={async (checked, values) => {
+            onUpdate={perm?.update ? async (checked, values) => {
                 const usedCode = checked[0] ? values[1] : ""
                 const usedCaption = checked[1] ? values[2] : ""
                 const result = await updateUplotnitel({ name, code: usedCode, caption: usedCaption })
                 return result
-            }}
-            onDelete={async (name) => {
+            } : undefined}
+            onDelete={perm?.remove ? async (name) => {
                 const result = await deleteUplotnitel(list[selectedIndex])
                 setSelectedIndex(0)
                 return result
-            }}
+            } : undefined}
             onAdd={async (checked, values) => {
                 const code = values[0]
                 const caption = values[1]

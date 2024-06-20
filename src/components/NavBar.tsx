@@ -1,31 +1,33 @@
-import User from "./User"
 import { useAtomValue, useSetAtom } from "jotai"
 import { userAtom } from "../atoms/users"
 import ImageButton from "./ImageButton"
 import MenuSeparator from "./MenuSeparator"
-import { isAdminAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { downloadDatabaseAtom } from "../atoms/database"
 import ImageLink from "./ImageLink"
+import { RESOURCE } from "../types/user"
 export default function NavBar() {
-  const user = useAtomValue(userAtom)
+  const {permissions} = useAtomValue(userAtom)
+  const permMat = permissions.get(RESOURCE.MATERIALS)
+  const permPrice = permissions.get(RESOURCE.PRICES)
+  const permSpec = permissions.get(RESOURCE.SPECIFICATION)
+  const permUsers = permissions.get(RESOURCE.USERS)
   const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   return <div className="data-navbar">
-          <ImageLink link={"combi"} caption="Комби-фасады" icon="combiButton" />
-          <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />
-      {isEditorAtLeast(user.role) ?
-        <>
-          <MenuSeparator />
-          <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />
-          <ImageLink link={"pricelist"} caption="Редактор цен" icon="editPrice" />
-          <ImageLink link={"specification"} caption="Редактор спецификации" icon="editSpecification" />
-        </>
-        : <></>}
-      {isAdminAtLeast(user.role) ?
-        <>
-          <MenuSeparator />
-          <ImageLink link={"users"} caption="Список пользователей" icon="userlistButton" />
-          <ImageButton title="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
-        </>
-        : <></>}
+    <ImageLink link={"combi"} caption="Комби-фасады" icon="combiButton" />
+    <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />
+    <>
+      <MenuSeparator />
+      {permMat?.read && <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />}
+      {permPrice?.read && <ImageLink link={"pricelist"} caption="Редактор цен" icon="editPrice" />}
+      {permSpec?.read && <ImageLink link={"specification"} caption="Редактор спецификации" icon="editSpecification" />}
+    </>
+
+    {permUsers?.read &&
+      <>
+        <MenuSeparator />
+        <ImageLink link={"users"} caption="Список пользователей" icon="userlistButton" />
+        <ImageButton title="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
+      </>
+    }
   </div>
 }

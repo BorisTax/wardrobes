@@ -1,17 +1,10 @@
 import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { Permissions, RESOURCE, UserRoles } from "../types/user"
+import { Permissions, RESOURCE, UserRole } from "../types/user"
 import { loadPriceListAtom } from "./prices"
 import { AtomCallbackResult } from "../types/atoms"
 
-export const UserRolesCaptions = {
-    [UserRoles.ANONYM]: "",
-    [UserRoles.CLIENT]: "КЛИЕНТ",
-    [UserRoles.MANAGER]: "МЕНЕДЖЕР",
-    [UserRoles.EDITOR]: "РЕДАКТОР",
-    [UserRoles.ADMIN]: "АДМИН",
-}
 
 export type UserState = {
     name: string
@@ -23,7 +16,16 @@ export type ActiveUserState = UserState & {
     time: number
     lastActionTime: number
 }
-
+export const userRolesAtom = atom<UserRole[]>([])
+export const loadUserRolesAtom = atom(null, async (get,set)=>{
+    const { token, permissions } = get(userAtom)
+    const perm = permissions.get(RESOURCE.USERS)
+    if (!perm?.read) return
+    const result = await fetchGetData(`api/users/roles?token=${token}`)
+    if(result.success){
+        set(userRolesAtom, result.data as UserRole[])
+    }
+})
 export const allUsersAtom = atom<UserState[]>([])
 export const activeUsersAtom = atom<ActiveUserState[]>([])
 export const loadUsersAtom = atom(null, async (get,set)=>{
@@ -36,21 +38,21 @@ export const loadUsersAtom = atom(null, async (get,set)=>{
     }
 })
 export const loadActiveUsersAtom = atom(null, async (get, set) => {
-    const { token, role } = get(userAtom)
-    if (role !== UserRoles.ADMIN) return
+    const { token, role,permissions } = get(userAtom)
+    if (!permissions.get(RESOURCE.USERS)?.read) return
     const result = await fetchGetData(`api/users/active?token=${token}`)
     if(result.success){
         set(activeUsersAtom, result.data as ActiveUserState[])
     }
 })
 
-export const userAtom = atom<UserState>({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "", permissions: getInitialPermissions() })
+export const userAtom = atom<UserState>({ name: "", role: "", token: "", permissions: getInitialPermissions() })
 
 export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const { token } = get(userAtom)
         const result = await fetchGetData(`api/users/verify?token=${token}`)
         if (!result.success) {
-            set(userAtom, { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "", permissions: getInitialPermissions() })
+            set(userAtom, { name: "", role: "", token: "", permissions: getInitialPermissions() })
             return
         }
 })
@@ -62,7 +64,7 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
     if (verify) {
         const result = await fetchGetData(`api/users/verify?token=${token}`)
         if(!result.success){
-            set(userAtom, { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "", permissions: getInitialPermissions()  })
+            set(userAtom, { name: "", role: "", token: "", permissions: getInitialPermissions()  })
             return
         }
     }
@@ -73,7 +75,7 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
         storeUser = { name, role, token, permissions }
         perm = new Map(permissions)
     } catch (e) {
-        storeUser = { name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "", permissions: getInitialPermissions()  }
+        storeUser = { name: "", role: "", token: "", permissions: getInitialPermissions()  }
     }
     localStorage.setItem('token', storeUser.token)
     const p = perm.get(RESOURCE.PRICES)
@@ -92,7 +94,7 @@ export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, userto
     set(loadActiveUsersAtom)
 })
 
-export const createUserAtom = atom(null, async (get: Getter, set: Setter, { name, password, role }: { name: string, password: string, role: UserRoles }, callback: AtomCallbackResult) => {
+export const createUserAtom = atom(null, async (get: Getter, set: Setter, { name, password, role }: { name: string, password: string, role: UserRole }, callback: AtomCallbackResult) => {
     const {token} = get(userAtom)
     const result = await fetchData('api/users/add', "POST", JSON.stringify({ name, password, role, token }))
     if (result.success) set(loadUsersAtom)
@@ -114,15 +116,15 @@ export function getInitialUser(): UserState {
         storeUser = jwtDecode(token) as UserState
     } catch (e) {
         storeUser = {
-            name: UserRoles.ANONYM,
-            role: UserRoles.ANONYM,
+            name: "",
+            role: "",
             token,
             permissions: getInitialPermissions()
         }
     }
     const user = {
-        name: UserRolesCaptions[storeUser.role as UserRoles],
-        role: storeUser.role as UserRoles,
+        name: storeUser.name,
+        role: storeUser.role,
         token,
         permissions: new Map(storeUser.permissions)
     }

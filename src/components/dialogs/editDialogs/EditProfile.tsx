@@ -10,8 +10,12 @@ import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
 import EditContainer from "../../EditContainer"
+import { userAtom } from "../../../atoms/users"
+import { RESOURCE } from "../../../types/user"
 
 export default function EditProfile() {
+    const { permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.MATERIALS)
     const profileAllList = useAtomValue(profileListAtom)
     const [{ type, profileIndex }, setState] = useState({ type: profileAllList[0].type, profileIndex: 0 })
     const profileList = profileAllList.filter(p => p.type === type)
@@ -38,25 +42,25 @@ export default function EditProfile() {
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, profileIndex: index })) }} />
         </div>
         <EditDataSection name={profile.name} items={editItems}
-            onUpdate={async (checked, values) => {
+            onUpdate={perm?.update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
                 const usedBrush = checked[2] ? values[2] : ""
                 const result = await updateProfile({ name, type, newName: usedName, newCode: usedCode, newBrush: usedBrush })
                 return result
-            }}
-            onDelete={async (name) => {
+            } : undefined}
+            onDelete={perm?.remove ? async (name) => {
                 const result = await deleteProfile(profile)
                 setState((prev) => ({ ...prev, profileIndex: 0 }))
                 return result
-            }}
-            onAdd={async (checked, values) => {
+            } : undefined}
+            onAdd={perm?.create ? async (checked, values) => {
                 const name = values[0]
                 const code = values[1]
                 const brush = values[2]
                 if (profileList.find((p: Profile) => p.name === name && p.type === type)) { return { success: false, message: messages.PROFILE_EXIST } }
                 const result = await addProfile({ name, type, code, brush })
                 return result
-            }} />
+            } : undefined} />
     </EditContainer>
 }

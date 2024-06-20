@@ -7,8 +7,12 @@ import { InputType } from "../../../types/property"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
 import EditContainer from "../../EditContainer"
+import { userAtom } from "../../../atoms/users"
+import { RESOURCE } from "../../../types/user"
 
 export default function EditBrush() {
+    const { permissions } = useAtomValue(userAtom)
+    const perm = permissions.get(RESOURCE.MATERIALS)
     const brushNoSortedList = useAtomValue(brushListAtom)
     const brushList = useMemo(() => brushNoSortedList.toSorted((b1, b2) => b1.name > b2.name ? 1 : -1), [brushNoSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -28,24 +32,24 @@ export default function EditBrush() {
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         <EditDataSection name={name} items={editItems}
-            onUpdate={async (checked, values) => {
+            onUpdate={perm?.update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
                 const result = await updateBrush({ name, newName: usedName, code: usedCode })
                 return result
-            }}
-            onDelete={async (name) => {
+            } : undefined}
+            onDelete={perm?.remove ? async (name) => {
                 const index = brushList.findIndex((p: Brush) => p.name === name)
                 const result = await deleteBrush(brushList[index])
                 setSelectedIndex(0)
                 return result
-            }}
-            onAdd={async (checked, values) => {
+            } : undefined}
+            onAdd={perm?.create ? async (checked, values) => {
                 const name = values[0]
                 const code = values[1]
                 if (brushList.find((p: Brush) => p.name === name)) { return { success: false, message: messages.BRUSH_EXIST } }
                 const result = await addBrush({ name, code })
                 return result
-            }} />
+            } : undefined} />
     </EditContainer>
 }

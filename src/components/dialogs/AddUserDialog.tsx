@@ -1,18 +1,16 @@
 import { useState } from "react"
-import { useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import useMessage from "../../custom-hooks/useMessage"
 import useConfirm from "../../custom-hooks/useConfirm"
 import ImageButton from "../ImageButton"
 import ComboBox from "../ComboBox"
-import { UserRolesCaptions, createUserAtom } from "../../atoms/users"
-import { UserRoles } from "../../types/user"
+import { createUserAtom, userRolesAtom } from "../../atoms/users"
 import { rusMessages } from "../../functions/messages"
 type DialogProps = {
     dialogRef: React.RefObject<HTMLDialogElement>
     setLoading: (state: boolean) => void
 }
 
-const roles = [UserRoles.CLIENT, UserRoles.MANAGER, UserRoles.EDITOR]
 const minNameLen = 3
 const minPassLen = 6
 export default function AddUserDialog({ dialogRef, setLoading }: DialogProps ) {
@@ -22,7 +20,8 @@ export default function AddUserDialog({ dialogRef, setLoading }: DialogProps ) {
     const showMessage = useMessage()
     const showConfirm = useConfirm()
     const createUser = useSetAtom(createUserAtom)
-    const rolesCaptions = roles.map(r => UserRolesCaptions[r])
+    const roles = useAtomValue(userRolesAtom)
+    const rolesCaptions = roles.map(r => r.caption)
     const passwordCorrect = checkPassword(password)
     const create = () => {
         if (password.length < 6) return showMessage("Пароль слишком короткий")

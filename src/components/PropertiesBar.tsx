@@ -13,7 +13,6 @@ import { materialListAtom } from "../atoms/materials/materials"
 import { Materials, SandBases } from "../functions/materials"
 import { totalPriceAtom } from "../atoms/specification"
 import { userAtom } from "../atoms/users"
-import { isClientAtLeast, isEditorAtLeast } from "../server/functions/user"
 import { getInitialBackImageProps } from "../classes/FasadState"
 import { settingsAtom } from "../atoms/settings"
 import { copyFasadDialogAtom, showSpecificationDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
@@ -23,17 +22,20 @@ import TextBox from "./TextBox"
 import { useMemo } from "react"
 import ImageLink from "./ImageLink"
 import { loadedInitialStateAtom } from "../atoms/app"
+import { RESOURCE } from "../types/user"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 const directions: Map<string, string> = new Map()
 export default function PropertiesBar() {
-    const { role } = useAtomValue(userAtom)
+    const { role, permissions } = useAtomValue(userAtom)
+    const permPrice = permissions.get(RESOURCE.PRICES)
+    const permSpec = permissions.get(RESOURCE.SPECIFICATION)
+    const permTemp = permissions.get(RESOURCE.TEMPLATE)
     const fasad = useAtomValue(activeFasadAtom)
     const rootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
     const { minSize } = useAtomValue(settingsAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
     const matList = useAtomValue(materialListAtom)
-    const loadedInitialState = useAtomValue(loadedInitialStateAtom)
     const materialList = useMemo(() => matList.filter(m => m.purpose !== MAT_PURPOSE.CORPUS), [matList])
     const totalPrice = useAtomValue(totalPriceAtom)
     const setHeight = useSetAtom(setHeightAtom)
@@ -51,20 +53,20 @@ export default function PropertiesBar() {
     const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
     const extMaterialsName = useMemo(() => (materialList.filter(mat => mat.material === material) || [{ name: "", material: "" }]).map((m: ExtMaterial) => m.name), [materialList, material])
     const fasadValue = fasad && totalPrice[rootFasadIndex]?.toFixed(2)
-    const fasadPrice = isClientAtLeast(role) ? <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div> : <></>
+    const fasadPrice = permPrice?.read && <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div>
     const onlyFasad = !!fasad && fasad.Children.length === 0
     const stretchImage = fasad?.BackImageProps.size === "100% 100%"
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}> 
         <div className="property-bar-header">
             Параметры фасада
             <div className="d-flex gap-1">
-                {isClientAtLeast(role) &&
+                {permSpec?.read &&
                     <>
                         <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
                         <ImageLink link={"schema"} title="Cхема" icon="schemaButton" />
                     </>}
-                {isEditorAtLeast(role) && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
-                {isClientAtLeast(role) && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
+                {permTemp?.create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
+                {permTemp?.read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
                 {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />}
                 {onlyFasad && hasFasadImage(fasad) && <ToggleButton
                     title={stretchImage ? "Сбросить масштабирование" : "Подогнать изображение под размер"}

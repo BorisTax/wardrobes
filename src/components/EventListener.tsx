@@ -1,14 +1,14 @@
 import { useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { loadActiveUsersAtom, standbyUserAtom, userAtom, verifyUserAtom } from "../atoms/users";
-import { UserRoles } from "../types/user";
+import { getInitialPermissions, loadActiveUsersAtom, standbyUserAtom, userAtom, verifyUserAtom } from "../atoms/users";
+import { RESOURCE, UserRoles } from "../types/user";
 import { waitForMessageFromServer } from "../functions/user";
 import useMessage from "../custom-hooks/useMessage";
 import { SERVER_EVENTS } from "../types/enums";
-import { fetchGetData } from "../functions/fetch";
 
 export default function EventListener() {
   const [user, setUserDirectly] = useAtom(userAtom)
+  const perm = user.permissions.get(RESOURCE.USERS)
   const loadActiveUsers = useSetAtom(loadActiveUsersAtom)
   const verifyUser = useSetAtom(verifyUserAtom)
   const standbyUser = useSetAtom(standbyUserAtom)
@@ -21,18 +21,18 @@ export default function EventListener() {
     return () => { clearInterval(timer) }
   }, [user])
   useEffect(() => {
-    if (user.role !== UserRoles.ANONYM) waitForMessageFromServer(user.token, (message, data) => {
+    if (user.role.name !== UserRoles.ANONYM) waitForMessageFromServer(user.token, (message, data) => {
       switch (message) {
         case SERVER_EVENTS.LOGOUT:
-          if (user.role === UserRoles.ANONYM) return true
+          if (user.role.name === "") return true
           if (data === user.token) {
-            setUserDirectly({ name: UserRoles.ANONYM, role: UserRoles.ANONYM, token: "" })
+            setUserDirectly({ name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() })
             showMessage("Сеанс завершен администратором")
             return true
-          } else if (user.role === UserRoles.ADMIN) loadActiveUsers()
+          } else if (perm?.read) loadActiveUsers()
           break;
         case SERVER_EVENTS.UPDATE_ACTIVE_USERS:
-          if (user.role === UserRoles.ADMIN) loadActiveUsers()
+          if (perm?.read) loadActiveUsers()
           break;
       }
       return false

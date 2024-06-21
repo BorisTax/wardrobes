@@ -1,5 +1,5 @@
-import { useToolTip } from '../custom-hooks/useToolTip';
-import ImageButton from './inputs/ImageButton';
+import { useToolTip } from './useToolTip';
+import ImageButton from './ImageButton';
 
 type ButtonProps = {
         caption: string

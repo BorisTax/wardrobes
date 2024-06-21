@@ -3,7 +3,7 @@ services:
   app:
     build: .
     restart: always
-    image: boristax/comby-fasades:v0.2.2
+    image: boristax/comby-fasades:v0.2.3
     ports:
       - "5555:5000"
     command: npm run start

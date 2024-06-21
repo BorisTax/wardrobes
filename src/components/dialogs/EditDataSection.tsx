@@ -6,6 +6,7 @@ import ComboBox from "../inputs/ComboBox"
 import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
 import CheckBox from "../inputs/CheckBox"
+import { MAX_FILE_SIZE } from "../../options"
 export type EditDataItem = {
     caption: string
     value: string | boolean
@@ -47,6 +48,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     {i.type === InputType.FILE && <div>
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]
+                            if (file && file.size > MAX_FILE_SIZE) { showMessage("Файл слишком большой (макс. 2МБ)"); return }
                             let reader = new FileReader();
                             reader.onload = function () {
                                 setNewValues(prev => { const p = [...prev]; p[index] = reader?.result as string || ""; return [...p] })

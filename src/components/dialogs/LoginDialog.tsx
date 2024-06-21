@@ -19,7 +19,7 @@ export default function LoginDialog() {
         const onResolve = (r: Result<string | null>) => { setUser(r.data as string); closeDialog() }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }
         const onCatch = () => { setState({ loading: false, message: "Ошибка сервера" }) }
-        onFetch('api/users/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)
+        onFetch('/api/users/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)
     }
     useEffect(() => {
         setLoginDialogRef(dialogRef)

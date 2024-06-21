@@ -1,7 +1,7 @@
 import { FetchResult, fetchGetData } from "./fetch.js";
 
 export async function waitForMessageFromServer(token: string, onMessage: (message: string, data: string) => boolean) {
-    const result: FetchResult<[] | string> = await fetchGetData(`api/users/events?token=${token}`)
+    const result: FetchResult<[] | string> = await fetchGetData(`/api/users/events?token=${token}`)
     if (result.success) {
         if (onMessage(result.message as string, result.data as string)) return
     }

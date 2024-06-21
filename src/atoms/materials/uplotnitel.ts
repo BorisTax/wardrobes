@@ -10,7 +10,7 @@ export const uplotnitelListAtom = atom<Uplotnitel[]>([])
 export const loadUplotnitelListAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/uplotnitel?token=${token}`)
+        const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/uplotnitel?token=${token}`)
         if (result.success) set(uplotnitelListAtom, result.data as Uplotnitel[]);
     } catch (e) { console.error(e) }
 })
@@ -18,7 +18,7 @@ export const loadUplotnitelListAtom = atom(null, async (get, set) => {
 export const deleteUplotnitelAtom = atom(null, async (get, set, uplotnitel: Uplotnitel) => {
     const user = get(userAtom)
     try {
-        const result = await fetchData("api/materials/uplotnitel", "DELETE", JSON.stringify({ name: uplotnitel.name, token: user.token }))
+        const result = await fetchData("/api/materials/uplotnitel", "DELETE", JSON.stringify({ name: uplotnitel.name, token: user.token }))
         await set(loadUplotnitelListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
@@ -35,7 +35,7 @@ export const addUplotnitelAtom = atom(null, async (get, set, { name, code }: Upl
         [TableFields.TOKEN]: user.token
     }
     try {
-        const result = await fetchData("api/materials/uplotnitel", "POST", JSON.stringify(data))
+        const result = await fetchData("/api/materials/uplotnitel", "POST", JSON.stringify(data))
         await set(loadUplotnitelListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
@@ -53,7 +53,7 @@ export const updateUplotnitelAtom = atom(null, async (get, set, { name, caption,
         [TableFields.TOKEN]: user.token
     }
     try {
-        const result = await fetchData("api/materials/uplotnitel", "PUT", JSON.stringify(data))
+        const result = await fetchData("/api/materials/uplotnitel", "PUT", JSON.stringify(data))
         await set(loadUplotnitelListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {

@@ -47,7 +47,7 @@ export const loadedInitialWardrobeDataAtom = atom(false)
 export const loadInitialWardrobeDataAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
     set(loadedInitialWardrobeDataAtom, false)
-    const result: FetchResult<WardrobeData> = await fetchGetData(`api/wardrobe/initialWardrobeData?token=${token}`)
+    const result: FetchResult<WardrobeData> = await fetchGetData(`/api/wardrobe/initialWardrobeData?token=${token}`)
     const data = result.data as WardrobeData
     if (result.success) {
         set(setWardrobeDataAtom, () => data)

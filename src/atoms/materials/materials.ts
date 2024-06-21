@@ -13,7 +13,7 @@ export const materialListAtom = atom<ExtMaterial[]>([])
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
     const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/material?token=${token}`)
+        const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/material?token=${token}`)
         if (!result.success) return
         set(materialListAtom, result.data as ExtMaterial[])
         const { rootFasades } = get(appDataAtom)
@@ -31,7 +31,7 @@ export const imageUrlAtom = atom((get) => {
 export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial) => {
     const user = get(userAtom)
     try{
-        const result = await fetchData("api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
+        const result = await fetchData("/api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
         await set(loadMaterialListAtom)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 
@@ -51,7 +51,7 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
         [TableFields.TOKEN]: user.token
     }
     try {
-        const result = await fetchData("api/materials/material", "POST", JSON.stringify(data))
+        const result = await fetchData("/api/materials/material", "POST", JSON.stringify(data))
         await set(loadMaterialListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
@@ -72,7 +72,7 @@ export const updateMaterialAtom = atom(null, async (get, set, { name, material, 
         [TableFields.TOKEN]: user.token
     }
     try {
-        const result = await fetchData("api/materials/material", "PUT", JSON.stringify(data))
+        const result = await fetchData("/api/materials/material", "PUT", JSON.stringify(data))
         await set(loadMaterialListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 

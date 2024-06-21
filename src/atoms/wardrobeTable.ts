@@ -12,7 +12,7 @@ export const loadWardrobeTableAtom = atom(null, async (get, set, kind: WARDROBE_
     formData[TableFields.KIND] = kind
     formData[TableFields.TOKEN] = token
     try {
-        const result: FetchResult<WardrobeDetailTable[]> = await fetchData('api/wardrobeTable', "POST", JSON.stringify(formData))
+        const result: FetchResult<WardrobeDetailTable[]> = await fetchData('/api/wardrobeTable', "POST", JSON.stringify(formData))
         set(wardrobeTableAtom, result.data as WardrobeDetailTable[])
     } catch (e) { console.error(e) }
 })

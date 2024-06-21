@@ -12,7 +12,7 @@ export const activeProfileIndexAtom = atom(0)
 export const loadProfileListAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData(`api/materials/profile?token=${token}`)
+        const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/profile?token=${token}`)
         if(result.success) set(profileListAtom, result.data as Profile[]);
     } catch (e) { console.error(e) }
 })
@@ -20,7 +20,7 @@ export const loadProfileListAtom = atom(null, async (get, set) => {
 export const deleteProfileAtom = atom(null, async (get, set, profile: Profile) => {
     const user = get(userAtom)
     try{
-        const result = await fetchData("api/materials/profile", "DELETE", JSON.stringify({ name: profile.name, type: profile.type, token: user.token }))
+        const result = await fetchData("/api/materials/profile", "DELETE", JSON.stringify({ name: profile.name, type: profile.type, token: user.token }))
         await set(loadProfileListAtom)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 
@@ -39,7 +39,7 @@ export const addProfileAtom = atom(null, async (get, set, profile: Profile) => {
         [TableFields.TOKEN]: user.token
     }
     try {
-        const result = await fetchData("api/materials/profile", "POST", JSON.stringify(data))
+        const result = await fetchData("/api/materials/profile", "POST", JSON.stringify(data))
         await set(loadProfileListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
@@ -59,7 +59,7 @@ export const updateProfileAtom = atom(null, async (get, set, { name, type, newCo
         [TableFields.TOKEN]: user.token
     }
     try {
-        const result = await fetchData("api/materials/profile", "PUT", JSON.stringify(data))
+        const result = await fetchData("/api/materials/profile", "PUT", JSON.stringify(data))
         await set(loadProfileListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 

@@ -14,13 +14,13 @@ import { WARDROBE_TYPE } from '../types/wardrobe';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
-    const result: FetchResult<[] | string> = await fetchGetData(`api/version`)
+    const result: FetchResult<[] | string> = await fetchGetData(`/api/version`)
     if (result.success) set(versionAtom, result.data as string)
 })
 export const loadedInitialStateAtom = atom(false)
 export const loadInitialStateAtom = atom(null, async (get, set) => {
     set(loadedInitialStateAtom, false)
-    const result: FetchResult<InitialAppState> = await fetchGetData(`api/wardrobe/initial`)
+    const result: FetchResult<InitialAppState> = await fetchGetData(`/api/wardrobe/initial`)
     if (result.success){
         const { wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial } = result.data as InitialAppState
         const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial)

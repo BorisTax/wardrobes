@@ -19,7 +19,7 @@ export const specificationInProgress = atom(false)
 export const loadSpecificationListAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData('api/specification?token=' + token)
+        const result: FetchResult<[] | string> = await fetchGetData('/api/specification?token=' + token)
         if (!result.success) set(specificationDataAtom, []); else
             set(specificationDataAtom, result.data as SpecificationData[])
     } catch (e) { console.error(e) }
@@ -36,7 +36,7 @@ export const updateSpecificationListAtom = atom(null, async (get, set, { name, c
     if (id !== undefined) formData[TableFields.ID] = id
     formData[TableFields.TOKEN] = user.token
     try {
-        const result = await fetchData("api/specification", "PUT", JSON.stringify(formData))
+        const result = await fetchData("/api/specification", "PUT", JSON.stringify(formData))
         await set(loadSpecificationListAtom)
         const data = get(wardrobeDataAtom)
         set(calculateSpecificationsAtom, data)
@@ -60,7 +60,7 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, data: War
     formData[TableFields.TOKEN] = token
     set(specificationInProgress, true)
     try {
-        const result: FetchResult<SpecificationMultiResult> = await fetchData('api/specification/data', "POST", JSON.stringify(formData))
+        const result: FetchResult<SpecificationMultiResult> = await fetchData('/api/specification/data', "POST", JSON.stringify(formData))
         if (!result.success) set(specificationAtom, [...getInitSpecification()]); else
             set(specificationAtom, result.data as SpecificationMultiResult)
             set(specificationInProgress, false)
@@ -74,7 +74,7 @@ export const calculateCombiSpecificationsAtom = atom(null, async (get, set, data
     formData[TableFields.TOKEN] = token
     set(specificationInProgress, true)
     try {
-        const result: FetchResult<SpecificationResult[][]> = await fetchData('api/specification/combidata', "POST", JSON.stringify(formData))
+        const result: FetchResult<SpecificationResult[][]> = await fetchData('/api/specification/combidata', "POST", JSON.stringify(formData))
         if (result.success) {
             set(specificationCombiAtom, result.data as SpecificationResult[][])
             set(specificationInProgress, false)

@@ -6,37 +6,6 @@ import { Response } from "express"
 import { MyRequest, Result } from '../../types/server.js';
 import { UserRoles } from "../../types/user.js";
 
-export enum MAT_TABLE_NAMES {
-    MATERIALS = 'materials',
-    EXTMATERIALS = 'extmaterials',
-    PROFILE_COLORS = 'profilecolors',
-    BRUSH = 'brush',
-    EDGE = 'edge',
-    TREMPEL = 'trempel',
-    ZAGLUSHKA = 'zaglushka',
-    UPLOTNITEL = 'uplotnitel'
-}
-
-export enum SPEC_TABLE_NAMES {
-    PRICELIST = 'pricelist',
-    MATERIALS = 'materials',
-    UNITS = 'units',
-    WARDROBES = 'wardrobes',
-    DETAILS = 'details',
-    DETAIL_TABLE = 'detail_table',
-    DVP_TEMPLATES = 'dvp_templates',
-    FURNITURE = 'furniture',
-}
-
-export enum USER_TABLE_NAMES {
-    USERS = 'users',
-    USERROLES = 'userroles',
-    TOKENS = 'tokens',
-    ROLES = 'roles',
-    RESOURCES = 'resources',
-    PERMISSIONS = 'permissions',
-    USER_ROLES = 'user_roles',
-}
 export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
@@ -63,6 +32,49 @@ export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusC
     }
     )
 }
+
+export function dataBaseTransaction<T>(dbFile: string, queries: string[], { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
+    return new Promise((resolve) => {
+        const db = new sqlite3.Database(dbFile, (err) => {
+            if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
+            db.serialize(()=>{
+                db.run("BEGIN TRANSACTION");
+                queries.forEach((query, index) => {
+                    if (!query) { resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.run("ROLLBACK"); db.close(); return }
+                    try {
+                        db.all(query, (err: Error, rows: []) => {
+                            if (err) {
+                                resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
+                                console.log(query)
+                                console.log(err.message)
+                                db.run("ROLLBACK");
+                                db.close();
+                                return
+                            }
+                            else { 
+                                if (index === queries.length - 1) {
+                                    db.run("COMMIT");
+                                    resolve({ success: true, status: successStatusCode, data: rows as T, message: successMessage })
+                                    db.close()
+                                }
+                            }
+                        });
+                    } catch (e: any) {
+                        db.run("ROLLBACK");
+                        resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: e });
+                        console.log(query)
+                        db.close();
+                    }
+                })
+            })
+
+        });
+    }
+    )
+}
+
+
+
 
 export async function moveFile(sourcefile: string, destfile: string): Promise<{ copy: boolean, delete: boolean }> {
     const result = { copy: false, delete: false }

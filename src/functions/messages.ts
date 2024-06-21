@@ -36,6 +36,10 @@ export const rusMessages = {
   [messages.SERVER_ERROR]: "Ошибка сервера",
   [messages.USER_NAME_EXIST]: "Пользователь существует",
 
+  [messages.ROLE_ADDED]: "Роль добавлена",
+  [messages.ROLE_DELETED]: "Роль удалена",
+  [messages.ROLE_EXIST]: "Роль уже сужествует",
+
   [messages.PRICELIST_NAME_NO_EXIST]: "Материал не существует в базе",
   [messages.PRICELIST_PRICE_INCORRECT]: "Некорректная цена",
   [messages.PRICELIST_MARKUP_INCORRECT]: "Некорректная наценка",

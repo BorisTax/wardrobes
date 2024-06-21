@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { PropertyType, RegExp } from "../types/property"
+import { PropertyType, RegExp } from "../../types/property"
 const { NUMBER, INTEGER_POSITIVE_NUMBER } = PropertyType
 
 export type TextBoxProps = {

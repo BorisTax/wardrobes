@@ -285,6 +285,10 @@ $header_button_height: 32px;
   background-image: url($icon-url+'add.png');
   @include instruments_button();
 }
+.delete {
+  background-image: url($icon-url+'delete.png');
+  @include instruments_button();
+}
 .pdf {
   background-image: url($icon-url+'pdf.png');
   @include instruments_button();

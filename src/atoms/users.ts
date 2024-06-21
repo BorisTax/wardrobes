@@ -8,7 +8,7 @@ import { AtomCallbackResult } from "../types/atoms"
 
 export type UserState = {
     name: string
-    role: { name: string, caption: string }
+    role: UserRole
     token: string
     permissions: Map<RESOURCE, Permissions>
 }
@@ -17,12 +17,6 @@ export type ActiveUserState = UserState & {
     lastActionTime: number
 }
 export const userRolesAtom = atom<UserRole[]>([])
-export const userRolesAsMap = atom((get) => {
-    const userRoles = get(userRolesAtom)
-    const m = new Map()
-    userRoles.forEach(u => m.set(u.name, u.caption))
-    return m
-})
 export const loadUserRolesAtom = atom(null, async (get,set)=>{
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
@@ -32,6 +26,7 @@ export const loadUserRolesAtom = atom(null, async (get,set)=>{
         set(userRolesAtom, result.data as UserRole[])
     }
 })
+
 export const allUsersAtom = atom<UserData[]>([])
 export const activeUsersAtom = atom<ActiveUserState[]>([])
 export const loadUsersAtom = atom(null, async (get, set) => {
@@ -52,13 +47,13 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
     }
 })
 
-export const userAtom = atom<UserState>({ name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions() })
+export const userAtom = atom<UserState>({ name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() })
 
 export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const { token } = get(userAtom)
         const result = await fetchGetData(`api/users/verify?token=${token}`)
         if (!result.success) {
-            set(userAtom, { name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions() })
+            set(userAtom, { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() })
             return
         }
 })
@@ -70,17 +65,17 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
     if (verify) {
         const result = await fetchGetData(`api/users/verify?token=${token}`)
         if(!result.success){
-            set(userAtom, { name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions()  })
+            set(userAtom, { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions()  })
             return
         }
     }
-    let storeUser: UserState = { name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions() }
+    let storeUser: UserState = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
     try {
         const { name, role, permissions } = jwtDecode(token) as UserState & { permissions: PERMISSIONS_SCHEMA[] }
         storeUser = { name, role, token, permissions }
         storeUser.permissions = permissionsToMap(permissions)
     } catch (e) {
-        storeUser = { name: "", role: { name: "", caption: "" }, token: "", permissions: getInitialPermissions()  }
+        storeUser = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions()  }
     }
     localStorage.setItem('token', storeUser.token)
     const p = storeUser.permissions.get(RESOURCE.PRICES)
@@ -115,6 +110,22 @@ export const deleteUserAtom = atom(null, async (get: Getter, set: Setter, { name
     callback({ success: result.success as boolean, message: result.message  as string })
 })
 
+export const createRoleAtom = atom(null, async (get: Getter, set: Setter, { name }: { name: string }) => {
+    const {token} = get(userAtom)
+    const result = await fetchData('api/users/addRole', "POST", JSON.stringify({ name, token }))
+    if (result.success) set(loadUserRolesAtom)
+    return {success: result.success, message: result.message}
+})
+
+export const deleteRoleAtom = atom(null, async (get: Getter, set: Setter, { name }: { name: string}) => {
+    const {token} = get(userAtom)
+    const result = await fetchData('api/users/deleteRole', "DELETE", JSON.stringify({ name, token }))
+    if (result.success) {
+        set(loadUserRolesAtom)
+    }
+    return {success: result.success, message: result.message}
+})
+
 export function getInitialUser(): UserState {
     const token = localStorage.getItem("token") || ""
     let storeUser: UserState
@@ -123,7 +134,7 @@ export function getInitialUser(): UserState {
     } catch (e) {
         storeUser = {
             name: "",
-            role: { name: "", caption: "" },
+            role: { name: "" },
             token,
             permissions: getInitialPermissions()
         }

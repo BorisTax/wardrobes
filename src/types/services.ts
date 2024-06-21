@@ -20,6 +20,8 @@ interface IUserAbstractService {
     getAllUserPermissions: (role: string) => Promise<PERMISSIONS_SCHEMA[]>
     getUserRole: (username: string) => Promise<string>
     getRoles: () => Promise<Result<UserRole[]>>
+    addRole: (role: string) => Promise<Result<null>>
+    deleteRole: (role: string) => Promise<Result<null>>
 }
 export interface IMaterialService {
     getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<ExtMaterial[]>>

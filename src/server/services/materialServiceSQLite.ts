@@ -3,7 +3,7 @@ import { ExtMaterialQuery, Result } from '../../types/server.js';
 import { IMaterialService } from '../../types/services.js';
 import { dataBaseQuery } from '../functions/other.js';
 import messages from '../messages.js';
-import { MAT_TABLE_NAMES } from '../functions/other.js';
+import { MAT_TABLE_NAMES } from '../../types/schemas.js';
 import { FasadMaterial } from '../../types/enums.js';
 const { EXTMATERIALS, PROFILE_COLORS } = MAT_TABLE_NAMES
 export default class MaterialServiceSQLite implements IMaterialService {

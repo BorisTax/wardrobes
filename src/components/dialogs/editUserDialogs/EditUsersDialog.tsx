@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
-import ImageButton from "../../ImageButton"
+import ImageButton from "../../inputs/ImageButton"
 import { activeUsersAtom, allUsersAtom, deleteUserAtom, loadActiveUsersAtom, loadUsersAtom, logoutUserAtom, userAtom } from "../../../atoms/users"
 import { timeToString } from "../../../functions/user"
 import AddUserDialog from "./AddUserDialog"
@@ -11,6 +11,7 @@ import { AtomCallbackResult } from "../../../types/atoms"
 import { rusMessages } from "../../../functions/messages"
 import EditPermissionsDialog from "./EditPermissionsDialog"
 import TableData from "../../TableData"
+import AddUserRoleDialog from "./AddUserRoleDialog"
 
 enum ListType {
     REGISTERED = "REGISTERED",
@@ -37,12 +38,12 @@ export default function EditUsersDialog() {
     const userlist = users.map(u => {
         const removeUser = perm?.remove
         const deleteButton = <div className={removeUser ? "text-center user-logout-button" : "text-center"} onClick={() => { if (removeUser) showConfirm(`Удалить пользователя ${u.name}?`, () => deleteUser({ name: u.name }, onDelete)) }}>{removeUser ? "Удалить" : ""}</div>
-        return [u.name, u.role.caption, deleteButton]
+        return [u.name, u.role.name, deleteButton]
     })
     const activeuserlist = activeUsers.map(u => {
         const you = u.token === token
         return [u.name,
-        u.role.caption,
+        u.role.name,
         <TimeField time={u.time} />,
         <TimeField time={u.lastActionTime} />,
         <div className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>]

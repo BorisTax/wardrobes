@@ -11,7 +11,7 @@ import { combineColors } from "../../functions/schema"
 import { FasadMaterial } from "../../types/enums"
 import Fasad from '../../classes/Fasad'
 import FasadSchemaSection from '../fasad/FasadSchemaSection'
-import ImageButton from '../ImageButton'
+import ImageButton from '../inputs/ImageButton'
 
 export default function SchemaDialog() {
     const rerender = useAtomValue(rerenderDialogAtom)

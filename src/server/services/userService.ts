@@ -27,11 +27,11 @@ const clearExpiredTokens = () => {
 
 setInterval(clearExpiredTokens, 60000)
 
-export function notifyActiveUsers(){
+export function notifyActiveUsers() {
   events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS))
 }
-export function logoutUser(token: string){
-  events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.LOGOUT,  token)) 
+export function logoutUser(token: string) {
+  events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.LOGOUT, token))
 }
 export class UserService implements IUserService {
   provider: IUserServiceProvider
@@ -41,7 +41,7 @@ export class UserService implements IUserService {
   async getUsers(): Promise<Result<User[]>> {
     return await this.provider.getUsers()
   }
-  
+
   async getUser(token: string): Promise<User | undefined> {
     const tokenList = await this.getTokens()
     if (!tokenList.success) return undefined
@@ -109,19 +109,27 @@ export class UserService implements IUserService {
     if (user) return { success: false, status: 409, message: messages.USER_NAME_EXIST }
     return { success: true, status: 200, message: messages.USER_NAME_ALLOWED }
   }
-  async getPermissions(role: string, resource: RESOURCE): Promise<Permissions>{
+  async getPermissions(role: string, resource: RESOURCE): Promise<Permissions> {
     return this.provider.getPermissions(role, resource)
   }
-  async getAllUserPermissions(role: string): Promise<PERMISSIONS_SCHEMA[]>{
+  async getAllUserPermissions(role: string): Promise<PERMISSIONS_SCHEMA[]> {
     return this.provider.getAllUserPermissions(role)
-}
+  }
   async getUserRole(username: string): Promise<string> {
     const result = await this.provider.getUserRole(username)
     return result
   }
-  async getRoles(): Promise<Result<UserRole[]>>{
+  async getRoles(): Promise<Result<UserRole[]>> {
     return await this.provider.getRoles()
-}
+  }
+  async addRole(name: string): Promise<Result<null>> {
+    const roles = (await this.provider.getRoles()).data
+    if (roles?.find(r => r.name === name)) return { success: false, status: 409, message: messages.ROLE_EXIST }
+    return this.provider.addRole(name)
+  }
+  async deleteRole(name: string): Promise<Result<null>> {
+    return this.provider.deleteRole(name)
+  }
 }
 
 

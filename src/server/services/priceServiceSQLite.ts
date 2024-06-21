@@ -2,7 +2,7 @@ import { dataBaseQuery } from '../functions/other.js'
 import { IPriceServiceProvider } from '../../types/services.js';
 import { Result, PriceData } from '../../types/server.js';
 import messages from '../messages.js';
-import { SPEC_TABLE_NAMES } from '../functions/other.js';
+import { SPEC_TABLE_NAMES } from '../../types/schemas.js';
 const { PRICELIST } = SPEC_TABLE_NAMES
 export default class PriceServiceSQLite implements IPriceServiceProvider {
     dbFile: string;

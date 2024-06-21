@@ -1,4 +1,5 @@
-import { USER_TABLE_NAMES, dataBaseQuery } from '../functions/other.js'
+import { dataBaseQuery } from '../functions/other.js'
+import { USER_TABLE_NAMES } from '../../types/schemas.js';
 import { IPermissionServiceProvider } from '../../types/services.js';
 import { Result } from '../../types/server.js';
 import messages from '../messages.js';

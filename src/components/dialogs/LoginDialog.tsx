@@ -4,7 +4,7 @@ import { setUserAtom } from "../../atoms/users"
 import { loginDialogAtom } from "../../atoms/dialogs"
 import onFetch from "../../functions/fetch"
 import { Result } from "../../types/server"
-import CheckBox from "../CheckBox"
+import CheckBox from "../inputs/CheckBox"
 
 export default function LoginDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)

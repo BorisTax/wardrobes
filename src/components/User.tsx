@@ -1,6 +1,6 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { getInitialUser, logoutAtom, setUserAtom, userAtom, userRolesAtom } from "../atoms/users";
+import { getInitialUser, logoutAtom, setUserAtom, userAtom } from "../atoms/users";
 import { loginDialogAtom } from "../atoms/dialogs";
 import useConfirm from "../custom-hooks/useConfirm";
 import { versionAtom } from "../atoms/app";
@@ -25,7 +25,7 @@ export default function User() {
         {user.role.name === "" ? loginButton :<>
             <div className="d-flex flex-column align-items-center p-0">
                 <div>{user.name}</div>
-                <div>{user.role.caption}</div>
+                <div>{user.role.name}</div>
             </div>
              {logoutButton}
         </>}

@@ -1,9 +1,9 @@
-import { dataBaseQuery, hashData } from '../functions/other.js'
+import { dataBaseQuery, dataBaseTransaction, hashData } from '../functions/other.js'
 import { IUserServiceProvider } from '../../types/services.js';
 import { Result, Token } from '../../types/server.js';
 import { PERMISSIONS_SCHEMA, USER_ROLE_SCHEMA, User } from "../../types/user.js";
 import messages from '../messages.js';
-import { USER_TABLE_NAMES } from '../functions/other.js';
+import { USER_TABLE_NAMES } from '../../types/schemas.js';
 import { Permissions, RESOURCE, UserRole } from '../../types/user.js';
 const { USERS, TOKENS, PERMISSIONS, USER_ROLES, ROLES} = USER_TABLE_NAMES
 export default class UserServiceSQLite implements IUserServiceProvider {
@@ -56,5 +56,15 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     }
     async getRoles(): Promise<Result<UserRole[]>>{
         return await dataBaseQuery(this.dbFile, `SELECT * FROM ${ROLES};`, {successStatusCode: 200})
+    }
+    async addRole(name: string): Promise<Result<null>>{
+        return dataBaseQuery<null>(this.dbFile, `INSERT INTO ${ROLES} (name) VALUES('${name}');`, {successStatusCode: 201, successMessage: messages.ROLE_ADDED})
+    }
+    async deleteRole(name: string): Promise<Result<null>>{
+        return dataBaseTransaction(this.dbFile, [
+            `DELETE FROM ${PERMISSIONS} where role='${name}';`,
+            `DELETE FROM ${USER_ROLES} where role='${name}';`,
+            `DELETE FROM ${ROLES} where name='${name}';`
+        ], { successStatusCode: 200, successMessage: messages.ROLE_DELETED })
     }
 }

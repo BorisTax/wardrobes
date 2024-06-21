@@ -12,18 +12,13 @@ export type ComboBoxProps = {
 
 export default function ComboBox(props: ComboBoxProps = { value: "", items: [], disabled: false, title: "", size: 1, styles: {} }) {
     const items: number[] | string[] = props.items instanceof Map ? [...props.items.values()] : props.items
-    let value = props.items instanceof Map ? props.items.get(props.value) : props.value
+    let value = props.items instanceof Map ? props.items.get(props.value) || "" : props.value || ""
     if (props.items instanceof Map) {
         const key = [...props.items].find(i => i[1] === props.value)
         if (key) value = key[0]
     }
-    const options = items?.map((i, index) =>
-        <option
-            key={index}
-        >
-            {i}
-        </option>
-    )
+    const itemsWithNull = value === "" ? ["", ...items] : items
+    const options = itemsWithNull?.map((i, index) => <option key={index}>{i}</option>)
     useEffect(() => { 
         const value = props.items instanceof Map ? [...(props.items as Map<string, string>).values()][0] || "" : props.items[0]
     }, [props.items])

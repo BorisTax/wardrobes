@@ -1,5 +1,5 @@
 import React from "react";
-import ImageButton from "../ImageButton";
+import ImageButton from "../inputs/ImageButton";
 
 type DialogWindowProps = {
     dialogRef: React.RefObject<HTMLDialogElement> 

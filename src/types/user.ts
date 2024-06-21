@@ -25,9 +25,8 @@ export type Resource = {
 }
 export type UserRole = {
     name: string,
-    caption: string
+    //     caption: string
 }
-
 export type User = {
     name: string
     password: string

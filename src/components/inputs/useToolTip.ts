@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { isMobile } from "../functions/functions";
+import { isMobile } from "../../functions/functions";
 
 export const useToolTip = (title: string | undefined) => {
   const toolTip: any = document.getElementById("tooltip");

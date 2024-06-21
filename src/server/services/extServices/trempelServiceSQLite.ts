@@ -3,7 +3,7 @@ import { Result } from '../../../types/server.js';
 import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
-import { MAT_TABLE_NAMES } from '../../functions/other.js';
+import { MAT_TABLE_NAMES } from '../../../types/schemas.js';
 const { TREMPEL } = MAT_TABLE_NAMES
 export default class TrempelServiceSQLite implements IMaterialExtService<Trempel> {
     dbFile: string;

@@ -84,7 +84,7 @@ router.get("/active", async (req, res) => {
     const user = (users.data as User[]).find((u: User) => u.name === t.username)
     if (user) {
       const userRole = await userService.getUserRole(user.name)
-      const role = (await userService.getRoles()).data?.find(r => r.name === userRole) || {name: "", caption: ""}
+      const role = (await userService.getRoles()).data?.find(r => r.name === userRole) || { name: "" }
       result.data?.push({ token: t.token, name: user.name, role, time: t.time, lastActionTime: t.lastActionTime })
     }
   }
@@ -126,7 +126,7 @@ router.get("/users", async (req, res) => {
   const result: UserData[] = []
   for(let u of users){
     const userRole = await userService.getUserRole(u.name)
-    const role = roles.find(r => r.name === userRole) || { name: "", caption: "" }
+    const role = roles.find(r => r.name === userRole) || { name: "" }
     const permissions = await userService.getAllUserPermissions(userRole)
     result.push({ name: u.name, role, permissions })
   }
@@ -140,6 +140,24 @@ router.get("/roles", async (req, res) => {
   res.status(result.status).json(result)
 });
 
+router.post("/addRole", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
+  const userService = new UserService(userServiceProvider)
+  const { name } = req.body;
+  if (!name) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
+  const result = await userService.addRole(name);
+  res.json(result);
+});
+
+router.delete("/deleteRole", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
+  const userService = new UserService(userServiceProvider)
+  const { name } = req.body;
+  if (!name) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
+  const result = await userService.deleteRole(name);
+  res.json(result);
+});
+
 async function loginUser(user: User): Promise<Result<string | null>> {
   const userService = new UserService(userServiceProvider)
   const result = await userService.getUsers()
@@ -149,7 +167,7 @@ async function loginUser(user: User): Promise<Result<string | null>> {
   if (!foundUser) return incorrectData(messages.INVALID_USER_DATA)
   if (!bcrypt.compareSync(user.password, foundUser.password)) return incorrectData(messages.INVALID_USER_DATA)
   const userRole = await userService.getUserRole(foundUser.name)
-  const role = (await userService.getRoles()).data?.find(r => r.name === userRole) || {name: "", caption: ""}
+  const role = (await userService.getRoles()).data?.find(r => r.name === userRole) || ""
   const permissions = await userService.getAllUserPermissions(userRole)
   const token = jwt.sign({ name: foundUser.name, role, permissions }, JWT_SECRET, { expiresIn: 1440 });
   return { success: true, status: 200, message: messages.LOGIN_SUCCEED, data: token };

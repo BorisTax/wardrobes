@@ -2,7 +2,7 @@ import { dataBaseQuery } from '../functions/other.js'
 import { ISpecificationServiceProvider } from '../../types/services.js';
 import { Result, SpecificationData } from '../../types/server.js';
 import messages from '../messages.js';
-import { SPEC_TABLE_NAMES } from '../functions/other.js';
+import { SPEC_TABLE_NAMES } from '../../types/schemas.js';
 import { DETAIL_NAME, WARDROBE_KIND, WardrobeDetailTable } from '../../types/wardrobe.js';
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from '../../types/schemas.js';
 import { SpecificationItem } from '../../types/specification.js';

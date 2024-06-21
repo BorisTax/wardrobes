@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { MATPurpose, existMaterial, getFasadMaterial, getMATPurpose } from "../../../functions/materials"
-import ComboBox from "../../ComboBox"
+import ComboBox from "../../inputs/ComboBox"
 import { ExtMaterial } from "../../../types/materials"
 import { MAT_PURPOSE, FasadMaterial } from "../../../types/enums"
 import { Materials } from "../../../functions/materials"

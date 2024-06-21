@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useToolTip } from '../custom-hooks/useToolTip';
+import { useToolTip } from './useToolTip';
 
 type ImageButtonProps = {
         onClick: () => void

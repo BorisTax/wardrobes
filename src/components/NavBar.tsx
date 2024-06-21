@@ -1,9 +1,9 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import { userAtom } from "../atoms/users"
-import ImageButton from "./ImageButton"
+import ImageButton from "./inputs/ImageButton"
 import MenuSeparator from "./MenuSeparator"
 import { downloadDatabaseAtom } from "../atoms/database"
-import ImageLink from "./ImageLink"
+import ImageLink from "./inputs/ImageLink"
 import { RESOURCE } from "../types/user"
 export default function NavBar() {
   const {permissions} = useAtomValue(userAtom)

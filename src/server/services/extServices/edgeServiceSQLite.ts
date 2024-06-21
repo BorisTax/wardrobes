@@ -3,7 +3,7 @@ import { Result } from '../../../types/server.js';
 import { IMaterialExtService, IMaterialServiceProvider } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
-import { MAT_TABLE_NAMES } from '../../functions/other.js';
+import { MAT_TABLE_NAMES } from '../../../types/schemas.js';
 const { EDGE } = MAT_TABLE_NAMES
 export default class EdgeServiceSQLite implements IMaterialExtService<Edge> {
     dbFile: string;

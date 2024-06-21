@@ -53,6 +53,10 @@ const messages = {
     USER_ADDED: "USER_ADDED",
     USER_DELETED: "USER_DELETED",
     USER_UPDATED: "USER_UPDATED",
+
+    ROLE_ADDED: "ROLE_ADDED",
+    ROLE_DELETED: "ROLE_DELETED",
+    ROLE_EXIST: "ROLE_EXIST",
   }
 
 export default messages

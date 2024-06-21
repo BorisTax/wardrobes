@@ -3,7 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { settingsDialogAtom } from "../../atoms/dialogs"
 import { setSettingsAtom, settingsAtom } from "../../atoms/settings"
 import DialogWindow from "./DialogWindow"
-import TextBox from "../TextBox"
+import TextBox from "../inputs/TextBox"
 import { PropertyType } from "../../types/property"
 
 export default function SettingsDialog() {

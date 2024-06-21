@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { Profiles } from "../../../functions/materials"
-import ComboBox from "../../ComboBox"
+import ComboBox from "../../inputs/ComboBox"
 import { Profile, ProfileType } from "../../../types/materials"
 import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../../../atoms/materials/profiles"
 import messages from "../../../server/messages"

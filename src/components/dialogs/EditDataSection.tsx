@@ -1,11 +1,11 @@
 import { Fragment, useEffect, useRef, useState } from "react"
 import useMessage from "../../custom-hooks/useMessage"
 import { InputType, PropertyType } from "../../types/property"
-import TextBox from "../TextBox"
-import ComboBox from "../ComboBox"
+import TextBox from "../inputs/TextBox"
+import ComboBox from "../inputs/ComboBox"
 import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
-import CheckBox from "../CheckBox"
+import CheckBox from "../inputs/CheckBox"
 export type EditDataItem = {
     caption: string
     value: string | boolean
@@ -33,7 +33,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
     useEffect(() => {
         setNewValues(props.items.map(i => i.value))
         setExtValue("")
-        setChecked(prev => prev.map(p => false))
+        setChecked(_ => props.items.map(p => !!p.readonly))
     }, [props.items])
     return <>
         <div className="editmaterial-container">
@@ -43,7 +43,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     {i.readonly ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
                     {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index]} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
                     {i.type === InputType.CHECKBOX && <CheckBox checked={newValues[index] as boolean} disabled={!checked[index]} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; return [...p] }) }} />}
-                    {i.list && <ComboBox value={newValues[index] as string} items={i.list} disabled={!checked[index] || i.readonly} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
+                    {(i.list && i.type === InputType.LIST) && <ComboBox value={newValues[index] as string} items={i.list} disabled={!checked[index] || i.readonly} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
                     {i.type === InputType.FILE && <div>
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]

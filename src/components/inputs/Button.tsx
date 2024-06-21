@@ -1,4 +1,4 @@
-import { useToolTip } from '../custom-hooks/useToolTip';
+import { useToolTip } from './useToolTip';
 
 type ButtonProps = {
         caption: string

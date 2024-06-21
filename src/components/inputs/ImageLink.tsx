@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useToolTip } from '../custom-hooks/useToolTip';
+import { useToolTip } from './useToolTip';
 import { Link } from 'react-router-dom';
 
 type ImageLinkProps = {

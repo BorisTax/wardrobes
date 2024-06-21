@@ -1,22 +1,34 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import messages from "../../../server/messages"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
 import EditContainer from "../../EditContainer"
-import { userAtom, userRolesAsMap } from "../../../atoms/users"
+import { deleteRoleAtom, userAtom, userRolesAtom } from "../../../atoms/users"
 import { PERMISSIONS_SCHEMA, RESOURCE } from "../../../types/user"
 import { addPermissionsAtom, deletePermissionsAtom, loadPermissionsAtom, loadResourceListAtom, permissionsAtom, resourceAsMap, updatePermissionsAtom } from "../../../atoms/permissions"
-import ComboBox from "../../ComboBox"
+import ComboBox from "../../inputs/ComboBox"
+import AddUserRoleDialog from "./AddUserRoleDialog"
+import ImageButton from "../../inputs/ImageButton"
+import { rusMessages } from "../../../functions/messages"
+import useMessage from "../../../custom-hooks/useMessage"
+import useConfirm from "../../../custom-hooks/useConfirm"
 
 export default function EditPermissionsDialog() {
+    const [loading, setLoading] = useState(false)
+    const showMessage = useMessage()
+    const showConfirm = useConfirm()
     const loadPermissions = useSetAtom(loadPermissionsAtom)
     const loadResources = useSetAtom(loadResourceListAtom)
-    const perm = useAtomValue(userAtom).permissions.get(RESOURCE.MATERIALS)
+    const addUserRoleDialogRef = useRef<HTMLDialogElement>(null)
+    const perm = useAtomValue(userAtom).permissions.get(RESOURCE.USERS)
     const permData = useAtomValue(permissionsAtom)
-    const userRoles = useAtomValue(userRolesAsMap)
-    const [role, setRole] = useState(userRoles.keys().next().value)
+    const roles = useAtomValue(userRolesAtom)
+    const userRoles = useMemo(() => roles.map(r => r.name), [roles])
+    const deleteRole = useSetAtom(deleteRoleAtom)
+    const [roleIndex, setRoleIndex] = useState(0)
+    const role = userRoles[roleIndex] || ""
     const resourceList = useAtomValue(resourceAsMap)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const { resource, read, create, update, remove } = permData[selectedIndex] || { resource: "", read: false, create: false, update: false, remove: false }
@@ -26,13 +38,16 @@ export default function EditPermissionsDialog() {
     const heads = ['Ресурс', 'Чтение', 'Создание', 'Обновление', 'Удаление']
     const contents = permData.map((p: PERMISSIONS_SCHEMA) => [resourceList.get(p.resource), p.read, p.create, p.update, p.remove])
     const editItems: EditDataItem[] = [
-        { caption: "Роль:", value: role || "", message: "Выберите роль", type: InputType.LIST, list: userRoles },
+        { caption: "Роль:", value: role || "", message: "Выберите роль", type: InputType.TEXT, readonly: true },
         { caption: "Ресурс:", value: resource, message: "Выберите ресурс", type: InputType.LIST, list: resourceList },
         { caption: "Чтение:", value: read, message: "", type: InputType.CHECKBOX },
         { caption: "Создание:", value: create, message: "", type: InputType.CHECKBOX },
         { caption: "Обновление:", value: update, message: "", type: InputType.CHECKBOX },
         { caption: "Удаление:", value: remove, message: "", type: InputType.CHECKBOX },
     ]
+    useEffect(() => {
+        setRoleIndex(0)
+    }, [roles])
     useEffect(() => {
         setSelectedIndex(0)
     }, [permData])
@@ -44,11 +59,21 @@ export default function EditPermissionsDialog() {
     }, [])
     return <EditContainer>
         <div>
-            <div className="d-flex flex-nowrap gap-2 align-items-start">
-                <ComboBox title="Роль: " value={role} items={userRoles} onChange={(_, value: string) => { setRole(value); }} />
+            <div className="d-flex flex-nowrap gap-2 align-items-start position-relative">
+                <ComboBox title="Роль: " value={role} items={userRoles} onChange={(index, value: string) => { setRoleIndex(index); }} />
+                {perm?.create && <ImageButton title="Добавить" icon='add' onClick={() => { addUserRoleDialogRef.current?.showModal() }} />}
+                {perm?.remove && <ImageButton title="Удалить" icon='delete' onClick={() => showConfirm("Удалить роль " + role, async () => {
+                    setLoading(true)
+                    const result = await deleteRole({ name: role })
+                    setLoading(false)
+                    showMessage(rusMessages[result.message as string])
+                }
+                )} />}
             </div>
             <hr />
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
+            <AddUserRoleDialog dialogRef={addUserRoleDialogRef} setLoading={(state: boolean) => setLoading(state)} />
+            {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
         </div>
         <EditDataSection name={role} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {

@@ -19,7 +19,7 @@ export default function ImageLink({ title, caption, icon, link, disabled = false
         className += " " + classes
         const { onMouseOver, onMouseLeave } = useToolTip(caption ? "" : title);
         return <Link
-                to={link}
+                to={`/${link}`}
                 style={{ visibility: visible ? "visible" : "hidden" }}
         >
                 <div className='data-navbar-button'>

@@ -21,12 +21,12 @@ export const loadedInitialStateAtom = atom(false)
 export const loadInitialStateAtom = atom(null, async (get, set) => {
     set(loadedInitialStateAtom, false)
     const result: FetchResult<InitialAppState> = await fetchGetData(`api/wardrobe/initial`)
-    const { wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial } = result.data as InitialAppState
-    const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial)
     if (result.success){
-         set(appAtom, { state, next: null, previous: null })
-         set(loadedInitialStateAtom, true)
-        }
+        const { wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial } = result.data as InitialAppState
+        const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial)
+        set(appAtom, { state, next: null, previous: null })
+        set(loadedInitialStateAtom, true)
+    }
 })
 export const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
 export const historyAppAtom = atom((get: Getter) => { const data = get(appAtom); return { next: data.next, previous: data.previous } })

@@ -112,7 +112,7 @@ function App() {
                 <Route path="/" element={<Select />}></Route>
                 <Route path="/combi" element={<CombiFasades />} />
                 <Route path="/calculator" element={<WardrobeCalculator /> } />
-                <Route path="/combi/schema" element={<SchemaDialog /> } />
+                <Route path="/schema" element={<SchemaDialog /> } />
                 <Route path="/specification" element={<EditSpecificationDialog /> } />
                 <Route path="/materials" element={<EditMaterialDialog /> } />
                 <Route path="/pricelist" element={<EditPriceDialog /> } />

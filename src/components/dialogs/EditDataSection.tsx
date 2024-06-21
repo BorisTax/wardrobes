@@ -39,7 +39,6 @@ export default function EditDataSection(props: EditDataSectionProps) {
     }, [props.items])
     return <>
         <div className="editmaterial-container">
-            <hr />
             <div className="edit-section-grid">
                 {props.items.map((i, index) => <Fragment key={i.caption}><span className="text-end text-nowrap">{i.caption}</span>
                     {i.readonly ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}

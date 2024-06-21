@@ -56,13 +56,13 @@ export default function EditUsersDialog() {
         loadUsers()
         loadActiveUsers()
     }, [])
-    return <div>
+    return <div className="edit-user-container">
         <div className="d-flex gap-2">
             <ImageButton title="Обновить" icon='update' onClick={() => { loadUsers(); loadActiveUsers() }} />
             {perm?.create && <ImageButton title="Добавить" icon='add' onClick={() => { addUserDialogRef.current?.showModal() }} />}
         </div>
-        <div className="d-flex jistify-content-around gap-1">
-            <div className={`${listType === ListType.REGISTERED ? "tab-button-active" : "tab-button-inactive"}`} onClick={() => { setListType(ListType.REGISTERED) }}>Зарегистрированные</div>
+        <div className="tab-header-container">
+            <div className={`${listType === ListType.REGISTERED ? "tab-button-active" : "tab-button-inactive"}`} onClick={() => { setListType(ListType.REGISTERED) }}>Все</div>
             <div className={`${listType === ListType.ACTIVE ? "tab-button-active" : "tab-button-inactive"}`} onClick={() => { setListType(ListType.ACTIVE) }}>Активные ({activeUsers.length})</div>
         </div>
         <hr />

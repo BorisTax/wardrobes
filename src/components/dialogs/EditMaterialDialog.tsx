@@ -21,8 +21,8 @@ export default function EditMaterialDialog() {
     useEffect(() => {
         if (!perm?.read) window.location.replace('/')
     }, [perm])
-    return <div className="p-2">
-        <div className="d-flex justify-content-center gap-1">{header}</div>
+    return <div className="database-edit-container">
+        <div className="tab-header-container">{header}</div>
         {content}
     </div>
 }

@@ -135,18 +135,19 @@ function App() {
 
 export default App
 
-function Select(){
-  return <div style={{fontSize: "1.5em", height: "100%", display: "flex", flexDirection: "column"}}>
-    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "stretch" }}>
+function Select() {
+  return <div className='main-screen-select-container'>
+    <div className='main-screen-select-item'>
       <Link to="combi">
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end",alignItems:"center", border: "1px solid", borderRadius: "5px", padding: "2em", height: "100%" }}>
-          <img className='image' src={combi}/>
+        <div className='d-flex flex-column align-items-center'>
+          <img className='image' src={combi} />
           <div>Калькулятор комби фасадов</div>
         </div>
       </Link>
-      <br />
+    </div>
+    <div className='main-screen-select-item'>
       <Link to="calculator">
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", alignItems:"center", border: "1px solid", borderRadius: "5px", padding: "2em", height: "100%" }}>
+        <div className='d-flex flex-column align-items-center'>
           <img className='image' src={wardrobe} />
           <div>Калькулятор шкафов</div>
         </div>

@@ -27,7 +27,7 @@ export default function AddUserDialog({ dialogRef, setLoading }: DialogProps ) {
         if (password.length < 6) return showMessage("Пароль слишком короткий")
         if (name.length < 3) return showMessage("Логин слишком короткий")
         if (!passwordCorrect) return showMessage("Пароль должен содержать только цифры и/или латинские буквы")
-        showConfirm(`Создать пользователя ${name} с правами ${roles[roleIndex]}?`, () => {
+        showConfirm(`Создать пользователя ${name} с правами ${roles[roleIndex].name}?`, () => {
             setLoading(true)
             createUser({ name, password, role: roles[roleIndex] }, (result) => {
                 setLoading(false)

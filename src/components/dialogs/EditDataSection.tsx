@@ -10,6 +10,7 @@ import { MAX_FILE_SIZE } from "../../options"
 export type EditDataItem = {
     caption: string
     value: string | boolean
+    valueCaption?: (value: string | boolean) => string
     list?: string[] | Map<string, string>
     message: string
     readonly?: boolean
@@ -42,13 +43,13 @@ export default function EditDataSection(props: EditDataSectionProps) {
             <div className="edit-section-grid">
                 {props.items.map((i, index) => <Fragment key={i.caption}><span className="text-end text-nowrap">{i.caption}</span>
                     {i.readonly ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
-                    {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index]} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
-                    {i.type === InputType.CHECKBOX && <CheckBox checked={newValues[index] as boolean} disabled={!checked[index]} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; return [...p] }) }} />}
+                    {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
+                    {i.type === InputType.CHECKBOX && <CheckBox checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; return [...p] }) }} />}
                     {(i.list && i.type === InputType.LIST) && <ComboBox value={newValues[index] as string} items={i.list} disabled={!checked[index] || i.readonly} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
                     {i.type === InputType.FILE && <div>
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]
-                            if (file && file.size > MAX_FILE_SIZE) { showMessage("Файл слишком большой (макс. 2МБ)"); return }
+                            if (file && file?.size > MAX_FILE_SIZE) { showMessage("Файл слишком большой (макс. 2МБ)"); return }
                             let reader = new FileReader();
                             reader.onload = function () {
                                 setNewValues(prev => { const p = [...prev]; p[index] = reader?.result as string || ""; return [...p] })
@@ -64,9 +65,10 @@ export default function EditDataSection(props: EditDataSectionProps) {
             </div>
             <div className="editmaterial-buttons-container">
                 {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every(c => c))} onClick={() => {
-                    const check = checkFields({ checked, items: props.items, newValues })
+                    const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
+                    const check = checkFields({ checked, items: props.items, newValues: values })
                     if (!check.success) { showMessage(check.message); return }
-                    const message = getAddMessage({ checked, items: props.items, newValues })
+                    const message = getAddMessage({ checked, items: props.items, newValues: values })
                     showConfirm(message, async () => {
                         if (!props.onAdd) return
                         setLoading(true)
@@ -76,9 +78,10 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     })
                 }} />}
                 {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some(c => c))} onClick={() => {
-                    const check = checkFields({ checked, items: props.items, newValues })
+                    const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
+                    const check = checkFields({ checked, items: props.items, newValues: values })
                     if (!check.success) { showMessage(check.message); return }
-                    const message = getMessage({ checked, items: props.items, newValues, extValue })
+                    const message = getMessage({ checked, items: props.items, newValues: values, extValue })
                     showConfirm(message, async () => {
                         if (!props.onUpdate) return
                         setLoading(true)

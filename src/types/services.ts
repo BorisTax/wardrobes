@@ -14,7 +14,7 @@ interface IUserAbstractService {
     updateToken: (token: string, lastActionTime: number) => Promise<Result<null>>
     deleteToken: (token: string) => Promise<Result<null>>
     clearAllTokens: () => Promise<Result<null>>
-    registerUser: (userName: string, password: string) => Promise<Result<null>>
+    registerUser: (userName: string, password: string, role: UserRole) => Promise<Result<null>>
     deleteUser: (user: User) => Promise<Result<null>>
     getPermissions: (role: string, resource: RESOURCE) => Promise<Permissions>
     getAllUserPermissions: (role: string) => Promise<PERMISSIONS_SCHEMA[]>
@@ -22,6 +22,7 @@ interface IUserAbstractService {
     getRoles: () => Promise<Result<UserRole[]>>
     addRole: (role: string) => Promise<Result<null>>
     deleteRole: (role: string) => Promise<Result<null>>
+    getSuperAdmin: () => Promise<Result<{ name: string }[]>>
 }
 export interface IMaterialService {
     getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<ExtMaterial[]>>

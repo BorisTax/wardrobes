@@ -11,7 +11,7 @@ import { addPermissionsAtom, deletePermissionsAtom, loadPermissionsAtom, loadRes
 import ComboBox from "../../inputs/ComboBox"
 import AddUserRoleDialog from "./AddUserRoleDialog"
 import ImageButton from "../../inputs/ImageButton"
-import { rusMessages } from "../../../functions/messages"
+import { boolToYesNo, rusMessages } from "../../../functions/messages"
 import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
 
@@ -36,14 +36,14 @@ export default function EditPermissionsDialog() {
     const addPermissions = useSetAtom(addPermissionsAtom)
     const updatePermissions = useSetAtom(updatePermissionsAtom)
     const heads = ['Ресурс', 'Чтение', 'Создание', 'Обновление', 'Удаление']
-    const contents = permData.map((p: PERMISSIONS_SCHEMA) => [resourceList.get(p.resource), p.read, p.create, p.update, p.remove])
+    const contents = permData.map((p: PERMISSIONS_SCHEMA) => [resourceList.get(p.resource), boolToYesNo(p.read as boolean), boolToYesNo(p.create as boolean), boolToYesNo(p.update as boolean), boolToYesNo(p.remove as boolean)])
     const editItems: EditDataItem[] = [
         { caption: "Роль:", value: role || "", message: "Выберите роль", type: InputType.TEXT, readonly: true },
-        { caption: "Ресурс:", value: resource, message: "Выберите ресурс", type: InputType.LIST, list: resourceList },
-        { caption: "Чтение:", value: read, message: "", type: InputType.CHECKBOX },
-        { caption: "Создание:", value: create, message: "", type: InputType.CHECKBOX },
-        { caption: "Обновление:", value: update, message: "", type: InputType.CHECKBOX },
-        { caption: "Удаление:", value: remove, message: "", type: InputType.CHECKBOX },
+        { caption: "Ресурс:", value: resource, valueCaption: (value) => { return resourceList.get(value) }, message: "Выберите ресурс", type: InputType.LIST, list: resourceList },
+        { caption: "Чтение:", value: read, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
+        { caption: "Создание:", value: create, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
+        { caption: "Обновление:", value: update, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
+        { caption: "Удаление:", value: remove, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
     ]
     useEffect(() => {
         setRoleIndex(0)

@@ -105,7 +105,7 @@ router.post("/add", async (req, res) => {
   const userService = new UserService(userServiceProvider)
   const user = req.body;
   if (!user.name || !user.password) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
-  const result = await userService.registerUser(user.name, user.password);
+  const result = await userService.registerUser(user.name, user.password, user.role);
   res.json(result);
 });
 

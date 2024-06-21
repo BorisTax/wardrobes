@@ -67,7 +67,7 @@ export async function addPermissions(role: string, resource: RESOURCE, permissio
   const result = await service.getPermissions(role)
   if (!result.success) return result
   const list = result.data
-  if ((list as PERMISSIONS_SCHEMA[]).find(m => m.role === role)) return { success: false, status: 409, message: messages.PERMISSION_EXIST }
+  if ((list as PERMISSIONS_SCHEMA[]).find(m => m.role === role && m.resource === resource)) return { success: false, status: 409, message: messages.PERMISSION_EXIST }
   return await service.addPermissions(role, resource, permissions)
 }
 

@@ -87,12 +87,14 @@ export class UserService implements IUserService {
     if (result.success) activeTokens.tokenList = []
     return result
   }
-  async registerUser(userName: string, password: string) {
+  async registerUser(userName: string, password: string, role: UserRole) {
     const result = await this.isUserNameExist(userName)
     if (!result.success) return result
-    return this.provider.registerUser(userName, password)
+    return this.provider.registerUser(userName, password, role)
   }
   async deleteUser(user: User) {
+    const superadmin = (await this.getSuperAdmin()).data?.map(m => m.name)
+    if (superadmin?.find(s => s === user.name)) return { success: false, status: 403, message: messages.USER_UPDATE_DENIED }
     const result = await this.provider.deleteUser(user)
     if (result.success) {
       const t = activeTokens.tokenList.find(t => t.username === user.name)
@@ -130,6 +132,9 @@ export class UserService implements IUserService {
   async deleteRole(name: string): Promise<Result<null>> {
     return this.provider.deleteRole(name)
   }
+  async getSuperAdmin(): Promise<Result<{ name: string }[]>>{
+    return await this.provider.getSuperAdmin()
+}
 }
 
 

@@ -35,6 +35,7 @@ export const rusMessages = {
   [messages.USER_DELETED]: "Пользователь удален",
   [messages.SERVER_ERROR]: "Ошибка сервера",
   [messages.USER_NAME_EXIST]: "Пользователь существует",
+  [messages.USER_UPDATE_DENIED]: "Нельзя удалить пользователя",
 
   [messages.ROLE_ADDED]: "Роль добавлена",
   [messages.ROLE_DELETED]: "Роль удалена",
@@ -50,4 +51,9 @@ export const rusMessages = {
   [messages.SPEC_ID_EXIST]: "Идентификатор уже существует",
   [messages.SPEC_UPDATED]: "Данные обновлены",
 
+}
+
+
+export function boolToYesNo(value: boolean): string{
+  return value ? "Да" : "Нет"
 }

@@ -23,8 +23,8 @@ export default function EditPermissionsDialog() {
     const deletePermissions = useSetAtom(deletePermissionsAtom)
     const addPermissions = useSetAtom(addPermissionsAtom)
     const updatePermissions = useSetAtom(updatePermissionsAtom)
-    const heads = ['Роль', 'Ресурс', 'Чтение', 'Создание', 'Обновление', 'Удаление']
-    const contents = permData.map((p: PERMISSIONS_SCHEMA) => [userRoles.get(p.role), resourceList.get(p.resource), p.read, p.create, p.update, p.remove])
+    const heads = ['Ресурс', 'Чтение', 'Создание', 'Обновление', 'Удаление']
+    const contents = permData.map((p: PERMISSIONS_SCHEMA) => [resourceList.get(p.resource), p.read, p.create, p.update, p.remove])
     const editItems: EditDataItem[] = [
         { caption: "Роль:", value: role || "", message: "Выберите роль", type: InputType.LIST, list: userRoles },
         { caption: "Ресурс:", value: resource, message: "Выберите ресурс", type: InputType.LIST, list: resourceList },

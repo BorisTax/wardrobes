@@ -53,6 +53,7 @@ export default function EditUsersDialog() {
     }, [perm])
     useEffect(() => {
         loadUsers()
+        loadActiveUsers()
     }, [])
     return <div>
         <div className="d-flex gap-2">

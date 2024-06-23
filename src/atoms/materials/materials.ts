@@ -7,11 +7,13 @@ import Fasad from "../../classes/Fasad";
 import { FasadMaterial } from "../../types/enums";
 import { TableFields } from "../../types/server";
 import messages from "../../server/messages";
+import { RESOURCE } from "../../types/user";
 
 export const materialListAtom = atom<ExtMaterial[]>([])
 
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
-    const { token } = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.read) return
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/material?token=${token}`)
         if (!result.success) return
@@ -29,9 +31,10 @@ export const imageUrlAtom = atom((get) => {
 })
 
 export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return
     try{
-        const result = await fetchData("/api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token: user.token }))
+        const result = await fetchData("/api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token }))
         await set(loadMaterialListAtom)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 
@@ -41,14 +44,15 @@ export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMater
 })
 
 export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: string) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.create) return
     const data = {
         [TableFields.NAME]: material.name,
         [TableFields.MATERIAL]: material.material,
         [TableFields.CODE]: material.code,
         [TableFields.IMAGE]: image,
         [TableFields.PURPOSE]: material.purpose,
-        [TableFields.TOKEN]: user.token
+        [TableFields.TOKEN]: token
     }
     try {
         const result = await fetchData("/api/materials/material", "POST", JSON.stringify(data))
@@ -61,7 +65,8 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
 })
 
 export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image, purpose }) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.update) return
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,
@@ -69,7 +74,7 @@ export const updateMaterialAtom = atom(null, async (get, set, { name, material, 
         [TableFields.CODE]: newCode,
         [TableFields.IMAGE]: image,
         [TableFields.PURPOSE]: purpose,
-        [TableFields.TOKEN]: user.token
+        [TableFields.TOKEN]: token
     }
     try {
         const result = await fetchData("/api/materials/material", "PUT", JSON.stringify(data))

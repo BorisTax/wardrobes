@@ -88,7 +88,7 @@ function App() {
     loadInitialWardrobeData()
     loadUserRoles()
     loadVersion()
-  }, [user])
+  }, [user.name])
   useEffect(() => {
     const onContextMenu = (e: Event) => { e.preventDefault() }
     const onBeforeUnload = (e: Event) => { saveToStorage() }

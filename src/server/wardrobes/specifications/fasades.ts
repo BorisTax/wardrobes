@@ -415,10 +415,12 @@ async function calcUplotnitelSoed(fasad: Fasad, profileType: ProfileType): Promi
     const verbose = [["Высота фасада", "Ширина фасада", "Уплотнитель", "Длина,м", ""]]
     let sum = 0
     edges.forEach(e => {
-        const s = (e.edges.reduce((a, i) => a + i.length, 0)) / 1000
-        sum += s
-        const sides = e.edges.map(i => EdgeSideCaptions[i.side]).join(", ")
-        verbose.push([`${e.height}`, `${e.width}`, `${sides} (${e.edges.map(i => i.length).join("+")})`, `${s.toFixed(3)}`])
+        if (e.edges.length > 0) {
+            const s = (e.edges.reduce((a, i) => a + i.length, 0)) / 1000
+            sum += s
+            const sides = e.edges.map(i => EdgeSideCaptions[i.side]).join(", ")
+            verbose.push([`${e.height}`, `${e.width}`, `${sides} (${e.edges.map(i => i.length).join("+")})`, `${s.toFixed(3)}`])
+        }
     })
     const coef = await getCoef(SpecificationItem.UplotSoedBavaria)
     const result = sum * coef

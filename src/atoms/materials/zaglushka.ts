@@ -4,11 +4,13 @@ import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
 import { TableFields } from "../../types/server";
 import messages from "../../server/messages";
+import { RESOURCE } from "../../types/user";
 
 export const zaglushkaListAtom = atom<Zaglushka[]>([])
 
 export const loadZaglushkaListAtom = atom(null, async (get, set) => {
-    const { token } = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.read) return
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/zaglushka?token=${token}`)
         if(result.success) set(zaglushkaListAtom, result.data as Zaglushka[]);
@@ -16,9 +18,10 @@ export const loadZaglushkaListAtom = atom(null, async (get, set) => {
 })
 
 export const deleteZaglushkaAtom = atom(null, async (get, set, zaglushka: Zaglushka) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return
     try{
-        const result = await fetchData("/api/materials/zaglushka", "DELETE", JSON.stringify({ name: zaglushka.name, token: user.token }))
+        const result = await fetchData("/api/materials/zaglushka", "DELETE", JSON.stringify({ name: zaglushka.name, token }))
         await set(loadZaglushkaListAtom)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 
@@ -28,12 +31,13 @@ export const deleteZaglushkaAtom = atom(null, async (get, set, zaglushka: Zaglus
 })
 
 export const addZaglushkaAtom = atom(null, async (get, set, {name, dsp, code}: Zaglushka) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.create) return
     const data = {
         [TableFields.NAME]: name,
         [TableFields.DSP]: dsp,
         [TableFields.CODE]: code,
-        [TableFields.TOKEN]: user.token
+        [TableFields.TOKEN]: token
     }
     try {
         const result = await fetchData("/api/materials/zaglushka", "POST", JSON.stringify(data))
@@ -46,13 +50,14 @@ export const addZaglushkaAtom = atom(null, async (get, set, {name, dsp, code}: Z
 })
 
 export const updateZaglushkaAtom = atom(null, async (get, set, { name, dsp, newName, code }) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.update) return
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,
         [TableFields.DSP]: dsp,
         [TableFields.CODE]: code,
-        [TableFields.TOKEN]: user.token
+        [TableFields.TOKEN]: token
     }
     try {
         const result = await fetchData("/api/materials/zaglushka", "PUT", JSON.stringify(data))

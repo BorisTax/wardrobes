@@ -14,12 +14,13 @@ export default function EventListener() {
   const standbyUser = useSetAtom(standbyUserAtom)
   const showMessage = useMessage()
   useEffect(() => {
+    verifyUser()
     const timer = setInterval(() => { 
       verifyUser()
       standbyUser()
      }, 60000)
     return () => { clearInterval(timer) }
-  }, [user])
+  }, [user.name])
   useEffect(() => {
     if (user.role.name !== UserRoles.ANONYM) waitForMessageFromServer(user.token, (message, data) => {
       switch (message) {

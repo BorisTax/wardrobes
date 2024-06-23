@@ -53,6 +53,7 @@ export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const { token } = get(userAtom)
         const result = await fetchGetData(`/api/users/verify?token=${token}`)
         if (!result.success) {
+            localStorage.removeItem("token")
             set(userAtom, { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() })
             return
         }
@@ -65,6 +66,7 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
     if (verify) {
         const result = await fetchGetData(`/api/users/verify?token=${token}`)
         if(!result.success){
+            localStorage.removeItem("token")
             set(userAtom, { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions()  })
             return
         }

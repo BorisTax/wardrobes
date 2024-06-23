@@ -4,11 +4,13 @@ import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
 import { TableFields } from "../../types/server";
 import messages from "../../server/messages";
+import { RESOURCE } from "../../types/user";
 
 export const trempelListAtom = atom<Trempel[]>([])
 
 export const loadTrempelListAtom = atom(null, async (get, set) => {
-    const { token } = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.read) return
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/trempel?token=${token}`)
         if (result.success) set(trempelListAtom, result.data as Trempel[]);
@@ -16,9 +18,10 @@ export const loadTrempelListAtom = atom(null, async (get, set) => {
 })
 
 export const deleteTrempelAtom = atom(null, async (get, set, trempel: Trempel) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return
     try {
-        const result = await fetchData("/api/materials/trempel", "DELETE", JSON.stringify({ name: trempel.name, token: user.token }))
+        const result = await fetchData("/api/materials/trempel", "DELETE", JSON.stringify({ name: trempel.name, token }))
         await set(loadTrempelListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
@@ -28,12 +31,13 @@ export const deleteTrempelAtom = atom(null, async (get, set, trempel: Trempel) =
 })
 
 export const addTrempelAtom = atom(null, async (get, set, { name, caption, code }: Trempel) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.create) return
     const data = {
         [TableFields.NAME]: name,
         [TableFields.CODE]: code,
         [TableFields.CAPTION]: caption,
-        [TableFields.TOKEN]: user.token
+        [TableFields.TOKEN]: token
     }
     try {
         const result = await fetchData("/api/materials/trempel", "POST", JSON.stringify(data))
@@ -46,12 +50,13 @@ export const addTrempelAtom = atom(null, async (get, set, { name, caption, code 
 })
 
 export const updateTrempelAtom = atom(null, async (get, set, { name, caption, code }) => {
-    const user = get(userAtom)
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.update) return
     const data = {
         [TableFields.NAME]: name,
         [TableFields.CAPTION]: caption,
         [TableFields.CODE]: code,
-        [TableFields.TOKEN]: user.token
+        [TableFields.TOKEN]: token
     }
     try {
         const result = await fetchData("/api/materials/trempel", "PUT", JSON.stringify(data))

@@ -73,7 +73,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                         setLoading(true)
                         const result = await props.onAdd(checked, newValues)
                         setLoading(false)
-                        showMessage(rusMessages[result.message])
+                        if (result.message) showMessage(rusMessages[result.message])
                     })
                 }} />}
                 {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some(c => c))} onClick={() => {
@@ -86,7 +86,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                         setLoading(true)
                         const result = await props.onUpdate(checked, newValues)
                         setLoading(false)
-                        showMessage(rusMessages[result.message])
+                        if (result.message) showMessage(rusMessages[result.message])
                     })
                 }} />}
                 {props.onDelete && <input type="button" value="Удалить" onClick={() => {
@@ -96,7 +96,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                         setLoading(true)
                         const result = await props.onDelete(props.name as string)
                         setLoading(false)
-                        showMessage(rusMessages[result.message])
+                        if (result.message) showMessage(rusMessages[result.message])
                     })
                 }} />}
             </div>

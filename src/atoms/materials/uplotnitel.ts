@@ -10,7 +10,7 @@ export const uplotnitelListAtom = atom<Uplotnitel[]>([])
 
 export const loadUplotnitelListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.read) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/uplotnitel?token=${token}`)
         if (result.success) set(uplotnitelListAtom, result.data as Uplotnitel[]);
@@ -19,7 +19,7 @@ export const loadUplotnitelListAtom = atom(null, async (get, set) => {
 
 export const deleteUplotnitelAtom = atom(null, async (get, set, uplotnitel: Uplotnitel) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return { success: false, message: "" }
     try {
         const result = await fetchData("/api/materials/uplotnitel", "DELETE", JSON.stringify({ name: uplotnitel.name, token }))
         await set(loadUplotnitelListAtom)
@@ -32,7 +32,7 @@ export const deleteUplotnitelAtom = atom(null, async (get, set, uplotnitel: Uplo
 
 export const addUplotnitelAtom = atom(null, async (get, set, { name, code }: Uplotnitel) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.create) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.CODE]: code,
@@ -50,7 +50,7 @@ export const addUplotnitelAtom = atom(null, async (get, set, { name, code }: Upl
 
 export const updateUplotnitelAtom = atom(null, async (get, set, { name, caption, code }) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.update) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.CAPTION]: caption,

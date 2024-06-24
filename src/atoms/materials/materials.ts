@@ -13,7 +13,7 @@ export const materialListAtom = atom<ExtMaterial[]>([])
 
 export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.read) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/material?token=${token}`)
         if (!result.success) return
@@ -32,7 +32,7 @@ export const imageUrlAtom = atom((get) => {
 
 export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMaterial) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return { success: false, message: "" }
     try{
         const result = await fetchData("/api/materials/material", "DELETE", JSON.stringify({ name: material.name, material: material.material, token }))
         await set(loadMaterialListAtom)
@@ -45,7 +45,7 @@ export const deleteMaterialAtom = atom(null, async (get, set, material: ExtMater
 
 export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial, image: string) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.create) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: material.name,
         [TableFields.MATERIAL]: material.material,
@@ -66,7 +66,7 @@ export const addMaterialAtom = atom(null, async (get, set, material: ExtMaterial
 
 export const updateMaterialAtom = atom(null, async (get, set, { name, material, newCode, newName, image, purpose }) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.update) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,

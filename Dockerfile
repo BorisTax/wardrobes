@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install -g npm@10.8.0
+RUN npm install -g npm@10.8.1
 RUN npm install
 
 CMD ["npm", "start"]
 
-EXPOSE 6000
+EXPOSE 5555

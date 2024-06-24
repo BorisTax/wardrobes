@@ -10,7 +10,7 @@ export const brushListAtom = atom<Brush[]>([])
 
 export const loadBrushListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.read) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/brush?token=${token}`)
         if(result.success) set(brushListAtom, result.data as Brush[]);
@@ -19,7 +19,7 @@ export const loadBrushListAtom = atom(null, async (get, set) => {
 
 export const deleteBrushAtom = atom(null, async (get, set, brush: Brush) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return { success: false, message: "" }
     try {
         const result = await fetchData("/api/materials/brush", "DELETE", JSON.stringify({ name: brush.name, token }))
         await set(loadBrushListAtom)
@@ -32,7 +32,7 @@ export const deleteBrushAtom = atom(null, async (get, set, brush: Brush) => {
 
 export const addBrushAtom = atom(null, async (get, set, {name, code}: Brush) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.create) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.CODE]: code,
@@ -50,7 +50,7 @@ export const addBrushAtom = atom(null, async (get, set, {name, code}: Brush) => 
 
 export const updateBrushAtom = atom(null, async (get, set, { name, newName, code }) => {
     const {token, permissions} = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.update) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,

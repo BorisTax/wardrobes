@@ -40,7 +40,10 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     }
 
     async deleteUser(user: User): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${USERS} where name='${user.name}';`, { successStatusCode: 200, successMessage: messages.USER_DELETED })
+        return await dataBaseTransaction(this.dbFile, [
+            `DELETE FROM ${USER_ROLES} where user='${user.name}';`,
+            `DELETE FROM ${USERS} where name='${user.name}';`,
+        ], { successStatusCode: 200, successMessage: messages.USER_DELETED })
     }
 
     async getPermissions(role: string, resource: RESOURCE): Promise<Permissions> {

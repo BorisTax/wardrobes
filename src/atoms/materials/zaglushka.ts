@@ -10,7 +10,7 @@ export const zaglushkaListAtom = atom<Zaglushka[]>([])
 
 export const loadZaglushkaListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.read) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/zaglushka?token=${token}`)
         if(result.success) set(zaglushkaListAtom, result.data as Zaglushka[]);
@@ -19,7 +19,7 @@ export const loadZaglushkaListAtom = atom(null, async (get, set) => {
 
 export const deleteZaglushkaAtom = atom(null, async (get, set, zaglushka: Zaglushka) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return { success: false, message: "" }
     try{
         const result = await fetchData("/api/materials/zaglushka", "DELETE", JSON.stringify({ name: zaglushka.name, token }))
         await set(loadZaglushkaListAtom)
@@ -32,7 +32,7 @@ export const deleteZaglushkaAtom = atom(null, async (get, set, zaglushka: Zaglus
 
 export const addZaglushkaAtom = atom(null, async (get, set, {name, dsp, code}: Zaglushka) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.create) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.DSP]: dsp,
@@ -51,7 +51,7 @@ export const addZaglushkaAtom = atom(null, async (get, set, {name, dsp, code}: Z
 
 export const updateZaglushkaAtom = atom(null, async (get, set, { name, dsp, newName, code }) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.update) return
+    if(!permissions.get(RESOURCE.MATERIALS)?.update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,

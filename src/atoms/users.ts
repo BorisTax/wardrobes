@@ -47,7 +47,8 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
     }
 })
 
-export const userAtom = atom<UserState>({ name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() })
+
+export const userAtom = atom<UserState>(getInitialUser())
 
 export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const { token } = get(userAtom)

@@ -169,7 +169,8 @@ async function loginUser(user: User): Promise<Result<string | null>> {
   const userRole = await userService.getUserRole(foundUser.name)
   const role = (await userService.getRoles()).data?.find(r => r.name === userRole) || ""
   const permissions = await userService.getAllUserPermissions(userRole)
-  const token = jwt.sign({ name: foundUser.name, role, permissions }, JWT_SECRET, { expiresIn: 1440 });
+  const random = Math.random()
+  const token = jwt.sign({ name: foundUser.name, role, permissions, random }, JWT_SECRET, { expiresIn: 1440 });
   return { success: true, status: 200, message: messages.LOGIN_SUCCEED, data: token };
 }
 

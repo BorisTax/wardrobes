@@ -12,6 +12,7 @@ import { rusMessages } from "../../../functions/messages"
 import EditPermissionsDialog from "./EditPermissionsDialog"
 import TableData from "../../TableData"
 import AddUserRoleDialog from "./AddUserRoleDialog"
+import { useNavigate } from "react-router-dom"
 
 enum ListType {
     REGISTERED = "REGISTERED",
@@ -20,6 +21,7 @@ enum ListType {
 
 export default function EditUsersDialog() {
     const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
     const addUserDialogRef = useRef<HTMLDialogElement>(null)
     const { token, permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
@@ -50,12 +52,12 @@ export default function EditUsersDialog() {
     }
     )
     useEffect(() => {
-        if (!perm?.read) window.location.replace('/')
-    }, [perm])
+        if (!perm?.read) navigate("/")
+    }, [perm?.read])
     useEffect(() => {
         loadUsers()
         loadActiveUsers()
-    }, [])
+    }, [perm])
     return <div className="edit-user-container">
         <div className="d-flex gap-2">
             <ImageButton title="Обновить" icon='update' onClick={() => { loadUsers(); loadActiveUsers() }} />

@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react"
 import { useSetAtom } from "jotai"
-import { setUserAtom } from "../../atoms/users"
 import { loginDialogAtom } from "../../atoms/dialogs"
 import onFetch from "../../functions/fetch"
 import { Result } from "../../types/server"
 import CheckBox from "../inputs/CheckBox"
+import { userAtom } from "../../atoms/users"
 
 export default function LoginDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
-    const setUser = useSetAtom(setUserAtom)
+    const setUser = useSetAtom(userAtom)
     const [state, setState] = useState({ loading: false, message: "" })
     const closeDialog = () => { dialogRef.current?.close() }
     const setLoginDialogRef = useSetAtom(loginDialogAtom)

@@ -11,6 +11,7 @@ import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
 import { WARDROBE_TYPE } from '../types/wardrobe';
+import { userAtom } from './users';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {

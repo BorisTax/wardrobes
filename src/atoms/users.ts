@@ -47,28 +47,13 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
     }
 })
 
-
-export const userAtom = atom<UserState>(getInitialUser())
-
-export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
-    const { token } = get(userAtom)
+const userAtomPrivate = atom(getInitialUser())
+export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, set: Setter, token: string, verify = false) => {
+    if (verify) {
         const result = await fetchGetData(`/api/users/verify?token=${token}`)
         if (!result.success) {
             localStorage.removeItem("token")
-            set(userAtom, { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() })
-            return
-        }
-})
-export const standbyUserAtom = atom(null, async (get: Getter, set: Setter) => {
-    const { token } = get(userAtom)
-    const result = await fetchGetData(`/api/users/standby?token=${token}`)
-})
-export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: string, verify = false) => {
-    if (verify) {
-        const result = await fetchGetData(`/api/users/verify?token=${token}`)
-        if(!result.success){
-            localStorage.removeItem("token")
-            set(userAtom, { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions()  })
+            set(userAtomPrivate, getInitialUser())
             return
         }
     }
@@ -77,19 +62,39 @@ export const setUserAtom = atom(null, async (get: Getter, set: Setter, token: st
         const { name, role, permissions } = jwtDecode(token) as UserState & { permissions: PERMISSIONS_SCHEMA[] }
         storeUser = { name, role, token, permissions }
         storeUser.permissions = permissionsToMap(permissions)
+        set(userAtomPrivate, storeUser)
+        localStorage.setItem('token', storeUser.token)
     } catch (e) {
-        storeUser = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions()  }
+        storeUser = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
+        localStorage.removeItem("token")
+        set(userAtomPrivate, getInitialUser())
     }
-    localStorage.setItem('token', storeUser.token)
     const p = storeUser.permissions.get(RESOURCE.PRICES)
-    set(userAtom, storeUser)
     if (p?.read) set(loadPriceListAtom)
+}
+)
+
+export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
+    const { token } = get(userAtom)
+        const result = await fetchGetData(`/api/users/verify?token=${token}`)
+        if (!result.success) {
+            localStorage.removeItem("token")
+            set(userAtom, "")
+            return
+        }
+    set(userAtom, token)
 })
+export const standbyUserAtom = atom(null, async (get: Getter, set: Setter) => {
+    const { token } = get(userAtom)
+    const result = await fetchGetData(`/api/users/standby?token=${token}`)
+})
+
+
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")
     const user = get(userAtom)
     fetchData('/api/users/logout', "POST", JSON.stringify({ token: user.token }))
-    set(userAtom, getInitialUser())
+    set(userAtom, "")
 })
 export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, usertoken: string) => {
     const user = get(userAtom)

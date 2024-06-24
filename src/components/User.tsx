@@ -1,14 +1,13 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { getInitialUser, logoutAtom, setUserAtom, userAtom } from "../atoms/users";
+import { getInitialUser, logoutAtom, userAtom } from "../atoms/users";
 import { loginDialogAtom } from "../atoms/dialogs";
 import useConfirm from "../custom-hooks/useConfirm";
 import { versionAtom } from "../atoms/app";
 
 export default function User() {
-    const user = useAtomValue(userAtom)
+    const [user, setUser] = useAtom(userAtom)
     const logout = useSetAtom(logoutAtom)
-    const setUser = useSetAtom(setUserAtom)
     const dialogRef = useAtomValue(loginDialogAtom)
     const showConfirm = useConfirm()
     const version = useAtomValue(versionAtom)

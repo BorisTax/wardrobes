@@ -5,16 +5,16 @@ type CheckBoxProps = {
     disabled?: boolean
     onChange: () => void
     id?: string
+    caption?: string
 }
-export default function CheckBox({ checked, disabled = false, onChange, id }: CheckBoxProps) {
-    const newId = useId()
+export default function CheckBox({ checked, disabled = false, onChange, caption = "", id }: CheckBoxProps) {
     const props = {
         type: "checkbox",
         checked,
         disabled,
         onChange,
-        id: id || newId
+        id: id || useId()
     }
-    return <input {...props} />
+    return <div className="d-flex flex-nowrap gap-1"><input {...props} /><span>{caption}</span></div>
 }
 

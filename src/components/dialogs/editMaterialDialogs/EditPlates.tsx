@@ -30,7 +30,7 @@ export default function EditPlates() {
     const editItems: EditDataItem[] = [
         { caption: "Наименование:", value: extMaterial.name || "", message: "Введите наименование", type: InputType.TEXT },
         { caption: "Код:", value: extMaterial.code, message: "Введите код", type: InputType.TEXT },
-        { caption: "Назначение:", value: extMaterial.purpose || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
+        { caption: "Назначение:", value: extMaterial.purpose || "", valueCaption: (value) => MATPurpose.get(value as MAT_PURPOSE) || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
         { caption: "Изображение:", value: extMaterial.image || "", message: "Выберите изображение", type: InputType.FILE },
     ]
     return <EditContainer>

@@ -36,6 +36,7 @@ router.post("/combidata", async (req, res) => {
   const result = await getSpecCombiData(data);
   res.json(result);
 });
+
 export async function getSpecList() {
   const specService = new SpecificationService(specServiceProvider, materialServiceProvider)
   return await specService.getSpecList()

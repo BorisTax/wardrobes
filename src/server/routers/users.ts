@@ -19,13 +19,6 @@ router.get("/hash", async (req, res) => {
   res.json(result);
 });
 
-router.get("/standby", async (req, res) => {
-  const token = (req as MyRequest).token as string;
-  const userService = new UserService(userServiceProvider)
-  const result = await userService.updateToken(token)
-  res.json(result);
-});
-
 router.get("/events", async (req, res) => {
   const token = (req as MyRequest).token as string;
   const event = events.set(token, new EventEmitter()).get(token) as EventEmitter
@@ -42,6 +35,7 @@ router.get("/verify", async (req, res) => {
   const userService = new UserService(userServiceProvider)
   const tokens = await userService.getTokens();
   const result = (tokens.data as Token[]).find((t: Token) => t.token === token)
+  if (result) await userService.updateToken(token)
   res.json({ success: !!result });
 });
 

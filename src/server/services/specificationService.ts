@@ -31,17 +31,10 @@ export class SpecificationService implements ISpecificationService {
   async getSpecData(data: WardrobeData): Promise<Result<SpecificationMultiResult>> {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: SpecificationMultiResult = []
-    const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
-    const wardrobe = getWardrobe(data, details)
-    const specList = (await this.provider.getSpecList()).data || []
-    const coefList: Map<SpecificationItem, number> = new Map(specList.map((p: SpecificationData) => [p.name as SpecificationItem, p.coef as number]))
     const profiles = (await this.matProvider.getProfiles()).data
-    const materialService = new MaterialExtService<Brush>(new BrushServiceSQLite(materialsPath))
-    const brushes = (await materialService.getExtData()).data
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
-    const brush: Brush | undefined = brushes?.find(b => b.name === profile?.brush)
     const fasades = createFasades(data, profile?.type as ProfileType)
-    const corpus = await getCorpusSpecification(wardrobe, data, profile as Profile)
+    const corpus = await getCorpusSpecification(data, profile as Profile)
     const corpusConverted = flattenSpecification(filterEmptySpecification(corpus))
     result.push({ type: CORPUS_SPECS.CORPUS, spec: corpusConverted })
     for(let f of fasades){ 
@@ -54,7 +47,6 @@ export class SpecificationService implements ISpecificationService {
   async getSpecCombiData(data: AppState): Promise<Result<(SpecificationResult[])[]>> {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: (SpecificationResult[])[] = []
-    const specList = (await this.provider.getSpecList()).data || []
     const profiles = (await this.matProvider.getProfiles()).data
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profile.name)
     const fasades = data.rootFasadesState.map(r => newFasadFromState(r))

@@ -43,7 +43,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                 {props.items.map((i, index) => <Fragment key={i.caption}><span className="text-end text-nowrap">{i.caption}</span>
                     {i.readonly ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
                     {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
-                    {i.type === InputType.CHECKBOX && <CheckBox checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; return [...p] }) }} />}
+                    {i.type === InputType.CHECKBOX && <CheckBox caption={i.valueCaption && i.valueCaption(newValues[index])} checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; return [...p] }) }} />}
                     {(i.list && i.type === InputType.LIST) && <ComboBox value={newValues[index] as string} items={i.list} disabled={!checked[index] || i.readonly} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
                     {i.type === InputType.FILE && <div>
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
@@ -63,7 +63,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                 )}
             </div>
             <div className="editmaterial-buttons-container">
-                {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every(c => c))} onClick={() => {
+                {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every((c, index) => c || props.items[index].readonly))} onClick={() => {
                     const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
                     if (!check.success) { showMessage(check.message); return }
@@ -76,7 +76,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                         if (result.message) showMessage(rusMessages[result.message])
                     })
                 }} />}
-                {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some(c => c))} onClick={() => {
+                {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some((c, index) => c && !props.items[index].readonly))} onClick={() => {
                     const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
                     if (!check.success) { showMessage(check.message); return }

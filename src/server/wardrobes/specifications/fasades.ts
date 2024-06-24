@@ -1,8 +1,8 @@
 import Fasad from "../../../classes/Fasad";
 import { getFasadHeight, getFasadWidth } from "../../../functions/wardrobe";
 import { Division, FasadMaterial } from "../../../types/enums";
-import { Edge, ExtMaterial, Profile, ProfileType } from "../../../types/materials";
-import { FullData, SpecificationResult, VerboseData } from "../../../types/wardrobe";
+import { ExtMaterial, Profile, ProfileType } from "../../../types/materials";
+import { FullData, SpecificationResult, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe";
 import { SpecificationItem } from "../../../types/specification";
 import { WardrobeData } from "../../../types/wardrobe";
 import { materialServiceProvider, materialsPath } from "../../options";
@@ -21,6 +21,7 @@ export function createFasades(data: WardrobeData, profileType: ProfileType): Fas
     const fasades: Fasad[] = []
     const count = getFasadCount(data)
     if (!correctFasadCount(count)) return fasades
+    if (data.wardType === WARDROBE_TYPE.CORPUS) return fasades
     const width = getFasadWidth(data.width, count, data.wardType, profileType)
     const height = getFasadHeight(data.height, data.wardType, profileType)
     data.fasades.dsp.names.forEach(n => {

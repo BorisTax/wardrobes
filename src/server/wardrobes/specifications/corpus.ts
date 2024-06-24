@@ -14,11 +14,8 @@ import { MaterialService } from "../../services/materialService"
 import { SpecificationService } from "../../services/specificationService"
 import BrushServiceSQLite from "../../services/extServices/brushServiceSQLite"
 
-export async function getCorpusSpecification(wardrobe: IWardrobe, data: WardrobeData, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
+export async function getCorpusSpecification(data: WardrobeData, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = getSpecificationPattern()
-    //const { details, dsp, dvpData, legs, karton } = intermediateData
-    const truba = wardrobe.getTruba()
-    const trempel = wardrobe.getTrempel()
     const karton = [await getKarton(data)]
     spec.set(SpecificationItem.DSP, [await getDSP(data)])
     spec.set(SpecificationItem.DVP, [await getDVP(data)])
@@ -40,7 +37,7 @@ export async function getCorpusSpecification(wardrobe: IWardrobe, data: Wardrobe
     //spec.set(SpecificationItem.NapravBottom, { amount: wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravBottom) || 1) })
     //spec.set(SpecificationItem.Samorez16, { amount: wardrobe.getSamorez16() * (coefList.get(SpecificationItem.Samorez16) || 1) })
     //spec.set(SpecificationItem.StyagkaM6, { amount: wardrobe.getStyagka() * (coefList.get(SpecificationItem.StyagkaM6) || 1) })
-    //spec.set(SpecificationItem.NapravTop, { amount: truba.length * truba.count * (coefList.get(SpecificationItem.Truba) || 1) })
+    //spec.set(SpecificationItem.Truba, { amount: truba.length * truba.count * (coefList.get(SpecificationItem.Truba) || 1) })
     // if (trempel.length === 250)
     //     spec.set(SpecificationItem.Trempel250, { amount: trempel.count * (coefList.get(SpecificationItem.Trempel250) || 1) });
     // else
@@ -237,7 +234,7 @@ async function getLegs(data: WardrobeData): Promise<FullData> {
     const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0;
     const verbose = [["Ширина шкафа", "Кол-во"]];
     list.forEach(item => {
-        verbose.push([getFineRange(item.minwidth, item.maxwidth), `${item.count}`]);
+        if (item.count === current) verbose.push([getFineRange(item.minwidth, item.maxwidth), `${item.count}`]);
     });
     return { data: { amount: current, char: { code: "", caption: "" } }, verbose };
 }

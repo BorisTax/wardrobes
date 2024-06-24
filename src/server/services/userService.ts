@@ -93,8 +93,8 @@ export class UserService implements IUserService {
     return this.provider.registerUser(userName, password, role)
   }
   async deleteUser(user: User) {
-    const superadmin = (await this.getSuperAdmin()).data?.map(m => m.name)
-    if (superadmin?.find(s => s === user.name)) return { success: false, status: 403, message: messages.USER_UPDATE_DENIED }
+    const superusers = (await this.getSuperUsers()).data?.map(m => m.name)
+    if (superusers?.find(s => s === user.name)) return { success: false, status: 403, message: messages.USER_DELETE_DENIED }
     const result = await this.provider.deleteUser(user)
     if (result.success) {
       const t = activeTokens.tokenList.find(t => t.username === user.name)
@@ -130,11 +130,16 @@ export class UserService implements IUserService {
     return this.provider.addRole(name)
   }
   async deleteRole(name: string): Promise<Result<null>> {
+    const superroles = (await this.getSuperRoles()).data?.map(m => m.name)
+    if (superroles?.find(s => s === name)) return { success: false, status: 403, message: messages.ROLE_DELETE_DENIED }
     return this.provider.deleteRole(name)
   }
-  async getSuperAdmin(): Promise<Result<{ name: string }[]>>{
-    return await this.provider.getSuperAdmin()
-}
+  async getSuperUsers(): Promise<Result<{ name: string }[]>> {
+    return await this.provider.getSuperUsers()
+  }
+  async getSuperRoles(): Promise<Result<{ name: string }[]>> {
+    return await this.provider.getSuperRoles()
+  }
 }
 
 

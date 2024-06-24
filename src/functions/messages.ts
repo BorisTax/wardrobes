@@ -35,11 +35,12 @@ export const rusMessages = {
   [messages.USER_DELETED]: "Пользователь удален",
   [messages.SERVER_ERROR]: "Ошибка сервера",
   [messages.USER_NAME_EXIST]: "Пользователь существует",
-  [messages.USER_UPDATE_DENIED]: "Нельзя удалить пользователя",
+  [messages.USER_DELETE_DENIED]: "Нельзя удалить пользователя",
 
   [messages.ROLE_ADDED]: "Роль добавлена",
   [messages.ROLE_DELETED]: "Роль удалена",
   [messages.ROLE_EXIST]: "Роль уже сужествует",
+  [messages.ROLE_DELETE_DENIED]: "Нельзя удалить роль",
 
   [messages.PRICELIST_NAME_NO_EXIST]: "Материал не существует в базе",
   [messages.PRICELIST_PRICE_INCORRECT]: "Некорректная цена",

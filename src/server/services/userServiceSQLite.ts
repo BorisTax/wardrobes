@@ -5,7 +5,7 @@ import { PERMISSIONS_SCHEMA, USER_ROLE_SCHEMA, User } from "../../types/user.js"
 import messages from '../messages.js';
 import { USER_TABLE_NAMES } from '../../types/schemas.js';
 import { Permissions, RESOURCE, UserRole } from '../../types/user.js';
-const { USERS, TOKENS, PERMISSIONS, USER_ROLES, ROLES, SUPERADMIN } = USER_TABLE_NAMES
+const { USERS, TOKENS, PERMISSIONS, USER_ROLES, ROLES, SUPERUSERS, SUPERROLES } = USER_TABLE_NAMES
 export default class UserServiceSQLite implements IUserServiceProvider {
     dbFile: string;
     constructor(dbFile: string) {
@@ -73,7 +73,10 @@ export default class UserServiceSQLite implements IUserServiceProvider {
             `DELETE FROM ${ROLES} where name='${name}';`
         ], { successStatusCode: 200, successMessage: messages.ROLE_DELETED })
     }
-    async getSuperAdmin(): Promise<Result<{ name: string }[]>>{
-        return await dataBaseQuery(this.dbFile, `SELECT * FROM ${SUPERADMIN};`, { successStatusCode: 200 })
+    async getSuperUsers(): Promise<Result<{ name: string }[]>>{
+        return await dataBaseQuery(this.dbFile, `SELECT * FROM ${SUPERUSERS};`, { successStatusCode: 200 })
+    }
+    async getSuperRoles(): Promise<Result<{ name: string }[]>>{
+        return await dataBaseQuery(this.dbFile, `SELECT * FROM ${SUPERROLES};`, { successStatusCode: 200 })
     }
 }

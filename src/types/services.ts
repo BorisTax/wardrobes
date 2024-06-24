@@ -22,7 +22,8 @@ interface IUserAbstractService {
     getRoles: () => Promise<Result<UserRole[]>>
     addRole: (role: string) => Promise<Result<null>>
     deleteRole: (role: string) => Promise<Result<null>>
-    getSuperAdmin: () => Promise<Result<{ name: string }[]>>
+    getSuperUsers: () => Promise<Result<{ name: string }[]>>
+    getSuperRoles: () => Promise<Result<{ name: string }[]>>
 }
 export interface IMaterialService {
     getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<ExtMaterial[]>>

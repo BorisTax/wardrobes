@@ -67,5 +67,6 @@ export enum USER_TABLE_NAMES {
     RESOURCES = 'resources',
     PERMISSIONS = 'permissions',
     USER_ROLES = 'user_roles',
-    SUPERADMIN = 'superadmin',
+    SUPERUSERS = 'superusers',
+    SUPERROLES = 'superroles',
 }

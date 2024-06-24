@@ -18,7 +18,7 @@ export default function EventListener() {
     //verifyUser()
     const timer = setInterval(() => { 
       verifyUser()
-      standbyUser()
+      //standbyUser()
      }, 60000)
     return () => { clearInterval(timer) }
   }, [user.name])
@@ -40,5 +40,5 @@ export default function EventListener() {
       return false
     })
   }, [user.name])
-    return <></>
+    return <div></div>
 }

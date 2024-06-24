@@ -14,7 +14,6 @@ export default router
 
 router.get("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
-  const { data } = req.body
   const result = await getSpecList();
   res.json(result);
 });

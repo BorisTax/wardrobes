@@ -10,7 +10,6 @@ import { JWT_SECRET, userServiceProvider } from '../options.js';
 import EventEmitter from 'events';
 import { SERVER_EVENTS } from "../../types/enums.js";
 import { RESOURCE } from '../../types/user.js';
-import { UserState } from '../../atoms/users.js';
 
 const router = express.Router();
 export default router
@@ -34,7 +33,7 @@ router.get("/events", async (req, res) => {
   event.on("message", (message: SERVER_EVENTS, data: string) => {
     try{
       if (!res.headersSent) res.status(200).json({ success: true, message, data })
-    } catch (e) { console.error(e)}
+    } catch (e) { console.log('event on message error - ', e)}
   })
 });
 

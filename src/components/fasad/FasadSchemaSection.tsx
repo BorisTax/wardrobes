@@ -71,7 +71,6 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
             hammer.get("pan").set({ enable: false })
             hammer.get("pinch").set({ enable: true })
             hammer.on("pinch", (e: HammerInput) => {
-                console.log(e.scale)
                 onZoom(1 - e.scale, 0.005)
             })
             setHammer(hammer)

@@ -76,17 +76,9 @@ function App() {
     const storage = localStorage.getItem('appState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
     setAppData(getAppDataFromState(appState), false)
-    loadMaterialList(!storage)
-    loadSpecification()
-    loadProfileList()
-    loadEdgeList()
-    loadBrushList()
-    loadTrempelList()
-    loadZaglushkaList()
-    loadUplotnitelList()
+
     loadInitialAppState()
     loadInitialWardrobeData()
-    loadUserRoles()
     loadVersion()
   }, [user.name])
   useEffect(() => {

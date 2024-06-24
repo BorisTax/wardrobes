@@ -31,13 +31,13 @@ export const loadInitialStateAtom = atom(null, async (get, set) => {
 })
 export const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
 export const historyAppAtom = atom((get: Getter) => { const data = get(appAtom); return { next: data.next, previous: data.previous } })
-export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state), (get, set, appData: AppData, useHistory: boolean) => {
+export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state), (get, set, appData: AppData, useHistory: boolean, calculate: boolean = true) => {
     const app = get(appAtom)
     const state = getAppState(appData)
     localStorage.setItem('appState', JSON.stringify(state))
     if (useHistory) set(appAtom, { previous: app, state, next: null });
     else set(appAtom, { ...app, state })
-    if (get(loadedInitialStateAtom)) set(calculateCombiSpecificationsAtom, app.state)
+    if (get(loadedInitialStateAtom) && calculate) set(calculateCombiSpecificationsAtom, app.state)
 })
 export const saveToStorageAtom = atom(null, (get, set) => {
     const app = get(appAtom)

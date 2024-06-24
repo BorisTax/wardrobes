@@ -9,14 +9,18 @@ import { UserRoles } from "../../types/user.js";
 export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
-            if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
+            if (err) { 
+                console.log(query, err)
+                resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); 
+                db.close(); 
+                return 
+            }
             if (!query) { resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.close(); return }
             try {
                 db.all(query, (err: Error, rows: []) => {
                     if (err) {
                         resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
-                        console.log(query)
-                        console.log(err.message)
+                        console.log(query, err.message)
                         db.close();
                         return
                     }
@@ -25,7 +29,7 @@ export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusC
                 });
             } catch (e: any) {
                 resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: e });
-                console.log(query)
+                console.log(query, e)
                 db.close();
             }
         });
@@ -45,8 +49,7 @@ export function dataBaseTransaction<T>(dbFile: string, queries: string[], { succ
                         db.all(query, (err: Error, rows: []) => {
                             if (err) {
                                 resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
-                                console.log(query)
-                                console.log(err.message)
+                                console.log(query, err.message)
                                 db.run("ROLLBACK");
                                 db.close();
                                 return

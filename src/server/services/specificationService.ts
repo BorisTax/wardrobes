@@ -57,7 +57,6 @@ export class SpecificationService implements ISpecificationService {
     const specList = (await this.provider.getSpecList()).data || []
     const profiles = (await this.matProvider.getProfiles()).data
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profile.name)
-    //console.log(data.rootFasadesState[0])
     const fasades = data.rootFasadesState.map(r => newFasadFromState(r))
     for (let f of fasades) {
       const fasadSpec = await getFasadSpecification(f, profile  as Profile)

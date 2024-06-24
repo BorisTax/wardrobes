@@ -1,17 +1,24 @@
 import { atom, useAtomValue } from "jotai";
 import { ExtMaterial } from "../../types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
-import { userAtom } from "../users";
+import { loadUserRolesAtom, userAtom } from "../users";
 import { appDataAtom } from "../app";
 import Fasad from "../../classes/Fasad";
 import { FasadMaterial } from "../../types/enums";
 import { TableFields } from "../../types/server";
 import messages from "../../server/messages";
-import { RESOURCE } from "../../types/user";
+import { Permissions, RESOURCE } from "../../types/user";
+import { loadSpecificationListAtom } from "../specification";
+import { loadProfileListAtom } from "./profiles";
+import { loadEdgeListAtom } from "./edges";
+import { loadBrushListAtom } from "./brush";
+import { loadTrempelListAtom } from "./trempel";
+import { loadZaglushkaListAtom } from "./zaglushka";
+import { loadUplotnitelListAtom } from "./uplotnitel";
 
 export const materialListAtom = atom<ExtMaterial[]>([])
 
-export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = false) => {
+export const loadMaterialListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
     try {
@@ -21,7 +28,6 @@ export const loadMaterialListAtom = atom(null, async (get, set, setAsInitial = f
         const { rootFasades } = get(appDataAtom)
         const material = result.data && (result.data as ExtMaterial[])[0]?.material
         const extMaterial = result.data && (result.data as ExtMaterial[])[0]?.name
-        //if (setAsInitial) 
         setInitialMaterials(rootFasades, material as FasadMaterial, extMaterial || "")
     } catch (e) { console.error(e) }
 })
@@ -92,6 +98,8 @@ export function setInitialMaterials(rootFasades: Fasad[], material: FasadMateria
         f.setExtMaterial(extMaterial)
     })
 }
+
+
 
 export function useImageUrl(extMaterial: string) {
     const materials = useAtomValue(materialListAtom)

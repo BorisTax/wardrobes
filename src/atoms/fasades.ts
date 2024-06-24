@@ -27,7 +27,7 @@ export const setActiveFasadAtom = atom(null, (get, set, activeFasad: Fasad | nul
     const appData = get(appDataAtom)
     if (activeFasad !== null && appData.rootFasades.every(f => !isFasadExist(f, activeFasad))) return
     appData.rootFasades.forEach((f: Fasad) => f.setActiveFasad(activeFasad))
-    set(appDataAtom, { ...appData }, false)
+    set(appDataAtom, { ...appData }, false, false)
 })
 export const activeRootFasadIndexAtom = atom((get) => {
     const { rootFasades } = get(appDataAtom)

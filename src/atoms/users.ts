@@ -2,8 +2,15 @@ import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
 import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserData, UserRole } from "../types/user"
-import { loadPriceListAtom } from "./prices"
 import { AtomCallbackResult } from "../types/atoms"
+import { loadMaterialListAtom } from "./materials/materials"
+import { loadProfileListAtom } from "./materials/profiles"
+import { loadEdgeListAtom } from "./materials/edges"
+import { loadBrushListAtom } from "./materials/brush"
+import { loadTrempelListAtom } from "./materials/trempel"
+import { loadZaglushkaListAtom } from "./materials/zaglushka"
+import { loadUplotnitelListAtom } from "./materials/uplotnitel"
+import { loadSpecificationListAtom } from "./specification"
 
 
 export type UserState = {
@@ -69,8 +76,7 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         localStorage.removeItem("token")
         set(userAtomPrivate, getInitialUser())
     }
-    const p = storeUser.permissions.get(RESOURCE.PRICES)
-    if (p?.read) set(loadPriceListAtom)
+    set(loadAllDataAtom, storeUser.permissions)
 }
 )
 
@@ -132,6 +138,23 @@ export const deleteRoleAtom = atom(null, async (get: Getter, set: Setter, { name
         set(loadUserRolesAtom)
     }
     return {success: result.success, message: result.message}
+})
+
+
+export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESOURCE, Permissions>) => {
+    if (permissions.get(RESOURCE.MATERIALS)?.read) {
+        set(loadMaterialListAtom)
+        set(loadProfileListAtom)
+        set(loadEdgeListAtom)
+        set(loadBrushListAtom)
+        set(loadTrempelListAtom)
+        set(loadZaglushkaListAtom)
+        set(loadUplotnitelListAtom)
+    }
+    if (permissions.get(RESOURCE.SPECIFICATION)?.read) {
+        set(loadSpecificationListAtom)
+    }
+    if (permissions.get(RESOURCE.USERS)?.read) { set(loadUserRolesAtom) }
 })
 
 export function getInitialUser(): UserState {

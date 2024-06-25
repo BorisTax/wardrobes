@@ -83,6 +83,7 @@ export type SpecificationMultiResultFasades = [
     { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
 ]
 
+export type CombiSpecificationResult = { specifications: SpecificationResult[][], totalPrice: number[] }
 export type SpecificationResult = [SpecificationItem, FullData]
 
 export type SpecificationMultiResult = { 

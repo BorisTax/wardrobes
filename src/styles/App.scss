@@ -97,6 +97,10 @@ svg {
   animation: spin 2s linear infinite;
 }
 
+.animate {
+  animation: spin 2s linear infinite;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

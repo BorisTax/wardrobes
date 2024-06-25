@@ -23,6 +23,7 @@ import { useMemo } from "react"
 import ImageLink from "./inputs/ImageLink"
 import { loadedInitialStateAtom } from "../atoms/app"
 import { RESOURCE } from "../types/user"
+import FasadTotalPrice from "./fasad/FasadTotalPrice"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 const directions: Map<string, string> = new Map()
 export default function PropertiesBar() {
@@ -37,7 +38,6 @@ export default function PropertiesBar() {
     const sections = fasad ? sectionsTemplate : []
     const matList = useAtomValue(materialListAtom)
     const materialList = useMemo(() => matList.filter(m => m.purpose !== MAT_PURPOSE.CORPUS), [matList])
-    const totalPrice = useAtomValue(totalPriceAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)
     const setFixedWidth = useSetAtom(setFixedWidthAtom)
@@ -52,8 +52,6 @@ export default function PropertiesBar() {
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
     const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
     const extMaterialsName = useMemo(() => (materialList.filter(mat => mat.material === material) || [{ name: "", material: "" }]).map((m: ExtMaterial) => m.name), [materialList, material])
-    const fasadValue = fasad && totalPrice[rootFasadIndex]?.toFixed(2)
-    const fasadPrice = permPrice?.read && <div className="d-flex justify-content-end text-primary" style={{ visibility: fasad ? "visible" : "hidden" }}>Стоимость фасада:{` ${fasadValue}`}</div>
     const onlyFasad = !!fasad && fasad.Children.length === 0
     const stretchImage = fasad?.BackImageProps.size === "100% 100%"
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}> 
@@ -97,7 +95,7 @@ export default function PropertiesBar() {
             <ComboBox title="Направление профиля:" value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
             <ComboBox title="Кол-во секций:" value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
         </PropertyGrid>
-        {fasadPrice}
+        {permPrice?.read && <FasadTotalPrice />}
     </div>
 }
 

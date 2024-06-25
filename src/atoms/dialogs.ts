@@ -44,8 +44,8 @@ export const specificationDialogAtom = atom<React.RefObject<HTMLDialogElement> |
 export const showSpecificationDialogAtom = atom(null, (get, set) => {
     const dialogRef = get(specificationDialogAtom)
     const appState = get(appAtom)
-    set(loadPriceListAtom)
-    set(calculateCombiSpecificationsAtom, appState.state)
+    //set(loadPriceListAtom)
+    //set(calculateCombiSpecificationsAtom, appState.state)
     dialogRef?.current?.showModal()
 })
 export const showEditSpecificationDialogAtom = atom(null, (get, set) => {

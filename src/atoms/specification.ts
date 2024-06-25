@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { SpecificationItem } from "../types/specification";
 import { priceListAtom } from "./prices";
-import { SpecificationMultiResult, SpecificationResult, WardrobeData } from "../types/wardrobe";
+import { CombiSpecificationResult, SpecificationMultiResult, SpecificationResult, WardrobeData } from "../types/wardrobe";
 import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { SpecificationData, TableFields } from "../types/server";
@@ -9,6 +9,7 @@ import { getInitSpecification } from "../functions/specification";
 import { wardrobeDataAtom } from "./wardrobe";
 import messages from "../server/messages";
 import { AppState } from "../types/app";
+import { appAtom } from "./app";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])
@@ -67,31 +68,22 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, data: War
     } catch (e) { console.error(e) }
 })
 
-export const calculateCombiSpecificationsAtom = atom(null, async (get, set, data: AppState) => {
+export const calculateCombiSpecificationsAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
+    const data = get(appAtom).state
     const formData: any = {}
     formData[TableFields.DATA] = data
     formData[TableFields.TOKEN] = token
     set(specificationInProgress, true)
     try {
-        const result: FetchResult<SpecificationResult[][]> = await fetchData('/api/specification/combidata', "POST", JSON.stringify(formData))
-        if (result.success) {
-            set(specificationCombiAtom, result.data as SpecificationResult[][])
+        const result: FetchResult<CombiSpecificationResult> = await fetchData('/api/specification/combidata', "POST", JSON.stringify(formData))
+        if (result.success && result.data) {
+            set(specificationCombiAtom, result.data.specifications as SpecificationResult[][])
+            set(totalPriceAtom, result.data.totalPrice)
             set(specificationInProgress, false)
         }
     } catch (e) { console.error(e) }
 })
 
-export const totalPriceAtom = atom((get) => {
-    const priceList = get(priceListAtom)
-    const specifications = get(specificationCombiAtom)
-    const totalPrice = specifications.map(s => {
-        let sum: number = 0
-            s.forEach(sp => {
-                const priceItem = priceList.find(pl => pl.name === sp[0]) || { price: 0, markup: 0, name: "" }
-                sum += sp[1].data.amount * (priceItem.price || 0) * (priceItem.markup || 0)
-            })
-        return sum
-    })
-    return totalPrice
-})
+
+export const totalPriceAtom = atom<number[]>([])

@@ -26,6 +26,7 @@ export const loadInitialStateAtom = atom(null, async (get, set) => {
         const { wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial } = result.data as InitialAppState
         const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial)
         set(appAtom, { state, next: null, previous: null })
+        set(calculateCombiSpecificationsAtom)
         set(loadedInitialStateAtom, true)
     }
 })
@@ -37,7 +38,7 @@ export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state)
     localStorage.setItem('appState', JSON.stringify(state))
     if (useHistory) set(appAtom, { previous: app, state, next: null });
     else set(appAtom, { ...app, state })
-    if (get(loadedInitialStateAtom) && calculate) set(calculateCombiSpecificationsAtom, app.state)
+    if (get(loadedInitialStateAtom) && calculate) set(calculateCombiSpecificationsAtom)
 })
 export const saveToStorageAtom = atom(null, (get, set) => {
     const app = get(appAtom)

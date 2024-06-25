@@ -1,4 +1,4 @@
-import { SpecificationData, Result, PriceData } from '../../types/server.js'
+import { Result, PriceData } from '../../types/server.js'
 import { IPriceService, IPriceServiceProvider} from '../../types/services.js'
 
 

@@ -18,6 +18,7 @@ interface IUserAbstractService {
     deleteUser: (user: User) => Promise<Result<null>>
     getPermissions: (role: string, resource: RESOURCE) => Promise<Permissions>
     getAllUserPermissions: (role: string) => Promise<PERMISSIONS_SCHEMA[]>
+    getAllPermissions: () => Promise<PERMISSIONS_SCHEMA[]>
     getUserRole: (username: string) => Promise<string>
     getRoles: () => Promise<Result<UserRole[]>>
     addRole: (role: string) => Promise<Result<null>>

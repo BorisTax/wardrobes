@@ -55,6 +55,10 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS} where role='${role}';`, { successStatusCode: 200 })
         return result.data as PERMISSIONS_SCHEMA[] || []
     }
+    async getAllPermissions(): Promise<PERMISSIONS_SCHEMA[]> {
+        const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS};`, { successStatusCode: 200 })
+        return result.data as PERMISSIONS_SCHEMA[] || []
+    }
     async getUserRole(username: string): Promise<string> {
         const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${USER_ROLES} where user='${username}';`, { successStatusCode: 200 })
         const users = result?.data as USER_ROLE_SCHEMA[]

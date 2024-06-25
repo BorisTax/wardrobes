@@ -117,6 +117,9 @@ export class UserService implements IUserService {
   async getAllUserPermissions(role: string): Promise<PERMISSIONS_SCHEMA[]> {
     return this.provider.getAllUserPermissions(role)
   }
+  async getAllPermissions(): Promise<PERMISSIONS_SCHEMA[]> {
+    return this.provider.getAllPermissions()
+  }
   async getUserRole(username: string): Promise<string> {
     const result = await this.provider.getUserRole(username)
     return result

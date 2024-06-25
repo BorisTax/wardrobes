@@ -41,7 +41,7 @@ export default function EditPlates() {
             <hr />
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
         </div>
-        <EditDataSection name={extMaterial.name} items={editItems}
+        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={extMaterial.name} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
@@ -63,6 +63,6 @@ export default function EditPlates() {
                 if (existMaterial(name, baseMaterial, materialList)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file)
                 return result
-            } : undefined} />
+            } : undefined} /> : <div></div>}
     </EditContainer>
 }

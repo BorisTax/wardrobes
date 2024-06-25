@@ -31,7 +31,7 @@ export default function EditUplotnitel() {
     }, [noSortedList])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        <EditDataSection name={name} items={editItems}
+        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={name} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {
                 const usedCode = checked[0] ? values[1] : ""
                 const usedCaption = checked[1] ? values[2] : ""
@@ -49,6 +49,6 @@ export default function EditUplotnitel() {
                 if (list.find((p: Uplotnitel) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addUplotnitel({ name, code })
                 return result
-            }} />
+            }} /> : <div></div>}
     </EditContainer>
 }

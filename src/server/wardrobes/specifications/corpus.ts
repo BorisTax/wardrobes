@@ -1,7 +1,7 @@
 import { correctFasadCount, emptyFullData, getFasadCount, getSpecificationPattern } from "./fasades"
 import { SpecificationItem } from "../../../types/specification"
 import { DETAIL_NAME, DVPData, Detail, FullData, VerboseData, WARDROBE_KIND, WardrobeDetailTable } from "../../../types/wardrobe"
-import { Edge, ExtMaterial, Profile, ProfileType, Zaglushka } from "../../../types/materials"
+import { Edge, ExtMaterial, Profile, ProfileType, Trempel, Zaglushka } from "../../../types/materials"
 import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
 import StandartWardrobe from "../standart"
 import { FasadMaterial } from "../../../types/enums"
@@ -13,6 +13,7 @@ import { MaterialExtService } from "../../services/materialExtService"
 import { MaterialService } from "../../services/materialService"
 import { SpecificationService } from "../../services/specificationService"
 import BrushServiceSQLite from "../../services/extServices/brushServiceSQLite"
+import TrempelServiceSQLite from "../../services/extServices/trempelServiceSQLite"
 
 export async function getCorpusSpecification(data: WardrobeData, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = getSpecificationPattern()
@@ -33,17 +34,13 @@ export async function getCorpusSpecification(data: WardrobeData, profile: Profil
     spec.set(SpecificationItem.Nails, [await getNails(data)])
     spec.set(SpecificationItem.Brush, [await getBrush(data, profile, ProfileType.STANDART)])
     spec.set(SpecificationItem.BrushBavaria, [await getBrush(data, profile, ProfileType.BAVARIA)])
-    //spec.set(SpecificationItem.NapravTop, { amount: wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravTop) || 1) })
-    //spec.set(SpecificationItem.NapravBottom, { amount: wardrobe.getNaprav() * (coefList.get(SpecificationItem.NapravBottom) || 1) })
-    //spec.set(SpecificationItem.Samorez16, { amount: wardrobe.getSamorez16() * (coefList.get(SpecificationItem.Samorez16) || 1) })
-    //spec.set(SpecificationItem.StyagkaM6, { amount: wardrobe.getStyagka() * (coefList.get(SpecificationItem.StyagkaM6) || 1) })
-    //spec.set(SpecificationItem.Truba, { amount: truba.length * truba.count * (coefList.get(SpecificationItem.Truba) || 1) })
-    // if (trempel.length === 250)
-    //     spec.set(SpecificationItem.Trempel250, { amount: trempel.count * (coefList.get(SpecificationItem.Trempel250) || 1) });
-    // else
-    //     spec.set(SpecificationItem.Trempel300, { amount: trempel.count * (coefList.get(SpecificationItem.Trempel300) || 1) })
-
-    //spec.set(SpecificationItem.Streich, { amount: 12 })
+    spec.set(SpecificationItem.NapravTop, [await getNaprav(data, profile, true)])
+    spec.set(SpecificationItem.NapravBottom, [await getNaprav(data, profile, false)])
+    spec.set(SpecificationItem.Samorez16, [await getSamorez16(data)])
+    spec.set(SpecificationItem.StyagkaM6, [await getStyagka(data)])
+    spec.set(SpecificationItem.Truba, [await getTruba(data)])
+    spec.set(SpecificationItem.Trempel, [await getTrempel(data)]);
+    spec.set(SpecificationItem.Streich, [{ data: { amount: 12 } }])
     return spec
 }
 
@@ -110,29 +107,26 @@ export async function getDetailNames(): Promise<WardrobeDetailSchema[]> {
 
 export async function getDetails(kind: WARDROBE_KIND, width: number, height: number, depth: number): Promise<Detail[]> {
     const service = new SpecificationService(specServiceProvider);
-    const result = await service.getDetailTable({ kind });
-    if (!result.success) return [];
-    const table = result.data as WardrobeDetailTable[];
     const details: Detail[] = [];
-    var { count, size } = getDetail(table, DETAIL_NAME.ROOF, width, height, 0, 0);
+    var { count, size } = await getDetail(service, kind, DETAIL_NAME.ROOF, width, height, 0, 0);
     const offset = 100;
     if (count > 0) details.push({ name: DETAIL_NAME.ROOF, length: size, width: depth, count });
-    var { count, size } = getDetail(table, DETAIL_NAME.STAND, width, height, 0, 0);
+    var { count, size } = await getDetail(service, kind, DETAIL_NAME.STAND, width, height, 0, 0);
     if (count > 0) details.push({ name: DETAIL_NAME.STAND, length: size, width: depth, count });
-    var { count, size } = getDetail(table, DETAIL_NAME.INNER_STAND, width, height, 0, 0);
+    var { count, size } = await getDetail(service, kind, DETAIL_NAME.INNER_STAND, width, height, 0, 0);
     const innerStandLCount = count;
     if (count > 0) details.push({ name: DETAIL_NAME.INNER_STAND, length: size, width: depth - offset, count });
-    var { count, size } = getDetail(table, DETAIL_NAME.SHELF, width, height, 0, innerStandLCount);
+    var { count, size } = await getDetail(service, kind, DETAIL_NAME.SHELF, width, height, 0, innerStandLCount);
     const shelfSize = size;
     if (count > 0) details.push({ name: DETAIL_NAME.SHELF, length: size, width: depth - offset, count });
-    var { count, size } = getDetail(table, DETAIL_NAME.SHELF_PLAT, width, height, shelfSize, innerStandLCount);
+    var { count, size } = await getDetail(service, kind, DETAIL_NAME.SHELF_PLAT, width, height, shelfSize, innerStandLCount);
     if (count > 0) details.push({ name: DETAIL_NAME.SHELF_PLAT, length: size, width: depth - offset, count });
-    var { count, size } = getDetail(table, DETAIL_NAME.PILLAR, width, height, shelfSize, innerStandLCount);
+    var { count, size } = await getDetail(service, kind, DETAIL_NAME.PILLAR, width, height, shelfSize, innerStandLCount);
     if (count > 0) details.push({ name: DETAIL_NAME.PILLAR, length: size, width: depth - offset, count });
     return details;
 }
-function getDetail(table: WardrobeDetailTable[], name: DETAIL_NAME, width: number, height: number, shelfSize: number, standCount: number): { count: number; size: number; } {
-    const detail = table.find(t => (name === t.name) && (width >= t.minwidth) && (width <= t.maxwidth) && (height >= t.minheight) && (height <= t.maxheight));
+async function getDetail(service: SpecificationService, kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number, shelfSize: number, standCount: number): Promise<{ count: number, size: number }> {
+    const detail = await service.getDetail(kind, name, width, height)
     if (!detail) return { count: 0, size: 0 };
     const size = calcFunction(detail.size, { width, height, shelfSize, standCount });
     return { count: size ? detail.count : 0, size };
@@ -213,30 +207,23 @@ async function getDVPData(width: number, height: number, depth: number): Promise
 async function getKarton(data: WardrobeData): Promise<FullData> {
     const { width, height, depth } = data;
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
-    const list = (await service.getFurnitureTable({ kind: WARDROBE_KIND.STANDART, item: SpecificationItem.Karton })).data || [];
-    const caption = await getWardrobeKind(data.wardKind);
+    const item = await service.getFurniture(data.wardKind, SpecificationItem.Karton, data.width, data.height, data.depth)
+    //const caption = await getWardrobeKind(data.wardKind);
     const coef = await getCoef(SpecificationItem.Karton) || 1;
-    const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0;
     const verbose = [["Ширина шкафа", "Высота шкафа", "Глубина шкафа", "Кол-во"]];
-
-    list.forEach(item => {
-        const active = isDataFit(width, height, depth, item);
-        if (active) verbose.push([getFineRange(item.minwidth, item.maxwidth), getFineRange(item.minheight, item.maxheight), getFineRange(item.mindepth, item.maxdepth), `${item.count}`]);
-    });
-    return { data: { amount: current * coef, char: { code: "", caption: "" } }, verbose };
+    const result = item?.count || 0
+    verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth||0), getFineRange(item?.minheight ||0, item?.maxheight||0), getFineRange(item?.mindepth||0, item?.maxdepth||0), `${result}`]);
+    return { data: { amount: result * coef, char: { code: "", caption: "" } }, verbose };
 }
 
 async function getLegs(data: WardrobeData): Promise<FullData> {
-    const { wardKind, width, height, depth } = data;
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
-    const list = (await service.getFurnitureTable({ kind: data.wardKind, item: SpecificationItem.Leg })).data || [];
-    const caption = await getWardrobeKind(data.wardKind);
-    const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0;
+    const item = await service.getFurniture(data.wardKind, SpecificationItem.Leg, data.width, data.height, data.depth)
+    //const caption = await getWardrobeKind(data.wardKind);
+    const result = item?.count || 0
     const verbose = [["Ширина шкафа", "Кол-во"]];
-    list.forEach(item => {
-        if (item.count === current) verbose.push([getFineRange(item.minwidth, item.maxwidth), `${item.count}`]);
-    });
-    return { data: { amount: current, char: { code: "", caption: "" } }, verbose };
+    verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), `${result}`]);
+    return { data: { amount: result, char: { code: "", caption: "" } }, verbose };
 }
 
 async function getConfirmat(data: WardrobeData): Promise<FullData> {
@@ -286,28 +273,35 @@ async function getZagMinifix(data: WardrobeData): Promise<FullData> {
     return { data: { amount: conf.data.amount, char: { code, caption } } };
 }
 async function getNails(data: WardrobeData): Promise<FullData> {
+    const service = new SpecificationService(specServiceProvider, materialServiceProvider);
+    const item = await service.getFurniture(data.wardKind, SpecificationItem.Nails, data.width, data.height, data.depth)
+    //const caption = await getWardrobeKind(wardKind);
+    const result = item?.count || 0
+    const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
+    verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), `${result}`]);
+    return { data: { amount: result, char: { code: "", caption: "" } }, verbose };
+}
+
+async function getSamorez16(data: WardrobeData): Promise<FullData> {
     const { wardKind, width, height, depth } = data;
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
-    const list = (await service.getFurnitureTable({ kind: data.wardKind, item: SpecificationItem.Nails })).data || [];
-    const caption = await getWardrobeKind(data.wardKind);
-    const current = list.find(item => isDataFit(width, height, depth, item))?.count || 0;
+    const item = await service.getFurniture(wardKind, SpecificationItem.Samorez16, width, height, depth);
+    //const caption = await getWardrobeKind(wardKind);
+    const current = item?.count || 0
     const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
-    list.forEach(item => {
-        const active = isDataFit(width, height, depth, item);
-        if (active) verbose.push([getFineRange(item.minwidth, item.maxwidth), `${item.count}`]);
-    });
+    verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), `${current}`]);
     return { data: { amount: current, char: { code: "", caption: "" } }, verbose };
 }
 
-function getSamorez16(width: number) {
-    const sizes = [
-        { width: 2200, value: 18 },
-        { width: 2600, value: 28 },
-        { width: 3001, value: 36 },
-    ];
-    return sizes.find((s => s.width > width))?.value || 0;
+async function getStyagka(data: WardrobeData): Promise<FullData> {
+    const service = new SpecificationService(specServiceProvider, materialServiceProvider);
+    const roof = await service.getDetail(data.wardKind, DETAIL_NAME.ROOF, data.width, data.height)
+    const ward = roof?.count === 2 ? "Одинарный" : "Двойной"
+    const count = roof?.count === 2 ? 0 : 3
+    const verbose = [["Шкаф", "Стяжка М6"]];
+    verbose.push([ward, `${count}шт`]);
+    return { data: { amount: count, char: { code: "", caption: "" } }, verbose };
 }
-;
 
 async function getEdge2(data: WardrobeData): Promise<FullData> {
     const edgeService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath));
@@ -373,6 +367,45 @@ async function getBrush(data: WardrobeData, profile: Profile, type: ProfileType)
     const result = height / 1000 * coef * fasadCount * 2
     verbose.push([`${data.height}-62=${height}`, `x ${fasadCount}`, `x 2 x ${coef}`, `=${result.toFixed(3)}м`])
     return { data: { amount: result, char: { code, caption }, useCharAsCode: true }, verbose }
+}
+
+async function getNaprav(data: WardrobeData, profile: Profile, top: boolean): Promise<FullData> {
+    const item = top ? SpecificationItem.NapravTop : SpecificationItem.NapravBottom
+    const coef = await getCoef(item)
+    const width = data.width - 32
+    const result = (width / 1000) * coef
+    const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
+    const verbose = [['Длина', '', '']]
+    verbose.push([`(${data.width} - 32)`, `${(width / 1000).toFixed(3)}м`, coefString])
+    return { data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose }
+}
+
+async function getTruba(data: WardrobeData): Promise<FullData> {
+    const coef = await getCoef(SpecificationItem.Truba)
+    const service = new SpecificationService(specServiceProvider, materialServiceProvider);
+    const item = await service.getFurniture(data.wardKind, SpecificationItem.Truba, data.width, data.height, data.depth );
+    const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
+    const shelfPlat = details.find(d => d.name === DETAIL_NAME.SHELF_PLAT)
+    const size = shelfPlat?.length || 0
+    //const caption = await getWardrobeKind(wardKind);
+    const count = item?.count || 0
+    const result = size * count / 1000 * coef
+    const coefString = coef !== 1 ? ` x ${coef} =  ${result.toFixed(3)}` : ""
+    const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа", "Кол-во", "Длина", "Итого"]];
+    verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), getFineRange(item?.mindepth || 0, item?.maxdepth || 0), `${count}`, `${size}`, `${(size * count / 1000).toFixed(3) + coefString}`]);
+    return { data: { amount: result, char: { code: "", caption: "" } }, verbose };
+}
+
+async function getTrempel(data: WardrobeData): Promise<FullData> {
+    const service = new SpecificationService(specServiceProvider, materialServiceProvider);
+    const matService = new MaterialExtService<Trempel>(new TrempelServiceSQLite(materialsPath));
+    const list = (await matService.getExtData()).data as Trempel[];
+    const [trempel, mindepth, maxdepth] = data.depth <= 400 ? [list.find(l => l.name === 't250'), 0, 400] : [list.find(l => l.name === 't300'), 401, 499]
+    const item = await service.getFurniture(data.wardKind, SpecificationItem.Trempel, data.width, data.height, data.depth );
+    const count = item?.count || 0
+    const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа","Тремпель", "Кол-во"]];
+    verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), getFineRange(mindepth, maxdepth), trempel?.caption || "", `${count}`]);
+    return { data: { amount: count, char: { code: trempel?.code || "", caption: trempel?.caption || "" } }, verbose };
 }
 
 export async function getWardrobeKind(kind: WARDROBE_KIND): Promise<string> {

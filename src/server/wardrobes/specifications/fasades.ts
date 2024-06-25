@@ -76,45 +76,8 @@ export function flattenSpecification(spec: Map<SpecificationItem, FullData[]>): 
 
 export async function getFasadSpecification(fasad: Fasad, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = await calcSpecification(fasad, profile);
-
-    //combineSpecifications(fasad, coefList);
-    // if (profileType === ProfileType.STANDART) {
-    //     const uplot = (spec.get(SpecificationItem.Uplot)?.data.amount || 0) * (coefList.get(SpecificationItem.Uplot) || 1);
-    //     const uplotSoed = (spec.get(SpecificationItem.UplotSoed)?.data.amount || 0) * (coefList.get(SpecificationItem.UplotSoed) || 1);
-    //     spec.set(SpecificationItem.Uplot, {data: { amount: uplot + uplotSoed }});
-    //     spec.set(SpecificationItem.UplotSoed, {data:{ amount: 0 }});
-    // }
-    // spec.set(SpecificationItem.ProfileSoedStandart, profileType === ProfileType.STANDART ? { amount: calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedStandart) || 1) } : { amount: 0 });
-    // spec.set(SpecificationItem.ProfileVertStandart, profileType === ProfileType.STANDART ? { amount: calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertStandart) || 1) } : { amount: 0 });
-    // spec.set(SpecificationItem.ProfileHorTopStandart, profileType === ProfileType.STANDART ? { amount: calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopStandart) || 1) } : { amount: 0 });
-    // spec.set(SpecificationItem.ProfileHorBottomStandart, profileType === ProfileType.STANDART ? { amount: calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomStandart) || 1) } : { amount: 0 });
-    // spec.set(SpecificationItem.ProfileSoedBavaria, profileType === ProfileType.BAVARIA ? { amount: calcProfileSoed(fasad) * (coefList.get(SpecificationItem.ProfileSoedBavaria) || 1) } : { amount: 0 });
-    // spec.set(SpecificationItem.ProfileVertBavaria, profileType === ProfileType.BAVARIA ? { amount: calcProfileVert(fasad) * (coefList.get(SpecificationItem.ProfileVertBavaria) || 1) } : { amount: 0 });
-    // spec.set(SpecificationItem.ProfileHorTopBavaria, profileType === ProfileType.BAVARIA ? { amount: calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorTopBavaria) || 1) } : { amount: 0 });
-    // spec.set(SpecificationItem.ProfileHorBottomBavaria, profileType === ProfileType.BAVARIA ? { amount: calcProfileHor(fasad) * (coefList.get(SpecificationItem.ProfileHorBottomBavaria) || 1) } : { amount: 0 });
-    // spec.set(SpecificationItem.Streich, { amount: 12 });
-    // spec.set(SpecificationItem.Roliki, profileType === ProfileType.STANDART ? { amount: 1 } : { amount: 0 });
-    // spec.set(SpecificationItem.RolikiBavaria, profileType === ProfileType.BAVARIA ? { amount: 1 } : { amount: 0 });
-    // spec.set(SpecificationItem.Karton, { amount: 0.25 });
-    // spec.set(SpecificationItem.Skotch, { amount: 5 });
     return spec;
 }
-
-
-// function combineSpecifications(fasad: Fasad, coefList: Map<SpecificationItem, number>): Map<SpecificationItem, FullData> {
-//     if (fasad.Children.length > 0) {
-//         const spec: Map<SpecificationItem, FullData> = getSpecificationPattern();
-//         fasad.Children.forEach((f: Fasad) => {
-//             const s = combineSpecifications(f, coefList);
-//             s.forEach((value, key) => {
-//                 const prev = spec.get(key) || { amount: 0, code_char: "" };
-//                 spec.set(key, { ...prev, data: {amount: prev.data.amount + value.data.amount} });
-//             });
-//         });
-//         return spec;
-//     }
-//     return calcSpecification(fasad, coefList);
-// }
 
 async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = getSpecificationPattern();

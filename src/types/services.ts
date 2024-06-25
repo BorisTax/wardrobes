@@ -56,7 +56,9 @@ export interface ISpecificationAbstractService {
     getSpecList: () => Promise<Result<SpecificationData[]>>
     updateSpecList: (item: SpecificationData) => Promise<Result<null>>
     getDetailTable: ({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }) => Promise<Result<WardrobeDetailTable[]>>
+    getDetail: (kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number) => Promise<WardrobeDetailTable | null>
     getFurnitureTable: ({ kind, item }: { kind: WARDROBE_KIND, item?: SpecificationItem }) => Promise<Result<WardrobeFurnitureTableSchema[]>>
+    getFurniture: (kind: WARDROBE_KIND, name: SpecificationItem, width: number, height: number, depth: number) => Promise<WardrobeFurnitureTableSchema | null>
     getDVPTemplates: () => Promise<Result<DVPTableSchema[]>>
     getDetailNames: () => Promise<Result<WardrobeDetailSchema[]>>
     getWardobeKinds: ()=> Promise<Result<WardrobeTableSchema[]>>

@@ -22,6 +22,18 @@ export default class SpecificationServiceSQLite implements ISpecificationService
         const query = detailName !== undefined ? `select * from ${DETAIL_TABLE} where wardrobe='${kind}' and name='${detailName}';` : `select * from ${DETAIL_TABLE} where wardrobe='${kind}';`
         return dataBaseQuery<WardrobeDetailTable[]>(this.dbFile, query, { successStatusCode: 200 })
     }
+    async getDetail(kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number): Promise<WardrobeDetailTable | null> {
+        const query = `select * from ${DETAIL_TABLE} where wardrobe='${kind}' and name='${name}'
+         and minwidth<=${width} and maxwidth>=${width} and minheight<=${height} and maxheight>=${height};`
+        const result = (await (dataBaseQuery<WardrobeDetailTable[]>(this.dbFile, query, { successStatusCode: 200 }))).data
+        return (result && result[0]) || null
+    }
+    async getFurniture(kind: WARDROBE_KIND, name: SpecificationItem, width: number, height: number, depth: number): Promise<WardrobeFurnitureTableSchema | null>{
+        const query = `select * from ${FURNITURE} where wardrobe='${kind}' and name='${name}'
+        and minwidth<=${width} and maxwidth>=${width} and minheight<=${height} and maxheight>=${height} and mindepth<=${depth} and maxdepth>=${depth};`
+        const result = (await (dataBaseQuery<WardrobeFurnitureTableSchema[]>(this.dbFile, query, { successStatusCode: 200 }))).data
+       return (result && result[0]) || null
+    }
     async getDVPTemplates(): Promise<Result<DVPTableSchema[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${DVP_TEMPLATES};`, { successStatusCode: 200 })
     }

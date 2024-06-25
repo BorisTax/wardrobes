@@ -38,12 +38,12 @@ export default function EditPriceDialog() {
     }, [perm])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
-        <EditDataSection items={editItems} onUpdate={async (checked, values) => {
+        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection items={editItems} onUpdate={async (checked, values) => {
             const data: PriceData = { name: name as SpecificationItem }
             if (checked[1]) data.price = +values[1]
             if (checked[2]) data.markup = +values[2]
             const result = await updatePriceList(data)
             return result
-        }} />
+        }} /> : <div></div>}
     </EditContainer>
 }

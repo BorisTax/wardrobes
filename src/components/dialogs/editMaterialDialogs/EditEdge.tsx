@@ -33,7 +33,7 @@ export default function EditEdge() {
     ]
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        <EditDataSection name={edgeName} items={editItems}
+        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={edgeName} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
@@ -54,7 +54,7 @@ export default function EditEdge() {
                 if (edgeList.find((p: Edge) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addEdge({ name, dsp, code })
                 return result
-            } : undefined} />
+            } : undefined} /> : <div></div>}
 
     </EditContainer>
 }

@@ -36,7 +36,7 @@ export default function EditZaglushka() {
     }, [zaglushkaList])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        <EditDataSection name={name} items={editItems}
+        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={name} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {
                 const data = { name }
                 const usedName = checked[0] ? values[0] : ""
@@ -57,6 +57,6 @@ export default function EditZaglushka() {
                 if (zaglushkaList.find((p: Zaglushka) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addZaglushka({ name, dsp, code })
                 return result
-            } : undefined} />
+            } : undefined} /> : <div></div>}
     </EditContainer>
 }

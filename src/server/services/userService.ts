@@ -7,7 +7,6 @@ import { userServiceProvider } from '../options.js'
 import { SERVER_EVENTS } from "../../types/enums.js"
 import { Permissions, RESOURCE, UserRole } from '../../types/user.js'
 
-export const activeTokens: { tokenList: Token[] } = { tokenList: [] }
 export const events: Map<string, EventEmitter> = new Map()
 export async function getTokens(): Promise<Token[]> {
   const userService = new UserService(userServiceProvider);
@@ -15,14 +14,14 @@ export async function getTokens(): Promise<Token[]> {
   if (result.success) return result.data as Token[]
   return []
 }
-Promise.resolve().then(() => getTokens().then(r => activeTokens.tokenList = r))
 
 const expiredInterval = 3600 * 1000
-const clearExpiredTokens = () => {
+const clearExpiredTokens = async () => {
   const userService = new UserService(userServiceProvider);
-  activeTokens.tokenList.forEach((t: Token) => {
-    if (Date.now() - t.lastActionTime > expiredInterval) userService.deleteToken(t.token)
-  })
+  const tokens = await getTokens()
+  for (let t of tokens) {
+    if (Date.now() - t.lastActionTime > expiredInterval) await userService.deleteToken(t.token)
+  }
 }
 
 setInterval(clearExpiredTokens, 60000)
@@ -59,24 +58,18 @@ export class UserService implements IUserService {
 
   async addToken({ token, username, time, lastActionTime }: Token) {
     const result = await this.provider.addToken({ token, username, time, lastActionTime })
-    if (result.success) activeTokens.tokenList.push({ token, username, time, lastActionTime })
     return result
   }
 
   async updateToken(token: string) {
     const lastActionTime = Date.now()
     const result = await this.provider.updateToken(token, lastActionTime)
-    if (result.success) {
-      const t = activeTokens.tokenList.find(t => t.token === token)
-      if (t) t.lastActionTime = lastActionTime
-    }
     return result
   }
 
   async deleteToken(token: string, extAction = () => { notifyActiveUsers() }) {
     const result = await this.provider.deleteToken(token)
     if (result.success) {
-      activeTokens.tokenList = activeTokens.tokenList.filter(t => t.token !== token)
       extAction()
       events.delete(token)
     }
@@ -84,7 +77,6 @@ export class UserService implements IUserService {
   }
   async clearAllTokens() {
     const result = await this.provider.clearAllTokens()
-    if (result.success) activeTokens.tokenList = []
     return result
   }
   async registerUser(userName: string, password: string, role: UserRole) {
@@ -96,10 +88,6 @@ export class UserService implements IUserService {
     const superusers = (await this.getSuperUsers()).data?.map(m => m.name)
     if (superusers?.find(s => s === user.name)) return { success: false, status: 403, message: messages.USER_DELETE_DENIED }
     const result = await this.provider.deleteUser(user)
-    if (result.success) {
-      const t = activeTokens.tokenList.find(t => t.username === user.name)
-      if (t) await this.deleteToken(t.token, () => { logoutUser(t.token) })
-    }
     return result
   }
   async isUserNameExist(name: string) {

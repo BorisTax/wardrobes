@@ -36,7 +36,7 @@ router.get("/verify", async (req, res) => {
   const tokens = await userService.getTokens();
   const tokenData = (tokens.data as Token[]).find((t: Token) => t.token === token)
   const result = await userService.updateToken(token)
-  res.json({ ...result, data: tokenData });
+  res.json({ ...result, data: tokenData, success: !!tokenData });
 });
 
 router.post("/login", async (req, res) => {

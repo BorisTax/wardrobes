@@ -18,14 +18,14 @@ export default function NavBar() {
     <>
       <MenuSeparator />
       {permMat?.update && <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />}
-      {permPrice?.read && <ImageLink link={"pricelist"} caption="Редактор цен" icon="editPrice" />}
-      {permSpec?.read && <ImageLink link={"specification"} caption="Редактор спецификации" icon="editSpecification" />}
+      {permPrice?.read && <ImageLink link={"pricelist"} caption="База цен" icon="editPrice" />}
+      {permSpec?.read && <ImageLink link={"specification"} caption="База спецификации" icon="editSpecification" />}
     </>
 
     {permUsers?.read &&
       <>
         <MenuSeparator />
-        <ImageLink link={"users"} caption="Список пользователей" icon="userlistButton" />
+      {(permUsers?.create || permUsers?.update || permUsers?.remove) && <ImageLink link={"users"} caption="Список пользователей" icon="userlistButton" />}
         <ImageButton title="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
       </>
     }

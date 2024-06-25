@@ -41,7 +41,7 @@ export default function EditProfile() {
             <hr />
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, profileIndex: index })) }} />
         </div>
-        <EditDataSection name={profile.name} items={editItems}
+        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={profile.name} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
@@ -61,6 +61,6 @@ export default function EditProfile() {
                 if (profileList.find((p: Profile) => p.name === name && p.type === type)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addProfile({ name, type, code, brush })
                 return result
-            } : undefined} />
+            } : undefined} /> : <div></div>}
     </EditContainer>
 }

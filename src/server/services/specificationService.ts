@@ -60,6 +60,12 @@ export class SpecificationService implements ISpecificationService {
   async getDetailTable({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }): Promise<Result<WardrobeDetailTable[]>> {
     return await this.provider.getDetailTable({ kind, detailName })
   }
+  async getDetail(kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number): Promise<WardrobeDetailTable | null> {
+    return await this.provider.getDetail(kind, name, width, height)
+}
+  async getFurniture(kind: WARDROBE_KIND, name: SpecificationItem, width: number, height: number, depth: number): Promise<WardrobeFurnitureTableSchema | null> {
+    return await this.provider.getFurniture(kind, name, width, height, depth)
+  }
   async getDVPTemplates(): Promise<Result<DVPTableSchema[]>> {
     return await this.provider.getDVPTemplates()
   }

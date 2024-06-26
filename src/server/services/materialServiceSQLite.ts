@@ -5,6 +5,7 @@ import { dataBaseQuery } from '../functions/other.js';
 import messages from '../messages.js';
 import { MAT_TABLE_NAMES } from '../../types/schemas.js';
 import { FasadMaterial } from '../../types/enums.js';
+import { StatusCodes } from 'http-status-codes';
 const { EXTMATERIALS, PROFILE_COLORS } = MAT_TABLE_NAMES
 export default class MaterialServiceSQLite implements IMaterialService {
     dbFile: string;
@@ -12,32 +13,32 @@ export default class MaterialServiceSQLite implements IMaterialService {
         this.dbFile = dbFile
     }
     async getExtMaterials({ material, name, code }: ExtMaterialQuery): Promise<Result<ExtMaterial[]>> {
-        return dataBaseQuery(this.dbFile, getQuery({ material, name, code }), {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, getQuery({ material, name, code }), {successStatusCode: StatusCodes.OK})
     }
 
     async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${EXTMATERIALS} (name, material, image, code, purpose) values('${name}', '${material}', '${image}', '${code}', '${purpose}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${EXTMATERIALS} (name, material, image, code, purpose) values('${name}', '${material}', '${image}', '${code}', '${purpose}');`, {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
 
     async updateExtMaterial({ name, material, newName, image, code, purpose }: ExtNewMaterial): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getUpdateQuery({ newName, image, code, name, material, purpose }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
+        return dataBaseQuery(this.dbFile, getUpdateQuery({ newName, image, code, name, material, purpose }), {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED})
     }
 
     async deleteExtMaterial(name: string, material: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${EXTMATERIALS} WHERE name='${name}' and material='${material}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${EXTMATERIALS} WHERE name='${name}' and material='${material}';`, {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
 
     async getProfiles(): Promise<Result<Profile[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${PROFILE_COLORS};`, {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, `select * from ${PROFILE_COLORS};`, {successStatusCode: StatusCodes.OK})
     }
     async addProfile({ name, code, type, brush }: Profile): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${PROFILE_COLORS} (name, type, code, brush) values('${name}', '${type}', '${code}', '${brush}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${PROFILE_COLORS} (name, type, code, brush) values('${name}', '${type}', '${code}', '${brush}');`, {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteProfile(name: string, type: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${PROFILE_COLORS} WHERE name='${name}' and type='${type}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${PROFILE_COLORS} WHERE name='${name}' and type='${type}';`, {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
     async updateProfile({ newName, code, type, name, brush }: NewProfile): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getProfileQuery({ newName, code, name, type, brush }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
+        return dataBaseQuery(this.dbFile, getProfileQuery({ newName, code, name, type, brush }), {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED})
     }
 }
 

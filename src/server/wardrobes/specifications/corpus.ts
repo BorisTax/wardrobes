@@ -1,11 +1,12 @@
-import { correctFasadCount, emptyFullData, getFasadCount, getSpecificationPattern } from "./fasades"
+import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getFasadCount } from "./functions"
+import { getSpecificationPattern } from "./functions"
+import { emptyFullData } from "./functions"
 import { SpecificationItem } from "../../../types/specification"
-import { DETAIL_NAME, DVPData, Detail, FullData, VerboseData, WARDROBE_KIND, WardrobeDetailTable } from "../../../types/wardrobe"
+import { DETAIL_NAME, DVPData, Detail, FullData, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"
 import { Edge, ExtMaterial, Profile, ProfileType, Trempel, Zaglushka } from "../../../types/materials"
-import { IWardrobe, WardrobeData } from "../../../types/wardrobe"
-import StandartWardrobe from "../standart"
+import { WardrobeData } from "../../../types/wardrobe"
 import { FasadMaterial } from "../../../types/enums"
-import { WardrobeFurnitureTableSchema, WardrobeDetailSchema } from "../../../types/schemas"
+import { WardrobeDetailSchema } from "../../../types/schemas"
 import { specServiceProvider, materialServiceProvider, materialsPath } from "../../options"
 import EdgeServiceSQLite from "../../services/extServices/edgeServiceSQLite"
 import ZagluskaServiceSQLite from "../../services/extServices/zaglushkaServiceSQLite"
@@ -14,10 +15,12 @@ import { MaterialService } from "../../services/materialService"
 import { SpecificationService } from "../../services/specificationService"
 import BrushServiceSQLite from "../../services/extServices/brushServiceSQLite"
 import TrempelServiceSQLite from "../../services/extServices/trempelServiceSQLite"
+import { getFineRange } from "./functions"
 
 export async function getCorpusSpecification(data: WardrobeData, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = getSpecificationPattern()
     const karton = [await getKarton(data)]
+    const truba = await getTruba(data)
     spec.set(SpecificationItem.DSP, [await getDSP(data)])
     spec.set(SpecificationItem.DVP, [await getDVP(data)])
     spec.set(SpecificationItem.Kromka2, [await getEdge2(data)])
@@ -38,32 +41,14 @@ export async function getCorpusSpecification(data: WardrobeData, profile: Profil
     spec.set(SpecificationItem.NapravBottom, [await getNaprav(data, profile, false)])
     spec.set(SpecificationItem.Samorez16, [await getSamorez16(data)])
     spec.set(SpecificationItem.StyagkaM6, [await getStyagka(data)])
-    spec.set(SpecificationItem.Truba, [await getTruba(data)])
+    spec.set(SpecificationItem.Truba, [truba])
+    spec.set(SpecificationItem.Flanec, [await getFlanec(truba)])
     spec.set(SpecificationItem.Trempel, [await getTrempel(data)]);
     spec.set(SpecificationItem.Streich, [{ data: { amount: 12 } }])
+    spec.set(SpecificationItem.Stopor, [await getStopor(data)])
+    spec.set(SpecificationItem.ConfKluch, [await getKluch(data)])
+    spec.set(SpecificationItem.Box, [await getBox(data)])
     return spec
-}
-
-export function getWardrobe(data: WardrobeData, details: Detail[]): IWardrobe {
-    switch (data.wardKind) {
-        case WARDROBE_KIND.STANDART:
-            return new StandartWardrobe(data, details)
-        default:
-            return new StandartWardrobe(data, details)
-    }
-}
-function getFineRange(min: number, max: number): string {
-    const maxValue = 3000;
-    let result = "";
-    if (min <= 0 && max >= maxValue) result = "---";
-    if (min <= 0 && max < maxValue) result = "<= " + max;
-    if (min > 0 && max >= maxValue) result = ">= " + min;
-    if (min > 0 && max < maxValue) result = min + " - " + max;
-    return result;
-}
-
-export function isDataFit(width: number, height: number, depth: number, item: WardrobeFurnitureTableSchema): boolean {
-    return (width >= item.minwidth) && (width <= item.maxwidth) && (height >= item.minheight) && (height <= item.maxheight) && (depth >= item.mindepth) && (depth <= item.maxdepth);
 }
 
 export function hasEdge2(detail: DETAIL_NAME): boolean {
@@ -142,6 +127,7 @@ function calcFunction(func: string, { width, height, shelfSize, standCount }: { 
 }
 
 async function getDSP(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const matService = new MaterialService(materialServiceProvider);
     const materials = (await matService.getExtMaterials({ material: FasadMaterial.DSP, name: "", code: "" })).data as ExtMaterial[];
     const mat = materials.find(m => m.name === data.dspName) || { code: "", name: "" };
@@ -162,6 +148,7 @@ async function getDSP(data: WardrobeData): Promise<FullData> {
 }
 
 async function getDVP(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const dvp = await getDVPData(data.width, data.height, data.depth);
     const coef = await getCoef(SpecificationItem.DVP);
     const area = dvp.dvpLength * dvp.dvpWidth * dvp.dvpCount / 1000000;
@@ -174,6 +161,7 @@ async function getDVP(data: WardrobeData): Promise<FullData> {
 }
 
 async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const { width, height, depth } = data;
     const dvpData = await getDVPData(width, height, depth);
     const coef = await getCoef(SpecificationItem.Planka);
@@ -217,6 +205,7 @@ async function getKarton(data: WardrobeData): Promise<FullData> {
 }
 
 async function getLegs(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(data.wardKind, SpecificationItem.Leg, data.width, data.height, data.depth)
     //const caption = await getWardrobeKind(data.wardKind);
@@ -227,6 +216,7 @@ async function getLegs(data: WardrobeData): Promise<FullData> {
 }
 
 async function getConfirmat(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => useConfirmat(d.name));
     const detailNames = await getDetailNames();
     const verbose: VerboseData = [["Деталь", "Кол-во", "Конфирматы"]];
@@ -238,9 +228,10 @@ async function getConfirmat(data: WardrobeData): Promise<FullData> {
         total += conf;
     });
     verbose.push(["", "Итого:", total]);
-    return { data: { amount: total, char: { code: "", caption: "" } }, verbose };
+    return { data: { amount: total, char: { code: "", caption: "" } }, verbose: total ? verbose : undefined };
 }
 async function getZagConfirmat(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullData()
     const service = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
     const list = (await service.getExtData()).data as Zaglushka[];
     const zaglushka = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
@@ -251,6 +242,7 @@ async function getZagConfirmat(data: WardrobeData): Promise<FullData> {
 
 
 async function getMinifix(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => useMinifix(d.name));
     const detailNames = await getDetailNames();
     const verbose: VerboseData = [["Деталь", "Кол-во", "Минификсы"]];
@@ -265,6 +257,7 @@ async function getMinifix(data: WardrobeData): Promise<FullData> {
     return { data: { amount: total, char: { code: "", caption: "" } }, verbose };
 }
 async function getZagMinifix(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullData()
     const service = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
     const list = (await service.getExtData()).data as Zaglushka[];
     const zaglushka = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
@@ -273,6 +266,7 @@ async function getZagMinifix(data: WardrobeData): Promise<FullData> {
     return { data: { amount: conf.data.amount, char: { code, caption } } };
 }
 async function getNails(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(data.wardKind, SpecificationItem.Nails, data.width, data.height, data.depth)
     //const caption = await getWardrobeKind(wardKind);
@@ -283,6 +277,7 @@ async function getNails(data: WardrobeData): Promise<FullData> {
 }
 
 async function getSamorez16(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const { wardKind, width, height, depth } = data;
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(wardKind, SpecificationItem.Samorez16, width, height, depth);
@@ -304,6 +299,7 @@ async function getStyagka(data: WardrobeData): Promise<FullData> {
 }
 
 async function getEdge2(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const edgeService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath));
     const list = (await edgeService.getExtData()).data as Edge[];
     const edge = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
@@ -324,6 +320,7 @@ async function getEdge2(data: WardrobeData): Promise<FullData> {
 }
 
 async function getEdge05(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const edgeService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath));
     const list = (await edgeService.getExtData()).data as Edge[];
     const edge = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
@@ -344,6 +341,7 @@ async function getEdge05(data: WardrobeData): Promise<FullData> {
 }
 
 async function getGlue(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const coefGlue = await getCoef(SpecificationItem.Glue);
     const edge2 = (await getEdge2(data)).data.amount;
     const edge05 = (await getEdge05(data)).data.amount;
@@ -354,9 +352,9 @@ async function getGlue(data: WardrobeData): Promise<FullData> {
 }
 
 async function getBrush(data: WardrobeData, profile: Profile, type: ProfileType): Promise<FullData> {
-    if (profile.type !== type) return emptyFullData()[0]
     const fasadCount = getFasadCount(data)
-    if(!correctFasadCount(fasadCount)) return emptyFullData()[0]
+    if(!correctFasadCount(fasadCount)) return emptyFullDataIfNoFasades()
+    if (profile.type !== type) return emptyFullData()
     const service = new MaterialExtService(new BrushServiceSQLite(materialsPath))
     const brushList = (await (service.getExtData())).data
     const brush = brushList && brushList.find(b => b.name === profile.brush) || { name: "", code: "" }
@@ -370,6 +368,7 @@ async function getBrush(data: WardrobeData, profile: Profile, type: ProfileType)
 }
 
 async function getNaprav(data: WardrobeData, profile: Profile, top: boolean): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.CORPUS) return emptyFullDataIfCorpus()
     const item = top ? SpecificationItem.NapravTop : SpecificationItem.NapravBottom
     const coef = await getCoef(item)
     const width = data.width - 32
@@ -380,7 +379,8 @@ async function getNaprav(data: WardrobeData, profile: Profile, top: boolean): Pr
     return { data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose }
 }
 
-async function getTruba(data: WardrobeData): Promise<FullData> {
+async function getTruba(data: WardrobeData): Promise<FullData & { count: number }> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return { ...emptyFullDataIfSystem(), count: 0 }
     const coef = await getCoef(SpecificationItem.Truba)
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(data.wardKind, SpecificationItem.Truba, data.width, data.height, data.depth );
@@ -392,27 +392,43 @@ async function getTruba(data: WardrobeData): Promise<FullData> {
     const result = size * count / 1000 * coef
     const coefString = coef !== 1 ? ` x ${coef} =  ${result.toFixed(3)}` : ""
     const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа", "Кол-во", "Длина", "Итого"]];
-    verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), getFineRange(item?.mindepth || 0, item?.maxdepth || 0), `${count}`, `${size}`, `${(size * count / 1000).toFixed(3) + coefString}`]);
-    return { data: { amount: result, char: { code: "", caption: "" } }, verbose };
+    if (count > 0) verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), getFineRange(item?.mindepth || 0, item?.maxdepth || 0), `${count}`, `${size}`, `${(size * count / 1000).toFixed(3) + coefString}`]);
+    else verbose.push(["", `${data.depth}`, `нет`, ``, ``]);
+    return { data: { amount: result, char: { code: "", caption: "" } }, verbose, count };
+}
+async function  getFlanec(truba: FullData & { count: number }): Promise<FullData> {
+    const count = truba.count
+    const verbose: VerboseData = [["Труба", "Фланец"]];
+    if (count > 0) verbose.push([`${count}шт`, `${count * 2}шт`]);else verbose.push([`нет`, `нет`])
+    return { data: { amount: count * 2 }, verbose }
 }
 
 async function getTrempel(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const matService = new MaterialExtService<Trempel>(new TrempelServiceSQLite(materialsPath));
     const list = (await matService.getExtData()).data as Trempel[];
     const [trempel, mindepth, maxdepth] = data.depth <= 400 ? [list.find(l => l.name === 't250'), 0, 400] : [list.find(l => l.name === 't300'), 401, 499]
     const item = await service.getFurniture(data.wardKind, SpecificationItem.Trempel, data.width, data.height, data.depth );
     const count = item?.count || 0
-    const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа","Тремпель", "Кол-во"]];
-    verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), getFineRange(mindepth, maxdepth), trempel?.caption || "", `${count}`]);
+    const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа", "Тремпель", "Кол-во"]];
+    if (count > 0) verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), getFineRange(mindepth, maxdepth), trempel?.caption || "", `${count}`]);
+    else verbose.push(["", `${data.depth}`, "", "нет"]);
     return { data: { amount: count, char: { code: trempel?.code || "", caption: trempel?.caption || "" } }, verbose };
 }
 
-export async function getWardrobeKind(kind: WARDROBE_KIND): Promise<string> {
-    const service = new SpecificationService(specServiceProvider, materialServiceProvider);
-    const wardkinds = (await service.getWardobeKinds()).data as WardrobeDetailSchema[];
-    const caption = wardkinds.find(w => w.name === kind)?.caption;
-    return caption || "";
+async function getStopor(data: WardrobeData): Promise<FullData> {
+    const fasadCount = getFasadCount(data)
+    const verbose: VerboseData = [["", ""]];
+    verbose.push(["Кол-во фасадов", `${fasadCount}`]);
+    return { data: { amount: fasadCount }, verbose };
 }
-
+async function getKluch(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    return { data: { amount: 1 } };
+}
+async function getBox(data: WardrobeData): Promise<FullData> {
+    if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    return { data: { amount: 1 } };
+}
 

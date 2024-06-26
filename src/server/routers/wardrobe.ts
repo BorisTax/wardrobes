@@ -7,6 +7,7 @@ import { Profile, ProfileType } from "../../types/materials.js";
 import { MaterialService } from "../services/materialService.js";
 import { InitialAppState } from "../../types/app.js";
 import { FasadMaterial, MAT_PURPOSE } from "../../types/enums.js";
+import { StatusCodes } from "http-status-codes";
 
 const router = express.Router();
 export default router
@@ -37,7 +38,7 @@ export async function getInitialState(): Promise<Result<InitialAppState>> {
   const wardHeight = 2400
   const fasadCount = 3
   const wardType: WARDROBE_TYPE = WARDROBE_TYPE.WARDROBE
-  return { success: true, status: 200, data: { wardType, wardWidth, wardHeight, fasadCount, profile, material: material as FasadMaterial, extMaterial: name } }
+  return { success: true, status: StatusCodes.OK, data: { wardType, wardWidth, wardHeight, fasadCount, profile, material: material as FasadMaterial, extMaterial: name } }
 }
 const initFasades = {
   dsp: { count: 0, names: [] },
@@ -54,7 +55,7 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
   const { name } = (materials && materials.find(m => m.purpose === MAT_PURPOSE.BOTH)) || { name: "" }
   const { name: profileName } = (profiles && profiles[0]) || { name: "", code: "", type: ProfileType.STANDART, brush: "" }
   return {
-    success: true, status: 200, data: {
+    success: true, status: StatusCodes.OK, data: {
       wardKind: WARDROBE_KIND.STANDART,
       wardType: WARDROBE_TYPE.WARDROBE,
       width: 2400,

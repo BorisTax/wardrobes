@@ -26,7 +26,7 @@ export default function NavBar() {
       <>
         <MenuSeparator />
       {(permUsers?.create || permUsers?.update || permUsers?.remove) && <ImageLink link={"users"} caption="Список пользователей" icon="userlistButton" />}
-        <ImageButton title="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
+      <ImageButton title="Скачать базу данных" caption="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
       </>
     }
   </div>

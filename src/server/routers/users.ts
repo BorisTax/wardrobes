@@ -10,6 +10,7 @@ import { JWT_SECRET, userServiceProvider } from '../options.js';
 import EventEmitter from 'events';
 import { SERVER_EVENTS } from "../../types/enums.js";
 import { RESOURCE } from '../../types/user.js';
+import { StatusCodes } from 'http-status-codes';
 
 const router = express.Router();
 export default router
@@ -25,7 +26,7 @@ router.get("/events", async (req, res) => {
   event.removeAllListeners("message")
   event.on("message", (message: SERVER_EVENTS, data: string) => {
     try{
-      if (!res.headersSent) res.status(200).json({ success: true, message, data })
+      if (!res.headersSent) res.status(StatusCodes.OK).json({ success: true, message, data })
     } catch (e) { console.log('event on message error - ', e)}
   })
 });
@@ -70,7 +71,7 @@ router.post("/logoutuser", async (req, res) => {
 router.get("/active", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const result: Result<ActiveUser[]> = { success: true, status: 200, data: [] }
+  const result: Result<ActiveUser[]> = { success: true, status: StatusCodes.OK, data: [] }
   const tokens = await getTokens();
   const users = await userService.getUsers();
   for (let t of tokens){
@@ -97,7 +98,7 @@ router.post("/add", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const user = req.body;
-  if (!user.name || !user.password) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
+  if (!user.name || !user.password) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.registerUser(user.name, user.password, user.role);
   res.json(result);
 });
@@ -106,7 +107,7 @@ router.delete("/delete", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const user = req.body;
-  if (!user.name) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
+  if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.deleteUser(user);
   res.json(result);
 });
@@ -123,7 +124,7 @@ router.get("/users", async (req, res) => {
     const permissions = await userService.getAllUserPermissions(userRole)
     result.push({ name: u.name, role, permissions })
   }
-  res.status(200).json({ success: true, data: result })
+  res.status(StatusCodes.OK).json({ success: true, data: result })
 });
 
 router.get("/roles", async (req, res) => {
@@ -137,7 +138,7 @@ router.post("/addRole", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const { name } = req.body;
-  if (!name) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
+  if (!name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.addRole(name);
   res.json(result);
 });
@@ -146,7 +147,7 @@ router.delete("/deleteRole", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const { name } = req.body;
-  if (!name) return res.status(400).json({ success: false, message: messages.INVALID_USER_DATA });
+  if (!name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.deleteRole(name);
   res.json(result);
 });
@@ -154,7 +155,7 @@ router.delete("/deleteRole", async (req, res) => {
 async function loginUser(user: User): Promise<Result<string | null>> {
   const userService = new UserService(userServiceProvider)
   const result = await userService.getUsers()
-  if (!result.success) return { success: false, status: 404, data: null };
+  if (!result.success) return { success: false, status: StatusCodes.NOT_FOUND, data: null };
   const userList = result.data
   const foundUser = (userList as User[]).find(u => (user.name === u.name))
   if (!foundUser) return incorrectData(messages.INVALID_USER_DATA)
@@ -164,7 +165,7 @@ async function loginUser(user: User): Promise<Result<string | null>> {
   const permissions = await userService.getAllUserPermissions(userRole)
   const random = Math.random()
   const token = jwt.sign({ name: foundUser.name, role, permissions, random }, JWT_SECRET, { expiresIn: 1440 });
-  return { success: true, status: 200, message: messages.LOGIN_SUCCEED, data: token };
+  return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, data: token };
 }
 
 

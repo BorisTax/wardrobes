@@ -68,7 +68,7 @@ export type SpecificationResultItem = {
         code: string
         caption: string
     }
-    useCharAsCode?: boolean //для щетки
+    useCharAsCode?: boolean
 }
 
 export type VerboseData = (string | number)[][]

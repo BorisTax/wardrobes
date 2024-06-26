@@ -6,6 +6,7 @@ import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
 import { SERVER_EVENTS } from "../../types/enums.js"
 import { Permissions, RESOURCE, UserRole } from '../../types/user.js'
+import { StatusCodes } from 'http-status-codes'
 
 export const events: Map<string, EventEmitter> = new Map()
 export async function getTokens(): Promise<Token[]> {
@@ -91,13 +92,13 @@ export class UserService implements IUserService {
     return result
   }
   async isUserNameExist(name: string) {
-    if (!name) return { success: false, status: 400, message: messages.INVALID_USER_DATA }
+    if (!name) return { success: false, status: StatusCodes.BAD_REQUEST, message: messages.INVALID_USER_DATA }
     const result = await this.getUsers()
     if (!result.success) return { ...result, data: null }
     const userList = result.data || []
     const user = (userList as User[]).find(u => u.name === name)
-    if (user) return { success: false, status: 409, message: messages.USER_NAME_EXIST }
-    return { success: true, status: 200, message: messages.USER_NAME_ALLOWED }
+    if (user) return { success: false, status: StatusCodes.CONFLICT, message: messages.USER_NAME_EXIST }
+    return { success: true, status: StatusCodes.OK, message: messages.USER_NAME_ALLOWED }
   }
   async getPermissions(role: string, resource: RESOURCE): Promise<Permissions> {
     return this.provider.getPermissions(role, resource)
@@ -117,7 +118,7 @@ export class UserService implements IUserService {
   }
   async addRole(name: string): Promise<Result<null>> {
     const roles = (await this.provider.getRoles()).data
-    if (roles?.find(r => r.name === name)) return { success: false, status: 409, message: messages.ROLE_EXIST }
+    if (roles?.find(r => r.name === name)) return { success: false, status: StatusCodes.CONFLICT, message: messages.ROLE_EXIST }
     return this.provider.addRole(name)
   }
   async deleteRole(name: string): Promise<Result<null>> {

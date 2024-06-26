@@ -5,15 +5,14 @@ import { accessDenied } from '../functions/other.js';
 import { addProfile, deleteProfile, getProfiles, updateProfile } from './materials/profiles.js';
 import { addExtMaterial, deleteExtMaterial, getExtMaterials, updateExtMaterial } from './materials/extMaterials.js';
 import { MyRequest } from '../../types/server.js';
-import { PERMISSION, RESOURCE, UserRoles } from "../../types/user.js";
+import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { addEdge, deleteEdge, getEdges, updateEdge } from './materials/edges.js';
 import { addZaglushka, deleteZaglushka, getZaglushkas, updateZaglushka } from './materials/zaglushka.js';
 import { addBrush, deleteBrush, getBrushes } from './materials/brush.js';
 import { addTrempel, deleteTrempel, getTrempels, updateTrempel } from './materials/trempel.js';
 import { addUplotnitel, deleteUplotnitel, getUplotnitels, updateUplotnitel } from './materials/uplotnitel.js';
-import { UserService } from '../services/userService.js';
-import { userServiceProvider } from '../options.js';
 import { hasPermission } from './users.js';
+import { StatusCodes } from 'http-status-codes';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,7 +31,7 @@ router.delete("/profile", async (req, res) => {
   const { name, type } = req.body
   let result
   result = await deleteProfile(name, type);
-  const status = result.success ? 200 : 404
+  const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
@@ -40,7 +39,7 @@ router.post("/profile", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.CREATE]))) return accessDenied(res)
   const { name, type, code, brush } = req.body
   const result = await addProfile({ name, type, code, brush });
-  const status = result.success ? 201 : 409
+  const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
@@ -92,7 +91,7 @@ router.delete("/edge", async (req, res) => {
   const { name } = req.body
   let result
   result = await deleteEdge(name);
-  const status = result.success ? 200 : 404
+  const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
@@ -100,7 +99,7 @@ router.post("/edge", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.CREATE]))) return accessDenied(res)
   const { name, dsp, code } = req.body
   const result = await addEdge({ name, dsp, code });
-  const status = result.success ? 201 : 409
+  const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
@@ -123,7 +122,7 @@ router.delete("/zaglushka", async (req, res) => {
   const { name } = req.body
   let result
   result = await deleteZaglushka(name);
-  const status = result.success ? 200 : 404
+  const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
@@ -131,7 +130,7 @@ router.post("/zaglushka", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.CREATE]))) return accessDenied(res)
   const { name, dsp, code } = req.body
   const result = await addZaglushka({ name, dsp, code });
-  const status = result.success ? 201 : 409
+  const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
@@ -153,7 +152,7 @@ router.delete("/brush", async (req, res) => {
   const { name } = req.body
   let result
   result = await deleteBrush(name);
-  const status = result.success ? 200 : 404
+  const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
@@ -161,7 +160,7 @@ router.post("/brush", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.CREATE]))) return accessDenied(res)
   const { name, code } = req.body
   const result = await addBrush({ name, code });
-  const status = result.success ? 201 : 409
+  const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
@@ -183,7 +182,7 @@ router.delete("/trempel", async (req, res) => {
   const { name } = req.body
   let result
   result = await deleteTrempel(name);
-  const status = result.success ? 200 : 404
+  const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
@@ -191,7 +190,7 @@ router.post("/trempel", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.CREATE]))) return accessDenied(res)
   const { name, caption, code } = req.body
   const result = await addTrempel({ name, code, caption });
-  const status = result.success ? 201 : 409
+  const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
@@ -214,7 +213,7 @@ router.delete("/uplotnitel", async (req, res) => {
   const { name } = req.body
   let result
   result = await deleteUplotnitel(name);
-  const status = result.success ? 200 : 404
+  const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
@@ -222,7 +221,7 @@ router.post("/uplotnitel", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.CREATE]))) return accessDenied(res)
   const { name, code } = req.body
   const result = await addUplotnitel({ name, code });
-  const status = result.success ? 201 : 409
+  const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 

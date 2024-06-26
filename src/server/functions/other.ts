@@ -5,8 +5,9 @@ import messages from '../messages.js';
 import { Response } from "express"
 import { MyRequest, Result } from '../../types/server.js';
 import { UserRoles } from "../../types/user.js";
+import { StatusCodes } from 'http-status-codes';
 
-export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
+export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { 
@@ -37,7 +38,7 @@ export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusC
     )
 }
 
-export function dataBaseTransaction<T>(dbFile: string, queries: string[], { successStatusCode = 200, errorStatusCode = 500, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
+export function dataBaseTransaction<T>(dbFile: string, queries: string[], { successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
@@ -107,17 +108,17 @@ export const checkPermissions = (req: MyRequest, res: Response, roles: UserRoles
 export function hashData(data: string): Promise<Result<string>> {
     return new Promise((resolve) => {
         bcrypt.hash(data, 10, (err, hash) => {
-            if (err) resolve({ success: false, status: 500, error: err });
-            else resolve({ success: true, status: 200, data: hash });
+            if (err) resolve({ success: false, status: StatusCodes.INTERNAL_SERVER_ERROR, error: err });
+            else resolve({ success: true, status: StatusCodes.OK, data: hash });
         });
     });
 }
 
 export function incorrectData(message: string): Result<null> {
-    return { success: false, status: 400, message }
+    return { success: false, status: StatusCodes.BAD_REQUEST, message }
 }
 export function noExistData(message: string): Result<null> {
-    return { success: false, status: 404, message }
+    return { success: false, status: StatusCodes.NOT_FOUND, message }
 }
 export function accessDenied(res: Response) {
     res.status(403).json({ success: false, message: messages.ACCESS_DENIED })

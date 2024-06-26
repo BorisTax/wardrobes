@@ -4,6 +4,7 @@ import { IMaterialExtService, IMaterialServiceProvider } from '../../../types/se
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
 import { MAT_TABLE_NAMES } from '../../../types/schemas.js';
+import { StatusCodes } from 'http-status-codes';
 const { EDGE } = MAT_TABLE_NAMES
 export default class EdgeServiceSQLite implements IMaterialExtService<Edge> {
     dbFile: string;
@@ -11,16 +12,16 @@ export default class EdgeServiceSQLite implements IMaterialExtService<Edge> {
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Edge[]>> {
-        return dataBaseQuery<Edge[]>(this.dbFile, `select * from ${EDGE};`, {successStatusCode: 200})
+        return dataBaseQuery<Edge[]>(this.dbFile, `select * from ${EDGE};`, {successStatusCode: StatusCodes.OK})
     }
     async addExtData({ name, dsp, code }: Edge): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${EDGE} (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${EDGE} (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${EDGE} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${EDGE} WHERE name='${name}';`, {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
     async updateExtData({ newName, dsp, code, name }: NewEdge): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getEdgeQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
+        return dataBaseQuery(this.dbFile, getEdgeQuery({ newName, dsp, code, name }), {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED})
     }
 }
 

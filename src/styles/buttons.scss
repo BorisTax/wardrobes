@@ -35,7 +35,7 @@
 }
 
 .button:hover {
-  transform: scale(0.9);
+  transform: scale($hoverScale);
 }
 
 .button-disabled {
@@ -47,12 +47,13 @@
 
 .image-button{
   display: inline-flex;
+  align-items: center;
   flex-wrap: nowrap;
   gap: 0.5rem;
   padding: 0.2rem;
 }
 .image-button:hover{
-  background-color: $hoverColor;
+  transform: scale($hoverScale);
 }
 .image-text-button {
   display: flex;
@@ -64,7 +65,7 @@
 }
 
 .image-text-button:hover {
-  background-color: aquamarine;
+  transform: scale($hoverScale);
 }
 
 .tab-button{

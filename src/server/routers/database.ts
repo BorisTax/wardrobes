@@ -5,9 +5,10 @@ import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/other.js';
 import { MyRequest, Result } from '../../types/server.js';
-import { PERMISSION, RESOURCE, UserRoles } from "../../types/user.js";
+import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { databaseFolder, databaseZipFile } from '../options.js';
 import { hasPermission } from './users.js';
+import { StatusCodes } from 'http-status-codes';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,8 +26,8 @@ function zipDirectory(sourceDir: string, outPath: string): Promise<Result<null>>
   const archive = archiver('zip', { zlib: { level: 9 }});
   const stream = fs.createWriteStream(outPath);
   return new Promise((resolve) => {
-    archive.directory(sourceDir, false).on('error', err => resolve({success: false, status: 500})).pipe(stream)
-    stream.on('close', () => resolve({success: true, status: 200}));
+    archive.directory(sourceDir, false).on('error', err => resolve({success: false, status: StatusCodes.INTERNAL_SERVER_ERROR})).pipe(stream)
+    stream.on('close', () => resolve({success: true, status: StatusCodes.OK}));
     archive.finalize();
   });
 }

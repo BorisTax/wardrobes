@@ -3,6 +3,7 @@ import { IPriceServiceProvider } from '../../types/services.js';
 import { Result, PriceData } from '../../types/server.js';
 import messages from '../messages.js';
 import { SPEC_TABLE_NAMES } from '../../types/schemas.js';
+import { StatusCodes } from 'http-status-codes';
 const { PRICELIST } = SPEC_TABLE_NAMES
 export default class PriceServiceSQLite implements IPriceServiceProvider {
     dbFile: string;
@@ -10,10 +11,10 @@ export default class PriceServiceSQLite implements IPriceServiceProvider {
         this.dbFile = dbFile
     }
     async getPriceList(): Promise<Result<PriceData[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${PRICELIST};`, { successStatusCode: 200 })
+        return dataBaseQuery(this.dbFile, `select * from ${PRICELIST};`, { successStatusCode: StatusCodes.OK })
     }
     async updatePriceList({ name, price, markup }: PriceData): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getPriceQuery({ name, price, markup }), { successStatusCode: 200, successMessage: messages.DATA_UPDATED })
+        return dataBaseQuery(this.dbFile, getPriceQuery({ name, price, markup }), { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
     }
 
 }

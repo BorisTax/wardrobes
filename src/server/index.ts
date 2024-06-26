@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express'
+import express from 'express'
 import http from 'http'
 import path from 'path'
 import { fileURLToPath } from 'url';
@@ -8,7 +8,6 @@ import cookieParser from 'cookie-parser'
 //import _debug from 'debug'
 import { router } from './routers.js'
 import { userRoleParser } from './options.js';
-import messages from './messages.js';
 
 //var debug = _debug('server') 
 
@@ -22,17 +21,8 @@ var app = express()
 app.use(cors())
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }))
 app.use(bodyParser.json({limit: '50mb'}))
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err) {
-    res.status(400).json({ success: false, message: messages.IMAGE_TOO_LARGE })
-  } else {
-    next()
-  }
-})
 app.use(cookieParser())
-
 app.use(express.static(path.join(__dirname, '../../dist')))
-
 app.use(userRoleParser)
 
 app.use('/api', router)

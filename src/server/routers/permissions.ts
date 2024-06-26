@@ -10,6 +10,7 @@ import { TemplateService } from '../services/templateService.js';
 import { NewTemplate, Template } from '../../types/templates.js';
 import { hasPermission } from './users.js';
 import { PermissionService } from '../services/permissionService.js';
+import { StatusCodes } from 'http-status-codes';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,7 +36,7 @@ router.delete("/", async (req, res) => {
   const { role, resource } = req.body
   let result
   result = await deletePermissions(role, resource);
-  const status = result.success ? 200 : 404
+  const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
@@ -43,7 +44,7 @@ router.post("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
   const { role, resource, permissions } = req.body
   const result = await addPermissions(role, resource, permissions);
-  const status = result.success ? 201 : 409
+  const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
@@ -67,7 +68,7 @@ export async function addPermissions(role: string, resource: RESOURCE, permissio
   const result = await service.getPermissions(role)
   if (!result.success) return result
   const list = result.data
-  if ((list as PERMISSIONS_SCHEMA[]).find(m => m.role === role && m.resource === resource)) return { success: false, status: 409, message: messages.PERMISSION_EXIST }
+  if ((list as PERMISSIONS_SCHEMA[]).find(m => m.role === role && m.resource === resource)) return { success: false, status: StatusCodes.CONFLICT, message: messages.PERMISSION_EXIST }
   return await service.addPermissions(role, resource, permissions)
 }
 
@@ -76,7 +77,7 @@ export async function updatePermissions(role: string, resource: RESOURCE, permis
   const result = await service.getPermissions(role)
   if (!result.success) return result
   const list = result.data
-  if (!(list as PERMISSIONS_SCHEMA[]).find(m => m.role === role && m.resource === resource)) return { success: false, status: 404, message: messages.PERMISSION_NO_EXIST }
+  if (!(list as PERMISSIONS_SCHEMA[]).find(m => m.role === role && m.resource === resource)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.PERMISSION_NO_EXIST }
   return await service.updatePermissions(role, resource, permissions)
 }
 
@@ -85,6 +86,6 @@ export async function deletePermissions(role: string, resource: RESOURCE) {
   const result = await service.getPermissions(role)
   if (!result.success) return result
   const list = result.data
-  if (!(list as PERMISSIONS_SCHEMA[]).find(m => m.role === role && m.resource === resource)) return { success: false, status: 404, message: messages.PERMISSION_NO_EXIST }
+  if (!(list as PERMISSIONS_SCHEMA[]).find(m => m.role === role && m.resource === resource)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.PERMISSION_NO_EXIST }
   return await service.deletePermissions(role, resource)
 }

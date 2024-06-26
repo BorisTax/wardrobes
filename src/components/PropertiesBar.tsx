@@ -21,18 +21,18 @@ import { hasFasadImage } from "../functions/fasades"
 import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import ImageLink from "./inputs/ImageLink"
-import { loadedInitialStateAtom } from "../atoms/app"
 import { RESOURCE } from "../types/user"
 import FasadTotalPrice from "./fasad/FasadTotalPrice"
+import { useNavigate } from "react-router-dom"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 const directions: Map<string, string> = new Map()
 export default function PropertiesBar() {
+    const navigate = useNavigate()
     const { permissions } = useAtomValue(userAtom)
     const permPrice = permissions.get(RESOURCE.PRICES)
     const permSpec = permissions.get(RESOURCE.SPECIFICATION)
     const permTemp = permissions.get(RESOURCE.TEMPLATE)
     const fasad = useAtomValue(activeFasadAtom)
-    const rootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
     const { minSize } = useAtomValue(settingsAtom)
     const { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
     const sections = fasad ? sectionsTemplate : []
@@ -61,7 +61,7 @@ export default function PropertiesBar() {
                 {permSpec?.read &&
                     <>
                         <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
-                        <ImageLink link={"schema"} title="Cхема" icon="schemaButton" />
+                        <ImageButton title="Cхема" icon="schemaButton" onClick={() => { navigate("/schema") }} />
                     </>}
                 {permTemp?.create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
                 {permTemp?.read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
@@ -95,7 +95,7 @@ export default function PropertiesBar() {
             <ComboBox title="Направление профиля:" value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
             <ComboBox title="Кол-во секций:" value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
         </PropertyGrid>
-        {permPrice?.read && <FasadTotalPrice />}
+        {permPrice?.read && fasad && <FasadTotalPrice />}
     </div>
 }
 

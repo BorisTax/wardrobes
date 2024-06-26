@@ -4,6 +4,7 @@ import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/other.js';
 import messages from '../../messages.js';
 import { MAT_TABLE_NAMES } from '../../../types/schemas.js';
+import { StatusCodes } from 'http-status-codes';
 const { ZAGLUSHKA } = MAT_TABLE_NAMES
 export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglushka> {
     dbFile: string;
@@ -11,16 +12,16 @@ export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglus
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Zaglushka[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${ZAGLUSHKA};`, {successStatusCode: 200})
+        return dataBaseQuery(this.dbFile, `select * from ${ZAGLUSHKA};`, {successStatusCode: StatusCodes.OK})
     }
     async addExtData({ name, dsp, code }: Zaglushka): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: 201, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, dsp, code) values('${name}', '${dsp}', '${code}');`, {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE name='${name}';`, {successStatusCode: 200, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE name='${name}';`, {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
     async updateExtData({ newName, dsp, code, name }: NewZaglushka): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getZaglushkaQuery({ newName, dsp, code, name }), {successStatusCode: 200, successMessage: messages.MATERIAL_UPDATED})
+        return dataBaseQuery(this.dbFile, getZaglushkaQuery({ newName, dsp, code, name }), {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED})
     }
 }
 

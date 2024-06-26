@@ -17,7 +17,7 @@ export default function ImageButton({ title, caption, onClick, icon, disabled = 
         className += pressed ? " button-down" : " button-up";
         className += " " + classes
         const { onMouseOver, onMouseLeave } = useToolTip(caption ? "" : title);
-        return <div className={caption ? 'image-button' : ""}
+        return <div className={'image-button'}
                 role="button"
                 style={{ visibility: visible ? "visible" : "hidden" }}
                 onClick={(e) => { if (!disabled) { e.stopPropagation(); onClick() } }}

@@ -16,14 +16,14 @@
   gap: 0.5rem;
 }
 .data-navbar-button:hover{
-  background-color: $hoverColor;
+  -transform: scale($hoverScale);
 }
 .data-navbar-button-title{
   text-decoration: none !important;
   color: black;
 }
 .data-navbar-button-title:hover{
-    -background-color: $hoverColor;
+  color: $hoverColor;
 }
 @media (max-width: 768px) {
   .data-navbar-button-title{

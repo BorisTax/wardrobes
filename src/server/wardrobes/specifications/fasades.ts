@@ -2,7 +2,7 @@ import Fasad from "../../../classes/Fasad";
 import { getFasadHeight, getFasadWidth } from "../../../functions/wardrobe";
 import { Division, FasadMaterial } from "../../../types/enums";
 import { ExtMaterial, Profile, ProfileType } from "../../../types/materials";
-import { FullData, SpecificationResult, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe";
+import { FullData, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe";
 import { SpecificationItem } from "../../../types/specification";
 import { WardrobeData } from "../../../types/wardrobe";
 import { materialServiceProvider, materialsPath } from "../../options";
@@ -10,13 +10,10 @@ import { MaterialService } from "../../services/materialService";
 import { getCoef } from "./corpus";
 import { MaterialExtService } from "../../services/materialExtService";
 import UplotnitelServiceSQLite from "../../services/extServices/uplotnitelServiceSQLite";
+import { emptyFullData } from "./functions";
+import { getSpecificationPattern } from "./functions";
+import { getFasadCount, correctFasadCount } from "./functions";
 
-export function getFasadCount(data: WardrobeData): number{
-    return Object.values(data.fasades).reduce((a, f) => f.count + a, 0)
-}
-export function correctFasadCount(count: number): boolean{
-    return count > 1 && count < 7
-}
 export function createFasades(data: WardrobeData, profileType: ProfileType): Fasad[]{
     const fasades: Fasad[] = []
     const count = getFasadCount(data)
@@ -50,29 +47,6 @@ export function createFasades(data: WardrobeData, profileType: ProfileType): Fas
     })
     return fasades
 }
-export function filterEmptySpecification(spec: Map<SpecificationItem, FullData[]>): Map<SpecificationItem, FullData[]> {
-    const newSpec = new Map<SpecificationItem, FullData[]>();
-    spec.forEach((v, k) => { if (v.every(d => d.data.amount !== 0)) newSpec.set(k, v); });
-    return newSpec;
-}
-
-export function getSpecificationPattern(): Map<SpecificationItem, FullData[]> {
-    const spec = new Map<SpecificationItem, FullData[]>();
-    Object.keys(SpecificationItem).forEach(k => {
-        spec.set(k as SpecificationItem, [{ data: { amount: 0, char: { code: "", caption: "" } }, verbose: [] }])
-    });
-    return spec;
-}
-
-export function flattenSpecification(spec: Map<SpecificationItem, FullData[]>): SpecificationResult[] {
-    const result: [SpecificationItem, FullData][] = []
-    spec.forEach((v, k) => {
-        v.forEach(item => {
-            result.push([k, item])
-        })
-    })
-    return result
-}
 
 export async function getFasadSpecification(fasad: Fasad, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = await calcSpecification(fasad, profile);
@@ -96,14 +70,14 @@ async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<Sp
     spec.set(SpecificationItem.EVA, await calcEva(fasad)); 
     spec.set(SpecificationItem.Uplot, await calcUplotnitel(fasad, profile.type));
     spec.set(SpecificationItem.UplotSoedBavaria, await calcUplotnitelSoed(fasad, profile.type));
-    spec.set(SpecificationItem.ProfileSoedStandart, profile.type === ProfileType.STANDART ? await calcProfileSoed(fasad, profile) : emptyFullData())
-    spec.set(SpecificationItem.ProfileVertStandart, profile.type === ProfileType.STANDART ? await calcProfileVert(fasad, profile) : emptyFullData())
-    spec.set(SpecificationItem.ProfileHorTopStandart, profile.type === ProfileType.STANDART ? await calcProfileHor(fasad, profile, true) : emptyFullData())
-    spec.set(SpecificationItem.ProfileHorBottomStandart, profile.type === ProfileType.STANDART ? await calcProfileHor(fasad, profile, false) : emptyFullData())
-    spec.set(SpecificationItem.ProfileSoedBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileSoed(fasad, profile) : emptyFullData())
-    spec.set(SpecificationItem.ProfileVertBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileVert(fasad, profile) : emptyFullData())
-    spec.set(SpecificationItem.ProfileHorTopBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileHor(fasad, profile, true) : emptyFullData())
-    spec.set(SpecificationItem.ProfileHorBottomBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileHor(fasad, profile, false) : emptyFullData())
+    spec.set(SpecificationItem.ProfileSoedStandart, profile.type === ProfileType.STANDART ? await calcProfileSoed(fasad, profile) : [emptyFullData()])
+    spec.set(SpecificationItem.ProfileVertStandart, profile.type === ProfileType.STANDART ? await calcProfileVert(fasad, profile) : [emptyFullData()])
+    spec.set(SpecificationItem.ProfileHorTopStandart, profile.type === ProfileType.STANDART ? await calcProfileHor(fasad, profile, true) : [emptyFullData()])
+    spec.set(SpecificationItem.ProfileHorBottomStandart, profile.type === ProfileType.STANDART ? await calcProfileHor(fasad, profile, false) : [emptyFullData()])
+    spec.set(SpecificationItem.ProfileSoedBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileSoed(fasad, profile) : [emptyFullData()])
+    spec.set(SpecificationItem.ProfileVertBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileVert(fasad, profile) : [emptyFullData()])
+    spec.set(SpecificationItem.ProfileHorTopBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileHor(fasad, profile, true) : [emptyFullData()])
+    spec.set(SpecificationItem.ProfileHorBottomBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileHor(fasad, profile, false) : [emptyFullData()])
     spec.set(SpecificationItem.Streich, await calcStreich(fasad))
     spec.set(SpecificationItem.Karton, await calcKarton(fasad))
     spec.set(SpecificationItem.Roliki, await calcRoliki(fasad, profile))
@@ -156,7 +130,8 @@ async function calcDSP10(fasad: Fasad, materials: ExtMaterial[]): Promise<FullDa
     const finalResult = result.map(r => {
         const area = r.data.amount
         r.data.amount = area * coef
-        return { ...r, verbose: [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]] }
+        const verbose = [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]]
+        return { ...r, verbose: area > 0 ? verbose : undefined  }
     })
     return finalResult
 }
@@ -166,7 +141,8 @@ async function calcMirror(fasad: Fasad, materials: ExtMaterial[]): Promise<FullD
     const finalResult = result.map(r => {
         const area = r.data.amount
         r.data.amount = area * coef
-        return { ...r, verbose: [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]] }
+        const verbose = [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]]
+        return { ...r, verbose: area > 0 ? verbose : undefined }
     })
     return finalResult
 }
@@ -176,7 +152,8 @@ async function calcArakal(fasad: Fasad, materials: ExtMaterial[]): Promise<FullD
     const finalResult = result.map(r => {
         const area = r.data.amount
         r.data.amount = area * coef
-        return { ...r, verbose: [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]] }
+        const verbose = [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]]
+        return { ...r, verbose: area > 0 ? verbose : undefined }
     })
     return finalResult
 }
@@ -188,6 +165,7 @@ async function calcHydro(fasad: Fasad, materials: ExtMaterial[]): Promise<FullDa
         const total = result[0].data.amount * 0.035 * coef
         const data = `x ${mult} ${coef !== 1 ? "x " + coef : ""} = ${total.toFixed(3)}`
         result[0].verbose?.push(["", "", "", data])
+        if (total <= 0) result[0].verbose = undefined
         result[0].data.amount = total
     }
     return result
@@ -198,7 +176,8 @@ async function calcLacobel(fasad: Fasad, materials: ExtMaterial[]): Promise<Full
     const finalResult = result.map(r => {
         const area = r.data.amount
         r.data.amount = area * coef
-        return { ...r, verbose: [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]] }
+        const verbose = [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]]
+        return { ...r, verbose: area > 0 ? verbose : undefined }
     })
     return finalResult
 }
@@ -213,12 +192,12 @@ async function calcRitrama(fasad: Fasad): Promise<FullData[]> {
         verbose.push([d.height, d.width, `(${d.height}+100)x1200`, ritrama.toFixed(3)])
     }
     verbose.push(["", "", `Итого:`, total.toFixed(3)])
-    return [{ data: { amount: total }, verbose }]
+    return [{ data: { amount: total }, verbose: total > 0 ? verbose : undefined }]
 }
 
 async function calcArmirovka(fasad: Fasad, tolerance = 5): Promise<FullData[]> {
     const dims = await calcDimensions(fasad, [FasadMaterial.FMP, FasadMaterial.LACOBELGLASS, FasadMaterial.MIRROR, FasadMaterial.SAND])
-    const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Полоса 200мм", "Полоса 400мм", "", "Площадь"]]
+    const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Полоса 400мм", "Полоса 200мм", "", "Площадь"]]
     let total = 0
     for (let d of dims) {
         let f = Math.floor(d.width / 400);
@@ -228,10 +207,10 @@ async function calcArmirovka(fasad: Fasad, tolerance = 5): Promise<FullData[]> {
         const tape200 = f < 0 ? 0 : f;
         let area = (d.height + 100) * (tape400 * 400 + tape200 * 200) / 1000000;
         total += area
-        verbose.push([d.height, d.width, tape200, tape400, `(${d.height}+100) x (400x${tape400}+200x${tape200})`, area.toFixed(3)])
+        verbose.push([d.height, d.width, `${tape400}шт`, `${tape200}шт`, `(${d.height}+100) x (400x${tape400}+200x${tape200})`, area.toFixed(3)])
     }
     verbose.push(["", "", "", "", `Итого:`, total.toFixed(3)])
-    return [{ data: { amount: total }, verbose }]
+    return [{ data: { amount: total }, verbose: total > 0 ? verbose : undefined }]
 }
 async function calcFMPPaper(fasad: Fasad, widthLimit = 700): Promise<FullData[]> {
     const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
@@ -249,7 +228,7 @@ async function calcFMPPaper(fasad: Fasad, widthLimit = 700): Promise<FullData[]>
     const result = total * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed}` : ""
     verbose.push(["", "", "", `Итого:`, total.toFixed(3), coefString])
-    return [{ data: { amount: total }, verbose }]
+    return [{ data: { amount: total }, verbose: total > 0 ? verbose : undefined }]
 }
 
 async function calcFMPGlass(fasad: Fasad): Promise<FullData[]> {
@@ -265,7 +244,7 @@ async function calcFMPGlass(fasad: Fasad): Promise<FullData[]> {
     const result = total * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     verbose.push(["", `Итого:`, total.toFixed(3), coefString])
-    return [{ data: { amount: result }, verbose }]
+    return [{ data: { amount: result }, verbose: result > 0 ? verbose : undefined }]
 }
 
 async function calcPaint(fasad: Fasad): Promise<FullData[]> {
@@ -282,7 +261,7 @@ async function calcPaint(fasad: Fasad): Promise<FullData[]> {
     const coefString = coef!==1?`x ${coef}`:""
     const result =  total * coef * mult * 0.001
     verbose.push(["", `Итого:`, total.toFixed(3), `x 13.8 x 0.001 ${coefString} = ${(result.toFixed(3))}`])
-    return [{ data: { amount: result }, verbose }]
+    return [{ data: { amount: result }, verbose: result > 0 ? verbose : undefined }]
 }
 async function calcEva(fasad: Fasad): Promise<FullData[]>  {
     const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
@@ -297,7 +276,7 @@ async function calcEva(fasad: Fasad): Promise<FullData[]>  {
     const result = total * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     verbose.push(["", `Итого:`, total.toFixed(3), coefString])
-    return [{ data: { amount: result }, verbose }]
+    return [{ data: { amount: result }, verbose: result > 0 ? verbose : undefined }]
 }
 
 type EdgesData = { width: number, height: number, edges: {side: EdgeSides, length: number}[] }
@@ -369,11 +348,11 @@ async function calcUplotnitel(fasad: Fasad, profileType: ProfileType): Promise<F
     const result = sum * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     verbose.push(["", "", "", `${sum.toFixed(3)}`, coefString])
-    return [{ data: { amount: result, char: { code, caption: name as string } }, verbose }]
+    return [{ data: { amount: result, char: { code, caption: name as string } }, verbose: result > 0 ? verbose : undefined }]
 }
 
 async function calcUplotnitelSoed(fasad: Fasad, profileType: ProfileType): Promise<FullData[]> {
-    if (profileType === ProfileType.STANDART) return emptyFullData()
+    if (profileType === ProfileType.STANDART) return [emptyFullData()]
     const service = new MaterialExtService(new UplotnitelServiceSQLite(materialsPath))
     const uplotList = (await (service.getExtData())).data
     const { code, name } = (uplotList && uplotList[0]) || { code: "", caption: "" }
@@ -392,7 +371,7 @@ async function calcUplotnitelSoed(fasad: Fasad, profileType: ProfileType): Promi
     const result = sum * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     verbose.push(["", "", "", `${sum.toFixed(3)}`, coefString])
-    return [{ data: { amount: result, char: { code, caption: name as string } }, verbose }]
+    return [{ data: { amount: result, char: { code, caption: name as string } }, verbose: result > 0 ? verbose : undefined }]
 }
 
 async function calcProfileSoed(fasad: Fasad, profile: Profile): Promise<FullData[]> {
@@ -410,7 +389,7 @@ async function calcProfileSoed(fasad: Fasad, profile: Profile): Promise<FullData
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     const verbose = [["Профили", "Итого", ""]]
     verbose.push([prof.join("+"), `${sum.toFixed(3)}`, coefString])
-    return [{ data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose }]
+    return [{ data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose: result > 0 ? verbose : undefined }]
 }
 async function calcProfileHor(fasad: Fasad, profile: Profile, top: boolean): Promise<FullData[]> {
     const itemStandart = top ? SpecificationItem.ProfileHorTopStandart : SpecificationItem.ProfileHorBottomStandart
@@ -421,14 +400,14 @@ async function calcProfileHor(fasad: Fasad, profile: Profile, top: boolean): Pro
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     const verbose = [['Длина', '', '']]
     verbose.push([`(${fasad.Width} - 13) = ${width}`, `${(width / 1000).toFixed(3)}м`, coefString])
-    return [{ data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose }]
+    return [{ data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose: result > 0 ? verbose : undefined }]
 }
 
 async function calcProfileVert(fasad: Fasad, profile: Profile): Promise<FullData[]> {
     const count = (fasad.Height > 2293) ? 2 : 1
     const verbose = [['Высота фасада', '', '']]
-    verbose.push([`${fasad.Height}`, `${count === 1 ? "<=" : ">"}2293 = ${count}шт`])
-    return [{ data: { amount: count, char: { code: profile.code, caption: profile.name } }, verbose }]
+    verbose.push([`${fasad.Height}`, `${count === 1 ? "меньше-равно" : "больше"} 2293 - ${count}шт`])
+    return [{ data: { amount: count, char: { code: profile.code, caption: profile.name } }, verbose: count > 0 ? verbose : undefined }]
 }
 async function calcStreich(fasad: Fasad): Promise<FullData[]>  {
     return [{ data: { amount: 12 } }]
@@ -437,13 +416,12 @@ async function calcKarton(fasad: Fasad): Promise<FullData[]>  {
     return [{ data: { amount: 0.25 } }]
 }
 async function calcRoliki(fasad: Fasad, profile: Profile): Promise<FullData[]>  {
-    if (profile.type === ProfileType.BAVARIA) return emptyFullData()
+    if (profile.type === ProfileType.BAVARIA) return [emptyFullData()]
     return [{ data: { amount: 1 } }]
 }
 async function calcRolikiBavaria(fasad: Fasad, profile: Profile): Promise<FullData[]>  {
-    if (profile.type === ProfileType.STANDART) return emptyFullData()
+    if (profile.type === ProfileType.STANDART) return [emptyFullData()]
     return [{ data: { amount: 1 } }]
 }
-export function emptyFullData(): FullData[]{
-    return [{ data: { amount: 0 } }]
-}
+
+

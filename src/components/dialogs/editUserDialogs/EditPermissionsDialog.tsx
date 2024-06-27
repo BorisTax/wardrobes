@@ -35,11 +35,11 @@ export default function EditPermissionsDialog() {
     const deletePermissions = useSetAtom(deletePermissionsAtom)
     const addPermissions = useSetAtom(addPermissionsAtom)
     const updatePermissions = useSetAtom(updatePermissionsAtom)
-    const heads = ['Ресурс', 'Чтение', 'Создание', 'Обновление', 'Удаление']
+    const heads = ['Права', 'Чтение', 'Создание', 'Обновление', 'Удаление']
     const contents = permData.map((p: PERMISSIONS_SCHEMA) => [resourceList.get(p.resource), boolToYesNo(p.read as boolean), boolToYesNo(p.create as boolean), boolToYesNo(p.update as boolean), boolToYesNo(p.remove as boolean)])
     const editItems: EditDataItem[] = [
         { caption: "Роль:", value: role || "", message: "Выберите роль", type: InputType.TEXT, readonly: true },
-        { caption: "Ресурс:", value: resource, valueCaption: (value) => { return resourceList.get(value) }, message: "Выберите ресурс", type: InputType.LIST, list: resourceList },
+        { caption: "Права:", value: resource, valueCaption: (value) => { return resourceList.get(value) }, message: "Выберите ресурс", type: InputType.LIST, list: resourceList },
         { caption: "Чтение:", value: read, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
         { caption: "Создание:", value: create, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
         { caption: "Обновление:", value: update, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },

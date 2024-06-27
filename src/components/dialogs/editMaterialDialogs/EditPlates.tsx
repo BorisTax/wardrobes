@@ -5,7 +5,7 @@ import ComboBox from "../../inputs/ComboBox"
 import { ExtMaterial } from "../../../types/materials"
 import { MAT_PURPOSE, FasadMaterial } from "../../../types/enums"
 import { Materials } from "../../../functions/materials"
-import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom } from "../../../atoms/materials/materials"
+import { addMaterialAtom, deleteMaterialAtom, materialListAtom, updateMaterialAtom, useImageUrl } from "../../../atoms/materials/materials"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
@@ -24,6 +24,7 @@ export default function EditPlates() {
     const updateMaterial = useSetAtom(updateMaterialAtom)
     const extMaterials: ExtMaterial[] = useMemo(() => (materialList.filter(m => m.material === baseMaterial) || [{ name: "", material: "" }]).toSorted((m1, m2) => (m1.name > m2.name) ? 1 : -1), [materialList, baseMaterial]);
     const extMaterial = extMaterials[extMaterialIndex] || { name: "", code: "", image: "", material: FasadMaterial.DSP, purpose: MAT_PURPOSE.BOTH }
+    const image = useImageUrl(extMaterial.material as FasadMaterial, extMaterial.name)
     const purposeEnabled = extMaterial?.material === FasadMaterial.DSP
     const heads = ['Наименование', 'Код', 'Назначение']
     const contents = extMaterials.map((i: ExtMaterial) => [i.name, i.code, MATPurpose.get(i.purpose) || ""])
@@ -31,7 +32,7 @@ export default function EditPlates() {
         { caption: "Наименование:", value: extMaterial.name || "", message: "Введите наименование", type: InputType.TEXT },
         { caption: "Код:", value: extMaterial.code, message: "Введите код", type: InputType.TEXT },
         { caption: "Назначение:", value: extMaterial.purpose || "", valueCaption: (value) => MATPurpose.get(value as MAT_PURPOSE) || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
-        { caption: "Изображение:", value: extMaterial.image || "", message: "Выберите изображение", type: InputType.FILE },
+        { caption: "Изображение:", value: image || "", message: "Выберите изображение", type: InputType.FILE },
     ]
     return <EditContainer>
         <div>

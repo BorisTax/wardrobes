@@ -73,7 +73,11 @@ setInterval(clearExpiredTokens, 60000)
 
 export function notifyActiveUsers(message: SERVER_EVENTS) {
   socketsMap.forEach((v, k) => {
-    k.send(message)
+    try {
+      k.send(message)
+    } catch (e) {
+      console.error(e)
+    }
   })
 }
 

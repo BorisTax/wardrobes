@@ -21,7 +21,7 @@ export default function SpecificationDialog() {
         setSpecificationDialogRef(dialogRef)
     }, [setSpecificationDialogRef, dialogRef])
     return <DialogWindow dialogRef={dialogRef} menuButtons={
-        <ImageButton icon="excel" title="Сохранить в Excel" onClick={() => saveToExcel(specification, `Фасад (${fasadIndex + 1} из ${specifications.length})`)} />
+        <ImageButton icon="excel" title="Сохранить в Excel" caption="Сохранить в Excel" onClick={() => saveToExcel(specification, `Фасад (${fasadIndex + 1} из ${specifications.length})`)} />
     }>
         <div className="d-flex flex-row flex-nowrap justify-content-center align-items-center gap-1">
             {fasades}

@@ -1,7 +1,7 @@
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { accessDenied } from '../functions/other.js';
+import { accessDenied } from '../functions/database.js';
 import { addProfile, deleteProfile, getProfiles, updateProfile } from './materials/profiles.js';
 import { addExtMaterial, deleteExtMaterial, getExtMaterials, updateExtMaterial } from './materials/extMaterials.js';
 import { MyRequest } from '../../types/server.js';

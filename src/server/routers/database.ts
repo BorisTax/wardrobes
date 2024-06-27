@@ -3,7 +3,7 @@ import fs from 'fs'
 import archiver from 'archiver'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { accessDenied } from '../functions/other.js';
+import { accessDenied } from '../functions/database.js';
 import { MyRequest, Result } from '../../types/server.js';
 import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { databaseFolder, databaseZipFile } from '../options.js';

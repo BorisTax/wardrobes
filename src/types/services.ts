@@ -9,7 +9,9 @@ import { Permissions, RESOURCE, UserRole } from "./user"
 
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User[]>>
+    getUser: (token: string) => Promise<Result<User[]>>
     getTokens: () => Promise<Result<Token[]>>
+    getToken: (token: string) => Promise<Result<Token[]>>
     addToken: ({ token, username, time, lastActionTime }: Token) => Promise<Result<null>>
     updateToken: (token: string, lastActionTime: number) => Promise<Result<null>>
     deleteToken: (token: string) => Promise<Result<null>>

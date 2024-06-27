@@ -1,13 +1,3 @@
-import { FetchResult, fetchGetData } from "./fetch.js";
-
-export async function waitForMessageFromServer(token: string, onMessage: (message: string, data: string) => boolean) {
-    const result: FetchResult<[] | string> = await fetchGetData(`/api/users/events?token=${token}`)
-    if (result.success) {
-        if (onMessage(result.message as string, result.data as string)) return
-    }
-    await waitForMessageFromServer(token, onMessage)
-}
-
 export function timeToString(time: number): string {
     const seconds = Math.floor(time / 1000)
     const minutes = Math.floor(seconds / 60)

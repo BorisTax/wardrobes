@@ -28,7 +28,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     const list: TotalData[] = useMemo(() => {
         const specList: TotalData[] = []
         specData.forEach(sd => {
-            const spec = props.specification.filter(s => s[0] === sd.name)
+            const spec = props.specification?.filter(s => s[0] === sd.name) || []
             if (spec.length === 0) spec.push([sd.name, { data: { amount: 0, char: { code: "", caption: "" } } }])
             const priceItem = priceList.find(p => p.name === sd.name) as PriceData
             spec.forEach(sp => {

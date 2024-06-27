@@ -11,6 +11,7 @@ import { loadTrempelListAtom } from "./materials/trempel"
 import { loadZaglushkaListAtom } from "./materials/zaglushka"
 import { loadUplotnitelListAtom } from "./materials/uplotnitel"
 import { loadSpecificationListAtom } from "./specification"
+import { webSocketSetAtom } from "./websocket"
 
 
 export type UserState = {
@@ -61,20 +62,24 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         if (!result.success) {
             localStorage.removeItem("token")
             set(userAtomPrivate, getInitialUser())
+            set(webSocketSetAtom, "")
             return
         }
     }
     let storeUser: UserState = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
+    const prevToken = get(userAtomPrivate).token
     try {
         const { name, role, permissions } = jwtDecode(token) as UserState & { permissions: PERMISSIONS_SCHEMA[] }
         storeUser = { name, role, token, permissions }
         storeUser.permissions = permissionsToMap(permissions)
         set(userAtomPrivate, storeUser)
+        if (token !== prevToken) set(webSocketSetAtom, token)
         localStorage.setItem('token', storeUser.token)
     } catch (e) {
         storeUser = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
         localStorage.removeItem("token")
         set(userAtomPrivate, getInitialUser())
+        set(webSocketSetAtom, "")
     }
     set(loadAllDataAtom, storeUser.permissions)
 }
@@ -101,6 +106,7 @@ export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     const user = get(userAtom)
     fetchData('/api/users/logout', "POST", JSON.stringify({ token: user.token }))
     set(userAtom, "")
+    set(webSocketSetAtom, "")
 })
 export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, usertoken: string) => {
     const user = get(userAtom)

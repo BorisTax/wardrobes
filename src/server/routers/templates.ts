@@ -2,7 +2,7 @@ import messages from '../messages.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import express from "express";
-import { accessDenied } from '../functions/other.js';
+import { accessDenied } from '../functions/database.js';
 import { MyRequest } from '../../types/server.js';
 import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { templateServiceProvider } from '../options.js';

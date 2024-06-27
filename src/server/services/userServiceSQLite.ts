@@ -1,4 +1,4 @@
-import { dataBaseQuery, dataBaseTransaction, hashData } from '../functions/other.js'
+import { dataBaseQuery, dataBaseTransaction, hashData } from '../functions/database.js'
 import { IUserServiceProvider } from '../../types/services.js';
 import { Result, Token } from '../../types/server.js';
 import { PERMISSIONS_SCHEMA, USER_ROLE_SCHEMA, User } from "../../types/user.js";
@@ -13,10 +13,20 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         this.dbFile = dbFile
     }
     async getUsers(): Promise<Result<User[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${USERS};`, { successStatusCode: StatusCodes.OK })
+        const result = await dataBaseQuery<User[]>(this.dbFile, `select * from ${USERS};`, { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data || [] }
+    }
+    async getUser(token: string): Promise<Result<User[]>> {
+        const result = await dataBaseQuery<User[]>(this.dbFile, `SELECT * FROM ${USERS} join ${TOKENS} on ${TOKENS}.token='${token}' and ${USERS}.name=${TOKENS}.username;`, { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data || [] }
     }
     async getTokens(): Promise<Result<Token[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${TOKENS};`, { successStatusCode: StatusCodes.OK })
+        const result = await dataBaseQuery<Token[]>(this.dbFile, `select * from ${TOKENS};`, { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data || [] }
+    }
+    async getToken(token: string): Promise<Result<Token[]>> {
+        const result = await dataBaseQuery<Token[]>(this.dbFile, `select * from ${TOKENS} where token='${token}';`, { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data || [] }
     }
     async addToken({ token, username, time, lastActionTime }: Token): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `INSERT INTO ${TOKENS} (token, username, time, lastActionTime) VALUES('${token}', '${username}', ${time}, ${lastActionTime})`, { successStatusCode: StatusCodes.CREATED })

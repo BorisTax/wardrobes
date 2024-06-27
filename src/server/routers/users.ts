@@ -3,7 +3,7 @@ import express from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService, events, getTokens, logoutUser, notifyActiveUsers } from '../services/userService.js';
-import { accessDenied, hashData, incorrectData } from '../functions/other.js';
+import { accessDenied, hashData, incorrectData } from '../functions/database.js';
 import { MyRequest, Result, Token } from '../../types/server.js';
 import { ActiveUser, PERMISSION, User, UserData } from "../../types/user.js";
 import { JWT_SECRET, userServiceProvider } from '../options.js';
@@ -49,7 +49,7 @@ router.post("/login", async (req, res) => {
   const time = Date.now()
   const lastActionTime = time
   if (result.success) userService.addToken({ token: result.data as string, username: user.name, time, lastActionTime })
-  if (result.success) notifyActiveUsers()
+  if (result.success) notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   res.json(result);
 });
 
@@ -64,7 +64,8 @@ router.post("/logoutuser", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const user = req.body;
-  const result = await userService.deleteToken(user.usertoken, () => { logoutUser(user.usertoken) })
+  const result = await userService.deleteToken(user.usertoken)
+  if(result.success) logoutUser(user.usertoken)
   res.json(result);
 });
 
@@ -89,7 +90,7 @@ router.post("/logoutall", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   userService.clearAllTokens()
-  notifyActiveUsers()
+  notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   events.clear()
   res.json({ success: true });
 });

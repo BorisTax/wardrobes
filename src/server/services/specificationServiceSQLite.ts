@@ -1,4 +1,4 @@
-import { dataBaseQuery } from '../functions/other.js'
+import { dataBaseQuery } from '../functions/database.js'
 import { ISpecificationServiceProvider } from '../../types/services.js';
 import { Result, SpecificationData } from '../../types/server.js';
 import messages from '../messages.js';

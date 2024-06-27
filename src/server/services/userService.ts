@@ -7,6 +7,45 @@ import { userServiceProvider } from '../options.js'
 import { SERVER_EVENTS } from "../../types/enums.js"
 import { Permissions, RESOURCE, UserRole } from '../../types/user.js'
 import { StatusCodes } from 'http-status-codes'
+import WebSocket from 'ws'
+import { dateToString } from '../functions/user.js'
+
+export const socketsMap = new Map<WebSocket, string>()
+export const sockets = new Set<WebSocket>()
+type WebSocketOld = WebSocket & { upgradeReq: { url: string } }
+export function createSocket() {
+  const wsServer = new WebSocket.Server({ port: 8080 })
+  wsServer.on('connection', async (ws: WebSocketOld) => {
+    const token = (ws.upgradeReq?.url || "=").split("=")[1]
+    if (!token) return ws.close()
+    const userService = new UserService(userServiceProvider)
+    const result = await userService.getUser(token)
+    const user = result.data && result.data[0]
+    console.log('Client connected', user?.name, dateToString(new Date()))
+    sockets.add(ws)
+    socketsMap.set(ws, token)
+    ws.on('error', console.error);
+    ws.on('message', (data) => {
+      
+    });
+    ws.on('close', async (code, reason) => {
+      const userService = new UserService(userServiceProvider)
+      const token = socketsMap.get(ws) || ""
+      const result = await userService.getUser(token)
+      const user = result.data && result.data[0]
+      console.log('Client disconnected', user?.name, dateToString(new Date()))
+      sockets.delete(ws)
+      socketsMap.delete(ws)
+    })
+  });
+  wsServer.on('close', () => {
+    sockets.clear()
+    socketsMap.clear()
+    createSocket()
+  })
+}
+
+createSocket()
 
 export const events: Map<string, EventEmitter> = new Map()
 export async function getTokens(): Promise<Token[]> {
@@ -27,11 +66,16 @@ const clearExpiredTokens = async () => {
 
 setInterval(clearExpiredTokens, 60000)
 
-export function notifyActiveUsers() {
-  events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.UPDATE_ACTIVE_USERS))
+export function notifyActiveUsers(message: SERVER_EVENTS) {
+  socketsMap.forEach((v, k) => {
+    k.send(message)
+  })
 }
+
 export function logoutUser(token: string) {
-  events.forEach(emitter => emitter.emit('message', SERVER_EVENTS.LOGOUT, token))
+  socketsMap.forEach((v, k) => {
+    if (v === token) k.send(SERVER_EVENTS.LOGOUT)
+  })
 }
 export class UserService implements IUserService {
   provider: IUserServiceProvider
@@ -42,19 +86,15 @@ export class UserService implements IUserService {
     return await this.provider.getUsers()
   }
 
-  async getUser(token: string): Promise<User | undefined> {
-    const tokenList = await this.getTokens()
-    if (!tokenList.success) return undefined
-    const userList = await this.getUsers()
-    if (!userList.success) return undefined
-    const foundToken = (tokenList.data as Token[]).find(t => t.token === token)
-    const userName = foundToken && foundToken.username
-    const user = (userList.data as User[]).find(u => u.name === userName)
-    return user
+  async getUser(token: string): Promise<Result<User[]>> {
+    return this.provider.getUser(token)
   }
 
   async getTokens() {
     return await this.provider.getTokens()
+  }
+  async getToken(token: string): Promise<Result<Token[]>> {
+    return this.provider.getToken(token)
   }
 
   async addToken({ token, username, time, lastActionTime }: Token) {
@@ -68,14 +108,12 @@ export class UserService implements IUserService {
     return result
   }
 
-  async deleteToken(token: string, extAction = () => { notifyActiveUsers() }) {
+  async deleteToken(token: string) {
     const result = await this.provider.deleteToken(token)
-    if (result.success) {
-      extAction()
-      events.delete(token)
-    }
+    if (result.success) notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
     return result
   }
+
   async clearAllTokens() {
     const result = await this.provider.clearAllTokens()
     return result

@@ -32,7 +32,7 @@ app.use(function (req, res) {
   })
 
 const port = process.env.PORT || 5000
-var httpServer = http.createServer(app);
+export const httpServer = http.createServer(app);
 httpServer.listen(port, () => {
   console.log(`HTTP server running on ${port}.`)
 })
@@ -40,3 +40,4 @@ httpServer.listen(port, () => {
 // httpsServer.listen(port, () => {
 //     debug(`HTTPS server running on ${port}.`)
 //   })
+

@@ -45,6 +45,7 @@ import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { loadUplotnitelListAtom } from './atoms/materials/uplotnitel'
 import { loadInitialWardrobeDataAtom } from './atoms/wardrobe'
 import NavBar from './components/NavBar'
+import { webSocketSetAtom } from './atoms/websocket'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -57,20 +58,12 @@ const router = createBrowserRouter(
 );
 
 function App() {
+  const connectWS = useSetAtom(webSocketSetAtom)
   const user = useAtomValue(userAtom)
-  const loadMaterialList = useSetAtom(loadMaterialListAtom)
-  const loadSpecification = useSetAtom(loadSpecificationListAtom)
-  const loadProfileList = useSetAtom(loadProfileListAtom)
-  const loadEdgeList = useSetAtom(loadEdgeListAtom)
-  const loadBrushList = useSetAtom(loadBrushListAtom)
-  const loadTrempelList = useSetAtom(loadTrempelListAtom)
-  const loadZaglushkaList = useSetAtom(loadZaglushkaListAtom)
-  const loadUplotnitelList = useSetAtom(loadUplotnitelListAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
   const loadInitialAppState = useSetAtom(loadInitialStateAtom)
   const loadInitialWardrobeData = useSetAtom(loadInitialWardrobeDataAtom)
-  const loadUserRoles = useSetAtom(loadUserRolesAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
     const storage = localStorage.getItem('appState')

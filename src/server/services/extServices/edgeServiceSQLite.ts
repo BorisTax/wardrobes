@@ -1,7 +1,7 @@
 import { Edge, NewEdge } from '../../../types/materials.js';
 import { Result } from '../../../types/server.js';
 import { IMaterialExtService, IMaterialServiceProvider } from '../../../types/services.js';
-import { dataBaseQuery } from '../../functions/other.js';
+import { dataBaseQuery } from '../../functions/database.js';
 import messages from '../../messages.js';
 import { MAT_TABLE_NAMES } from '../../../types/schemas.js';
 import { StatusCodes } from 'http-status-codes';

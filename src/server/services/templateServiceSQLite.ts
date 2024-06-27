@@ -1,6 +1,6 @@
 import { Result } from '../../types/server.js';
 import { ITemplateServiceProvider } from '../../types/services.js';
-import { dataBaseQuery } from '../functions/other.js';
+import { dataBaseQuery } from '../functions/database.js';
 import messages from '../messages.js';
 import { NewTemplate, Template } from '../../types/templates.js';
 import { StatusCodes } from 'http-status-codes';

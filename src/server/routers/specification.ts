@@ -4,7 +4,7 @@ import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { materialServiceProvider, priceServiceProvider, specServiceProvider } from '../options.js';
 import { SpecificationService } from '../services/specificationService.js';
 import { SpecificationResult, WardrobeData } from "../../types/wardrobe.js";
-import { accessDenied, incorrectData, noExistData } from "../functions/other.js";
+import { accessDenied, incorrectData, noExistData } from "../functions/database.js";
 import messages from "../messages.js";
 import { AppState } from "../../types/app.js";
 import { hasPermission } from "./users.js";

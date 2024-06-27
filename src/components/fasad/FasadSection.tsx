@@ -30,7 +30,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [fasad, backImageProps.top, backImageProps.left, backImageProps.size, backImageProps.repeat])
     const { showFixIcons } = useAtomValue(settingsAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
-    const imageUrl = useImageUrl(fasad.ExtMaterial)
+    const imageUrl = useImageUrl(fasad.Material, fasad.ExtMaterial)
     const fasadRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
     let gridTemplate: {

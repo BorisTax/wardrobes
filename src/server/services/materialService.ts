@@ -1,3 +1,4 @@
+import { FasadMaterial } from "../../types/enums"
 import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "../../types/materials"
 import { ExtMaterialQuery } from "../../types/server"
 import { IMaterialService, IMaterialServiceProvider } from "../../types/services"
@@ -18,6 +19,9 @@ export class MaterialService implements IMaterialService {
     }
     async deleteExtMaterial(name: string, material: string) {
         return await this.provider.deleteExtMaterial(name, material)
+    }
+    async getImage(material: FasadMaterial, name: string){
+        return await this.provider.getImage(material, name)
     }
     async getProfiles() {
         return await this.provider.getProfiles()

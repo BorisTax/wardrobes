@@ -60,7 +60,12 @@ const clearExpiredTokens = async () => {
   const userService = new UserService(userServiceProvider);
   const tokens = await getTokens()
   for (let t of tokens) {
-    if (Date.now() - t.lastActionTime > expiredInterval) await userService.deleteToken(t.token)
+    if (Date.now() - t.lastActionTime > expiredInterval) {
+      await userService.deleteToken(t.token)
+      socketsMap.forEach((v, k) => {
+        if (v === t.token) k.close()
+      })
+    }
   }
 }
 

@@ -4,6 +4,7 @@ import { ExtMaterial, ExtNewMaterial } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import MaterialServiceSQLite from '../../services/materialServiceSQLite.js';
 import { StatusCodes } from 'http-status-codes';
+import { FasadMaterial } from '../../../types/enums.js';
 
 export async function getExtMaterials({}) {
   const materialService = new MaterialService(new MaterialServiceSQLite(materialsPath))
@@ -37,3 +38,7 @@ export async function deleteExtMaterial(name: string, material: string) {
   return await materialService.deleteExtMaterial(name, material)
 }
 
+export async function getImage(material: FasadMaterial, name: string) {
+  const materialService = new MaterialService(new MaterialServiceSQLite(materialsPath))
+  return await materialService.getImage(material, name)
+}

@@ -6,6 +6,7 @@ import { NewTemplate, Template } from "./templates"
 import { DETAIL_NAME, SpecificationMultiResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from "./schemas"
 import { Permissions, RESOURCE, UserRole } from "./user"
+import { FasadMaterial } from "./enums"
 
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User[]>>
@@ -33,6 +34,7 @@ export interface IMaterialService {
     addExtMaterial: ({ }: ExtMaterial) => Promise<Result<null>>
     updateExtMaterial: ({ }: ExtNewMaterial) => Promise<Result<null>>
     deleteExtMaterial: (name: string, base: string) => Promise<Result<null>>
+    getImage: (material: FasadMaterial, name: string) => Promise<Result<string>>
     getProfiles: () => Promise<Result<Profile[]>>
     addProfile: ({ }: Profile) => Promise<Result<null>>
     deleteProfile: (name: string, type: string) => Promise<Result<null>>

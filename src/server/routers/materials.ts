@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/database.js';
 import { addProfile, deleteProfile, getProfiles, updateProfile } from './materials/profiles.js';
-import { addExtMaterial, deleteExtMaterial, getExtMaterials, updateExtMaterial } from './materials/extMaterials.js';
+import { addExtMaterial, deleteExtMaterial, getExtMaterials, getImage, updateExtMaterial } from './materials/extMaterials.js';
 import { MyRequest } from '../../types/server.js';
 import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { addEdge, deleteEdge, getEdges, updateEdge } from './materials/edges.js';
@@ -79,6 +79,13 @@ router.put("/material", async (req, res) => {
   res.status(result.status).json(result);
 });
 
+router.post("/image", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
+  const { material, name } = req.body
+  const result = await getImage(material, name);
+  if (!result.success) return res.sendStatus(result.status)
+  res.status(result.status).json(result);
+});
 
 router.get("/edge", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)

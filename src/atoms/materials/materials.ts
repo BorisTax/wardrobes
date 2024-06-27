@@ -1,20 +1,13 @@
-import { atom, useAtomValue } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { ExtMaterial } from "../../types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
-import { loadUserRolesAtom, userAtom } from "../users";
+import { userAtom } from "../users";
 import { appDataAtom } from "../app";
 import Fasad from "../../classes/Fasad";
 import { FasadMaterial } from "../../types/enums";
 import { TableFields } from "../../types/server";
 import messages from "../../server/messages";
-import { Permissions, RESOURCE } from "../../types/user";
-import { loadSpecificationListAtom } from "../specification";
-import { loadProfileListAtom } from "./profiles";
-import { loadEdgeListAtom } from "./edges";
-import { loadBrushListAtom } from "./brush";
-import { loadTrempelListAtom } from "./trempel";
-import { loadZaglushkaListAtom } from "./zaglushka";
-import { loadUplotnitelListAtom } from "./uplotnitel";
+import { RESOURCE } from "../../types/user";
 
 export const materialListAtom = atom<ExtMaterial[]>([])
 
@@ -99,11 +92,32 @@ export function setInitialMaterials(rootFasades: Fasad[], material: FasadMateria
     })
 }
 
+export const materialImageAtom = atom<{material: FasadMaterial, name: string, image: string}[]>([])
+export const loadMaterialImageAtom = atom(null, async (get, set, material: FasadMaterial, name: string) => {
+    const { token, permissions } = get(userAtom)
+    if (!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
+    const data = {
+        [TableFields.NAME]: name,
+        [TableFields.MATERIAL]: material,
+        [TableFields.TOKEN]: token
+    }
+    try {
+        const result: FetchResult<{image: string}> = await fetchData("/api/materials/image", "POST", JSON.stringify(data))
+        const images = [...get(materialImageAtom)]
+        const existImage = images.find(i => i.name === name && i.material === material)
+        if (existImage) existImage.image = result.data?.image as string; else images.push({ material, name, image: result.data?.image as string })
+        set(materialImageAtom, [...images])
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+    }
+})
 
-
-export function useImageUrl(extMaterial: string) {
-    const materials = useAtomValue(materialListAtom)
-    const mat = materials.find((m: ExtMaterial) => m.name === extMaterial)
-    if (mat) return mat.image
+export function useImageUrl(material: FasadMaterial, name: string) {
+    const materials = useAtomValue(materialImageAtom)
+    const loadMaterialImage = useSetAtom(loadMaterialImageAtom)
+    const mat = materials.find(m => m.name === name && m.material === material)
+    if (mat) return mat.image; else loadMaterialImage(material, name)
     return ""
 }

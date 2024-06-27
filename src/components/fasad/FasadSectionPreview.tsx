@@ -19,7 +19,7 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
     }
     const [{ top, left, size, repeat }, setBackImagePosition] = useState({...backImageProps })
     useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [backImageProps])
-    const imageUrl = useImageUrl(fasad.ExtMaterial)
+    const imageUrl = useImageUrl(fasad.Material, fasad.ExtMaterial)
     const fasadRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
     let gridTemplate: {

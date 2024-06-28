@@ -24,7 +24,7 @@ export function getInitSpecification(): SpecificationMultiResult {
         // { type: CORPUS_SPECS.EXT_TREMPEL, spec: [] },
         // { type: CORPUS_SPECS.EXT_LIGHT, spec: [] },
     ]
-};
+}
 
 export const SpecGroups: Map<string, string> = new Map()
 SpecGroups.set(CORPUS_SPECS.CORPUS, "Корпус")

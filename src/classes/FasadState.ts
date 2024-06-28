@@ -11,15 +11,15 @@ export function getInitialBackImageProps(): FasadBackImageProps {
     return { top: 0, left: 0, size: 100, repeat: true }
 }
 export default class FasadState {
-    public active: boolean = false
-    public level: number = 0
-    public width: number = 0
-    public height: number = 0
-    public fixedWidth: boolean = false
-    public fixedHeight: boolean = false
+    public active = false
+    public level = 0
+    public width = 0
+    public height = 0
+    public fixedWidth = false
+    public fixedHeight = false
     public outerEdges: {left: boolean, right: boolean, top: boolean, bottom: boolean} = {left: true, right: true, top: true, bottom: true}
     public material: FasadMaterial = FasadMaterial.EMPTY
-    public extMaterial: string = ''
+    public extMaterial = ''
     public sandBase: SandBase = SandBase.MIRROR
     public division: Division = Division.HEIGHT
     public children: FasadState[] = []

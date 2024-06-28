@@ -16,7 +16,7 @@ export default function SettingsDialog() {
     }, [setSettingsDialogRef, dialogRef])
     return <DialogWindow dialogRef={dialogRef}>
         <div className="d-flex gap-2">
-            <input id="showFix" type="checkbox" checked={settings.showFixIcons} onChange={(e) => { setSettings({ ...settings, showFixIcons: !settings.showFixIcons }) }} />
+            <input id="showFix" type="checkbox" checked={settings.showFixIcons} onChange={() => { setSettings({ ...settings, showFixIcons: !settings.showFixIcons }) }} />
             <label htmlFor="showFix">{`Отображать значок фиксации на фасаде`}</label>
         </div>
         <div className="d-flex gap-2">

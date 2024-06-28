@@ -1,7 +1,6 @@
 import Fasad from "../classes/Fasad"
 import FasadState from "../classes/FasadState"
 import { Division, FasadMaterial } from "../types/enums"
-import { ExtMaterial } from "../types/materials"
 
 export function trySetWidth(fasad: Fasad | null, width: number, minSize: number): boolean {
     if (!fasad) return false
@@ -47,7 +46,7 @@ export function getFasadState(width: number, height: number, division: Division,
     return state
 }
 
-export function newFasadFromState(state: FasadState, keepOriginalMaterial: boolean = false): Fasad {
+export function newFasadFromState(state: FasadState, keepOriginalMaterial = false): Fasad {
     const f: Fasad = new Fasad()
     f.setState(state, keepOriginalMaterial)
     return f

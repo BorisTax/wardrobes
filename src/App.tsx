@@ -29,7 +29,7 @@ import SettingsDialog from './components/dialogs/SettingsDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
 import CombiFasades from './components/CombiFasades'
-import { BrowserRouter, Link, Route, Routes, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import WardrobeCalculator from './components/WardrobeCalculator'
 import EditSpecificationDialog from './components/dialogs/EditSpecificationDialog'
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
@@ -37,17 +37,6 @@ import SchemaDialog from './components/dialogs/SchemaDialog'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { loadInitialWardrobeDataAtom } from './atoms/wardrobe'
 import NavBar from './components/NavBar'
-import { webSocketSetAtom } from './atoms/websocket'
-
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path="/" >
-      <Route path="/" element={<Select />}></Route>
-      <Route path="/combi" element={<CombiFasades />} />
-      <Route path="/calculator" element={<WardrobeCalculator /> } />
-    </Route>
-  )
-);
 
 function App() {
   const user = useAtomValue(userAtom)
@@ -63,10 +52,10 @@ function App() {
     loadInitialAppState()
     loadInitialWardrobeData()
     loadVersion()
-  }, [user.name])
+  }, [user.name, setAppData, loadInitialAppState, loadInitialWardrobeData, loadVersion])
   useEffect(() => {
     const onContextMenu = (e: Event) => { e.preventDefault() }
-    const onBeforeUnload = (e: Event) => { saveToStorage() }
+    const onBeforeUnload = () => { saveToStorage() }
     document.addEventListener("contextmenu", onContextMenu)
     window.addEventListener("beforeunload", onBeforeUnload)
     const toolTip = createToolTip()
@@ -76,7 +65,7 @@ function App() {
       window.removeEventListener("beforeunload", onBeforeUnload)
       document.body.removeChild(toolTip)
     }
-  }, [])
+  }, [saveToStorage])
   return (
     <>
       <BrowserRouter>

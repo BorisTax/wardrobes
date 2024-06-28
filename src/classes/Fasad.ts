@@ -51,7 +51,7 @@ export default class Fasad {
         for (const c of this.Children) state.children.push(c.getState())
         return state
     }
-    public setState(state: FasadState, keepOriginalMaterial: boolean = false) {
+    public setState(state: FasadState, keepOriginalMaterial = false) {
         this.level = state.level
         this.active = state.active
         this.width = state.width

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { PropertyType, RegExp } from "../../types/property"
-const { NUMBER, INTEGER_POSITIVE_NUMBER } = PropertyType
 
 export type TextBoxProps = {
     setValue: (value: string | number) => void
@@ -19,7 +18,7 @@ export default function TextBox(props: TextBoxProps) {
     }, [props.value])
     const onChange = (v: string) => {
         if (v === "") { setState({ ...state, value: v }); return }
-        let { value, correct } = test(v, props.type, props.max, props.min)
+        const { value, correct } = test(v, props.type)
         if (correct) setState({ ...state, value })
     }
     const className = ((state.value !== state.prevValue) ? "textbox-incorrect" : "textbox")
@@ -58,7 +57,7 @@ export default function TextBox(props: TextBoxProps) {
     );
 }
 
-function test(value: string | number, type: PropertyType, max?: number, min?: number) {
+function test(value: string | number, type: PropertyType) {
     const regexp = RegExp.get(type) || '';
     const result = { value, correct: false }
     if ((`${value}`.match(regexp) !== null) || value === "") { result.correct = true }

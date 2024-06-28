@@ -98,7 +98,7 @@ export const setExtMaterialAtom = atom(null, (get, set, extMaterial: string) => 
     activeFasad.setExtMaterial(extMaterial)
     set(appDataAtom, { ...appData }, true)
 })
-export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial, useHistory: boolean = true) => {
+export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial, useHistory = true) => {
     const activeFasad = get(activeFasadAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
@@ -106,7 +106,7 @@ export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial, us
     const matList = get(materialListAtom)
     const mat = matList.find(m => m.material === activeFasad.Material)?.name || ""
     activeFasad.setExtMaterial(mat)
-    set(appDataAtom, { ...appData }, useHistory)
+    set(appDataAtom, { ...appData }, useHistory as boolean)
 })
 
 export const setSandBaseAtom = atom(null, (get, set, sandBase: SandBase) => {

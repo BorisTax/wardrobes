@@ -1,5 +1,3 @@
-import { useEffect } from "react"
-
 export type ComboBoxProps = {
     onChange?: (index: number, value: string) => void
     items: number[] | string[] | Map<string, string>
@@ -7,7 +5,7 @@ export type ComboBoxProps = {
     title?: string
     disabled?: boolean
     size?: number
-    styles?: {}
+    styles?: object
 }
 
 export default function ComboBox(props: ComboBoxProps = { value: "", items: [], disabled: false, title: "", size: 1, styles: {} }) {
@@ -19,9 +17,6 @@ export default function ComboBox(props: ComboBoxProps = { value: "", items: [], 
     }
     const itemsWithNull = value === "" ? ["", ...items] : items
     const options = itemsWithNull?.map((i, index) => <option key={index}>{i}</option>)
-    useEffect(() => { 
-        const value = props.items instanceof Map ? [...(props.items as Map<string, string>).values()][0] || "" : props.items[0]
-    }, [props.items])
     return (
         <>
             {props.title ? <span className="text-end text-nowrap" style={{ ...props.styles }}>{props.title}</span> : <></>}

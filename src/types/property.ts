@@ -4,14 +4,15 @@ export enum PropertyType {
     INTEGER_POSITIVE_NUMBER = 'INTEGER_POSITIVE_NUMBER',
     BOOL = 'BOOL',
     STRING = 'STRING',
-};
+}
 export enum InputType {
     TEXT = 'TEXT',
     CHECKBOX = 'CHECKBOX',
     LIST = 'LIST',
     FILE = 'FILE',
     IMAGE = 'IMAGE', 
-};
+}
+
 export const RegExp = new Map<string, RegExp>()
 
 RegExp.set(PropertyType.NUMBER, /^-?\d+\.?\d*$/)

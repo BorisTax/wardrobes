@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { isMobile } from "../../functions/functions";
 
 export const useToolTip = (title: string | undefined) => {
-  const toolTip: any = document.getElementById("tooltip");
+  const toolTip: HTMLElement = document.getElementById("tooltip") as HTMLElement;
   useEffect(() => {
     return () => {
       toolTip && (toolTip.style.display = "none");

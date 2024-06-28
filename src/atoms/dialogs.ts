@@ -3,7 +3,6 @@ import React from "react";
 import { loadSpecificationListAtom } from "./specification";
 import { loadActiveUsersAtom, loadUsersAtom } from "./users";
 import { loadTemplateListAtom } from "./templates";
-import { appAtom } from "./app";
 
 type MessageAtom = {
     dialogRef: React.RefObject<HTMLDialogElement> | null

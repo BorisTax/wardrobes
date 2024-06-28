@@ -95,11 +95,6 @@ export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
         }
     set(userAtom, token)
 })
-export const standbyUserAtom = atom(null, async (get: Getter, set: Setter) => {
-    const { token } = get(userAtom)
-    const result = await fetchGetData(`/api/users/standby?token=${token}`)
-})
-
 
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")

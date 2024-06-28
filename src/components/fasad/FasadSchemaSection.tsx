@@ -85,9 +85,10 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
             }
             setState(prev => ({ ...prev, vertical: !prev.vertical }))
         }
-        sectionRef.current?.addEventListener('wheel', onWhell, { passive: false })
+        const current = sectionRef.current
+        current?.addEventListener('wheel', onWhell, { passive: false })
         return () => {
-            sectionRef.current?.removeEventListener('wheel', onWhell)
+            current?.removeEventListener('wheel', onWhell)
         }
     }, [])
     return <div ref={lastFasad ? sectionRef : nullRef} className={classes} style={{

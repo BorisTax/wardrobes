@@ -22,11 +22,12 @@ export const loadPriceListAtom = atom(null, async (get, set) => {
 export const updatePriceListAtom = atom(null, async (get, set, { name, price, markup }: PriceData) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.PRICES)?.update) return { success: false, message: "" }
-    const formData: any = {}
-    formData[TableFields.NAME] = name
-    if (price !== undefined) formData[TableFields.PRICE] = `${price}`
-    if (markup !== undefined) formData[TableFields.MARKUP] = `${markup}`
-    formData[TableFields.TOKEN] = token
+    const formData: { name: string, token: string, price?: number, markup?: number } = {
+        [TableFields.NAME]: name,
+        [TableFields.TOKEN]: token
+    }
+    if (price !== undefined) formData[TableFields.PRICE] = price
+    if (markup !== undefined) formData[TableFields.MARKUP] = markup
     try {
         const result = await fetchData("/api/prices/pricelist", "PUT", JSON.stringify(formData))
         await set(loadPriceListAtom)

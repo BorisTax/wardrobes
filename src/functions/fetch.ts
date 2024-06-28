@@ -6,8 +6,7 @@ export type FetchResult<T> = {
 }
 export async function fetchGetData<T>(url: string): Promise<FetchResult<T>> {
     try {
-        let status: number
-        const result = await fetch(url, { method: "GET" }).then(r => { status = r.status; return r.json() })
+        const result = await fetch(url, { method: "GET" }).then(r => r.json())
         return result
     } catch (e) {
         return { success: false }
@@ -15,8 +14,7 @@ export async function fetchGetData<T>(url: string): Promise<FetchResult<T>> {
 }
 export async function fetchData<T>(url: string, method: string, body: string): Promise<FetchResult<T>> {
     try {
-        let status: number
-        const result = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body }).then(r => { status = r.status; return r.json() })
+        const result = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body }).then(r => r.json())
         return result
     } catch (e) {
         return { success: false }
@@ -24,11 +22,7 @@ export async function fetchData<T>(url: string, method: string, body: string): P
 }
 export async function fetchFormData(url: string, method: string, body: FormData) {
     try {
-        let status: number
-        const result = await fetch(url, { method, body }).then(r => { 
-            status = r.status; 
-            return r.json() 
-        })
+        const result = await fetch(url, { method, body }).then(r => r.json())
         return result
     } catch (e) {
         return { success: false }

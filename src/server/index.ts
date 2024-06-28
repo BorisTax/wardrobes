@@ -5,17 +5,12 @@ import { fileURLToPath } from 'url';
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
-//import _debug from 'debug'
 import { router } from './routers.js'
 import { userRoleParser } from './options.js';
 
-//var debug = _debug('server') 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-//var privateKey  = fs.readFileSync('cert/cert.key', 'utf8');
-//var certificate = fs.readFileSync('cert/cert.crt', 'utf8');
-//var credentials = {key: privateKey, cert: certificate};
 
 var app = express()
 app.use(cors())

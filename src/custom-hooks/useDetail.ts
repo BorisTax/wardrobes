@@ -8,6 +8,6 @@ export const useDetail = (detailName: DETAIL_NAME, kind: WARDROBE_KIND, width: n
     const detail = useAtomValue(detailAtom)
     useEffect(() => {
         loadDetail(detailName, kind, width, height)
-    }, [detailName, kind, width, height])
+    }, [detailName, kind, width, height, loadDetail])
     return detail
 }

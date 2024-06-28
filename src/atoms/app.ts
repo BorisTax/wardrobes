@@ -11,7 +11,6 @@ import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
 import { WARDROBE_TYPE } from '../types/wardrobe';
-import { userAtom } from './users';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
@@ -32,7 +31,7 @@ export const loadInitialStateAtom = atom(null, async (get, set) => {
 })
 export const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
 export const historyAppAtom = atom((get: Getter) => { const data = get(appAtom); return { next: data.next, previous: data.previous } })
-export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state), (get, set, appData: AppData, useHistory: boolean, calculate: boolean = true) => {
+export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state), (get, set, appData: AppData, useHistory: boolean, calculate = true) => {
     const app = get(appAtom)
     const state = getAppState(appData)
     localStorage.setItem('appState', JSON.stringify(state))
@@ -40,7 +39,7 @@ export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state)
     else set(appAtom, { ...app, state })
     if (get(loadedInitialStateAtom) && calculate) set(calculateCombiSpecificationsAtom)
 })
-export const saveToStorageAtom = atom(null, (get, set) => {
+export const saveToStorageAtom = atom(null, (get) => {
     const app = get(appAtom)
     const state = app.state
     localStorage.setItem('appState', JSON.stringify(state))

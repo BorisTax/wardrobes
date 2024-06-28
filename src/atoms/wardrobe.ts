@@ -2,8 +2,6 @@ import { atom } from "jotai"
 import { CONSOLE_TYPE, DETAIL_NAME, Detail, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { FetchResult, fetchGetData } from "../functions/fetch"
 import { userAtom } from "./users"
-import { WardrobeDetailTableSchema } from "../types/schemas"
-import { calcFunction } from "../server/wardrobes/specifications/functions"
 
 export const initFasades = {
     dsp: { count: 0, names: [] },

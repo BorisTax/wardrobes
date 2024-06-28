@@ -1,6 +1,5 @@
 import { atom } from "jotai";
 import { SpecificationItem } from "../types/specification";
-import { priceListAtom } from "./prices";
 import { CombiSpecificationResult, SpecificationMultiResult, SpecificationResult, WardrobeData } from "../types/wardrobe";
 import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
@@ -8,8 +7,8 @@ import { SpecificationData, TableFields } from "../types/server";
 import { getInitSpecification } from "../functions/specification";
 import { wardrobeDataAtom } from "./wardrobe";
 import messages from "../server/messages";
-import { AppState } from "../types/app";
 import { appAtom } from "./app";
+import { AppState } from "../types/app";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])
@@ -28,14 +27,15 @@ export const loadSpecificationListAtom = atom(null, async (get, set) => {
 
 export const updateSpecificationListAtom = atom(null, async (get, set, { name, caption, code, coef, id, purpose }: SpecificationData) => {
     const user = get(userAtom)
-    const formData: any = {}
-    formData[TableFields.NAME] = name
+    const formData: { name: string, token: string, caption?: string, coef?: number, code?: string, purpose?: string, id?: string } = {
+        [TableFields.TOKEN]: user.token,
+        [TableFields.NAME]: name
+    }
     if (caption !== undefined) formData[TableFields.CAPTION] = caption
     if (coef !== undefined) formData[TableFields.COEF] = coef
     if (code !== undefined) formData[TableFields.CODE] = code
     if (purpose !== undefined) formData[TableFields.PURPOSE] = purpose
     if (id !== undefined) formData[TableFields.ID] = id
-    formData[TableFields.TOKEN] = user.token
     try {
         const result = await fetchData("/api/specification", "PUT", JSON.stringify(formData))
         await set(loadSpecificationListAtom)
@@ -56,9 +56,10 @@ export const coefListAtom = atom<Map<SpecificationItem, number>>((get) => {
 
 export const calculateSpecificationsAtom = atom(null, async (get, set, data: WardrobeData) => {
     const { token } = get(userAtom)
-    const formData: any = {}
-    formData[TableFields.DATA] = data
-    formData[TableFields.TOKEN] = token
+    const formData: {data: WardrobeData, token: string} = {
+        [TableFields.DATA]: data,
+        [TableFields.TOKEN]: token
+    }
     set(specificationInProgress, true)
     try {
         const result: FetchResult<SpecificationMultiResult> = await fetchData('/api/specification/data', "POST", JSON.stringify(formData))
@@ -71,9 +72,10 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, data: War
 export const calculateCombiSpecificationsAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
     const data = get(appAtom).state
-    const formData: any = {}
-    formData[TableFields.DATA] = data
-    formData[TableFields.TOKEN] = token
+    const formData: { data: AppState, token: string } = {
+        [TableFields.DATA]: data,
+        [TableFields.TOKEN]: token
+    }
     set(specificationInProgress, true)
     try {
         const result: FetchResult<CombiSpecificationResult> = await fetchData('/api/specification/combidata', "POST", JSON.stringify(formData))

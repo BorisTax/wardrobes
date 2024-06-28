@@ -1,0 +1,6 @@
+{
+    "watch": ["src/server"],
+    "ext": "ts",
+    "ignore": ["src/server/database/"],
+    "exec": "node --inspect --loader ts-node/esm ./src/server/index.ts"
+  }

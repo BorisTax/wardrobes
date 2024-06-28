@@ -49,7 +49,7 @@ export default function EditProfile() {
                 const result = await updateProfile({ name, type, newName: usedName, newCode: usedCode, newBrush: usedBrush })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async (name) => {
+            onDelete={perm?.remove ? async () => {
                 const result = await deleteProfile(profile)
                 setState((prev) => ({ ...prev, profileIndex: 0 }))
                 return result

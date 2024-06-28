@@ -33,7 +33,7 @@ export function getFasadHeight(wardHeight: number, wardType: WARDROBE_TYPE, prof
     return wardHeight - offset
 }
 
-export function getAppDataFromState(state: AppState, keepOriginalMaterial: boolean = false): AppData {
+export function getAppDataFromState(state: AppState, keepOriginalMaterial = false): AppData {
     const data: AppData = {
         order: state.order,
         wardHeight: state.wardHeight,
@@ -55,7 +55,7 @@ export function getInitialAppState(): AppState {
     return createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, FasadMaterial.EMPTY, "")
 }
 
-export function createAppState(order: string, wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WARDROBE_TYPE, material: FasadMaterial = FasadMaterial.EMPTY, extMaterial: string = ""): AppState {
+export function createAppState(order: string, wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WARDROBE_TYPE, material = FasadMaterial.EMPTY, extMaterial = ""): AppState {
     const fasadHeight = getFasadHeight(wardHeight, wardType, profile.type)
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardType, profile.type)
     const state: AppState = {

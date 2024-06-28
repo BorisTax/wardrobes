@@ -26,7 +26,7 @@ export type EditDataSectionProps = {
 }
 export default function EditDataSection(props: EditDataSectionProps) {
     const [loading, setLoading] = useState(false)
-    const [checked, setChecked] = useState(props.items.map(i => false))
+    const [checked, setChecked] = useState(props.items.map(() => false))
     const [newValues, setNewValues] = useState(props.items.map(i => i.value))
     const [extValue, setExtValue] = useState("")
     const showMessage = useMessage()
@@ -35,7 +35,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
     useEffect(() => {
         setNewValues(props.items.map(i => i.value))
         setExtValue("")
-        setChecked(_ => props.items.map(p => !!p.readonly))
+        setChecked(() => props.items.map(p => !!p.readonly))
     }, [props.items])
     return <>
         <div className="editmaterial-container">
@@ -49,7 +49,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]
                             if (file && file?.size > MAX_FILE_SIZE) { showMessage("Файл слишком большой (макс. 2МБ)"); return }
-                            let reader = new FileReader();
+                            const reader = new FileReader();
                             reader.onload = function () {
                                 setNewValues(prev => { const p = [...prev]; p[index] = reader?.result as string || ""; return [...p] })
                                 setExtValue(file?.name || "")

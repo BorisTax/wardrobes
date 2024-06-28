@@ -6,7 +6,7 @@ import useConfirm from "../../custom-hooks/useConfirm"
 import Button from "../inputs/Button"
 import { rusMessages } from "../../functions/messages"
 import DialogWindow from "./DialogWindow"
-import { addFasadTemplateAtom, applyTemplateAtom, deleteTemplateAtom, templateListAtom, templateTableAtom, updateFasadTemplateAtom } from "../../atoms/templates"
+import { addFasadTemplateAtom, applyTemplateAtom, deleteTemplateAtom, templateListAtom, updateFasadTemplateAtom } from "../../atoms/templates"
 import { TEMPLATE_TABLES } from "../../types/enums"
 import FasadState from "../../classes/FasadState"
 import { Template } from "../../types/templates"
@@ -31,7 +31,7 @@ export default function FasadTemplatesDialog() {
     const deleteTemplate = useSetAtom(deleteTemplateAtom)
     const updateTemplate = useSetAtom(updateFasadTemplateAtom)
     const applyTemplate = useSetAtom(applyTemplateAtom)
-    const { role, permissions } = useAtomValue(userAtom)
+    const { permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.TEMPLATE)
     useMemo(() => {
         setNewName((curTemplate && curTemplate.name) || "")

@@ -19,7 +19,7 @@ export default function FasadPreviewContainer(props: FasadContainerProps): React
     }
     useLayoutEffect(() => {
         resize(ratio)
-    }, [ratio, innerWidth])
+    }, [ratio, innerWidth, resize])
     return <div className="fasad-container">
         <div ref={props.refObject} className='fasad-section-container' style={{ aspectRatio, height: "300px", width: "auto" }}>
             <FasadSectionPreview fasad={rootFasad}/>

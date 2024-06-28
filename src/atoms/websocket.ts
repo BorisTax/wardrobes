@@ -10,14 +10,12 @@ export const webSocketSetAtom = atom(null, (get, set, token: string) => {
     let wsClient = get(webSocketAtom)
     if (wsClient) wsClient.close()
     if(!token) return
-    console.log('new websocket')
-    wsClient = new WebSocket(`ws://${url}:8080?token=${token}`)
+    wsClient = new WebSocket(`ws://${url}:8888?token=${token}`)
     wsClient.addEventListener('error', (ev) => {
         console.error(ev)
     });
 
     wsClient.addEventListener('open', function open() {
-        wsClient.send('something');
     });
 
     wsClient.addEventListener('message', function message(event) {

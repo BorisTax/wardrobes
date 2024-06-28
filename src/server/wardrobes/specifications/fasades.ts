@@ -2,15 +2,15 @@ import Fasad from "../../../classes/Fasad";
 import { getFasadHeight, getFasadWidth } from "../../../functions/wardrobe";
 import { Division, FasadMaterial } from "../../../types/enums";
 import { ExtMaterial, Profile, ProfileType } from "../../../types/materials";
-import { FullData, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe";
+import { FullData, SpecificationResult, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe";
 import { SpecificationItem } from "../../../types/specification";
 import { WardrobeData } from "../../../types/wardrobe";
 import { materialServiceProvider, materialsPath } from "../../options";
 import { MaterialService } from "../../services/materialService";
-import { getCoef } from "./corpus";
+import { getCoef } from "./functions";
 import { MaterialExtService } from "../../services/materialExtService";
 import UplotnitelServiceSQLite from "../../services/extServices/uplotnitelServiceSQLite";
-import { emptyFullData } from "./functions";
+import { emptyFullData, flattenSpecification } from "./functions";
 import { getSpecificationPattern } from "./functions";
 import { getFasadCount, correctFasadCount } from "./functions";
 
@@ -48,9 +48,9 @@ export function createFasades(data: WardrobeData, profileType: ProfileType): Fas
     return fasades
 }
 
-export async function getFasadSpecification(fasad: Fasad, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
+export async function getFasadSpecification(fasad: Fasad, profile: Profile): Promise<SpecificationResult[]> {
     const spec = await calcSpecification(fasad, profile);
-    return spec;
+    return flattenSpecification(spec);
 }
 
 async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {

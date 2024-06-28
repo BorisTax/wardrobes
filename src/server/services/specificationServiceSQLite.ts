@@ -23,11 +23,10 @@ export default class SpecificationServiceSQLite implements ISpecificationService
         const query = detailName !== undefined ? `select * from ${DETAIL_TABLE} where wardrobe='${kind}' and name='${detailName}';` : `select * from ${DETAIL_TABLE} where wardrobe='${kind}';`
         return dataBaseQuery<WardrobeDetailTable[]>(this.dbFile, query, { successStatusCode: StatusCodes.OK })
     }
-    async getDetail(kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number): Promise<WardrobeDetailTable | null> {
-        const query = `select * from ${DETAIL_TABLE} where wardrobe='${kind}' and name='${name}'
-         and minwidth<=${width} and maxwidth>=${width} and minheight<=${height} and maxheight>=${height};`
+    async getDetails(kind: WARDROBE_KIND, width: number, height: number): Promise<WardrobeDetailTable[]> {
+        const query = `select * from ${DETAIL_TABLE} where wardrobe='${kind}' and minwidth<=${width} and maxwidth>=${width} and minheight<=${height} and maxheight>=${height};`
         const result = (await (dataBaseQuery<WardrobeDetailTable[]>(this.dbFile, query, { successStatusCode: StatusCodes.OK }))).data
-        return (result && result[0]) || null
+        return result as WardrobeDetailTable[]
     }
     async getFurniture(kind: WARDROBE_KIND, name: SpecificationItem, width: number, height: number, depth: number): Promise<WardrobeFurnitureTableSchema | null>{
         const query = `select * from ${FURNITURE} where wardrobe='${kind}' and name='${name}'

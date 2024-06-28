@@ -20,7 +20,7 @@ export default function EditProfile() {
     const [{ type, profileIndex }, setState] = useState({ type: profileAllList[0].type, profileIndex: 0 })
     const profileList = profileAllList.filter(p => p.type === type)
     const bList = useAtomValue(brushListAtom)
-    const brushList = useMemo(() => bList.map(b => b.name).toSorted(), bList)
+    const brushList = useMemo(() => bList.map(b => b.name).toSorted(), [bList])
     useMemo(() => { setState({ type: profileAllList[0].type, profileIndex: 0 }) }, [profileAllList])
     const deleteProfile = useSetAtom(deleteProfileAtom)
     const addProfile = useSetAtom(addProfileAtom)

@@ -13,6 +13,7 @@ import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, War
 import { AppState } from '../../types/app.js'
 import { newFasadFromState } from '../../functions/fasades.js'
 import { StatusCodes } from 'http-status-codes'
+import { getExtComplectSpecification } from "../wardrobes/specifications/extComplect/extComplect.js"
 export class SpecificationService implements ISpecificationService {
   provider: ISpecificationServiceProvider
   matProvider?: IMaterialServiceProvider
@@ -33,13 +34,15 @@ export class SpecificationService implements ISpecificationService {
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
     const fasades = createFasades(data, profile?.type as ProfileType)
     const corpus = await getCorpusSpecification(data, profile as Profile)
-    const corpusConverted = flattenSpecification(corpus)
-    result.push({ type: CORPUS_SPECS.CORPUS, spec: corpusConverted })
+    result.push({ type: CORPUS_SPECS.CORPUS, spec: corpus })
     for(let f of fasades){ 
       const fasadSpec = await getFasadSpecification(f, profile as Profile)
-      const fasadSpecConverted = flattenSpecification(fasadSpec)
-      result.push({ type: f.Material, spec: fasadSpecConverted })
+      result.push({ type: f.Material, spec: fasadSpec })
      }
+    const extSpec = await getExtComplectSpecification(data, profile as Profile)
+    for(let ext of extSpec){
+      result.push(ext)
+    }
     return {success: true, status: StatusCodes.OK, data: result}
   }
   async getSpecCombiData(data: AppState): Promise<Result<(SpecificationResult[])[]>> {
@@ -51,16 +54,16 @@ export class SpecificationService implements ISpecificationService {
     const fasades = data.rootFasadesState.map(r => newFasadFromState(r))
     for (let f of fasades) {
       const fasadSpec = await getFasadSpecification(f, profile  as Profile)
-      const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
-      result.push(fasadSpecConverted)
+      //const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
+      result.push(fasadSpec)
     }
     return {success: true, status: StatusCodes.OK, data: result}
   }
   async getDetailTable({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }): Promise<Result<WardrobeDetailTable[]>> {
     return await this.provider.getDetailTable({ kind, detailName })
   }
-  async getDetail(kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number): Promise<WardrobeDetailTable | null> {
-    return await this.provider.getDetail(kind, name, width, height)
+  async getDetails(kind: WARDROBE_KIND, width: number, height: number): Promise<WardrobeDetailTable[]> {
+    return await this.provider.getDetails(kind, width, height)
 }
   async getFurniture(kind: WARDROBE_KIND, name: SpecificationItem, width: number, height: number, depth: number): Promise<WardrobeFurnitureTableSchema | null> {
     return await this.provider.getFurniture(kind, name, width, height, depth)

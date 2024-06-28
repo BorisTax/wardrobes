@@ -56,6 +56,7 @@ UnitCaptions.set("litres", "литр")
 UnitCaptions.set("sheets", "лист")
 UnitCaptions.set("piece", "шт")
 UnitCaptions.set("kg", "кг")
+UnitCaptions.set("comp", "компл")
 
 export function getMATPurpose(purpose: string): MAT_PURPOSE {
     let result: MAT_PURPOSE = MAT_PURPOSE.BOTH

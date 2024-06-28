@@ -14,7 +14,6 @@ import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { WARDROBE_TYPE } from "../types/wardrobe"
 import { RESOURCE } from "../types/user"
-import { openFile } from "../functions/file"
 const fasades = ["2", "3", "4", "5", "6"]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)
@@ -37,7 +36,7 @@ export default function WardrobePropertiesBar() {
     const perm = user.permissions.get(RESOURCE.FILES)
     const saveFileDisabled = !perm?.create
     const readFileDisabled = !perm?.read
-    const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.CORPUS)), [WardTypes])
+    const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.CORPUS)), [])
     const wardTypeChangeConfirm = () => new Promise<boolean>((resolve) => {
         showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
     })

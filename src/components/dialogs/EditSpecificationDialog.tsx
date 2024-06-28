@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import useMessage from "../../custom-hooks/useMessage"
-import useConfirm from "../../custom-hooks/useConfirm"
-import { rusMessages } from "../../functions/messages"
 import { SpecificationData } from "../../types/server"
 import { UnitCaptions } from "../../functions/materials"
 import { loadSpecificationListAtom, specificationDataAtom, updateSpecificationListAtom } from "../../atoms/specification"
@@ -20,7 +17,7 @@ export default function EditSpecificationDialog() {
     const specList = useAtomValue(specificationDataAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const def = { name: "", caption: "", coef: 1, price: "", code: "", id: "", markup: "" }
-    const { name, caption, coef, code, id } = (specList && specList[selectedIndex]) ? ({ ...(specList[selectedIndex] || def) }) : def
+    const { caption, coef, code, id } = (specList && specList[selectedIndex]) ? ({ ...(specList[selectedIndex] || def) }) : def
     const updateSpecList = useSetAtom(updateSpecificationListAtom)
     const heads = ['Наименование', 'Ед', 'Коэф-т', 'Код', 'Идентификатор']
     const contents = specList.map((i: SpecificationData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.coef}`, i.code || "", i.id || ""])
@@ -32,7 +29,7 @@ export default function EditSpecificationDialog() {
     ]
     useEffect(() => {
         loadSpecList()
-    }, [])
+    }, [loadSpecList])
     useEffect(() => {
         if (!perm?.read) window.location.replace('/')
     }, [perm])

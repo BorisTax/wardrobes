@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import ComboBox from "./inputs/ComboBox"
 import PropertyGrid from "./PropertyGrid"
-import { CONSOLE_TYPE, WARDROBE_TYPE } from "../types/wardrobe"
+import { CONSOLE_TYPE, DETAIL_NAME, WARDROBE_TYPE } from "../types/wardrobe"
 import { PropertyType } from "../types/property"
 import { materialListAtom } from "../atoms/materials/materials"
 import { useAtomValue, useSetAtom } from "jotai"
@@ -12,13 +12,16 @@ import { ConsoleTypes, WardKinds, WardTypes } from "../functions/wardrobe"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import { calculateSpecificationsAtom } from "../atoms/specification"
 import WardrobeSpecification from "./WardrobeSpecification"
-import { initFasades, loadedInitialWardrobeDataAtom, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
+import { getInitExtComplect, initFasades, loadedInitialWardrobeDataAtom, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
 import { RESOURCE } from "../types/user"
 import { userAtom } from "../atoms/users"
+import CheckBox from "./inputs/CheckBox"
+import { useDetail } from "../custom-hooks/useDetail"
 
 const numbers = [0, 1, 2, 3, 4, 5, 6]
 const styles = { fontStyle: "italic", color: "gray" }
-
+const maxFasades = 6
+const consoleWidth = ['200', '250', '300', '350', '400', '450', '500']
 export default function WardrobeCalculator() {
     const { permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.SPECIFICATION)
@@ -38,10 +41,11 @@ export default function WardrobeCalculator() {
     const profileNames = useMemo(() => profileList.map(p => p.name), [profileList])
     const { wardKind, wardType, width, depth, height, dspName, fasades, profileName, extComplect } = data
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
-    const maxFasades = 6
+    const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
+    const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardKind, data.width, data.height) || {length: 0}
     useEffect(() => {
         if (loadedInitialWardrobeData) calculate(data)
-    }, [data, loadedInitialWardrobeData])
+    }, [data, loadedInitialWardrobeData, calculate])
     return <div className="container">
         <div className="row">
             <div className={`container col-xs-12 col-sm-12 ${perm?.read ? "col-md-6 col-lg-4" : "col-md-12 col-lg-12"}`}>
@@ -80,17 +84,23 @@ export default function WardrobeCalculator() {
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
                         <div className="text-center">Доп. комплектация</div>
                         <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
+                            <div></div><div className="d-flex align-items-center justify-content-between"><div></div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, extComplect: getInitExtComplect(prev.height, prev.depth) })); setConsoles({ consoleSameDepth: true, consoleSameHeight: true, standSameHeight: true }) }}>Сбросить</div></div>
                             <div className="text-end">Телескоп: </div>
                             <TextBox value={extComplect.telescope} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, telescope: +value } })) }} />
                             <hr /><hr />
                             <div className="text-end">Консоли кол-во: </div>
                             <TextBox value={extComplect.console.count} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, count: +value } } })) }} />
-                            <div className="text-end">Высота консоли: </div>
-                            <TextBox value={extComplect.console.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={3000} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: +value } } })) }} />
-                            <div className="text-end">Глубина консоли: </div>
-                            <TextBox value={extComplect.console.depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={800} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: +value } } })) }} />
-                            <div className="text-end">Ширина консоли: </div>
-                            <TextBox value={extComplect.console.width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={300} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, width: +value } } })) }} />
+                            <div className="d-flex flex-column align-items-end">
+                                <div className="text-end">Высота консоли: </div>
+                                <CheckBox styles={{fontSize: "0.8em"}} checked={consoleSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameHeight: !consoleSameHeight })); if (!consoleSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: prev.height } } })) }} />
+                            </div>
+                            <TextBox disabled={consoleSameHeight} value={extComplect.console.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={3000} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: +value } } })) }} />
+                            <div className="d-flex flex-column align-items-end">
+                                <div className="text-end">Глубина консоли: </div>
+                                <CheckBox styles={{ fontSize: "0.8em" }} checked={consoleSameDepth} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameDepth: !consoleSameDepth })); if (!consoleSameDepth) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: prev.depth } } })) }} />
+                            </div>
+                            <TextBox disabled={consoleSameDepth} value={extComplect.console.depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={800} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: +value } } })) }} />
+                            <ComboBox title="Ширина консоли:" items={consoleWidth} value={`${extComplect.console.width}`} onChange={(_, value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, width: +value } } })) }} />
                             <ComboBox title="Тип консоли:" value={extComplect.console.type || ""} items={ConsoleTypes} onChange={(_, value: string) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, type: value as CONSOLE_TYPE } } })) }} />
                             <hr /><hr />
                             <div className="text-end">Козырек: </div>
@@ -101,10 +111,15 @@ export default function WardrobeCalculator() {
                             <TextBox value={extComplect.shelfPlat} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, shelfPlat: +value } })) }} />
                             <div className="text-end">Перемычка (доп): </div>
                             <TextBox value={extComplect.pillar} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, pillar: +value } })) }} />
+                            <hr /><hr />
                             <div className="text-end">Стойка (доп) кол-во: </div>
                             <TextBox value={extComplect.stand.count} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, count: +value } } })) }} />
-                            <div className="text-end">Стойка (доп) размер: </div>
-                            <TextBox value={extComplect.stand.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2750} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: +value } } })) }} />
+                            <div className="d-flex flex-column align-items-end">
+                                <div className="text-end">Стойка (доп) размер: </div>
+                                <CheckBox styles={{ fontSize: "0.8em" }} checked={standSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, standSameHeight: !standSameHeight })); }} />
+                            </div>
+                            <TextBox disabled={standSameHeight} value={standSameHeight ? extStand.length : extComplect.stand.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2750} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: +value } } })) }} />
+                            <hr /><hr />    
                             <div className="text-end">Труба (доп): </div>
                             <TextBox value={extComplect.truba} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, truba: +value } })) }} />
                             <div className="text-end">Тремпель (доп): </div>

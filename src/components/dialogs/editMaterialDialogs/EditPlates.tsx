@@ -51,7 +51,7 @@ export default function EditPlates() {
                 const result = await updateMaterial({ name: extMaterial.name, material: baseMaterial, newName: usedName, newCode: usedCode, image: usedFile, purpose: usedPurpose })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async (name) => {
+            onDelete={perm?.remove ? async () => {
                 const result = await deleteMaterial(extMaterial)
                 setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
                 return result

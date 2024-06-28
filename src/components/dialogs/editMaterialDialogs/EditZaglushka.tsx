@@ -38,14 +38,13 @@ export default function EditZaglushka() {
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={name} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {
-                const data = { name }
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
                 const usedDSP = checked[2] ? values[2] : ""
                 const result = await updateZaglushka({ name, newName: usedName, code: usedCode, dsp: usedDSP })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async (name) => {
+            onDelete={perm?.remove ? async () => {
                 const result = await deleteZaglushka(zaglushkaList[selectedIndex])
                 setSelectedIndex(0)
                 return result

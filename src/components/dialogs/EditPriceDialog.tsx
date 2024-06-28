@@ -32,7 +32,7 @@ export default function EditPriceDialog() {
     ]
     useEffect(() => {
         loadPriceList()
-    }, [])
+    }, [loadPriceList])
     useEffect(() => {
         if (!perm?.read) window.location.replace('/')
     }, [perm])

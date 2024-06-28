@@ -1,13 +1,18 @@
 import express from "express";
-import { Result } from '../../types/server.js';
+import { MyRequest, Result } from '../../types/server.js';
 import { materialServiceProvider, specificationPath } from '../options.js';
-import { CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from '../../types/wardrobe.js';
+import { CONSOLE_TYPE, DETAIL_NAME, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from '../../types/wardrobe.js';
 import SpecificationServiceSQLite from "../services/specificationServiceSQLite.js";
 import { Profile, ProfileType } from "../../types/materials.js";
 import { MaterialService } from "../services/materialService.js";
 import { InitialAppState } from "../../types/app.js";
 import { FasadMaterial, MAT_PURPOSE } from "../../types/enums.js";
 import { StatusCodes } from "http-status-codes";
+import { hasPermission } from "./users.js";
+import { PERMISSION, RESOURCE } from "../../types/user.js";
+import { accessDenied } from "../functions/database.js";
+import { calcFunction } from "../wardrobes/specifications/functions.js";
+import { count } from "console";
 
 const router = express.Router();
 export default router
@@ -16,9 +21,16 @@ router.get("/initial", async (req, res) => {
   const result = await getInitialState();
   res.json(result);
 });
+
 router.get("/initialWardrobeData", async (req, res) => {
   const result = await getInitialWardrobeData();
   res.json(result);
+});
+router.get("/getDetail", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
+  const { kind, detailName, width, height } = req.query
+  const result = await getDetail(kind as WARDROBE_KIND, detailName as DETAIL_NAME, width ? (+width) : 0, height ? (+height) : 0)
+  res.status(200).json({ success: true, data: result });
 });
 
 export async function getTable(kind: WARDROBE_KIND) {
@@ -26,6 +38,25 @@ export async function getTable(kind: WARDROBE_KIND) {
   return await service.getDetailTable({ kind })
 }
 
+export async function getDetail(kind: WARDROBE_KIND, detailName: DETAIL_NAME, width: number, height: number) {
+  const service = new SpecificationServiceSQLite(specificationPath)
+  const details = await service.getDetails(kind, width, height)
+  const detail = details.find(d => d.name === detailName)
+  const shelf = details.find(d => d.name === DETAIL_NAME.SHELF)
+  const standCount = details.find(d => d.name === DETAIL_NAME.INNER_STAND)?.count || 0
+  const shelfSize = calcFunction(shelf?.size || "", { width, height, shelfSize: 0, standCount: 0 })
+  if (detail) return {
+    name: detail.name,
+    count: detail.count,
+    length: calcFunction(detail.size, { width, height, shelfSize, standCount }),
+  }
+  return {
+    name: "",
+    count: 0,
+    length: 0
+  }
+
+}
 
 
 export async function getInitialState(): Promise<Result<InitialAppState>> {
@@ -67,7 +98,7 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
       extComplect: {
         telescope: 0,
         blinder: 0,
-        console: { count: 0, height: 0, depth: 0, width: 0, type: CONSOLE_TYPE.STANDART },
+        console: { count: 0, height: 2100, depth: 600, width: 200, type: CONSOLE_TYPE.STANDART },
         shelf: 0,
         shelfPlat: 0,
         stand: { count: 0, height: 0, },

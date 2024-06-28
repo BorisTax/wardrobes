@@ -11,7 +11,7 @@ export default function EventListener() {
       verifyUser()
      }, 60000)
     return () => { clearInterval(timer) }
-  }, [user.name])
+  }, [user.name, verifyUser])
 
     return <div></div>
 }

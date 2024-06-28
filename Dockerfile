@@ -10,3 +10,4 @@ RUN npm install
 CMD ["npm", "start"]
 
 EXPOSE 5555
+EXPOSE 8888

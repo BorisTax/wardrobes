@@ -8,7 +8,7 @@ export default function MessageDialog() {
     const [{ message }] = useAtom(messageDialogAtom)
     useEffect(() => {
         setMessageDialogRef(dialogRef)
-    }, [])
+    }, [setMessageDialogRef])
     return <dialog ref={dialogRef}>
         <div>{message}</div>
         <div className="d-flex justify-content-center">

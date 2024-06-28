@@ -8,7 +8,7 @@ export default function ConfirmDialog() {
     const { message, onYesAction, onNoAction = () => { } } = useAtomValue(confirmDialogAtom)
     useEffect(() => {
         setConfirmDialogRef(dialogRef)
-    }, [])
+    }, [setConfirmDialogRef])
     return <dialog ref={dialogRef}>
         <div className="confirm-message">{message}</div>
         <div className="d-flex justify-content-center gap-2">

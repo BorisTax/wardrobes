@@ -12,7 +12,7 @@ export const saveToExcelAtom = atom(null, async (get, set, specification: Specif
     const orderCaption = order.trim() ? order.trim() + " " : ""
     const specList: (SpecificationData & { amount: number, charCode: string })[] = []
     specData.forEach(sd => {
-        const spec = specification.filter(s => s[0] === sd.name)
+        const spec = specification.filter(s => s[0] === sd.name && s[1].data.amount > 0)
         spec.forEach(sp => {
             const code = sp[1].data.useCharAsCode ? sp[1].data.char?.code : sd.code //для щетки
             const caption = sp[1].data.useCharAsCode ? sp[1].data.char?.caption : sd.caption //для щетки

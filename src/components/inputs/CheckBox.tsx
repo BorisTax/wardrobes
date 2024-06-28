@@ -6,8 +6,9 @@ type CheckBoxProps = {
     onChange: () => void
     id?: string
     caption?: string
+    styles?: object
 }
-export default function CheckBox({ checked, disabled = false, onChange, caption = "", id }: CheckBoxProps) {
+export default function CheckBox({ checked, disabled = false, onChange, caption = "", id, styles = {} }: CheckBoxProps) {
     const props = {
         type: "checkbox",
         checked,
@@ -15,6 +16,6 @@ export default function CheckBox({ checked, disabled = false, onChange, caption 
         onChange,
         id: id || useId()
     }
-    return <div className="d-flex flex-nowrap gap-1"><input {...props} /><span>{caption}</span></div>
+    return <div className="d-flex flex-nowrap gap-1" style={{...styles}}><input {...props} /><span>{caption}</span></div>
 }
 

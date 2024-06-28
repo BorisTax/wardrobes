@@ -45,18 +45,18 @@ export default function EditUsersDialog() {
         const you = u.token === token
         return [u.name,
         u.role.name,
-        <TimeField time={u.time} />,
-        <TimeField time={u.lastActionTime} />,
-        <div className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>]
+        <TimeField key={u.token + "1"} time={u.time} />,
+        <TimeField key={u.token + "2"} time={u.lastActionTime} />,
+        <div key={u.token + "3"} className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>]
     }
     )
     useEffect(() => {
         if (!perm?.read) navigate("/")
-    }, [perm?.read])
+    }, [perm?.read, navigate])
     useEffect(() => {
         loadUsers()
         loadActiveUsers()
-    }, [perm])
+    }, [perm, loadActiveUsers, loadUsers])
     return <div className="edit-user-container">
         <div className="d-flex gap-2">
             <ImageButton title="Обновить" icon='update' onClick={() => { loadUsers(); loadActiveUsers() }} />

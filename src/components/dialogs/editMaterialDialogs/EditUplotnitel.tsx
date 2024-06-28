@@ -38,14 +38,13 @@ export default function EditUplotnitel() {
                 const result = await updateUplotnitel({ name, code: usedCode, caption: usedCaption })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async (name) => {
+            onDelete={perm?.remove ? async () => {
                 const result = await deleteUplotnitel(list[selectedIndex])
                 setSelectedIndex(0)
                 return result
             } : undefined}
             onAdd={async (checked, values) => {
                 const code = values[0] as string
-                const caption = values[1] as string
                 if (list.find((p: Uplotnitel) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addUplotnitel({ name, code })
                 return result

@@ -1,5 +1,5 @@
 import '../../styles/schema.scss'
-import { useEffect, useLayoutEffect, useRef } from "react"
+import { useLayoutEffect, useRef } from "react"
 import { useAtomValue } from "jotai"
 // @ts-ignore
 import * as  html2image from 'html-to-image'
@@ -20,7 +20,7 @@ export default function SchemaDialog() {
     const sheetRef = useRef<HTMLDivElement>(null)
     const containerRef = useRef<HTMLDivElement>(null)
     const orderRef = useRef<HTMLDivElement>(null)
-    const { rootFasades, fasadCount, order, profile, type, wardHeight, wardWidth } = useAtomValue(appDataAtom)
+    const { rootFasades, fasadCount, order, profile, wardHeight, wardWidth } = useAtomValue(appDataAtom)
     const totalWidth = rootFasades.reduce((prev, r: Fasad) => r.Width + prev, 0) + 5
     const ratio = totalWidth / rootFasades[0].Height
     const DSPColors = [...combineColors(rootFasades, FasadMaterial.DSP)].join(", ")
@@ -39,7 +39,7 @@ export default function SchemaDialog() {
             if (viewRef.current) viewRef.current.style.width = width + "px"
             if (viewRef.current) viewRef.current.style.height = height - padding * 2 + "px"
         }
-    }, [rerender])
+    }, [rerender, ratio])
     return <div className='p-2'>
             <div>
                 <ImageButton icon="pdf" title="Сохранить в PDF" caption="Сохранить в PDF" onClick={() => {

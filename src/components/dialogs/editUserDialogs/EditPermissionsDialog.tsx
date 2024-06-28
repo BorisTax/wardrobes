@@ -53,14 +53,14 @@ export default function EditPermissionsDialog() {
     }, [permData])
     useEffect(() => {
         loadPermissions(role)
-    }, [role])
+    }, [role, loadPermissions])
     useEffect(() => {
         loadResources()
-    }, [])
+    }, [loadResources])
     return <EditContainer>
         <div>
             <div className="d-flex flex-nowrap gap-2 align-items-start position-relative">
-                <ComboBox title="Роль: " value={role} items={userRoles} onChange={(index, value: string) => { setRoleIndex(index); }} />
+                <ComboBox title="Роль: " value={role} items={userRoles} onChange={(index) => { setRoleIndex(index); }} />
                 {perm?.create && <ImageButton title="Добавить" icon='add' onClick={() => { addUserRoleDialogRef.current?.showModal() }} />}
                 {perm?.remove && <ImageButton title="Удалить" icon='delete' onClick={() => showConfirm("Удалить роль " + role, async () => {
                     setLoading(true)
@@ -86,7 +86,7 @@ export default function EditPermissionsDialog() {
                 const result = await updatePermissions(newRole as string, newResource as RESOURCE, { read: newRead, create: newCreate, update: newUpdate, remove: newRemove })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async (name) => {
+            onDelete={perm?.remove ? async () => {
                 const result = await deletePermissions(role, resource)
                 setSelectedIndex(0)
                 return result

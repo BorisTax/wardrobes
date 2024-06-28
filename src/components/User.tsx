@@ -19,7 +19,7 @@ export default function User() {
     useEffect(() => {
       const { token } = getInitialUser();
       setUser(token, true);
-    }, []);
+    }, [setUser]);
     return <div className="user">
         {user.role.name === "" ? loginButton :<>
             <div className="d-flex flex-column align-items-center p-0">

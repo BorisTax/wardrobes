@@ -14,7 +14,7 @@ export const socketsMap = new Map<WebSocket, string>()
 export const sockets = new Set<WebSocket>()
 type WebSocketOld = WebSocket & { upgradeReq: { url: string } }
 export function createSocket() {
-  const wsServer = new WebSocket.Server({ port: 8080 })
+  const wsServer = new WebSocket.Server({ port: 8888 })
   wsServer.on('connection', async (ws: WebSocketOld) => {
     const token = (ws.upgradeReq?.url || "=").split("=")[1]
     if (!token) return ws.close()
@@ -62,8 +62,13 @@ const clearExpiredTokens = async () => {
   for (let t of tokens) {
     if (Date.now() - t.lastActionTime > expiredInterval) {
       await userService.deleteToken(t.token)
+      console.log('Token was deleted by expiration', t.username, t.token.substring(0, 7) + "....." + t.token.substring(t.token.length - 7))
       socketsMap.forEach((v, k) => {
-        if (v === t.token) k.close()
+        try{
+        if (v === t.token && k.readyState !== WebSocket.CLOSED) k.close()
+        } catch (e) { 
+          console.error(e)
+        }
       })
     }
   }
@@ -74,7 +79,7 @@ setInterval(clearExpiredTokens, 60000)
 export function notifyActiveUsers(message: SERVER_EVENTS) {
   socketsMap.forEach((v, k) => {
     try {
-      k.send(message)
+      if (k.readyState !== WebSocket.CLOSED) k.send(message)
     } catch (e) {
       console.error(e)
     }

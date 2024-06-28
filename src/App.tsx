@@ -15,12 +15,10 @@ import Header from './components/Header'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/dialogs/LoginDialog'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { loadMaterialListAtom } from './atoms/materials/materials'
 import EditMaterialDialog from './components/dialogs/EditMaterialDialog'
-import {  loadUserRolesAtom, userAtom } from './atoms/users'
+import {  userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
-import { loadProfileListAtom } from './atoms/materials/profiles'
 import EditPriceDialog from './components/dialogs/EditPriceDialog'
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
@@ -30,19 +28,13 @@ import EventListener from './components/EventListener'
 import SettingsDialog from './components/dialogs/SettingsDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
-import { loadEdgeListAtom } from './atoms/materials/edges'
-import { loadZaglushkaListAtom } from './atoms/materials/zaglushka'
-import { loadBrushListAtom } from './atoms/materials/brush'
-import { loadTrempelListAtom } from './atoms/materials/trempel'
 import CombiFasades from './components/CombiFasades'
 import { BrowserRouter, Link, Route, Routes, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import WardrobeCalculator from './components/WardrobeCalculator'
 import EditSpecificationDialog from './components/dialogs/EditSpecificationDialog'
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
-import { loadSpecificationListAtom } from './atoms/specification'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
-import { loadUplotnitelListAtom } from './atoms/materials/uplotnitel'
 import { loadInitialWardrobeDataAtom } from './atoms/wardrobe'
 import NavBar from './components/NavBar'
 import { webSocketSetAtom } from './atoms/websocket'
@@ -58,7 +50,6 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  const connectWS = useSetAtom(webSocketSetAtom)
   const user = useAtomValue(userAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
@@ -69,7 +60,6 @@ function App() {
     const storage = localStorage.getItem('appState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
     setAppData(getAppDataFromState(appState), false)
-
     loadInitialAppState()
     loadInitialWardrobeData()
     loadVersion()

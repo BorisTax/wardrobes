@@ -1,4 +1,6 @@
-import { useEffect } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/App.scss'
 import './styles/buttons.scss'
@@ -14,12 +16,11 @@ import wardrobe from './images/wardrobe.png';
 import Header from './components/Header'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/dialogs/LoginDialog'
-import { useAtomValue, useSetAtom } from 'jotai'
-import EditMaterialDialog from './components/dialogs/EditMaterialDialog'
+const EditMaterialDialog = lazy(() => import('./components/dialogs/EditMaterialDialog'))
 import {  userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
-import EditPriceDialog from './components/dialogs/EditPriceDialog'
+const EditPriceDialog = lazy(() => import('./components/dialogs/EditPriceDialog'))
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom, loadInitialStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
@@ -28,15 +29,15 @@ import EventListener from './components/EventListener'
 import SettingsDialog from './components/dialogs/SettingsDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
-import CombiFasades from './components/CombiFasades'
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
-import WardrobeCalculator from './components/WardrobeCalculator'
-import EditSpecificationDialog from './components/dialogs/EditSpecificationDialog'
+const CombiFasades = lazy(() => import('./components/CombiFasades'))
+const WardrobeCalculator = lazy(() => import('./components/WardrobeCalculator'))
+const EditSpecificationDialog = lazy(()=>import('./components/dialogs/EditSpecificationDialog'))
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { loadInitialWardrobeDataAtom } from './atoms/wardrobe'
 import NavBar from './components/NavBar'
+import LoadIndicator from './components/LoadIndicator'
 
 function App() {
   const user = useAtomValue(userAtom)
@@ -71,28 +72,30 @@ function App() {
       <BrowserRouter>
       <Header />
       <div className='d-flex flex-nowrap'>
-        <NavBar />
-              <Routes>
-                <Route path="/" element={<Select />}></Route>
-                <Route path="/combi" element={<CombiFasades />} />
-                <Route path="/calculator" element={<WardrobeCalculator /> } />
-                <Route path="/schema" element={<SchemaDialog /> } />
-                <Route path="/specification" element={<EditSpecificationDialog /> } />
-                <Route path="/materials" element={<EditMaterialDialog /> } />
-                <Route path="/pricelist" element={<EditPriceDialog /> } />
-                <Route path="/users" element={<EditUsersDialog /> } />
-               </Routes>
-      </div>
-      </BrowserRouter>
+          {user.name && <NavBar />}
+          <Suspense fallback={<LoadIndicator />}>
+            <Routes>
+              <Route path="/" element={<></>}/>
+              <Route path="/login" element={<LoginDialog />}/>
+              <Route path="/combi" element={<CombiFasades />} />
+              <Route path="/calculator" element={<WardrobeCalculator />} />
+              <Route path="/schema" element={<SchemaDialog />} />
+              <Route path="/specification" element={<EditSpecificationDialog />} />
+              <Route path="/materials" element={<EditMaterialDialog />} />
+              <Route path="/pricelist" element={<EditPriceDialog />} />
+              <Route path="/users" element={<EditUsersDialog />} />
+            </Routes>
+          </Suspense>
+        </div>
       <SpecificationDialog />
       <CopyFasadDialog />
       <FasadTemplatesDialog />
       <SettingsDialog />
-      <LoginDialog />
       <VerboseDataDialog />
       <MessageDialog />
       <ConfirmDialog />
       <EventListener />
+      </BrowserRouter>
     </>
   )
 }

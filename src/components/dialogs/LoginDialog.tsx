@@ -1,30 +1,27 @@
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { useSetAtom } from "jotai"
-import { loginDialogAtom } from "../../atoms/dialogs"
 import onFetch from "../../functions/fetch"
 import { Result } from "../../types/server"
 import CheckBox from "../inputs/CheckBox"
 import { userAtom } from "../../atoms/users"
+import { useNavigate } from "react-router-dom"
 
 export default function LoginDialog() {
-    const dialogRef = useRef<HTMLDialogElement>(null)
+    const navigate = useNavigate()
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const setUser = useSetAtom(userAtom)
     const [state, setState] = useState({ loading: false, message: "" })
-    const closeDialog = () => { dialogRef.current?.close() }
-    const setLoginDialogRef = useSetAtom(loginDialogAtom)
     const login = (name: string, password: string) => {
         setState({ loading: true, message: "" })
-        const onResolve = (r: Result<string | null>) => { setUser(r.data as string); closeDialog() }
+        const onResolve = (r: Result<string | null>) => { setUser(r.data as string); navigate('/') }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }
         const onCatch = () => { setState({ loading: false, message: "Ошибка сервера" }) }
         onFetch('/api/users/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)
     }
-    useEffect(() => {
-        setLoginDialogRef(dialogRef)
-    }, [setLoginDialogRef, dialogRef])
-    return <dialog ref={dialogRef} onClose={() => { setPassword("") }}>
+
+    return <div className="login-container">
+        <br/>
         <form id="loginForm" onSubmit={(e) => {
             e.preventDefault(); 
             const formData = new FormData(document.getElementById("loginForm") as HTMLFormElement)
@@ -41,12 +38,10 @@ export default function LoginDialog() {
                     <label htmlFor="showPass">показать пароль</label>
                 </div>
             </div>
-            <br />
             <div className="d-flex flex-column gap-2">
                 <input className="btn btn-primary" type="submit" value="Вход" />
-                <input className="btn btn-secondary" type="button" value="Отмена" onClick={() => closeDialog()} />
                 <div>{state.message}</div>
             </div>
         </form>
-    </dialog>
+    </div>
 }

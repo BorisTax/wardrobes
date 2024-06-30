@@ -16,6 +16,7 @@ export type EditDataItem = {
     readonly?: boolean
     type: InputType
     propertyType?: PropertyType
+    checkValue?: (value: string | number) => { success: boolean, message: string }
 }
 export type EditDataSectionProps = {
     items: EditDataItem[]
@@ -66,7 +67,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                 {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every((c, index) => c || props.items[index].readonly))} onClick={() => {
                     const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
-                    if (!check.success) { showMessage(check.message); return }
+                    if (!check.success) { showMessage(rusMessages[check.message]); return }
                     const message = getAddMessage({ checked, items: props.items, newValues: values })
                     showConfirm(message, async () => {
                         if (!props.onAdd) return
@@ -79,7 +80,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                 {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some((c, index) => c && !props.items[index].readonly))} onClick={() => {
                     const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
-                    if (!check.success) { showMessage(check.message); return }
+                    if (!check.success) { showMessage(rusMessages[check.message]); return }
                     const message = getMessage({ checked, items: props.items, newValues: values, extValue })
                     showConfirm(message, async () => {
                         if (!props.onUpdate) return
@@ -109,8 +110,17 @@ function checkFields({ checked, items, newValues }: { checked: boolean[], items:
     let message = ""
     const success = checked.every((c, index) => {
         if (c === false) return true
-        if (typeof newValues[index] === 'string' && (newValues[index] as string).trim() === "") {
-            message = items[index].message
+        const item = items[index]
+        const newValue = newValues[index]
+        if (item.checkValue) {
+            const result = item.checkValue(newValue as string | number)
+            if (!result.success) {
+                message = result.message
+                return false
+            }
+        }
+        if (typeof newValue === 'string' && (newValue as string).trim() === "") {
+            message = item.message
             return false
         }
         return true

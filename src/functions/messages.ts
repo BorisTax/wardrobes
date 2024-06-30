@@ -33,9 +33,12 @@ export const rusMessages = {
   [messages.PASSWORDS_NOT_MATCH]: "Пароли не совпадают",
   [messages.USER_ADDED]: "Пользователь добавлен",
   [messages.USER_DELETED]: "Пользователь удален",
+  [messages.USER_UPDATED]: "Пользователь изменен",
   [messages.SERVER_ERROR]: "Ошибка сервера",
   [messages.USER_NAME_EXIST]: "Пользователь существует",
+  [messages.USER_NAME_NO_EXIST]: "Пользователь не существует",
   [messages.USER_DELETE_DENIED]: "Нельзя удалить пользователя",
+  [messages.USER_UPDATE_DENIED]: "Нельзя изменить пользователя",
 
   [messages.ROLE_ADDED]: "Роль добавлена",
   [messages.ROLE_DELETED]: "Роль удалена",
@@ -52,6 +55,21 @@ export const rusMessages = {
   [messages.SPEC_ID_EXIST]: "Идентификатор уже существует",
   [messages.SPEC_UPDATED]: "Данные обновлены",
 
+  [messages.PASSWORD_SHORT]: "Пароль короткий (мин. 6 символов)",
+  [messages.PASSWORD_INCORRECT]: "Некорректный пароль (используйте символы a-zA-Z0-9_)",
+
+  [messages.ENTER_BRUSH]: "Выберите щетку",
+  [messages.ENTER_CAPTION]: "Введите наименование",
+  [messages.ENTER_CODE]: "Введите код", 
+  [messages.ENTER_COEF]: "Введите коэф-т",
+  [messages.ENTER_CORRESPOND]: "Введите соответствие",
+  [messages.ENTER_ID]: "Введите идентификатор",
+  [messages.ENTER_IMAGE]: "Выберите изображение",
+  [messages.ENTER_MARKUP]: "Введите наценку",
+  [messages.ENTER_PRICE]: "Введите цену",
+  [messages.ENTER_PASSWORD]: "Введите пароль",
+  [messages.ENTER_PURPOSE]: "Выберите назначение",
+  [messages.ENTER_NAME]: "Введите имя",
 }
 
 

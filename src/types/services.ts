@@ -18,6 +18,7 @@ interface IUserAbstractService {
     deleteToken: (token: string) => Promise<Result<null>>
     clearAllTokens: () => Promise<Result<null>>
     registerUser: (userName: string, password: string, role: UserRole) => Promise<Result<null>>
+    updateUser: ({ userName, password, role }: { userName: string, password?: string, role?: UserRole }) => Promise<Result<null>>
     deleteUser: (user: User) => Promise<Result<null>>
     getPermissions: (role: string, resource: RESOURCE) => Promise<Permissions>
     getAllUserPermissions: (role: string) => Promise<PERMISSIONS_SCHEMA[]>

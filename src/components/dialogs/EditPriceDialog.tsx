@@ -11,6 +11,7 @@ import { InputType, PropertyType } from "../../types/property"
 import EditContainer from "../EditContainer"
 import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
+import messages from "../../server/messages"
 type ExtPriceData = PriceData & { units: string, caption: string }
 export default function EditPriceDialog() {
     const { permissions } = useAtomValue(userAtom)
@@ -26,9 +27,9 @@ export default function EditPriceDialog() {
     const heads = ['Наименование', 'Ед', 'Цена', 'Наценка']
     const contents = extPriceList.map((i: ExtPriceData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.price || ""}`, `${i.markup || ""}`])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: caption || "", message: "Введите наименование", type: InputType.TEXT, readonly: true },
-        { caption: "Цена:", value: `${price}`, message: "Введите цену", type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
-        { caption: "Наценка:", value: `${markup}`, message: "Введите наценку", type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
+        { caption: "Наименование:", value: caption || "", message: messages.ENTER_CAPTION, type: InputType.TEXT, readonly: true },
+        { caption: "Цена:", value: `${price}`, message: messages.ENTER_PRICE, type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
+        { caption: "Наценка:", value: `${markup}`, message: messages.ENTER_MARKUP, type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
     ]
     useEffect(() => {
         loadPriceList()

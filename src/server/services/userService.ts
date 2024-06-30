@@ -137,10 +137,16 @@ export class UserService implements IUserService {
     if (!result.success) return result
     return this.provider.registerUser(userName, password, role)
   }
+  async updateUser({ userName, password, role }: { userName: string, password?: string, role?: UserRole }): Promise<Result<null>>{
+    const superusers = (await this.getSuperUsers()).data?.map(m => m.name)
+    if (superusers?.find(s => s === userName)) return { success: false, status: 403, message: messages.USER_DELETE_DENIED }
+    return this.provider.updateUser({userName, password, role})
+}
   async deleteUser(user: User) {
     const superusers = (await this.getSuperUsers()).data?.map(m => m.name)
     if (superusers?.find(s => s === user.name)) return { success: false, status: 403, message: messages.USER_DELETE_DENIED }
     const result = await this.provider.deleteUser(user)
+    if (result.success) notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
     return result
   }
   async isUserNameExist(name: string) {

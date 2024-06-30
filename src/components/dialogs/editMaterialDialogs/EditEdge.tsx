@@ -27,9 +27,9 @@ export default function EditEdge() {
     const heads = ['Наименование', 'Код', 'Соответствие ДСП']
     const contents = edgeList.map((i: Edge) => [i.name, i.code, i.dsp])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: edgeName || "", message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Код:", value: code, message: "Введите код", type: InputType.TEXT },
-        { caption: "Соответствие ДСП:", value: dsp, list: mList, message: "Выберите ДСП", type: InputType.LIST },
+        { caption: "Наименование:", value: edgeName || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
+        { caption: "Код:", value: code, message: messages.ENTER_CODE, type: InputType.TEXT },
+        { caption: "Соответствие ДСП:", value: dsp, list: mList, message: messages.ENTER_CORRESPOND, type: InputType.LIST },
     ]
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />

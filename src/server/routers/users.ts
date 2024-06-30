@@ -103,7 +103,14 @@ router.post("/add", async (req, res) => {
   const result = await userService.registerUser(user.name, user.password, user.role);
   res.json(result);
 });
-
+router.post("/update", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
+  const userService = new UserService(userServiceProvider)
+  const user = req.body;
+  if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
+  const result = await userService.updateUser({userName: user.name, password: user.password, role: user.role});
+  res.json(result);
+});
 router.delete("/delete", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)

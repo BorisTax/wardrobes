@@ -29,10 +29,10 @@ export default function EditPlates() {
     const heads = ['Наименование', 'Код', 'Назначение']
     const contents = extMaterials.map((i: ExtMaterial) => [i.name, i.code, MATPurpose.get(i.purpose) || ""])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: extMaterial.name || "", message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Код:", value: extMaterial.code, message: "Введите код", type: InputType.TEXT },
-        { caption: "Назначение:", value: extMaterial.purpose || "", valueCaption: (value) => MATPurpose.get(value as MAT_PURPOSE) || "", list: MATPurpose, message: "Выберите назначение", type: InputType.LIST, readonly: !purposeEnabled },
-        { caption: "Изображение:", value: image || "", message: "Выберите изображение", type: InputType.FILE },
+        { caption: "Наименование:", value: extMaterial.name || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
+        { caption: "Код:", value: extMaterial.code, message: messages.ENTER_CODE, type: InputType.TEXT },
+        { caption: "Назначение:", value: extMaterial.purpose || "", valueCaption: (value) => MATPurpose.get(value as MAT_PURPOSE) || "", list: MATPurpose, message: messages.ENTER_PURPOSE, type: InputType.LIST, readonly: !purposeEnabled },
+        { caption: "Изображение:", value: image || "", message: messages.ENTER_IMAGE, type: InputType.FILE },
     ]
     return <EditContainer>
         <div>

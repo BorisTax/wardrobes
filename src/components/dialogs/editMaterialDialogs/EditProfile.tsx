@@ -29,9 +29,9 @@ export default function EditProfile() {
     const heads = ['Наименование', 'Код', 'Щетка']
     const contents = profileList.map((i: Profile) => [i.name, i.code, i.brush])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: profile.name, message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Код:", value: profile.code, message: "Введите код", type: InputType.TEXT },
-        { caption: "Щетка:", value: profile.brush, list: brushList, message: "Выберите щетку", type: InputType.LIST },
+        { caption: "Наименование:", value: profile.name, message: messages.ENTER_CAPTION, type: InputType.TEXT },
+        { caption: "Код:", value: profile.code, message: messages.ENTER_CODE, type: InputType.TEXT },
+        { caption: "Щетка:", value: profile.brush, list: brushList, message: messages.ENTER_BRUSH, type: InputType.LIST },
     ]
     return <EditContainer>
         <div>

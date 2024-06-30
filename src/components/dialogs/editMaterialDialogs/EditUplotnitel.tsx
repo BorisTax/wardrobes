@@ -23,8 +23,8 @@ export default function EditUplotnitel() {
     const heads = ['Наименование', 'Код']
     const contents = list.map((i: Uplotnitel) => [i.name, i.code])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: name || "", message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Код:", value: code, message: "Введите код", type: InputType.TEXT },
+        { caption: "Наименование:", value: name || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
+        { caption: "Код:", value: code, message: messages.ENTER_CODE, type: InputType.TEXT },
     ]
     useEffect(() => {
         setSelectedIndex(0)

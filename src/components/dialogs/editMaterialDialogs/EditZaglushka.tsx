@@ -27,9 +27,9 @@ export default function EditZaglushka() {
     const heads = ['Наименование', 'Код', 'Соответствие ДСП']
     const contents = zaglushkaList.map((i: Zaglushka) => [i.name, i.code, i.dsp])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: name || "", message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Код:", value: code, message: "Введите код", type: InputType.TEXT },
-        { caption: "Соответствие ДСП:", value: dsp, list: mList, message: "Выберите ДСП", type: InputType.LIST },
+        { caption: "Наименование:", value: name || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
+        { caption: "Код:", value: code, message: messages.ENTER_CODE, type: InputType.TEXT },
+        { caption: "Соответствие ДСП:", value: dsp, list: mList, message: messages.ENTER_CORRESPOND, type: InputType.LIST },
     ]
     useEffect(() => {
         setSelectedIndex(0)

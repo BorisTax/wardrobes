@@ -109,20 +109,26 @@ export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, userto
     set(loadActiveUsersAtom)
 })
 
-export const createUserAtom = atom(null, async (get: Getter, set: Setter, { name, password, role }: { name: string, password: string, role: UserRole }, callback: AtomCallbackResult) => {
+export const createUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, role: UserRole) => {
     const {token} = get(userAtom)
     const result = await fetchData('/api/users/add', "POST", JSON.stringify({ name, password, role, token }))
     if (result.success) set(loadUsersAtom)
-    callback({ success: result.success as boolean, message: result.message  as string })
+    return { success: result.success as boolean, message: result.message  as string }
 })
-export const deleteUserAtom = atom(null, async (get: Getter, set: Setter, { name }: { name: string}, callback: AtomCallbackResult) => {
+export const updateUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, role: UserRole) => {
+    const {token} = get(userAtom)
+    const result = await fetchData('/api/users/update', "POST", JSON.stringify({ name, password, role, token }))
+    if (result.success) set(loadUsersAtom)
+    return { success: result.success as boolean, message: result.message  as string }
+})
+export const deleteUserAtom = atom(null, async (get: Getter, set: Setter, name: string) => {
     const {token} = get(userAtom)
     const result = await fetchData('/api/users/delete', "DELETE", JSON.stringify({ name, token }))
     if (result.success) {
         set(loadUsersAtom)
         set(loadActiveUsersAtom)
     }
-    callback({ success: result.success as boolean, message: result.message  as string })
+    return{ success: result.success as boolean, message: result.message  as string }
 })
 
 export const createRoleAtom = atom(null, async (get: Getter, set: Setter, { name }: { name: string }) => {

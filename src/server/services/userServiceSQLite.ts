@@ -49,9 +49,18 @@ export default class UserServiceSQLite implements IUserServiceProvider {
             `INSERT INTO ${USER_ROLES} (user, role) VALUES('${userName}', '${role.name}')`,
         ], { successStatusCode: StatusCodes.CREATED, successMessage: messages.USER_ADDED })
     }
+    async updateUser({ userName, password, role }: { userName: string, password?: string, role?: UserRole }): Promise<Result<null>>{
+        const passHash = password && await hashData(password);
+        const queries: string[] = []
+        if(passHash) queries.push(`update ${USERS} set password='${passHash}' where name='${userName}';`)
+        if (role) queries.push(`update ${USER_ROLES} set role='${role.name}' where user='${userName}';`)
+        if (queries.length === 0) return { success: false, status: StatusCodes.NO_CONTENT, message: messages.QUERY_ERROR }
+        return await dataBaseTransaction(this.dbFile, queries, { successStatusCode: StatusCodes.OK, successMessage: messages.USER_UPDATED })
+    }
 
     async deleteUser(user: User): Promise<Result<null>> {
         return await dataBaseTransaction(this.dbFile, [
+            `DELETE FROM ${TOKENS} where username='${user.name}';`,
             `DELETE FROM ${USER_ROLES} where user='${user.name}';`,
             `DELETE FROM ${USERS} where name='${user.name}';`,
         ], { successStatusCode: StatusCodes.OK, successMessage: messages.USER_DELETED })

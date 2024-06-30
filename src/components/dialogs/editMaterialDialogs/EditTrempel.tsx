@@ -8,6 +8,7 @@ import TableData from "../../TableData"
 import EditContainer from "../../EditContainer"
 import { userAtom } from "../../../atoms/users"
 import { RESOURCE } from "../../../types/user"
+import messages from "../../../server/messages"
 
 export default function EditTrempel() {
     const { permissions } = useAtomValue(userAtom)
@@ -20,8 +21,8 @@ export default function EditTrempel() {
     const heads = ['Наименование', 'Код']
     const contents = trempelList.map((i: Trempel) => [i.caption, i.code])
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: caption, message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Код:", value: code, message: "Введите код", type: InputType.TEXT },
+        { caption: "Наименование:", value: caption, message: messages.ENTER_CAPTION, type: InputType.TEXT },
+        { caption: "Код:", value: code, message: messages.ENTER_CODE, type: InputType.TEXT },
     ]
     useEffect(() => {
         setSelectedIndex(0)

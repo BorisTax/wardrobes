@@ -9,6 +9,7 @@ import { InputType, PropertyType } from "../../types/property"
 import EditContainer from "../EditContainer"
 import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
+import messages from "../../server/messages"
 
 export default function EditSpecificationDialog() {
     const loadSpecList = useSetAtom(loadSpecificationListAtom)
@@ -22,10 +23,10 @@ export default function EditSpecificationDialog() {
     const heads = ['Наименование', 'Ед', 'Коэф-т', 'Код', 'Идентификатор']
     const contents = specList.map((i: SpecificationData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.coef}`, i.code || "", i.id || ""])
     const editItems: EditDataItem[] =  [
-        { caption: "Наименование:", value: caption || "", message: "Введите наименование", type: InputType.TEXT },
-        { caption: "Коэф-т:", value: `${coef}`, message: "Введите коэф-т", type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
-        { caption: "Код:", value: code || "", message: "Введите код", type: InputType.TEXT },
-        { caption: "Идентификатор:", value: id || "", message: "Введите идентификатор", type: InputType.TEXT },
+        { caption: "Наименование:", value: caption || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
+        { caption: "Коэф-т:", value: `${coef}`, message: messages.ENTER_COEF, type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
+        { caption: "Код:", value: code || "", message: messages.ENTER_CODE, type: InputType.TEXT },
+        { caption: "Идентификатор:", value: id || "", message: messages.ENTER_ID, type: InputType.TEXT },
     ]
     useEffect(() => {
         loadSpecList()

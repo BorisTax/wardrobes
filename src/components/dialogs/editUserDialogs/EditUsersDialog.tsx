@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
+import EditContainer from "../../EditContainer"
 
 export default function EditUsersDialog() {
     const navigate = useNavigate()
@@ -65,30 +66,35 @@ export default function EditUsersDialog() {
             <ImageButton title="Обновить" icon='update' onClick={() => { loadUsers(); loadActiveUsers() }} />
         </div>
         <hr />
-        <TableData heads={userListHeader} content={userlist} onSelectRow={(index)=>setUserIndex(index)} />
+        Все пользователи
+        <EditContainer>
+            <TableData heads={userListHeader} content={userlist} onSelectRow={(index)=>setUserIndex(index)} />
+            <EditDataSection items={userEditItems} name={user.name}
+                onAdd={async (checked, values) => {
+                    const name = values[0] as string
+                    const role = values[1] as string
+                    const password = values[2] as string
+                    if (users.find(u => u.name === name)) { return { success: false, message: messages.USER_NAME_EXIST } }
+                    const result = await createUser(name as string, password, { name: role })
+                    return result
+                }}
+                onUpdate={async (checked, values) => {
+                    const usedName = checked[0] ? values[0] : ""
+                    const usedRole = checked[1] ? values[1] : ""
+                    const usedPass = checked[2] ? values[2] : ""
+                    if (!users.find(u => u.name === usedName)) { return { success: false, message: messages.USER_NAME_NO_EXIST } }
+                    const result = await updateUser(usedName as string, usedPass as string, { name: usedRole as string })
+                    return result
+                }}
+                onDelete={async (name) => {
+                    const result = await deleteUser(name as string)
+                    return result
+                }} />
+        </EditContainer>
         <hr />
-        <TableData heads={activeUserListHeader} content={activeuserlist}  />
-        <EditDataSection items={userEditItems} name={user.name}
-            onAdd={async (checked, values) => {
-                const name = values[0] as string
-                const role = values[1] as string
-                const password = values[2] as string
-                if (users.find(u => u.name === name)) { return { success: false, message: messages.USER_NAME_EXIST } }
-                const result = await createUser(name as string, password, { name: role })
-                return result
-            }}
-            onUpdate={async (checked, values) => {
-                const usedName = checked[0] ? values[0] : ""
-                const usedRole = checked[1] ? values[1] : ""
-                const usedPass = checked[2] ? values[2] : ""
-                if (!users.find(u => u.name === usedName)) { return { success: false, message: messages.USER_NAME_NO_EXIST } }
-                const result = await updateUser(usedName as string, usedPass as string, { name: usedRole as string })
-                return result
-            }}
-            onDelete={async (name) => {
-                const result = await deleteUser(name as string)
-                return result
-            }} />
+        В сети
+        <TableData heads={activeUserListHeader} content={activeuserlist} />
+        <hr />
         <EditPermissionsDialog />
     </div>
 }

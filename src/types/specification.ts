@@ -62,6 +62,7 @@ export enum SpecificationItem {
     Box = "Box",
     Brush = "Brush",
     BrushBavaria = "BrushBavaria",
+    Lamp = "Lamp",
 }
 
 export enum CORPUS_SPECS {

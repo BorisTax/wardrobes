@@ -39,7 +39,7 @@ export class SpecificationService implements ISpecificationService {
       const fasadSpec = await getFasadSpecification(f, profile as Profile)
       result.push({ type: f.Material, spec: fasadSpec })
      }
-    const extSpec = await getExtComplectSpecification(data, profile as Profile)
+    const extSpec = await getExtComplectSpecification(data)
     for(let ext of extSpec){
       result.push(ext)
     }

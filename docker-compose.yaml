@@ -3,13 +3,13 @@ services:
   app:
     build: .
     restart: always
-    image: boristax/wardrobes:v0.3.2
+    image: boristax/wardrobes:v0.3.3
     ports:
       - "5555:5000"
       - "8888:8888"
     command: npm run start
     volumes: 
-      - combi-db:/app/src/server/database
+      - wardrobes-db:/app/src/server/database
 volumes:
-  combi-db:
+  wardrobes-db:
       external: true

@@ -11,8 +11,9 @@ import { getShelfPlatSpecification } from "./shelfPlat"
 import { getPillarSpecification } from "./pillar"
 import { getTrubaSpecification } from "./truba"
 import { getTrempelSpecification } from "./trempel"
+import { getLightSpecification } from "./light"
 
-export async function getExtComplectSpecification(data: WardrobeData, profile: Profile): Promise<SpecificationMultiResult> {
+export async function getExtComplectSpecification(data: WardrobeData): Promise<SpecificationMultiResult> {
     const result: SpecificationMultiResult = []
     if (data.extComplect.telescope > 0) result.push({ type: CORPUS_SPECS.EXT_TEL, spec: await getDrawerSpecification(data) })
     if (data.extComplect.console.count > 0) result.push({ type: CORPUS_SPECS.EXT_CONSOLE, spec: await getConsoleSpecification(data) })
@@ -23,6 +24,7 @@ export async function getExtComplectSpecification(data: WardrobeData, profile: P
     if (data.extComplect.pillar > 0) result.push({ type: CORPUS_SPECS.EXT_PILLAR, spec: await getPillarSpecification(data) })
     if (data.extComplect.truba > 0) result.push({ type: CORPUS_SPECS.EXT_TUBE, spec: await getTrubaSpecification(data) })
     if (data.extComplect.trempel > 0) result.push({ type: CORPUS_SPECS.EXT_TREMPEL, spec: await getTrempelSpecification(data) })
+    if (data.extComplect.light > 0) result.push({ type: CORPUS_SPECS.EXT_LIGHT, spec: await getLightSpecification(data) })
     return result
 }
 

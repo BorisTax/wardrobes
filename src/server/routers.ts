@@ -19,5 +19,5 @@ router.use('/prices', priceRouter)
 router.use('/database', databaseRouter)
 router.use('/wardrobe', wardrobeRouter)
 router.get('/version', (req, res) => {
-    res.status(StatusCodes.OK).json({ success: true, data: "0.3.2" })
+    res.status(StatusCodes.OK).json({ success: true, data: "0.3.3" })
 })

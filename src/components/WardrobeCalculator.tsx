@@ -44,6 +44,9 @@ export default function WardrobeCalculator() {
     const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
     const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardKind, data.width, data.height) || {length: 0}
     useEffect(() => {
+        if (standSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: extStand.length } } }))
+    }, [extStand.length, standSameHeight])
+    useEffect(() => {
         if (loadedInitialWardrobeData) calculate(data)
     }, [data, loadedInitialWardrobeData, calculate])
     return <div className="container">

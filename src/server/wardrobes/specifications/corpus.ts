@@ -1,4 +1,4 @@
-import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, flattenSpecification, getConfirmatByDetail, getEdge05Length, getEdge2Length, getFasadCount } from "./functions"
+import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, flattenSpecification, getConfirmatByDetail, getEdge05Length, getEdge2Length, getFasadCount, getMinifixByDetail } from "./functions"
 import { getSpecificationPattern } from "./functions"
 import { emptyFullData } from "./functions"
 import { SpecificationItem } from "../../../types/specification"
@@ -22,7 +22,7 @@ export async function getCorpusSpecification(data: WardrobeData, profile: Profil
     const result: SpecificationResult[] = []
     const details = await getDetails(data.wardKind, data.width, data.height, data.depth);
     const karton = await getKarton(data)
-    const truba = await getTruba(data)
+    const truba = await getTruba(data, details)
     const edge2 = (await getEdge2(data, details))
     const edge05 = await getEdge05(data, details)
     result.push([SpecificationItem.DSP, await getDSP(data, details)])
@@ -31,8 +31,8 @@ export async function getCorpusSpecification(data: WardrobeData, profile: Profil
     result.push([SpecificationItem.Kromka05, edge05])
     result.push([SpecificationItem.Confirmat, await getConfirmat(data, details)])
     result.push([SpecificationItem.ZagConfirmat, await getZagConfirmat(data, details)])
-    result.push([SpecificationItem.Minifix, await getMinifix(data)])
-    result.push([SpecificationItem.ZagMinifix, await getZagMinifix(data)])
+    result.push([SpecificationItem.Minifix, await getMinifix(data, details)])
+    result.push([SpecificationItem.ZagMinifix, await getZagMinifix(data, details)])
     result.push([SpecificationItem.Glue, await getGlue(data, edge2.data.amount, edge05.data.amount)])
     result.push([SpecificationItem.Planka, await getDVPPlanka(data)])
     result.push([SpecificationItem.Leg, await getLegs(data)])
@@ -188,14 +188,13 @@ async function getZagConfirmat(data: WardrobeData, details: Detail[]): Promise<F
 }
 
 
-async function getMinifix(data: WardrobeData): Promise<FullData> {
+export async function getMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth)).filter(d => useMinifix(d.name));
     const detailNames = await getDetailNames();
     const verbose: VerboseData = [["Деталь", "Кол-во", "Минификсы"]];
     let total = 0;
     details.forEach(d => {
-        const count = d.count * ((d.name === DETAIL_NAME.CONSOLE_BACK_STAND || d.name === DETAIL_NAME.PILLAR) ? 2 : 4);
+        const count = d.count * getMinifixByDetail(d.name)
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
         verbose.push([caption, `${d.count}`, `${count}`]);
         total += count;
@@ -203,13 +202,13 @@ async function getMinifix(data: WardrobeData): Promise<FullData> {
     verbose.push(["", "Итого:", total]);
     return { data: { amount: total, char: { code: "", caption: "" } }, verbose };
 }
-async function getZagMinifix(data: WardrobeData): Promise<FullData> {
+async function getZagMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullData()
     const service = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
     const list = (await service.getExtData()).data as Zaglushka[];
     const zaglushka = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
     const { code, name: caption } = zaglushka;
-    const conf = await getMinifix(data);
+    const conf = await getMinifix(data, details);
     return { data: { amount: conf.data.amount, char: { code, caption } } };
 }
 export async function getNails(data: WardrobeData): Promise<FullData> {
@@ -325,12 +324,11 @@ async function getNaprav(data: WardrobeData, profile: Profile, top: boolean): Pr
     return { data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose }
 }
 
-async function getTruba(data: WardrobeData): Promise<FullData & { count: number }> {
+export async function getTruba(data: WardrobeData, details: Detail[]): Promise<FullData & { count: number }> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return { ...emptyFullDataIfSystem(), count: 0 }
     const coef = await getCoef(SpecificationItem.Truba)
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(data.wardKind, SpecificationItem.Truba, data.width, data.height, data.depth );
-    const details = await getDetails(data.wardKind, data.width, data.height, data.depth)
     const shelfPlat = details.find(d => d.name === DETAIL_NAME.SHELF_PLAT)
     const size = shelfPlat?.length || 0
     //const caption = await getWardrobeKind(wardKind);
@@ -349,7 +347,7 @@ async function  getFlanec(truba: FullData & { count: number }): Promise<FullData
     return { data: { amount: count * 2 }, verbose }
 }
 
-async function getTrempel(data: WardrobeData): Promise<FullData> {
+export async function getTrempel(data: WardrobeData): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const matService = new MaterialExtService<Trempel>(new TrempelServiceSQLite(materialsPath));

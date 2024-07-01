@@ -25,7 +25,6 @@ import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom, loadInitialStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import EditUsersDialog from './components/dialogs/editUserDialogs/EditUsersDialog'
-import EventListener from './components/EventListener'
 import SettingsDialog from './components/dialogs/SettingsDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
@@ -94,7 +93,6 @@ function App() {
       <VerboseDataDialog />
       <MessageDialog />
       <ConfirmDialog />
-      <EventListener />
       </BrowserRouter>
     </>
   )

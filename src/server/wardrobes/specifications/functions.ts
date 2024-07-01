@@ -104,14 +104,14 @@ export async function getCoef(item: SpecificationItem): Promise<number> {
     return coef
 }
 export function getConfirmatByDetail(detail: DETAIL_NAME): number {
-    switch (detail) {
-        case DETAIL_NAME.SHELF || DETAIL_NAME.SHELF_PLAT:
-            return 4
-        case DETAIL_NAME.PILLAR || DETAIL_NAME.DRAWER_SIDE:
-            return 2
-        default:
-            return 0
-    }
+    if ([DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT].includes(detail)) return 4
+    if ([DETAIL_NAME.PILLAR, DETAIL_NAME.DRAWER_SIDE].includes(detail)) return 2
+    return 0
+}
+export function getMinifixByDetail(detail: DETAIL_NAME): number {
+    if ([DETAIL_NAME.STAND, DETAIL_NAME.INNER_STAND].includes(detail)) return 4
+    if ([DETAIL_NAME.PILLAR].includes(detail)) return 2
+    return 0
 }
 export function hasEdge2(detail: DETAIL_NAME): boolean {
     return detail === DETAIL_NAME.ROOF ||
@@ -136,6 +136,7 @@ export function getEdge2Length(detail: Detail): number {
     DETAIL_NAME.STAND,
     DETAIL_NAME.CONSOLE_STAND,
     DETAIL_NAME.CONSOLE_BACK_STAND,
+    DETAIL_NAME.BLINDER,
     ].includes(detail.name)) return detail.length
     if ([
         DETAIL_NAME.CONSOLE_ROOF,
@@ -153,9 +154,10 @@ export function getEdge05Length(detail: Detail): number {
     DETAIL_NAME.DRAWER_BRIDGE,
     ].includes(detail.name)) return detail.length
     if ([DETAIL_NAME.DRAWER_FASAD].includes(detail.name)) return (detail.width + detail.length) * 2
-    if ([DETAIL_NAME.ROOF].includes(detail.name)) return detail.width * 2
+    if ([DETAIL_NAME.ROOF, DETAIL_NAME.BLINDER].includes(detail.name)) return detail.width * 2
     return 0
 }
+
 export function calcFunction(func: string, { width, height, shelfSize, standCount }: { width: number; height: number; shelfSize: number; standCount: number} ): number {
     try {
         const f = new Function('W', 'H', 'ShL', 'StN', 'return ' + func)

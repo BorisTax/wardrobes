@@ -94,6 +94,9 @@ export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
             return
         }
     set(userAtom, token)
+    const timer = setInterval(() => { 
+        set(verifyUserAtom)
+       }, 60000)
 })
 
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {

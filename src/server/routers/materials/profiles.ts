@@ -25,6 +25,7 @@ export async function updateProfile({ name, newName, type, code, brush }: NewPro
   if (!result.success) return result
   const profiles = result.data
   if (!(profiles as Profile[]).find(m => m.name === name && m.type === type)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  if ((profiles as Profile[]).find(m => m.name === newName)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_EXIST }
   return await materialService.updateProfile({ name, type, newName, code, brush })
 }
 

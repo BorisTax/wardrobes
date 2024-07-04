@@ -40,6 +40,7 @@ export type WardrobeFurnitureTableSchema = {
 export enum MAT_TABLE_NAMES {
     MATERIALS = 'materials',
     EXTMATERIALS = 'extmaterials',
+    EXTMATERIALS_IMAGES = 'extmaterials_images',
     PROFILE_COLORS = 'profilecolors',
     BRUSH = 'brush',
     EDGE = 'edge',

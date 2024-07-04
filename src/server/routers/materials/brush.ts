@@ -26,6 +26,7 @@ export async function updateBrush({ name, newName, code }: NewBrush) {
   if (!result.success) return result
   const brushes = result.data
   if (!(brushes as Brush[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  if ((brushes as Brush[]).find(m => m.name === newName)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_EXIST }
   return await materialService.updateExtData({ name, newName, code })
 }
 

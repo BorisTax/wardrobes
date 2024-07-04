@@ -79,7 +79,7 @@ export default function EditUsersDialog() {
                     return result
                 }}
                 onUpdate={async (checked, values) => {
-                    const usedName = checked[0] ? values[0] : ""
+                    const usedName = checked[0] ? values[0] : user.name
                     const usedRole = checked[1] ? values[1] : ""
                     const usedPass = checked[2] ? values[2] : ""
                     if (!users.find(u => u.name === usedName)) { return { success: false, message: messages.USER_NAME_NO_EXIST } }

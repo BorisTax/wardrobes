@@ -78,6 +78,7 @@ export const updateMaterialAtom = atom(null, async (get, set, { name, material, 
     try {
         const result = await fetchData("/api/materials/material", "PUT", JSON.stringify(data))
         await set(loadMaterialListAtom)
+        await set(resetMaterialImageAtom, material, name)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
         console.error(e)
@@ -93,6 +94,10 @@ export function setInitialMaterials(rootFasades: Fasad[], material: FasadMateria
 }
 
 export const materialImageAtom = atom<{material: FasadMaterial, name: string, image: string}[]>([])
+const resetMaterialImageAtom = atom(null, async (get, set, material, name)=>{
+    const images = get(materialImageAtom).filter(i => i.material !== material || i.name !== name)
+    set(materialImageAtom, images)
+})
 export const loadMaterialImageAtom = atom(null, async (get, set, material: FasadMaterial, name: string) => {
     const { token, permissions } = get(userAtom)
     if (!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }

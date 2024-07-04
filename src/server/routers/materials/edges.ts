@@ -25,6 +25,7 @@ export async function updateEdge({ name, newName, dsp, code }: NewEdge) {
   if (!result.success) return result
   const edges = result.data
   if (!(edges as Edge[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  if ((edges as Edge[]).find(m => m.dsp === dsp)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_CORRESPOND_EXIST }
   return await materialService.updateExtData({ name, dsp, newName, code })
 }
 

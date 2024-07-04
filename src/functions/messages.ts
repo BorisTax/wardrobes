@@ -16,6 +16,7 @@ export const rusMessages = {
   [messages.MATERIAL_DELETED]: "Материал удален",
   [messages.MATERIAL_UPDATED]: "Материал обновлен",
   [messages.MATERIAL_LINKED]: "Данный материал привязан к другому",
+  [messages.MATERIAL_CORRESPOND_EXIST]: "Соответствие материалов уже существует",
 
   [messages.TEMPLATE_EXIST]: "Шаблон уже существует",
   [messages.TEMPLATE_NO_EXIST]: "Шаблон не найден",

@@ -170,6 +170,7 @@ export async function getConfirmat(data: WardrobeData, details: Detail[]): Promi
     let total = 0;
     details.forEach(d => {
         const conf = d.count * getConfirmatByDetail(d.name)
+        if (conf === 0) return 
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
         verbose.push([caption, `${d.count}`, `${conf}`]);
         total += conf;
@@ -195,6 +196,7 @@ export async function getMinifix(data: WardrobeData, details: Detail[]): Promise
     let total = 0;
     details.forEach(d => {
         const count = d.count * getMinifixByDetail(d.name)
+        if (count === 0) return
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
         verbose.push([caption, `${d.count}`, `${count}`]);
         total += count;

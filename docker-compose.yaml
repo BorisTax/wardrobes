@@ -3,7 +3,7 @@ services:
   app:
     build: .
     restart: always
-    image: boristax/wardrobes:v0.3.3
+    image: boristax/wardrobes:v0.3.4
     ports:
       - "5555:5000"
       - "8888:8888"

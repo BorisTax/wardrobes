@@ -26,6 +26,7 @@ export async function updateExtMaterial({ name, material, newName, image, code, 
   if (!result.success) return result
   const materials = result.data
   if (!(materials as ExtMaterial[]).find(m => m.name === name && m.material === material)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  if ((materials as ExtMaterial[]).find(m => m.name === newName)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_EXIST }
   return await materialService.updateExtMaterial({ name, material, newName, image, code, purpose })
 }
 

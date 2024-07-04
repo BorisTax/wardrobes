@@ -9,6 +9,7 @@ import { Permissions, RESOURCE, UserRole } from '../../types/user.js'
 import { StatusCodes } from 'http-status-codes'
 import WebSocket from 'ws'
 import { dateToString } from '../functions/user.js'
+import { badRequestResponse, conflictResponse, forbidResponse } from '../functions/response.js'
 
 export const socketsMap = new Map<WebSocket, string>()
 export const sockets = new Set<WebSocket>()
@@ -139,23 +140,23 @@ export class UserService implements IUserService {
   }
   async updateUser({ userName, password, role }: { userName: string, password?: string, role?: UserRole }): Promise<Result<null>>{
     const superusers = (await this.getSuperUsers()).data?.map(m => m.name)
-    if (superusers?.find(s => s === userName)) return { success: false, status: 403, message: messages.USER_DELETE_DENIED }
+    if (superusers?.find(s => s === userName)) return forbidResponse(messages.USER_UPDATE_DENIED)
     return this.provider.updateUser({userName, password, role})
 }
   async deleteUser(user: User) {
     const superusers = (await this.getSuperUsers()).data?.map(m => m.name)
-    if (superusers?.find(s => s === user.name)) return { success: false, status: 403, message: messages.USER_DELETE_DENIED }
+    if (superusers?.find(s => s === user.name)) return forbidResponse(messages.USER_DELETE_DENIED)
     const result = await this.provider.deleteUser(user)
     if (result.success) notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
     return result
   }
   async isUserNameExist(name: string) {
-    if (!name) return { success: false, status: StatusCodes.BAD_REQUEST, message: messages.INVALID_USER_DATA }
+    if (!name) return badRequestResponse(messages.INVALID_USER_DATA)
     const result = await this.getUsers()
     if (!result.success) return { ...result, data: null }
     const userList = result.data || []
     const user = (userList as User[]).find(u => u.name === name)
-    if (user) return { success: false, status: StatusCodes.CONFLICT, message: messages.USER_NAME_EXIST }
+    if (user) return conflictResponse(messages.USER_NAME_EXIST)
     return { success: true, status: StatusCodes.OK, message: messages.USER_NAME_ALLOWED }
   }
   async getPermissions(role: string, resource: RESOURCE): Promise<Permissions> {
@@ -176,12 +177,12 @@ export class UserService implements IUserService {
   }
   async addRole(name: string): Promise<Result<null>> {
     const roles = (await this.provider.getRoles()).data
-    if (roles?.find(r => r.name === name)) return { success: false, status: StatusCodes.CONFLICT, message: messages.ROLE_EXIST }
+    if (roles?.find(r => r.name === name)) return conflictResponse(messages.ROLE_EXIST)
     return this.provider.addRole(name)
   }
   async deleteRole(name: string): Promise<Result<null>> {
     const superroles = (await this.getSuperRoles()).data?.map(m => m.name)
-    if (superroles?.find(s => s === name)) return { success: false, status: 403, message: messages.ROLE_DELETE_DENIED }
+    if (superroles?.find(s => s === name)) return forbidResponse(messages.ROLE_DELETE_DENIED)
     return this.provider.deleteRole(name)
   }
   async getSuperUsers(): Promise<Result<{ name: string }[]>> {

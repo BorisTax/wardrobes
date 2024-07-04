@@ -121,5 +121,5 @@ export function noExistData(message: string): Result<null> {
     return { success: false, status: StatusCodes.NOT_FOUND, message }
 }
 export function accessDenied(res: Response) {
-    res.status(403).json({ success: false, message: messages.ACCESS_DENIED })
+    res.status(StatusCodes.FORBIDDEN).json({ success: false, message: messages.ACCESS_DENIED })
 }

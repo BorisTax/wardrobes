@@ -10,7 +10,7 @@ export const webSocketSetAtom = atom(null, (get, set, token: string) => {
     let wsClient = get(webSocketAtom)
     if (wsClient) wsClient.close()
     if(!token) return
-    wsClient = new WebSocket(`ws://${url}:8888?token=${token}`)
+    wsClient = new WebSocket(`wss://${url}:5000?token=${token}`)
     wsClient.addEventListener('error', (ev) => {
         console.error(ev)
     });
@@ -20,6 +20,7 @@ export const webSocketSetAtom = atom(null, (get, set, token: string) => {
 
     wsClient.addEventListener('message', function message(event) {
         const message = event.data
+        console.log(message)
         switch(message){
             case SERVER_EVENTS.LOGOUT:
                 set(logoutAtom)

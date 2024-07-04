@@ -1,5 +1,9 @@
 import express from 'express'
+import https from 'https'
 import http from 'http'
+//@ts-ignore
+import pem from 'https-pem'
+import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import cors from 'cors'
@@ -7,12 +11,15 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { router } from './routers.js'
 import { userRoleParser } from './options.js';
+import { createSocket } from './services/userService.js'
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-var app = express()
+const privateKey = fs.readFileSync(path.join(__dirname, './secure/wardrobes-privateKey.key'));
+const certificate = fs.readFileSync(path.join(__dirname, './secure/wardrobes.crt'));
+const credentials = {key: privateKey, cert: certificate};
+const app = express()
 app.use(cors())
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }))
 app.use(bodyParser.json({limit: '50mb'}))
@@ -27,12 +34,15 @@ app.use(function (req, res) {
   })
 
 const port = process.env.PORT || 5000
-export const httpServer = http.createServer(app);
-httpServer.listen(port, () => {
-  console.log(`HTTP server running on ${port}.`)
+// export const httpServer = http.createServer(app);
+// httpServer.listen(port, () => {
+//   console.log(`HTTP server running on ${port}.`)
+// })
+
+const httpsServer = https.createServer(pem, app);
+httpsServer.listen(port, () => {
+  console.log(`HTTPS server running on ${port}.`)
+  createSocket(httpsServer)
 })
-//  var httpsServer = https.createServer(credentials, app);
-// httpsServer.listen(port, () => {
-//     debug(`HTTPS server running on ${port}.`)
-//   })
+
 

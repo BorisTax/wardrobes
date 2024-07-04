@@ -56,7 +56,6 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             {permPrice?.read ? <td className="table-data-cell">{price.toFixed(2)}</td> : <></>}
             {permPrice?.read ? <td className="table-data-cell">{(amount * price).toFixed(2)}</td> : <></>}
             {permPrice?.read ? <td className="table-data-cell">{item.markup}</td> : <></>}
-            {permPrice?.read ? <td className="table-data-cell">{item.id || ""}</td> : <></>}
         </tr >
     })
     return <div className="specification-table">
@@ -72,7 +71,6 @@ export default function SpecificationTable(props: SpecificationTableProps) {
                         {permPrice?.read ? <th className="table-header">Цена за ед</th> : <></>}
                         {permPrice?.read ? <th className="table-header">Цена</th> : <></>}
                         {permPrice?.read ? <th className="table-header">Наценка</th> : <></>}
-                        {permPrice?.read ? <th className="table-header">Идентификатор</th> : <></>}
                     </tr>
                 </thead>
                 <tbody>{contents}</tbody>

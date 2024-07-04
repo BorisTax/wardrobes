@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import https from 'https'
 import { Result, Token } from '../../types/server.js'
 import { PERMISSIONS_SCHEMA, User } from "../../types/user.js"
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
@@ -14,8 +15,8 @@ import { badRequestResponse, conflictResponse, forbidResponse } from '../functio
 export const socketsMap = new Map<WebSocket, string>()
 export const sockets = new Set<WebSocket>()
 type WebSocketOld = WebSocket & { upgradeReq: { url: string } }
-export function createSocket() {
-  const wsServer = new WebSocket.Server({ port: 8888 })
+export function createSocket(server: https.Server) {
+  const wsServer = new WebSocket.Server({ server })
   wsServer.on('connection', async (ws: WebSocketOld) => {
     const token = (ws.upgradeReq?.url || "=").split("=")[1]
     if (!token) return ws.close()
@@ -42,11 +43,11 @@ export function createSocket() {
   wsServer.on('close', () => {
     sockets.clear()
     socketsMap.clear()
-    createSocket()
+    createSocket(server)
   })
 }
 
-createSocket()
+
 
 export const events: Map<string, EventEmitter> = new Map()
 export async function getTokens(): Promise<Token[]> {

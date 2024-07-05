@@ -1,5 +1,3 @@
-import EventEmitter from 'events'
-import https from 'https'
 import { Result, Token } from '../../types/server.js'
 import { PERMISSIONS_SCHEMA, User } from "../../types/user.js"
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
@@ -8,48 +6,11 @@ import { userServiceProvider } from '../options.js'
 import { SERVER_EVENTS } from "../../types/enums.js"
 import { Permissions, RESOURCE, UserRole } from '../../types/user.js'
 import { StatusCodes } from 'http-status-codes'
-import WebSocket from 'ws'
-import { dateToString } from '../functions/user.js'
 import { badRequestResponse, conflictResponse, forbidResponse } from '../functions/response.js'
+import { Response } from 'express'
 
-export const socketsMap = new Map<WebSocket, string>()
-export const sockets = new Set<WebSocket>()
-type WebSocketOld = WebSocket & { upgradeReq: { url: string } }
-export function createSocket(server: https.Server) {
-  const wsServer = new WebSocket.Server({ server })
-  wsServer.on('connection', async (ws: WebSocketOld) => {
-    const token = (ws.upgradeReq?.url || "=").split("=")[1]
-    if (!token) return ws.close()
-    const userService = new UserService(userServiceProvider)
-    const result = await userService.getUser(token)
-    const user = result.data && result.data[0]
-    console.log('Client connected', user?.name, dateToString(new Date()))
-    sockets.add(ws)
-    socketsMap.set(ws, token)
-    ws.on('error', console.error);
-    ws.on('message', (data) => {
-      
-    });
-    ws.on('close', async (code, reason) => {
-      const userService = new UserService(userServiceProvider)
-      const token = socketsMap.get(ws) || ""
-      const result = await userService.getUser(token)
-      const user = result.data && result.data[0]
-      console.log('Client disconnected', user?.name, dateToString(new Date()))
-      sockets.delete(ws)
-      socketsMap.delete(ws)
-    })
-  });
-  wsServer.on('close', () => {
-    sockets.clear()
-    socketsMap.clear()
-    createSocket(server)
-  })
-}
+export const events: Map<string, Response> = new Map()
 
-
-
-export const events: Map<string, EventEmitter> = new Map()
 export async function getTokens(): Promise<Token[]> {
   const userService = new UserService(userServiceProvider);
   const result = await userService.getTokens()
@@ -65,9 +26,9 @@ const clearExpiredTokens = async () => {
     if (Date.now() - t.lastActionTime > expiredInterval) {
       await userService.deleteToken(t.token)
       console.log('Token was deleted by expiration', t.username, t.token.substring(0, 7) + "....." + t.token.substring(t.token.length - 7))
-      socketsMap.forEach((v, k) => {
+      events.forEach((v, k) => {
         try{
-        if (v === t.token && k.readyState !== WebSocket.CLOSED) k.close()
+          if (k === t.token) v.end()
         } catch (e) { 
           console.error(e)
         }
@@ -79,9 +40,9 @@ const clearExpiredTokens = async () => {
 setInterval(clearExpiredTokens, 60000)
 
 export function notifyActiveUsers(message: SERVER_EVENTS) {
-  socketsMap.forEach((v, k) => {
+  events.forEach((v, k) => {
     try {
-      if (k.readyState !== WebSocket.CLOSED) k.send(message)
+      v.write(getEventSourceMessage(message))
     } catch (e) {
       console.error(e)
     }
@@ -89,9 +50,18 @@ export function notifyActiveUsers(message: SERVER_EVENTS) {
 }
 
 export function logoutUser(token: string) {
-  socketsMap.forEach((v, k) => {
-    if (v === token) k.send(SERVER_EVENTS.LOGOUT)
+  events.forEach((v, k) => {
+    try {
+      
+      if (k === token) v.write(getEventSourceMessage(SERVER_EVENTS.LOGOUT))
+    } catch (e) {
+      console.error(e)
+    }
   })
+}
+
+function getEventSourceMessage(message: string, comment: string = ""){
+  return `data: {"message":"${message}", "comment":"${comment}"}\n\n`
 }
 export class UserService implements IUserService {
   provider: IUserServiceProvider

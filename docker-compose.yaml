@@ -3,10 +3,11 @@ services:
   app:
     build: .
     restart: always
-    image: boristax/wardrobes:v0.3.5
+    environment:
+      - VERSION=0.3.6
+    image: boristax/wardrobes:v0.3.6
     ports:
       - "5555:5555"
-      - "8888:8888"
     command: npm run start
     volumes: 
       - wardrobes-db:/app/src/server/database

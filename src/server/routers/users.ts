@@ -7,7 +7,6 @@ import { accessDenied, hashData, incorrectData } from '../functions/database.js'
 import { MyRequest, Result, Token } from '../../types/server.js';
 import { ActiveUser, PERMISSION, User, UserData } from "../../types/user.js";
 import { JWT_SECRET, userServiceProvider } from '../options.js';
-import EventEmitter from 'events';
 import { SERVER_EVENTS } from "../../types/enums.js";
 import { RESOURCE } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
@@ -22,12 +21,13 @@ router.get("/hash", async (req, res) => {
 
 router.get("/events", async (req, res) => {
   const token = (req as MyRequest).token as string;
-  const event = events.set(token, new EventEmitter()).get(token) as EventEmitter
-  event.removeAllListeners("message")
-  event.on("message", (message: SERVER_EVENTS, data: string) => {
-    try{
-      if (!res.headersSent) res.status(StatusCodes.OK).json({ success: true, message, data })
-    } catch (e) { console.log('event on message error - ', e)}
+  const tokens = await getTokens()
+  if (!tokens.find(t => token)) return accessDenied(res)
+  events.set(token, res)
+  res.writeHead(200, {
+    Connection: 'keep-alive',
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache'
   })
 });
 

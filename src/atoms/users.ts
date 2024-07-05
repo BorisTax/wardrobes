@@ -2,7 +2,6 @@ import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
 import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserData, UserRole } from "../types/user"
-import { AtomCallbackResult } from "../types/atoms"
 import { loadMaterialListAtom } from "./materials/materials"
 import { loadProfileListAtom } from "./materials/profiles"
 import { loadEdgeListAtom } from "./materials/edges"
@@ -11,7 +10,7 @@ import { loadTrempelListAtom } from "./materials/trempel"
 import { loadZaglushkaListAtom } from "./materials/zaglushka"
 import { loadUplotnitelListAtom } from "./materials/uplotnitel"
 import { loadSpecificationListAtom } from "./specification"
-import { webSocketSetAtom } from "./websocket"
+import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
 
 
 export type UserState = {
@@ -62,7 +61,7 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         if (!result.success) {
             localStorage.removeItem("token")
             set(userAtomPrivate, getInitialUser())
-            set(webSocketSetAtom, "")
+            set(closeEventSourceAtom)
             return
         }
     }
@@ -73,13 +72,15 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         storeUser = { name, role, token, permissions }
         storeUser.permissions = permissionsToMap(permissions)
         set(userAtomPrivate, storeUser)
-        if (token !== prevToken) set(webSocketSetAtom, token)
+        if (token !== prevToken) {
+            set(newEventSourceAtom, token)
+        }
         localStorage.setItem('token', storeUser.token)
     } catch (e) {
         storeUser = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
         localStorage.removeItem("token")
         set(userAtomPrivate, getInitialUser())
-        set(webSocketSetAtom, "")
+        set(closeEventSourceAtom)
     }
     set(loadAllDataAtom, storeUser.permissions)
 }
@@ -104,7 +105,7 @@ export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     const user = get(userAtom)
     fetchData('/api/users/logout', "POST", JSON.stringify({ token: user.token }))
     set(userAtom, "")
-    set(webSocketSetAtom, "")
+    set(closeEventSourceAtom)
 })
 export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, usertoken: string) => {
     const user = get(userAtom)

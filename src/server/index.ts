@@ -1,8 +1,5 @@
 import express from 'express'
-import https from 'https'
 import http from 'http'
-//@ts-ignore
-import pem from 'https-pem'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url';
@@ -11,7 +8,6 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { router } from './routers.js'
 import { userRoleParser } from './options.js';
-import { createSocket } from './services/userService.js'
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -34,15 +30,10 @@ app.use(function (req, res) {
   })
 
 const port = process.env.PORT || 5555
-// export const httpServer = http.createServer(app);
-// httpServer.listen(port, () => {
-//   console.log(`HTTP server running on ${port}.`)
-// })
-
-const httpsServer = https.createServer(pem, app);
-httpsServer.listen(port, () => {
-  console.log(`HTTPS server running on ${port}.`)
-  createSocket(httpsServer)
+export const httpServer = http.createServer(app);
+httpServer.listen(port, () => {
+  console.log(`HTTP server running on ${port}.`)
 })
+
 
 

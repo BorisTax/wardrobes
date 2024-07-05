@@ -33,7 +33,7 @@ app.use(function (req, res) {
     res.sendFile(path.join(__dirname, '../../dist/index.html'))
   })
 
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5555
 // export const httpServer = http.createServer(app);
 // httpServer.listen(port, () => {
 //   console.log(`HTTP server running on ${port}.`)

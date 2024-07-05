@@ -3,9 +3,9 @@ services:
   app:
     build: .
     restart: always
-    image: boristax/wardrobes:v0.3.4
+    image: boristax/wardrobes:v0.3.5
     ports:
-      - "5555:5000"
+      - "5555:5555"
       - "8888:8888"
     command: npm run start
     volumes: 

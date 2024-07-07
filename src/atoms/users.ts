@@ -1,7 +1,7 @@
 import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserData, UserRole } from "../types/user"
+import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserData, UserLoginResult, UserRole } from "../types/user"
 import { loadMaterialListAtom } from "./materials/materials"
 import { loadProfileListAtom } from "./materials/profiles"
 import { loadEdgeListAtom } from "./materials/edges"
@@ -55,7 +55,7 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
 })
 
 const userAtomPrivate = atom(getInitialUser())
-export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, set: Setter, token: string, verify = false) => {
+export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, set: Setter, { token, permissions }: UserLoginResult, verify = false) => {
     if (verify) {
         const result = await fetchGetData(`/api/users/verify?token=${token}`)
         if (!result.success) {
@@ -68,9 +68,8 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
     let storeUser: UserState = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
     const prevToken = get(userAtomPrivate).token
     try {
-        const { name, role, permissions } = jwtDecode(token) as UserState & { permissions: PERMISSIONS_SCHEMA[] }
-        storeUser = { name, role, token, permissions }
-        storeUser.permissions = permissionsToMap(permissions)
+        const { name, role } = jwtDecode(token) as UserState
+        storeUser = { name, role, token, permissions: permissionsToMap(permissions) }
         set(userAtomPrivate, storeUser)
         if (token !== prevToken) {
             set(newEventSourceAtom, token)
@@ -88,13 +87,13 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
 
 export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const { token } = get(userAtom)
-        const result = await fetchGetData(`/api/users/verify?token=${token}`)
-        if (!result.success) {
-            localStorage.removeItem("token")
-            set(userAtom, "")
-            return
-        }
-    set(userAtom, token)
+    const result = await fetchGetData<{token: string, permissions: PERMISSIONS_SCHEMA[]}>(`/api/users/verify?token=${token}`)
+    if (!result.success) {
+        localStorage.removeItem("token")
+        set(userAtom, { token: "", permissions: [] })
+        return
+    }
+    set(userAtom, {token, permissions: result.data?.permissions || []})
     const timer = setInterval(() => { 
         set(verifyUserAtom)
        }, 60000)
@@ -104,7 +103,7 @@ export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")
     const user = get(userAtom)
     fetchData('/api/users/logout', "POST", JSON.stringify({ token: user.token }))
-    set(userAtom, "")
+    set(userAtom, { token: "", permissions: [] })
     set(closeEventSourceAtom)
 })
 export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, usertoken: string) => {

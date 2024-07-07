@@ -5,6 +5,7 @@ import { Result } from "../../types/server"
 import CheckBox from "../inputs/CheckBox"
 import { userAtom } from "../../atoms/users"
 import { useNavigate } from "react-router-dom"
+import { UserLoginResult } from "../../types/user"
 
 export default function LoginDialog() {
     const navigate = useNavigate()
@@ -14,7 +15,7 @@ export default function LoginDialog() {
     const [state, setState] = useState({ loading: false, message: "" })
     const login = (name: string, password: string) => {
         setState({ loading: true, message: "" })
-        const onResolve = (r: Result<string | null>) => { setUser(r.data as string); navigate('/') }
+        const onResolve = (r: Result<UserLoginResult | null>) => { setUser({ token: r.data?.token || "", permissions: r.data?.permissions || [] }); navigate('/') }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }
         const onCatch = () => { setState({ loading: false, message: "Ошибка сервера" }) }
         onFetch('/api/users/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)

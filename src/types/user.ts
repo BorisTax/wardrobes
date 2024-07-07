@@ -60,3 +60,5 @@ export type PERMISSIONS_SCHEMA = {
     update: boolean,
     remove: boolean,
 }
+
+export type UserLoginResult = { token: string, permissions: PERMISSIONS_SCHEMA[] }

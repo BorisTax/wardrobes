@@ -2,7 +2,7 @@ import messages from '../messages.js'
 import express from "express";
 import { accessDenied, incorrectData, noExistData } from '../functions/database.js';
 import { MyRequest, PriceData } from '../../types/server.js';
-import { PERMISSION, RESOURCE, UserRoles } from "../../types/user.js";
+import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { priceServiceProvider } from '../options.js';
 import { PriceService } from '../services/priceService.js';
 import { hasPermission } from './users.js';

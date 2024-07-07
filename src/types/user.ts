@@ -6,6 +6,7 @@ export enum RESOURCE {
     TEMPLATE = 'template',
     FILES = 'files',
     DATABASE = 'database',
+    VERBOSE = 'verbose',
 }
 export enum PERMISSION{
     READ = 'read',
@@ -36,13 +37,7 @@ export type UserData = {
     role: UserRole
     permissions: PERMISSIONS_SCHEMA[]
 }
-export enum UserRoles {
-    ADMIN = 'ADMIN',
-    EDITOR = 'EDITOR',
-    MANAGER = 'MANAGER',
-    CLIENT = 'CLIENT',
-    ANONYM = 'ANONYM'
-}
+
 export type ActiveUser = {
     name: string
     role: UserRole

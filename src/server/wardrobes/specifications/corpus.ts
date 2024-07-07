@@ -18,7 +18,7 @@ import { getDSP } from "./functions"
 import { getCoef } from "./functions"
 import { calcFunction } from "./functions"
 
-export async function getCorpusSpecification(data: WardrobeData, profile: Profile): Promise<SpecificationResult[]> {
+export async function getCorpusSpecification(data: WardrobeData, profile: Profile, verbose = false): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
     const details = await getDetails(data.wardKind, data.width, data.height, data.depth);
     const karton = await getKarton(data)
@@ -52,6 +52,11 @@ export async function getCorpusSpecification(data: WardrobeData, profile: Profil
     result.push([SpecificationItem.Stopor, await getStopor(data)])
     result.push([SpecificationItem.ConfKluch, await getKluch(data)])
     result.push([SpecificationItem.Box, await getBox(data)])
+    if (!verbose) {
+        result.forEach(r => {
+            r[1].verbose = undefined
+        })
+    }
     return result
 }
 

@@ -1,6 +1,4 @@
 import { getFasadSpecification } from "../wardrobes/specifications/fasades.js"
-import { filterEmptySpecification } from "../wardrobes/specifications/functions.js"
-import { flattenSpecification } from "../wardrobes/specifications/functions.js"
 import { CORPUS_SPECS } from "../../types/specification.js"
 import { SpecificationItem } from "../../types/specification"
 import { Profile, ProfileType } from '../../types/materials.js'
@@ -27,25 +25,25 @@ export class SpecificationService implements ISpecificationService {
   async updateSpecList(item: SpecificationData): Promise<Result<null>> {
     return await this.provider.updateSpecList(item)
   }
-  async getSpecData(data: WardrobeData): Promise<Result<SpecificationMultiResult>> {
+  async getSpecData(data: WardrobeData, verbose = false): Promise<Result<SpecificationMultiResult>> {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: SpecificationMultiResult = []
     const profiles = (await this.matProvider.getProfiles()).data
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
     const fasades = createFasades(data, profile?.type as ProfileType)
-    const corpus = await getCorpusSpecification(data, profile as Profile)
+    const corpus = await getCorpusSpecification(data, profile as Profile, verbose)
     result.push({ type: CORPUS_SPECS.CORPUS, spec: corpus })
     for(let f of fasades){ 
-      const fasadSpec = await getFasadSpecification(f, profile as Profile)
+      const fasadSpec = await getFasadSpecification(f, profile as Profile, verbose)
       result.push({ type: f.Material, spec: fasadSpec })
      }
-    const extSpec = await getExtComplectSpecification(data)
+    const extSpec = await getExtComplectSpecification(data, verbose)
     for(let ext of extSpec){
       result.push(ext)
     }
     return {success: true, status: StatusCodes.OK, data: result}
   }
-  async getSpecCombiData(data: AppState): Promise<Result<(SpecificationResult[])[]>> {
+  async getSpecCombiData(data: AppState, verbose = false): Promise<Result<(SpecificationResult[])[]>> {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: (SpecificationResult[])[] = []
     const profiles = (await this.matProvider.getProfiles()).data
@@ -53,7 +51,7 @@ export class SpecificationService implements ISpecificationService {
     if(!profile) return {success: false, status: StatusCodes.BAD_REQUEST, data: result}
     const fasades = data.rootFasadesState.map(r => newFasadFromState(r))
     for (let f of fasades) {
-      const fasadSpec = await getFasadSpecification(f, profile  as Profile)
+      const fasadSpec = await getFasadSpecification(f, profile  as Profile, verbose)
       //const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
       result.push(fasadSpec)
     }

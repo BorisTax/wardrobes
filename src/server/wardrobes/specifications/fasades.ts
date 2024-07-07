@@ -48,9 +48,15 @@ export function createFasades(data: WardrobeData, profileType: ProfileType): Fas
     return fasades
 }
 
-export async function getFasadSpecification(fasad: Fasad, profile: Profile): Promise<SpecificationResult[]> {
+export async function getFasadSpecification(fasad: Fasad, profile: Profile, verbose = false): Promise<SpecificationResult[]> {
     const spec = await calcSpecification(fasad, profile);
-    return flattenSpecification(spec);
+    const result = flattenSpecification(spec);
+    if (!verbose) {
+        result.forEach(r => {
+            r[1].verbose = undefined
+        })
+    }
+    return result
 }
 
 async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {

@@ -4,7 +4,6 @@ import sqlite3 from "sqlite3";
 import messages from '../messages.js';
 import { Response } from "express"
 import { MyRequest, Result } from '../../types/server.js';
-import { UserRoles } from "../../types/user.js";
 import { StatusCodes } from 'http-status-codes';
 
 export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
@@ -97,13 +96,6 @@ export async function moveFile(sourcefile: string, destfile: string): Promise<{ 
     })
 }
 
-export const checkPermissions = (req: MyRequest, res: Response, roles: UserRoles[]) => {
-    if (!roles.some(r => r === req.userRole)) {
-        res.status(403).json({ success: false, message: messages.ACCESS_DENIED })
-        return false
-    }
-    return true
-}
 
 export function hashData(data: string): Promise<Result<string>> {
     return new Promise((resolve) => {

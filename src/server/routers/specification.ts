@@ -9,6 +9,7 @@ import messages from "../messages.js";
 import { AppState } from "../../types/app.js";
 import { hasPermission } from "./users.js";
 import { PriceService } from "../services/priceService.js";
+import { verbose } from "sqlite3";
 
 const router = express.Router();
 export default router
@@ -26,16 +27,18 @@ router.put("/", async (req, res) => {
 });
 router.post("/data", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
+  const verbose = await hasPermission(req as MyRequest, RESOURCE.VERBOSE, [PERMISSION.READ])
   const { data } = req.body
-  const result = await getSpecData(data);
+  const result = await getSpecData(data, verbose);
   res.status(result.status).json(result);
 });
 
 router.post("/combidata", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
+  const verbose = await hasPermission(req as MyRequest, RESOURCE.VERBOSE, [PERMISSION.READ])
   const pricePerm = await hasPermission(req as MyRequest, RESOURCE.PRICES, [PERMISSION.READ])
   const { data } = req.body
-  const result = await getSpecCombiData(data, pricePerm);
+  const result = await getSpecCombiData(data, pricePerm, verbose);
   res.json({ success: true, data: result });
 });
 
@@ -54,14 +57,14 @@ export async function updateSpecList({ name, caption, coef, code, id }: Specific
   return await priceService.updateSpecList({ name, caption, coef, code, id })
 }
 
-export async function getSpecData(data: WardrobeData) {
+export async function getSpecData(data: WardrobeData, verbose = false) {
   const specService = new SpecificationService(specServiceProvider, materialServiceProvider)
-  return await specService.getSpecData(data)
+  return await specService.getSpecData(data, verbose)
 }
 
-export async function getSpecCombiData(data: AppState, pricePerm: boolean) {
+export async function getSpecCombiData(data: AppState, pricePerm: boolean, verbose = false) {
   const specService = new SpecificationService(specServiceProvider, materialServiceProvider)
-  const specifications = (await specService.getSpecCombiData(data)).data as SpecificationResult[][]
+  const specifications = (await specService.getSpecCombiData(data, verbose)).data as SpecificationResult[][]
   const totalPrice = pricePerm ? await getTotalPrice(specifications) : specifications.map(s => 0)
   return { specifications, totalPrice }
 }

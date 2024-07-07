@@ -1,6 +1,5 @@
 import { CORPUS_SPECS } from "../../../../types/specification"
 import { SpecificationMultiResult } from "../../../../types/wardrobe"
-import { Profile } from "../../../../types/materials"
 import { WardrobeData } from "../../../../types/wardrobe"
 import { getDrawerSpecification } from "./drawer"
 import { getConsoleSpecification } from "./console"
@@ -13,7 +12,7 @@ import { getTrubaSpecification } from "./truba"
 import { getTrempelSpecification } from "./trempel"
 import { getLightSpecification } from "./light"
 
-export async function getExtComplectSpecification(data: WardrobeData): Promise<SpecificationMultiResult> {
+export async function getExtComplectSpecification(data: WardrobeData, verbose = false): Promise<SpecificationMultiResult> {
     const result: SpecificationMultiResult = []
     if (data.extComplect.telescope > 0) result.push({ type: CORPUS_SPECS.EXT_TEL, spec: await getDrawerSpecification(data) })
     if (data.extComplect.console.count > 0) result.push({ type: CORPUS_SPECS.EXT_CONSOLE, spec: await getConsoleSpecification(data) })
@@ -25,6 +24,13 @@ export async function getExtComplectSpecification(data: WardrobeData): Promise<S
     if (data.extComplect.truba > 0) result.push({ type: CORPUS_SPECS.EXT_TUBE, spec: await getTrubaSpecification(data) })
     if (data.extComplect.trempel > 0) result.push({ type: CORPUS_SPECS.EXT_TREMPEL, spec: await getTrempelSpecification(data) })
     if (data.extComplect.light > 0) result.push({ type: CORPUS_SPECS.EXT_LIGHT, spec: await getLightSpecification(data) })
+    if (!verbose) {
+        result.forEach(r => {
+            r.spec.forEach(rs => {
+                rs[1].verbose = undefined
+            })
+        })
+    }
     return result
 }
 

@@ -7,6 +7,8 @@ export enum RESOURCE {
     FILES = 'files',
     DATABASE = 'database',
     VERBOSE = 'verbose',
+    COMBIFASADES = 'combifasades',
+    WARDROBES = 'wardrobes',
 }
 export enum PERMISSION{
     READ = 'read',

@@ -33,7 +33,7 @@ export default function WardrobePropertiesBar() {
     const { next, previous } = useAtomValue(historyAppAtom)
     const undo = useSetAtom(undoAtom)
     const redo = useSetAtom(redoAtom)
-    const perm = user.permissions.get(RESOURCE.FILES)
+    const perm = user.permissions.get(RESOURCE.COMBIFASADES)
     const saveFileDisabled = !perm?.create
     const readFileDisabled = !perm?.read
     const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.CORPUS)), [])

@@ -65,10 +65,8 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
     try {
         const { name, role } = jwtDecode(token) as UserState
         storeUser = { name, role, token, permissions: permissionsToMap(permissions) }
+        set(newEventSourceAtom, token)
         set(userAtomPrivate, storeUser)
-        if (token !== prevToken) {
-            set(newEventSourceAtom, token)
-        }
         localStorage.setItem('token', storeUser.token)
     } catch (e) {
         storeUser = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
@@ -77,6 +75,7 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         set(closeEventSourceAtom)
     }
     set(loadAllDataAtom, storeUser.permissions)
+    set(setTimerAtom)
 }
 )
 

@@ -7,7 +7,7 @@ import ImageLink from "./inputs/ImageLink"
 import { RESOURCE } from "../types/user"
 export default function NavBar() {
   const {permissions} = useAtomValue(userAtom)
-  const permMat = permissions.get(RESOURCE.MATERIALS)
+  const permMat = permissions.get(RESOURCE.MATERIALS_DB)
   const permPrice = permissions.get(RESOURCE.PRICES)
   const permSpec = permissions.get(RESOURCE.SPECIFICATION)
   const permUsers = permissions.get(RESOURCE.USERS)

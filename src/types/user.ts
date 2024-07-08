@@ -1,6 +1,7 @@
 export enum RESOURCE {
     USERS = 'users',
     MATERIALS = 'materials',
+    MATERIALS_DB = 'materials_db',
     PRICES = 'prices',
     SPECIFICATION = 'specification',
     TEMPLATE = 'template',
@@ -10,10 +11,10 @@ export enum RESOURCE {
     COMBIFASADES = 'combifasades',
     WARDROBES = 'wardrobes',
 }
-export enum PERMISSION{
+export enum PERMISSION {
     READ = 'read',
-    CREATE= 'create',
-    UPDATE='update',
+    CREATE = 'create',
+    UPDATE = 'update',
     REMOVE = 'remove',
 }
 export type Permissions = {

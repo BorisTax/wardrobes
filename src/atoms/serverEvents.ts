@@ -1,13 +1,16 @@
 import { atom } from 'jotai'
 import { SERVER_EVENTS } from '../types/enums'
-import { loadActiveUsersAtom, logoutAtom } from './users'
+import { loadActiveUsersAtom, logoutAtom, userAtom } from './users'
 
 export const eventSourceAtom = atom<EventSource | null>(null)
 export const newEventSourceAtom = atom(null, async (get, set, token: string) => {
-    const eventSource = new EventSource(`/api/users/events?token=${token}`);
-    eventSource.onopen = ev => {
-        set(eventSourceAtom, eventSource)
+    const { token: prevToken } = get(userAtom)
+    const prev = get(eventSourceAtom)
+    if (prev) {
+        if (token === prevToken) return 
+        prev.close()
     }
+    const eventSource = new EventSource(`/api/users/events?token=${token}`);
     eventSource.onmessage = function (event) {
         const data = JSON.parse(event.data)
         console.log("Новое сообщение", data);
@@ -25,6 +28,7 @@ export const newEventSourceAtom = atom(null, async (get, set, token: string) => 
         console.error('EventSource', ev)
         set(closeEventSourceAtom)
     }
+    set(eventSourceAtom, eventSource)
 })
 export const closeEventSourceAtom = atom(null, async (get, set) => {
     try {

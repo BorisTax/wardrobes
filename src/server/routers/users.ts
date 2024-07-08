@@ -40,6 +40,7 @@ router.get("/verify", async (req, res) => {
   const userRole = await userService.getUserRole(tokenData?.username)
   const permissions = await userService.getAllUserPermissions(userRole)
   const result = await userService.updateToken(token)
+  notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   res.status(result.status).json({ ...result, data: { token, permissions }, success: true });
 });
 
@@ -174,7 +175,8 @@ async function loginUser(user: User): Promise<Result<UserLoginResult | null>> {
   const userRole = await userService.getUserRole(foundUser.name)
   const role = (await userService.getRoles()).data?.find(r => r.name === userRole) || ""
   const permissions = await userService.getAllUserPermissions(userRole)
-  const token = jwt.sign({ name: foundUser.name, role }, JWT_SECRET, { expiresIn: 1440 });
+  const random = Math.random()
+  const token = jwt.sign({ name: foundUser.name, role, random }, JWT_SECRET, { expiresIn: 1440 });
   return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, data: { token, permissions } };
 }
 

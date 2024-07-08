@@ -34,7 +34,7 @@ export default function EditUsersDialog() {
     const showMessage = useMessage()
     const showConfirm = useConfirm()
     const userListHeader = ["Имя", "Права"]
-    const activeUserListHeader = ["Имя", "Права", "Время", "Время простоя"]
+    const activeUserListHeader = ["Имя", "Права", "Время с момента входа", "Время последней активности"]
     const [userIndex, setUserIndex] = useState(0)
     const user = users[userIndex] || { name: "", role: { name: "" } }
     const userlist = users.map(u => {

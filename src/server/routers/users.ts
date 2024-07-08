@@ -40,7 +40,7 @@ router.get("/verify", async (req, res) => {
   const userRole = await userService.getUserRole(tokenData?.username)
   const permissions = await userService.getAllUserPermissions(userRole)
   const result = await userService.updateToken(token)
-  res.json({ ...result, data: { token, permissions }, success: true });
+  res.status(result.status).json({ ...result, data: { token, permissions }, success: true });
 });
 
 router.post("/login", async (req, res) => {
@@ -53,14 +53,14 @@ router.post("/login", async (req, res) => {
   const lastActionTime = time
   if (result.success) userService.addToken({ token: result.data?.token as string, username: user.name, time, lastActionTime })
   if (result.success) notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
-  res.json(result);
+  res.status(result.status).json(result);
 });
 
 router.post("/logout", async (req, res) => {
   const user = req.body;
   const userService = new UserService(userServiceProvider)
   const result = await userService.deleteToken(user.token)
-  res.json(result);
+  res.status(result.status).json(result);
 });
 
 router.post("/logoutuser", async (req, res) => {
@@ -69,7 +69,7 @@ router.post("/logoutuser", async (req, res) => {
   const user = req.body;
   const result = await userService.deleteToken(user.usertoken)
   if(result.success) logoutUser(user.usertoken)
-  res.json(result);
+  res.status(result.status).json(result);
 });
 
 router.get("/active", async (req, res) => {
@@ -95,7 +95,7 @@ router.post("/logoutall", async (req, res) => {
   userService.clearAllTokens()
   notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   events.clear()
-  res.json({ success: true });
+  res.status(StatusCodes.OK).json({ success: true });
 });
 
 router.post("/add", async (req, res) => {
@@ -104,7 +104,7 @@ router.post("/add", async (req, res) => {
   const user = req.body;
   if (!user.name || !user.password) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.registerUser(user.name, user.password, user.role);
-  res.json(result);
+  res.status(result.status).json(result);
 });
 router.post("/update", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
@@ -112,7 +112,7 @@ router.post("/update", async (req, res) => {
   const user = req.body;
   if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.updateUser({userName: user.name, password: user.password, role: user.role});
-  res.json(result);
+  res.status(result.status).json(result);
 });
 router.delete("/delete", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
@@ -120,7 +120,7 @@ router.delete("/delete", async (req, res) => {
   const user = req.body;
   if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.deleteUser(user);
-  res.json(result);
+  res.status(result.status).json(result);
 });
 
 router.get("/users", async (req, res) => {
@@ -151,7 +151,7 @@ router.post("/addRole", async (req, res) => {
   const { name } = req.body;
   if (!name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.addRole(name);
-  res.json(result);
+  res.status(result.status).json(result);
 });
 
 router.delete("/deleteRole", async (req, res) => {
@@ -160,7 +160,7 @@ router.delete("/deleteRole", async (req, res) => {
   const { name } = req.body;
   if (!name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.deleteRole(name);
-  res.json(result);
+  res.status(result.status).json(result);
 });
 
 async function loginUser(user: User): Promise<Result<UserLoginResult | null>> {

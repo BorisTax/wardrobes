@@ -1,7 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { getInitialUser, logoutAtom, userAtom } from "../atoms/users";
-import { loginDialogAtom } from "../atoms/dialogs";
 import useConfirm from "../custom-hooks/useConfirm";
 import { versionAtom } from "../atoms/app";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +18,7 @@ export default function User() {
     }>Выход</button>
     useEffect(() => {
       const { token } = getInitialUser();
-      setUser(token, true);
+        setUser({ token, permissions: [] }, true);
     }, [setUser]);
     useEffect(() => {
         if (!user.name) navigate('/login')

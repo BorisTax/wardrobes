@@ -57,13 +57,8 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
 const userAtomPrivate = atom(getInitialUser())
 export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, set: Setter, { token, permissions }: UserLoginResult, verify = false) => {
     if (verify) {
-        const result = await fetchGetData(`/api/users/verify?token=${token}`)
-        if (!result.success) {
-            localStorage.removeItem("token")
-            set(userAtomPrivate, getInitialUser())
-            set(closeEventSourceAtom)
-            return
-        }
+        set(verifyUserAtom)
+        return
     }
     let storeUser: UserState = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
     const prevToken = get(userAtomPrivate).token
@@ -93,12 +88,19 @@ export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
         set(userAtom, { token: "", permissions: [] })
         return
     }
-    set(userAtom, {token, permissions: result.data?.permissions || []})
-    const timer = setInterval(() => { 
-        set(verifyUserAtom)
-       }, 60000)
+    set(userAtom, { token, permissions: result.data?.permissions || [] })
+    set(setTimerAtom)
 })
 
+
+const timerAtom = atom<NodeJS.Timeout | undefined>(undefined)
+const setTimerAtom = atom(null, async (get, set) => {
+    const timer = get(timerAtom)
+    clearInterval(timer)
+    set(timerAtom, setInterval(() => {
+        set(verifyUserAtom)
+    }, 300000))
+})
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")
     const user = get(userAtom)

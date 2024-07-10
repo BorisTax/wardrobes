@@ -18,6 +18,29 @@ export type FasadesData = {
     lacobel: { count: number, names: string[] },
     lacobelGlass: { count: number, names: string[] }
 }
+export type ExtComplectData = {
+    telescope: number
+    console: {
+        count: number
+        height: number
+        depth: number
+        width: number
+        type: CONSOLE_TYPE
+    }
+    blinder: number
+    shelf: number
+    shelfPlat: number
+    pillar: number
+    stand: {
+        count: number
+        height: number
+    }
+    truba: number
+    trempel: number
+    light: number
+}
+
+
 export type WardrobeData = {
     wardKind: WARDROBE_KIND
     wardType: WARDROBE_TYPE
@@ -27,27 +50,7 @@ export type WardrobeData = {
     dspName: string
     fasades: FasadesData
     profileName: string
-    extComplect: {
-        telescope: number
-        console: {
-            count: number
-            height: number
-            depth: number
-            width: number
-            type: CONSOLE_TYPE
-        }
-        blinder: number
-        shelf: number
-        shelfPlat: number
-        pillar: number
-        stand: {
-            count: number
-            height: number
-        }
-        truba: number
-        trempel: number
-        light: number
-    }
+    extComplect: ExtComplectData
 }
 
 export type DVPData = {

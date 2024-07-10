@@ -10,9 +10,8 @@ import { profileListAtom } from "../atoms/materials/profiles"
 import TextBox from "./inputs/TextBox"
 import { ConsoleTypes, WardKinds, WardTypes } from "../functions/wardrobe"
 import { WARDROBE_KIND } from "../types/wardrobe"
-import { calculateSpecificationsAtom } from "../atoms/specification"
 import WardrobeSpecification from "./WardrobeSpecification"
-import { getInitExtComplect, initFasades, loadedInitialWardrobeDataAtom, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
+import { getInitExtComplect, initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
 import { RESOURCE } from "../types/user"
 import { userAtom } from "../atoms/users"
 import CheckBox from "./inputs/CheckBox"
@@ -27,9 +26,7 @@ export default function WardrobeCalculator() {
     const perm = permissions.get(RESOURCE.SPECIFICATION)
     const data = useAtomValue(wardrobeDataAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
-    const calculate = useSetAtom(calculateSpecificationsAtom)
     const materialList = useAtomValue(materialListAtom)
-    const loadedInitialWardrobeData = useAtomValue(loadedInitialWardrobeDataAtom)
     const dspList = useMemo(() => materialList.filter(m => m.purpose !== MAT_PURPOSE.FASAD).map(m => m.name), [materialList])
     const dsp10List = useMemo(() => materialList.filter(m => m.material === FasadMaterial.DSP && m.purpose !== MAT_PURPOSE.CORPUS).map(m => m.name), [materialList])
     const mirrorList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.MIRROR).map(m => m.name), [materialList])
@@ -46,9 +43,6 @@ export default function WardrobeCalculator() {
     useEffect(() => {
         if (standSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: extStand.length } } }))
     }, [extStand.length, standSameHeight])
-    useEffect(() => {
-        if (loadedInitialWardrobeData) calculate(data)
-    }, [data, loadedInitialWardrobeData, calculate])
     return <div className="container">
         <div className="row">
             <div className={`container col-xs-12 col-sm-12 ${perm?.read ? "col-md-6 col-lg-4" : "col-md-12 col-lg-12"}`}>
@@ -71,17 +65,17 @@ export default function WardrobeCalculator() {
                             <div className="text-end">Фасадов всего: </div>
                             <div className="d-flex align-items-center justify-content-between"><div>{totalFasades}</div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, fasades: initFasades })) }}>Сбросить</div></div>
                             <ComboBox title="ДСП:" value={`${fasades.dsp.count}`} items={numbers} onChange={(_, value: string) => { if (+value + totalFasades - fasades.dsp.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, dsp: { count: +value, names: new Array(+value).fill("") } } })) }} />
-                            {fasades.dsp.count > 0 && fasades.dsp.names.map((m, i) => <ComboBox styles={styles} key={"dsp" + i} title={`${i + 1}`} items={dsp10List} value={fasades.dsp.names[i]} onChange={(_, value) => { fasades.dsp.names[i] = value; setData(prev => ({ ...prev })) }} />)}
+                            {fasades.dsp.count > 0 && fasades.dsp.names.map((m, i) => <ComboBox styles={styles} key={"dsp" + i} title={`${i + 1}`} items={dsp10List} value={fasades.dsp.names[i]} onChange={(_, value) => { const names = [...fasades.dsp.names]; names[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, dsp: { ...prev.fasades.dsp, names } } })) }} />)}
                             <ComboBox title="Зеркало:" value={`${fasades.mirror.count}`} items={numbers} onChange={(_, value: string) => { if (+value + totalFasades - fasades.mirror.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, mirror: { count: +value, names: new Array(+value).fill("") } } })) }} />
-                            {fasades.mirror.count > 0 && fasades.mirror.names.map((m, i) => <ComboBox styles={styles} key={"mirror" + i} title={`${i + 1}`} items={mirrorList} value={fasades.mirror.names[i]} onChange={(_, value) => { fasades.mirror.names[i] = value; setData(prev => ({ ...prev })) }} />)}
+                            {fasades.mirror.count > 0 && fasades.mirror.names.map((m, i) => <ComboBox styles={styles} key={"mirror" + i} title={`${i + 1}`} items={mirrorList} value={fasades.mirror.names[i]} onChange={(_, value) => { const names = [...fasades.mirror.names]; names[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, mirror: { ...prev.fasades.mirror, names } } })) }} />)}
                             <ComboBox title="ФМП:" value={`${fasades.fmp.count}`} items={numbers} onChange={(_, value: string) => { if (+value + totalFasades - fasades.fmp.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, fmp: { count: +value, names: new Array(+value).fill("") } } })) }} />
-                            {fasades.fmp.count > 0 && fasades.fmp.names.map((m, i) => <ComboBox styles={styles} key={"fmp" + i} title={`${i + 1}`} items={fmpList} value={fasades.fmp.names[i]} onChange={(_, value) => { fasades.fmp.names[i] = value; setData(prev => ({ ...prev, })) }} />)}
+                            {fasades.fmp.count > 0 && fasades.fmp.names.map((m, i) => <ComboBox styles={styles} key={"fmp" + i} title={`${i + 1}`} items={fmpList} value={fasades.fmp.names[i]} onChange={(_, value) => { const names = [...fasades.fmp.names]; names[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, fmp: { ...prev.fasades.fmp, names } } })) }} />)}
                             <ComboBox title="Пескоструй:" value={`${fasades.sand.count}`} items={numbers} onChange={(_, value: string) => { if (+value + totalFasades - fasades.sand.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, sand: { count: +value, names: new Array(+value).fill("") } } })) }} />
-                            {fasades.sand.count > 0 && fasades.sand.names.map((m, i) => <ComboBox styles={styles} key={"sand" + i} title={`${i + 1}`} items={sandList} value={fasades.sand.names[i]} onChange={(_, value) => { fasades.sand.names[i] = value; setData(prev => ({ ...prev, })) }} />)}
+                            {fasades.sand.count > 0 && fasades.sand.names.map((m, i) => <ComboBox styles={styles} key={"sand" + i} title={`${i + 1}`} items={sandList} value={fasades.sand.names[i]} onChange={(_, value) => { const names = [...fasades.sand.names]; names[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, sand: { ...prev.fasades.sand, names } } })) }} />)}
                             <ComboBox title="Лакобель:" value={`${fasades.lacobel.count}`} items={numbers} onChange={(_, value: string) => { if (+value + totalFasades - fasades.lacobel.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, lacobel: { count: +value, names: new Array(+value).fill("") } } })) }} />
-                            {fasades.lacobel.count > 0 && fasades.lacobel.names.map((m, i) => <ComboBox styles={styles} key={"lacobel" + i} title={`${i + 1}`} items={lacobelList} value={fasades.lacobel.names[i]} onChange={(_, value) => { fasades.lacobel.names[i] = value; setData(prev => ({ ...prev, })) }} />)}
+                            {fasades.lacobel.count > 0 && fasades.lacobel.names.map((m, i) => <ComboBox styles={styles} key={"lacobel" + i} title={`${i + 1}`} items={lacobelList} value={fasades.lacobel.names[i]} onChange={(_, value) => { const names = [...fasades.lacobel.names]; names[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, lacobel: { ...prev.fasades.lacobel, names } } })) }} />)}
                             <ComboBox title="Лакобель (стекло):" value={`${fasades.lacobelGlass.count}`} items={numbers} onChange={(_, value: string) => { if (+value + totalFasades - fasades.lacobelGlass.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, lacobelGlass: { count: +value, names: new Array(+value).fill("") } } })) }} />
-                            {fasades.lacobelGlass.count > 0 && fasades.lacobelGlass.names.map((m, i) => <ComboBox styles={styles} key={"lacobelGlass" + i} title={`${i + 1}`} items={lacobelGlassList} value={fasades.lacobelGlass.names[i]} onChange={(_, value) => { fasades.lacobelGlass.names[i] = value; setData(prev => ({ ...prev, })) }} />)}
+                            {fasades.lacobelGlass.count > 0 && fasades.lacobelGlass.names.map((m, i) => <ComboBox styles={styles} key={"lacobelGlass" + i} title={`${i + 1}`} items={lacobelGlassList} value={fasades.lacobelGlass.names[i]} onChange={(_, value) => { const names = [...fasades.lacobelGlass.names]; names[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, lacobelGlass: { ...prev.fasades.lacobelGlass, names } } })) }} />)}
                         </PropertyGrid>}
                     </div>
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">

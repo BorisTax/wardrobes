@@ -12,24 +12,33 @@ export default class BrushServiceSQLite implements IMaterialExtService<Brush> {
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Brush[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${BRUSH};`, {successStatusCode: StatusCodes.OK})
+        return dataBaseQuery(this.dbFile, `select * from ${BRUSH};`, [], {successStatusCode: StatusCodes.OK})
     }
     async addExtData({ name, code }: Brush): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${BRUSH} (name, code) values('${name}', '${code}');`, {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${BRUSH} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
         
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${BRUSH} WHERE name='${name}';`, {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${BRUSH} WHERE name=?;`, [name], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
     async updateExtData({ newName, code, name }: NewBrush): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getBrushQuery({ newName, code, name }), {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED})
+        const query = getBrushQuery({ newName, code, name })
+        return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
 function getBrushQuery({ newName, code, name }: NewBrush) {
     const parts = []
-    if (newName) parts.push(`name='${newName}'`)
-    if (code) parts.push(`code='${code}'`)
-    const query = parts.length > 0 ? `update ${BRUSH} set ${parts.join(', ')} where name='${name}';` : ""
-    return query
+    const params = []
+    if (newName) {
+        parts.push(`name=?`)
+        params.push(newName)
+    }
+    if (code) {
+        parts.push(`code=?`)
+        params.push(code)
+    }
+    params.push(name)
+    const query = parts.length > 0 ? `update ${BRUSH} set ${parts.join(', ')} where name=?;` : ""
+    return { query, params }
 }

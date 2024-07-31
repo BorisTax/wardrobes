@@ -1,4 +1,9 @@
 import { SpecificationItem } from "./specification"
+
+export type Query = {
+    query: string,
+    params: any[]
+}
 export type WardrobeTableSchema = {
     name: string,
     caption: string

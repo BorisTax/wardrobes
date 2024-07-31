@@ -3,10 +3,11 @@ import bcrypt from "bcrypt";
 import sqlite3 from "sqlite3";
 import messages from '../messages.js';
 import { Response } from "express"
-import { MyRequest, Result } from '../../types/server.js';
+import { Result } from '../../types/server.js';
 import { StatusCodes } from 'http-status-codes';
+import { Query } from '../../types/schemas.js';
 
-export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
+export function dataBaseQuery<T>(dbFile: string, query: string, params: any[], { successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR }): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { 
@@ -17,7 +18,7 @@ export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusC
             }
             if (!query) { resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.close(); return }
             try {
-                db.all(query, (err: Error, rows: []) => {
+                db.all(query, params, (err: Error, rows: []) => {
                     if (err) {
                         resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
                         console.log(query, err.message)
@@ -37,7 +38,7 @@ export function dataBaseQuery<T>(dbFile: string, query: string, { successStatusC
     )
 }
 
-export function dataBaseTransaction<T>(dbFile: string, queries: string[], { successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
+export function dataBaseTransaction<T>(dbFile: string, queries: Query[], { successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR, }): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { resolve({ success: false, status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
@@ -46,7 +47,7 @@ export function dataBaseTransaction<T>(dbFile: string, queries: string[], { succ
                 queries.forEach((query, index) => {
                     if (!query) { resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.run("ROLLBACK"); db.close(); return }
                     try {
-                        db.all(query, (err: Error, rows: []) => {
+                        db.all(query.query, query.params, (err: Error, rows: []) => {
                             if (err) {
                                 resolve({ success: false, status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
                                 console.log(query, err.message)

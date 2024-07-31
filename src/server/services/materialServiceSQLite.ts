@@ -6,6 +6,7 @@ import messages from '../messages.js';
 import { MAT_TABLE_NAMES } from '../../types/schemas.js';
 import { FasadMaterial } from '../../types/enums.js';
 import { StatusCodes } from 'http-status-codes';
+import { query } from 'express';
 const { EXTMATERIALS, PROFILE_COLORS, EXTMATERIALS_IMAGES } = MAT_TABLE_NAMES
 export default class MaterialServiceSQLite implements IMaterialService {
     dbFile: string;
@@ -13,12 +14,12 @@ export default class MaterialServiceSQLite implements IMaterialService {
         this.dbFile = dbFile
     }
     async getExtMaterials({ material, name, code }: ExtMaterialQuery): Promise<Result<ExtMaterial[]>> {
-        return dataBaseQuery(this.dbFile, getQuery({ material, name, code }), {successStatusCode: StatusCodes.OK})
+        return dataBaseQuery(this.dbFile, getQuery({ material, name, code }), [], {successStatusCode: StatusCodes.OK})
     }
 
     async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial): Promise<Result<null>> {
-        const queries = [`insert into ${EXTMATERIALS} (name, material, code, purpose) values('${name}', '${material}', '${code}', '${purpose}');`]
-        if (image) queries.push(`insert into ${EXTMATERIALS_IMAGES} (name, material, image) values('${name}', '${material}', '${image}');`)
+        const queries = [{query: `insert into ${EXTMATERIALS} (name, material, code, purpose) values(?, ?, ?, ?);`, params: [name, material, code, purpose]}]
+        if (image) queries.push({query: `insert into ${EXTMATERIALS_IMAGES} (name, material, image) values(?, ?, ?);`, params: [name, material, image]})
         return dataBaseTransaction(this.dbFile, queries, {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
 
@@ -26,28 +27,29 @@ export default class MaterialServiceSQLite implements IMaterialService {
         const queries = []
         const updateQuery= getUpdateQuery({ newName, image, code, name, material, purpose })
         if(updateQuery) queries.push(updateQuery)
-        if (image) queries.push(`update ${EXTMATERIALS_IMAGES} set image='${image}' where name='${name}' and material='${material}';`)
+        if (image) queries.push({query: `update ${EXTMATERIALS_IMAGES} set image=? where name=? and material=?;`, params: [image, name, material]})
         return dataBaseTransaction(this.dbFile, queries, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 
     async deleteExtMaterial(name: string, material: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${EXTMATERIALS} WHERE name='${name}' and material='${material}';`, {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${EXTMATERIALS} WHERE name=? and material=?;`, [name, material], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
     async getImage(material: FasadMaterial, name: string): Promise<Result<string>>{
-        const result = await dataBaseQuery<string[]>(this.dbFile, `select image from ${EXTMATERIALS_IMAGES} where material='${material}' and name='${name}';`, { successStatusCode: StatusCodes.OK })
+        const result = await dataBaseQuery<string[]>(this.dbFile, `select image from ${EXTMATERIALS_IMAGES} where material=? and name=?;`, [material, name], { successStatusCode: StatusCodes.OK })
         return { ...result, data: (result.data && result.data[0] )|| "" }
     }
     async getProfiles(): Promise<Result<Profile[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${PROFILE_COLORS};`, {successStatusCode: StatusCodes.OK})
+        return dataBaseQuery(this.dbFile, `select * from ${PROFILE_COLORS};`, [], {successStatusCode: StatusCodes.OK})
     }
     async addProfile({ name, code, type, brush }: Profile): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${PROFILE_COLORS} (name, type, code, brush) values('${name}', '${type}', '${code}', '${brush}');`, {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${PROFILE_COLORS} (name, type, code, brush) values(?, ?, ?, ?);`, [name, type, code, brush], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteProfile(name: string, type: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${PROFILE_COLORS} WHERE name='${name}' and type='${type}';`, {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${PROFILE_COLORS} WHERE name=? and type=?;`, [name, type], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
     async updateProfile({ newName, code, type, name, brush }: NewProfile): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getProfileQuery({ newName, code, name, type, brush }), {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED})
+        const profileQuery = getProfileQuery({ newName, code, name, type, brush })
+        return dataBaseQuery(this.dbFile, profileQuery.query, profileQuery.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
@@ -64,20 +66,46 @@ function getQuery({ material, name, code }: ExtMaterialQuery): string {
 
 function getUpdateQuery({ newName, code, name, material, purpose }: ExtNewMaterial) {
     const parts = []
-    if (newName) parts.push(`name='${newName}'`)
-    if (code) parts.push(`code='${code}'`)
-    if (purpose) parts.push(`purpose='${purpose}'`)
-    const query = parts.length > 0 ? `update ${EXTMATERIALS} set ${parts.join(', ')} where name='${name}' and material='${material}';` : ""
-    return query
+    const params = []
+    if (newName) {
+        parts.push(`name=?`)
+        params.push(newName)
+    }
+    if (code) {
+        parts.push(`code=?`)
+        params.push(code)
+    }
+    if (purpose) {
+        parts.push(`purpose=?`)
+        params.push(purpose)
+    }
+    params.push(name)
+    params.push(material)
+    const query = parts.length > 0 ? `update ${EXTMATERIALS} set ${parts.join(', ')} where name=? and material=?;` : ""
+    return { query, params }
 }
 
 function getProfileQuery({ newName, code, name, type, brush }: NewProfile) {
     const parts = []
-    if (newName) parts.push(`name='${newName}'`)
-    if (code) parts.push(`code='${code}'`)
-    if (type) parts.push(`type='${type}'`)
-    if (brush) parts.push(`brush='${brush}'`)
-    const query = parts.length > 0 ? `update ${PROFILE_COLORS} set ${parts.join(', ')} where name='${name}';` : ""
-    return query
+    const params = []
+    if (newName) {
+        parts.push(`name=?`)
+        params.push(newName)
+    }
+    if (code) {
+        parts.push(`code=?`)
+        params.push(code)
+    }
+    if (type) {
+        parts.push(`type=?`)
+        params.push(type)
+    }
+    if (brush) {
+        parts.push(`brush=?`)
+        params.push(brush)
+    }
+    params.push(name)
+    const query = parts.length > 0 ? `update ${PROFILE_COLORS} set ${parts.join(', ')} where name=?;` : ""
+    return { query, params }
 }
 

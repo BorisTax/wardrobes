@@ -12,23 +12,32 @@ export default class TrempelServiceSQLite implements IMaterialExtService<Trempel
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Trempel[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${TREMPEL};`, {successStatusCode: StatusCodes.OK})
+        return dataBaseQuery(this.dbFile, `select * from ${TREMPEL};`, [], {successStatusCode: StatusCodes.OK})
     }
     async addExtData({ name, code }: Trempel): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${TREMPEL} (name, code) values('${name}', '${code}');`, {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${TREMPEL} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${TREMPEL} WHERE name='${name}';`, {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${TREMPEL} WHERE name=?;`, [name], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
     async updateExtData({ caption, code, name }: Trempel ): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getQuery({ caption, code, name }), {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED})
+        const query = getQuery({ caption, code, name })
+        return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
 function getQuery({ caption, code, name }: Trempel) {
     const parts = []
-    if (caption) parts.push(`caption='${caption}'`)
-    if (code) parts.push(`code='${code}'`)
-    const query = parts.length > 0 ? `update ${TREMPEL} set ${parts.join(', ')} where name='${name}';` : ""
-    return query
+    const params = []
+    if (caption) {
+        parts.push(`caption=?`)
+        params.push(caption)
+    }
+    if (code) {
+        parts.push(`code=?`)
+        params.push(code)
+    }
+    params.push(name)
+    const query = parts.length > 0 ? `update ${TREMPEL} set ${parts.join(', ')} where name=?;` : ""
+    return { query, params }
 }

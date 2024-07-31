@@ -13,20 +13,20 @@ export default class PermissionServiceSQLite implements IPermissionServiceProvid
     }
 
     async getPermissions(roleId: number): Promise<Result<PERMISSIONS_SCHEMA[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${PERMISSIONS} where roleId='${roleId}';`, { successStatusCode: StatusCodes.OK })
+        return dataBaseQuery(this.dbFile, `select * from ${PERMISSIONS} where roleId=?;`, [roleId], { successStatusCode: StatusCodes.OK })
     }
     async addPermissions(roleId: number, resource: RESOURCE, permissions: Permissions): Promise<Result<null>>  {
         const { create, read, update, remove } = permissions
-        return dataBaseQuery(this.dbFile, `insert into ${PERMISSIONS} ('roleId', 'resource', 'create', 'read', 'update', 'remove') values('${roleId}', '${resource}', ${create ? 1 : 0}, ${read ? 1 : 0}, ${update ? 1 : 0}, ${remove ? 1 : 0});`, { successStatusCode: StatusCodes.CREATED, successMessage: messages.DATA_UPDATED })
+        return dataBaseQuery(this.dbFile, `insert into ${PERMISSIONS} ('roleId', 'resource', 'create', 'read', 'update', 'remove') values(?, ?, ?, ?, ?, ?);`, [roleId, resource, create ? 1 : 0, read ? 1 : 0, update ? 1 : 0, remove ? 1 : 0], { successStatusCode: StatusCodes.CREATED, successMessage: messages.DATA_UPDATED })
     }
     async deletePermissions(roleId: number, resource: RESOURCE): Promise<Result<null>>  {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${PERMISSIONS} WHERE roleId='${roleId}' and resource='${resource}';`, { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${PERMISSIONS} WHERE roleId=? and resource=?;`, [roleId, resource], { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
     }
     async updatePermissions(roleId: number, resource: RESOURCE, permissions: Permissions): Promise<Result<null>>  {
         const { create, read, update, remove } = permissions
-        return dataBaseQuery(this.dbFile, `update ${PERMISSIONS} set 'create'=${create ? 1 : 0}, 'read'=${read ? 1 : 0}, 'update'=${update ? 1 : 0}, 'remove'=${remove ? 1 : 0} where roleId='${roleId}' and resource='${resource}';`, { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
+        return dataBaseQuery(this.dbFile, `update ${PERMISSIONS} set 'create'=?, 'read'=?, 'update'=?, 'remove'=? where roleId=? and resource=?;`, [read ? 1 : 0, update ? 1 : 0, remove ? 1 : 0, roleId, resource], { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
     }
     async getResourceList(): Promise<Result<Resource>>{
-        return dataBaseQuery(this.dbFile, `select * from ${RESOURCES};`, { successStatusCode: StatusCodes.OK })
+        return dataBaseQuery(this.dbFile, `select * from ${RESOURCES};`, [], { successStatusCode: StatusCodes.OK })
     }
 }

@@ -11,18 +11,27 @@ export default class PriceServiceSQLite implements IPriceServiceProvider {
         this.dbFile = dbFile
     }
     async getPriceList(): Promise<Result<PriceData[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${PRICELIST};`, { successStatusCode: StatusCodes.OK })
+        return dataBaseQuery(this.dbFile, `select * from ${PRICELIST};`, [], { successStatusCode: StatusCodes.OK })
     }
     async updatePriceList({ name, price, markup }: PriceData): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getPriceQuery({ name, price, markup }), { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
+        const priceQuery = getPriceQuery({ name, price, markup })
+        return dataBaseQuery(this.dbFile, priceQuery.query, priceQuery.params, { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
     }
 
 }
 
 function getPriceQuery({ name, price, markup }: PriceData) {
     const parts = []
-    if (price !== undefined) parts.push(`price=${price}`)
-    if (markup !== undefined) parts.push(`markup=${markup}`)
-    const query = parts.length > 0 ? `update ${PRICELIST} set ${parts.join(', ')} where name='${name}';` : ""
-    return query
+    const params = []
+    if (price !== undefined) {
+        parts.push(`price=?`)
+        params.push(price)
+    }
+    if (markup !== undefined) {
+        parts.push(`markup=?`)
+        params.push(markup)
+    }
+    params.push(name)
+    const query = parts.length > 0 ? `update ${PRICELIST} set ${parts.join(', ')} where name=?;` : ""
+    return { query, params }
 }

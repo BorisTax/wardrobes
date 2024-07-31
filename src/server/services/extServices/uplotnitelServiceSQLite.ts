@@ -12,22 +12,28 @@ export default class UplotnitelServiceSQLite implements IMaterialExtService<Uplo
         this.dbFile = dbFile
     }
     async getExtData(): Promise<Result<Uplotnitel[]>> {
-        return dataBaseQuery(this.dbFile, `select * from ${UPLOTNITEL};`, { successStatusCode: StatusCodes.OK })
+        return dataBaseQuery(this.dbFile, `select * from ${UPLOTNITEL};`, [], { successStatusCode: StatusCodes.OK })
     }
     async addExtData({ name, code }: Uplotnitel): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${UPLOTNITEL} (name, caption, code) values('${name}', '${code}');`, { successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED })
+        return dataBaseQuery(this.dbFile, `insert into ${UPLOTNITEL} (name, caption, code) values(?, ?);`, [name, code], { successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED })
     }
     async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${UPLOTNITEL} WHERE name='${name}';`, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED })
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${UPLOTNITEL} WHERE name=?;`, [name], { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED })
     }
     async updateExtData({ code, name }: Uplotnitel): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, getQuery({ code, name }), { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
+        const query = getQuery({ code, name })
+        return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
 function getQuery({ code, name }: Uplotnitel) {
     const parts = []
-    if (code !== undefined) parts.push(`code='${code}'`)
-    const query = parts.length > 0 ? `update ${UPLOTNITEL} set ${parts.join(', ')} where name='${name}';` : ""
-    return query
+    const params = []
+    if (code !== undefined) {
+        parts.push(`code=?`)
+        params.push(code)
+    }
+    params.push(name)
+    const query = parts.length > 0 ? `update ${UPLOTNITEL} set ${parts.join(', ')} where name=?;` : ""
+    return { query, params }
 }

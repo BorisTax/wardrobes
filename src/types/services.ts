@@ -3,7 +3,7 @@ import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "./materials"
 import { SpecificationData, Result, Token, PriceData, ExtMaterialQuery } from "./server"
 import { PERMISSIONS_SCHEMA, Resource, User } from "./user"
 import { NewTemplate, Template } from "./templates"
-import { DETAIL_NAME, SpecificationMultiResult, WARDROBE_KIND, WardrobeData, WardrobeDetailTable } from "./wardrobe"
+import { DETAIL_NAME, WARDROBE_KIND, WardrobeDetailTable } from "./wardrobe"
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from "./schemas"
 import { Permissions, RESOURCE, UserRole } from "./user"
 import { FasadMaterial } from "./enums"
@@ -17,18 +17,18 @@ interface IUserAbstractService {
     updateToken: (token: string, lastActionTime: number) => Promise<Result<null>>
     deleteToken: (token: string) => Promise<Result<null>>
     clearAllTokens: () => Promise<Result<null>>
-    registerUser: (userName: string, password: string, role: UserRole) => Promise<Result<null>>
-    updateUser: ({ userName, password, role }: { userName: string, password?: string, role?: UserRole }) => Promise<Result<null>>
+    registerUser: (userName: string, password: string, roleId: number) => Promise<Result<null>>
+    updateUser: ({ userName, password, roleId }: { userName: string, password?: string, roleId?: number }) => Promise<Result<null>>
     deleteUser: (user: User) => Promise<Result<null>>
-    getPermissions: (role: string, resource: RESOURCE) => Promise<Permissions>
-    getAllUserPermissions: (role: string) => Promise<PERMISSIONS_SCHEMA[]>
+    getPermissions: (roleId: number, resource: RESOURCE) => Promise<Permissions>
+    getAllUserPermissions: (roleId: number) => Promise<PERMISSIONS_SCHEMA[]>
     getAllPermissions: () => Promise<PERMISSIONS_SCHEMA[]>
-    getUserRole: (username: string) => Promise<string>
+    getUserRoleId: (username: string) => Promise<number>
     getRoles: () => Promise<Result<UserRole[]>>
-    addRole: (role: string) => Promise<Result<null>>
-    deleteRole: (role: string) => Promise<Result<null>>
+    addRole: (name: string) => Promise<Result<null>>
+    deleteRole: (id: number) => Promise<Result<null>>
     getSuperUsers: () => Promise<Result<{ name: string }[]>>
-    getSuperRoles: () => Promise<Result<{ name: string }[]>>
+    getSuperRoles: () => Promise<Result<{ roleId: number }[]>>
 }
 export interface IMaterialService {
     getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<ExtMaterial[]>>
@@ -69,10 +69,10 @@ export interface ISpecificationAbstractService {
     getWardobeKinds: ()=> Promise<Result<WardrobeTableSchema[]>>
 }
 interface IPermissionAbstractService {
-    getPermissions: (role: string) => Promise<Result<PERMISSIONS_SCHEMA[]>>
-    addPermissions: (role: string, resource: RESOURCE, permissions: Permissions) => Promise<Result<null>>
-    deletePermissions: (role: string, resource: RESOURCE) => Promise<Result<null>>
-    updatePermissions: (role: string, resource: RESOURCE, permissions: Permissions) => Promise<Result<null>>
+    getPermissions: (roleId: number) => Promise<Result<PERMISSIONS_SCHEMA[]>>
+    addPermissions: (roleId: number, resource: RESOURCE, permissions: Permissions) => Promise<Result<null>>
+    deletePermissions: (roleId: number, resource: RESOURCE) => Promise<Result<null>>
+    updatePermissions: (roleId: number, resource: RESOURCE, permissions: Permissions) => Promise<Result<null>>
     getResourceList: () => Promise<Result<Resource>>
 }
 export interface IMaterialServiceProvider extends IMaterialService {

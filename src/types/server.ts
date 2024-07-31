@@ -13,7 +13,7 @@ export type RequestBody = {
     password?: string
 }
 export interface MyRequest extends Request {
-    userRole: string
+    userRoleId: number
     token?: string
 }
 export enum TableFields {
@@ -35,7 +35,7 @@ export enum TableFields {
     MARKUP = 'markup',
     TABLE = 'table',
     KIND = 'kind',
-    ROLE = 'role',
+    ROLEID = 'roleId',
     RESOURCE = 'resource',
     PERMISSIONS = 'permissions'
 }

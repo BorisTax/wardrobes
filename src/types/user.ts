@@ -28,8 +28,8 @@ export type Resource = {
     caption: string
 }
 export type UserRole = {
-    name: string,
-    //     caption: string
+    id: number
+    name: string
 }
 export type User = {
     name: string
@@ -37,13 +37,13 @@ export type User = {
 }
 export type UserData = {
     name: string
-    role: UserRole
+    roleId: number
     permissions: PERMISSIONS_SCHEMA[]
 }
 
 export type ActiveUser = {
     name: string
-    role: UserRole
+    roleId: number
     token: string
     time: number
     lastActionTime: number
@@ -51,10 +51,10 @@ export type ActiveUser = {
 
 export type USER_ROLE_SCHEMA = {
     user: string,
-    role: string
+    roleId: number
 }
 export type PERMISSIONS_SCHEMA = {
-    role: string,
+    roleId: number,
     resource: RESOURCE,
     create: boolean,
     read: boolean,

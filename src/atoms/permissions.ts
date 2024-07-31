@@ -7,11 +7,11 @@ import { TableFields } from "../types/server"
 
 
 export const permissionsAtom = atom<PERMISSIONS_SCHEMA[]>([])
-export const loadPermissionsAtom = atom(null, async (get, set, role: string)=>{
+export const loadPermissionsAtom = atom(null, async (get, set, roleId: number)=>{
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     if (!perm?.read) return
-    const result = await fetchGetData(`/api/users/permissions?token=${token}&role=${role}`)
+    const result = await fetchGetData(`/api/users/permissions?token=${token}&roleId=${roleId}`)
     if(result.success){
         set(permissionsAtom, result.data as PERMISSIONS_SCHEMA[])
     }
@@ -32,11 +32,11 @@ export const resourceAsMap = atom((get) => {
     resources.forEach(r => m.set(r.name, r.caption))
     return m
 })
-export const deletePermissionsAtom = atom(null, async (get, set, role: string, resource: RESOURCE) => {
+export const deletePermissionsAtom = atom(null, async (get, set, roleId: number, resource: RESOURCE) => {
     const user = get(userAtom)
     try{
-        const result = await fetchData("/api/users/permissions", "DELETE", JSON.stringify({ role, resource, token: user.token }))
-        await set(loadPermissionsAtom, role)
+        const result = await fetchData("/api/users/permissions", "DELETE", JSON.stringify({ roleId, resource, token: user.token }))
+        await set(loadPermissionsAtom, roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
         console.error(e)
@@ -44,17 +44,17 @@ export const deletePermissionsAtom = atom(null, async (get, set, role: string, r
      }
 })
 
-export const addPermissionsAtom = atom(null, async (get, set, role: string, resource: RESOURCE, permissions: Permissions) => {
+export const addPermissionsAtom = atom(null, async (get, set, roleId: number, resource: RESOURCE, permissions: Permissions) => {
     const user = get(userAtom)
     const data = {
-        [TableFields.ROLE]: role,
+        [TableFields.ROLEID]: roleId,
         [TableFields.RESOURCE]: resource,
         [TableFields.PERMISSIONS]: permissions,
         [TableFields.TOKEN]: user.token
     }
     try {
         const result = await fetchData("/api/users/permissions", "POST", JSON.stringify(data))
-        await set(loadPermissionsAtom, role)
+        await set(loadPermissionsAtom, roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
         console.error(e)
@@ -62,17 +62,17 @@ export const addPermissionsAtom = atom(null, async (get, set, role: string, reso
      }
 })
 
-export const updatePermissionsAtom = atom(null, async (get, set, role: string, resource: RESOURCE, permissions: Permissions) => {
+export const updatePermissionsAtom = atom(null, async (get, set, roleId: number, resource: RESOURCE, permissions: Permissions) => {
     const user = get(userAtom)
     const data = {
-        [TableFields.ROLE]: role,
+        [TableFields.ROLEID]: roleId,
         [TableFields.RESOURCE]: resource,
         [TableFields.PERMISSIONS]: permissions,
         [TableFields.TOKEN]: user.token
     }
     try {
         const result = await fetchData("/api/users/permissions", "PUT", JSON.stringify(data))
-        await set(loadPermissionsAtom, role)
+        await set(loadPermissionsAtom, roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
         console.error(e) 

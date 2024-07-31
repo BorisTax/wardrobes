@@ -104,15 +104,15 @@ export class UserService implements IUserService {
     const result = await this.provider.clearAllTokens()
     return result
   }
-  async registerUser(userName: string, password: string, role: UserRole) {
+  async registerUser(userName: string, password: string, roleId: number) {
     const result = await this.isUserNameExist(userName)
     if (!result.success) return result
-    return this.provider.registerUser(userName, password, role)
+    return this.provider.registerUser(userName, password, roleId)
   }
-  async updateUser({ userName, password, role }: { userName: string, password?: string, role?: UserRole }): Promise<Result<null>>{
+  async updateUser({ userName, password, roleId }: { userName: string, password?: string, roleId?: number }): Promise<Result<null>>{
     const superusers = (await this.getSuperUsers()).data?.map(m => m.name)
     if (superusers?.find(s => s === userName)) return forbidResponse(messages.USER_UPDATE_DENIED)
-    return this.provider.updateUser({userName, password, role})
+    return this.provider.updateUser({userName, password, roleId})
 }
   async deleteUser(user: User) {
     const superusers = (await this.getSuperUsers()).data?.map(m => m.name)
@@ -130,17 +130,17 @@ export class UserService implements IUserService {
     if (user) return conflictResponse(messages.USER_NAME_EXIST)
     return { success: true, status: StatusCodes.OK, message: messages.USER_NAME_ALLOWED }
   }
-  async getPermissions(role: string, resource: RESOURCE): Promise<Permissions> {
-    return this.provider.getPermissions(role, resource)
+  async getPermissions(roleId: number, resource: RESOURCE): Promise<Permissions> {
+    return this.provider.getPermissions(roleId, resource)
   }
-  async getAllUserPermissions(role: string): Promise<PERMISSIONS_SCHEMA[]> {
-    return this.provider.getAllUserPermissions(role)
+  async getAllUserPermissions(roleId: number): Promise<PERMISSIONS_SCHEMA[]> {
+    return this.provider.getAllUserPermissions(roleId)
   }
   async getAllPermissions(): Promise<PERMISSIONS_SCHEMA[]> {
     return this.provider.getAllPermissions()
   }
-  async getUserRole(username: string): Promise<string> {
-    const result = await this.provider.getUserRole(username)
+  async getUserRoleId(username: string): Promise<number> {
+    const result = await this.provider.getUserRoleId(username)
     return result
   }
   async getRoles(): Promise<Result<UserRole[]>> {
@@ -151,15 +151,15 @@ export class UserService implements IUserService {
     if (roles?.find(r => r.name === name)) return conflictResponse(messages.ROLE_EXIST)
     return this.provider.addRole(name)
   }
-  async deleteRole(name: string): Promise<Result<null>> {
-    const superroles = (await this.getSuperRoles()).data?.map(m => m.name)
-    if (superroles?.find(s => s === name)) return forbidResponse(messages.ROLE_DELETE_DENIED)
-    return this.provider.deleteRole(name)
+  async deleteRole(id: number): Promise<Result<null>> {
+    const superroles = (await this.getSuperRoles()).data?.map(m => m.roleId)
+    if (superroles?.find(s => s === id)) return forbidResponse(messages.ROLE_DELETE_DENIED)
+    return this.provider.deleteRole(id)
   }
   async getSuperUsers(): Promise<Result<{ name: string }[]>> {
     return await this.provider.getSuperUsers()
   }
-  async getSuperRoles(): Promise<Result<{ name: string }[]>> {
+  async getSuperRoles(): Promise<Result<{ roleId: number }[]>> {
     return await this.provider.getSuperRoles()
   }
 }

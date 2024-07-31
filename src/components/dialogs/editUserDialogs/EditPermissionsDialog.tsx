@@ -28,7 +28,7 @@ export default function EditPermissionsDialog() {
     const userRoles = useMemo(() => roles.map(r => r.name), [roles])
     const deleteRole = useSetAtom(deleteRoleAtom)
     const [roleIndex, setRoleIndex] = useState(0)
-    const role = userRoles[roleIndex] || ""
+    const role = roles[roleIndex] || {id: 0, name: ""}
     const resourceList = useAtomValue(resourceAsMap)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const { resource, read, create, update, remove } = permData[selectedIndex] || { resource: "", read: false, create: false, update: false, remove: false }
@@ -38,7 +38,7 @@ export default function EditPermissionsDialog() {
     const heads = ['Права', 'Чтение', 'Создание', 'Обновление', 'Удаление']
     const contents = permData.map((p: PERMISSIONS_SCHEMA) => [resourceList.get(p.resource), boolToYesNo(p.read as boolean), boolToYesNo(p.create as boolean), boolToYesNo(p.update as boolean), boolToYesNo(p.remove as boolean)])
     const editItems: EditDataItem[] = [
-        { caption: "Роль:", value: role || "", message: messages.ENTER_ROLE, type: InputType.TEXT, readonly: true },
+        { caption: "Роль:", value: role.name, message: messages.ENTER_ROLE, type: InputType.TEXT, readonly: true },
         { caption: "Права:", value: resource, valueCaption: (value) => { return resourceList.get(value) }, message: messages.ENTER_RESOURCE, type: InputType.LIST, list: resourceList },
         { caption: "Чтение:", value: read, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
         { caption: "Создание:", value: create, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
@@ -52,7 +52,7 @@ export default function EditPermissionsDialog() {
         setSelectedIndex(0)
     }, [permData])
     useEffect(() => {
-        loadPermissions(role)
+        loadPermissions(role.id)
     }, [role, loadPermissions])
     useEffect(() => {
         loadResources()
@@ -60,11 +60,11 @@ export default function EditPermissionsDialog() {
     return <EditContainer>
         <div>
             <div className="d-flex flex-nowrap gap-2 align-items-start position-relative">
-                <ComboBox title="Роль: " value={role} items={userRoles} onChange={(index) => { setRoleIndex(index); }} />
+                <ComboBox title="Роль: " value={role.name} items={userRoles} onChange={(index) => { setRoleIndex(index); }} />
                 {perm?.create && <ImageButton title="Добавить" icon='add' onClick={() => { addUserRoleDialogRef.current?.showModal() }} />}
-                {perm?.remove && <ImageButton title="Удалить" icon='delete' onClick={() => showConfirm("Удалить роль " + role, async () => {
+                {perm?.remove && <ImageButton title="Удалить" icon='delete' onClick={() => showConfirm("Удалить роль " + role.name, async () => {
                     setLoading(true)
-                    const result = await deleteRole({ name: role })
+                    const result = await deleteRole({ id: role.id })
                     setLoading(false)
                     showMessage(rusMessages[result.message as string])
                 }
@@ -75,31 +75,29 @@ export default function EditPermissionsDialog() {
             <AddUserRoleDialog dialogRef={addUserRoleDialogRef} setLoading={(state: boolean) => setLoading(state)} />
             {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
         </div>
-        <EditDataSection name={role} items={editItems}
+        <EditDataSection name={String(role.id)} items={editItems}
             onUpdate={perm?.update ? async (checked, values) => {
-                const newRole = checked[0] ? values[0] : role
                 const newResource = checked[1] ? values[1] : resource
                 const newRead = checked[2] ? values[2] as boolean : read
                 const newCreate = checked[3] ? values[3] as boolean : create
                 const newUpdate = checked[4] ? values[4] as boolean : update
                 const newRemove = checked[5] ? values[5] as boolean : remove
-                const result = await updatePermissions(newRole as string, newResource as RESOURCE, { read: newRead, create: newCreate, update: newUpdate, remove: newRemove })
+                const result = await updatePermissions(role.id, newResource as RESOURCE, { read: newRead, create: newCreate, update: newUpdate, remove: newRemove })
                 return result
             } : undefined}
             onDelete={perm?.remove ? async () => {
-                const result = await deletePermissions(role, resource)
+                const result = await deletePermissions(role.id, resource)
                 setSelectedIndex(0)
                 return result
             } : undefined}
             onAdd={perm?.create ? async (checked, values) => {
-                const newRole = checked[0] ? values[0] : role
                 const newResource = checked[1] ? values[1] : resource
                 const newRead = checked[2] ? values[2] as boolean : read
                 const newCreate = checked[3] ? values[3] as boolean : create
                 const newUpdate = checked[4] ? values[4] as boolean : update
                 const newRemove = checked[5] ? values[5] as boolean : remove
-                if (permData.find(p => p.role === newRole && p.resource === newResource)) { return { success: false, message: messages.PERMISSION_EXIST } }
-                const result = await addPermissions(newRole as string, newResource as RESOURCE, { read: newRead, create: newCreate, update: newUpdate, remove: newRemove })
+                if (permData.find(p => p.roleId === role.id && p.resource === newResource)) { return { success: false, message: messages.PERMISSION_EXIST } }
+                const result = await addPermissions(role.id, newResource as RESOURCE, { read: newRead, create: newCreate, update: newUpdate, remove: newRemove })
                 return result
             } : undefined} />
     </EditContainer>

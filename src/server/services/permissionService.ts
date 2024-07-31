@@ -8,17 +8,17 @@ export class PermissionService implements IPermissionService {
         this.provider = provider
     }
 
-    async getPermissions(role: string): Promise<Result<PERMISSIONS_SCHEMA[]>> {
-        return this.provider.getPermissions(role)
+    async getPermissions(roleId: number): Promise<Result<PERMISSIONS_SCHEMA[]>> {
+        return this.provider.getPermissions(roleId)
     }
-    async addPermissions(role: string, resource: RESOURCE, permissions: Permissions): Promise<Result<null>> {
-        return this.provider.addPermissions(role, resource, permissions)
+    async addPermissions(roleId: number, resource: RESOURCE, permissions: Permissions): Promise<Result<null>> {
+        return this.provider.addPermissions(roleId, resource, permissions)
     }
-    async deletePermissions(role: string, resource: RESOURCE): Promise<Result<null>> {
-        return this.provider.deletePermissions(role, resource)
+    async deletePermissions(roleId: number, resource: RESOURCE): Promise<Result<null>> {
+        return this.provider.deletePermissions(roleId, resource)
     }
-    async updatePermissions(role: string, resource: RESOURCE, permissions: Permissions): Promise<Result<null>> {
-        return this.provider.updatePermissions(role, resource, permissions)
+    async updatePermissions(roleId: number, resource: RESOURCE, permissions: Permissions): Promise<Result<null>> {
+        return this.provider.updatePermissions(roleId, resource, permissions)
     }
     async getResourceList(): Promise<Result<Resource>>{
         return this.provider.getResourceList()

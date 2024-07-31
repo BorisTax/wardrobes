@@ -36,8 +36,8 @@ export const userRoleParser = async (req: Request, res: Response, next: NextFunc
   const result = await userService.getUser(token)
   const user = result.data && result.data[0]
   if (user) {
-    const role = await userService.getUserRole(user?.name);
-    (req as MyRequest).userRole = role
+    const roleId = await userService.getUserRoleId(user?.name);
+    (req as MyRequest).userRoleId = roleId
   }
   next()
 }

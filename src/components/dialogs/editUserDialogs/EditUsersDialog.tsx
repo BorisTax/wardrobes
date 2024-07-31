@@ -1,13 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import useMessage from "../../../custom-hooks/useMessage"
 import useConfirm from "../../../custom-hooks/useConfirm"
 import ImageButton from "../../inputs/ImageButton"
 import { activeUsersAtom, allUsersAtom, createUserAtom, deleteUserAtom, loadActiveUsersAtom, loadUsersAtom, logoutUserAtom, updateUserAtom, userAtom, userRolesAtom } from "../../../atoms/users"
 import { timeToString } from "../../../server/functions/user"
 import { RESOURCE } from "../../../types/user"
-import { AtomCallbackResult } from "../../../types/atoms"
-import { rusMessages } from "../../../functions/messages"
 import EditPermissionsDialog from "./EditPermissionsDialog"
 import TableData from "../../TableData"
 import { useNavigate } from "react-router-dom"
@@ -18,7 +15,6 @@ import EditContainer from "../../EditContainer"
 
 export default function EditUsersDialog() {
     const navigate = useNavigate()
-    const addUserDialogRef = useRef<HTMLDialogElement>(null)
     const { token, permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     const users = useAtomValue(allUsersAtom)
@@ -31,27 +27,29 @@ export default function EditUsersDialog() {
     const createUser = useSetAtom(createUserAtom)
     const updateUser = useSetAtom(updateUserAtom)
     const deleteUser = useSetAtom(deleteUserAtom)
-    const showMessage = useMessage()
     const showConfirm = useConfirm()
     const userListHeader = ["Имя", "Права"]
     const activeUserListHeader = ["Имя", "Права", "Время с момента входа", "Время последней активности"]
     const [userIndex, setUserIndex] = useState(0)
-    const user = users[userIndex] || { name: "", role: { name: "" } }
+    const user = users[userIndex] || { name: "", roleId: 0 }
+    const userRole = roles.find(r => r.id === user.roleId)?.name
     const userlist = users.map(u => {
-        return [u.name, u.role.name]
+        const role = roles.find(r => r.id === u.roleId)?.name
+        return [u.name, role]
     })
     const activeuserlist = activeUsers.map(u => {
         const you = u.token === token
+        const role = roles.find(r => r.id === u.roleId)?.name
         return [u.name,
-        u.role.name,
+            role,
         <TimeField key={u.token + "1"} time={u.time} />,
         <TimeField key={u.token + "2"} time={u.lastActionTime} />,
         <div key={u.token + "3"} className={you ? "text-center" : " text-center user-logout-button"} onClick={() => { if (!you) showConfirm(`Отключить пользователя ${u.name}?`, () => logoutUser(u.token)) }}>{you ? "Это вы" : "Отсоединить"}</div>]
     }
     )
-    const userEditItems: EditDataItem[]=[
-        {caption:"Имя:", type: InputType.TEXT, value: user.name, message: messages.ENTER_NAME},
-        {caption:"Роль:", type: InputType.LIST, value: user.role.name, list: userRoles, message: messages.ENTER_ROLE},
+    const userEditItems: EditDataItem[] = [
+        { caption: "Имя:", type: InputType.TEXT, value: user.name, message: messages.ENTER_NAME },
+        { caption: "Роль:", type: InputType.LIST, value: userRole as string, list: userRoles, message: messages.ENTER_ROLE },
         { caption: "Пароль:", type: InputType.TEXT, value: "", message: messages.ENTER_PASSWORD, checkValue: (value) => checkPassword(value as string) },
     ]
     useEffect(() => {
@@ -73,17 +71,19 @@ export default function EditUsersDialog() {
                 onAdd={async (checked, values) => {
                     const name = values[0] as string
                     const role = values[1] as string
+                    const roleId = roles.find(r => r.name === role)?.id || 0
                     const password = values[2] as string
                     if (users.find(u => u.name === name)) { return { success: false, message: messages.USER_NAME_EXIST } }
-                    const result = await createUser(name as string, password, { name: role })
+                    const result = await createUser(name as string, password, roleId)
                     return result
                 }}
                 onUpdate={async (checked, values) => {
                     const usedName = checked[0] ? values[0] : user.name
                     const usedRole = checked[1] ? values[1] : ""
                     const usedPass = checked[2] ? values[2] : ""
+                    const roleId = roles.find(r => r.name === usedRole)?.id || 0
                     if (!users.find(u => u.name === usedName)) { return { success: false, message: messages.USER_NAME_NO_EXIST } }
-                    const result = await updateUser(usedName as string, usedPass as string, { name: usedRole as string })
+                    const result = await updateUser(usedName as string, usedPass as string, roleId)
                     return result
                 }}
                 onDelete={async (name) => {

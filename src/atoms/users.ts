@@ -15,7 +15,7 @@ import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
 
 export type UserState = {
     name: string
-    role: UserRole
+    roleId: number
     token: string
     permissions: Map<RESOURCE, Permissions>
 }
@@ -60,16 +60,16 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         set(verifyUserAtom)
         return
     }
-    let storeUser: UserState = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
+    let storeUser: UserState = { name: "", roleId: 0, token: "", permissions: getInitialPermissions() }
     const prevToken = get(userAtomPrivate).token
     try {
-        const { name, role } = jwtDecode(token) as UserState
-        storeUser = { name, role, token, permissions: permissionsToMap(permissions) }
+        const { name, roleId } = jwtDecode(token) as UserState
+        storeUser = { name, roleId, token, permissions: permissionsToMap(permissions) }
         set(newEventSourceAtom, token)
         set(userAtomPrivate, storeUser)
         localStorage.setItem('token', storeUser.token)
     } catch (e) {
-        storeUser = { name: "", role: { name: "" }, token: "", permissions: getInitialPermissions() }
+        storeUser = { name: "", roleId: 0, token: "", permissions: getInitialPermissions() }
         localStorage.removeItem("token")
         set(userAtomPrivate, getInitialUser())
         set(closeEventSourceAtom)
@@ -113,15 +113,15 @@ export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, userto
     set(loadActiveUsersAtom)
 })
 
-export const createUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, role: UserRole) => {
+export const createUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, roleId: number) => {
     const {token} = get(userAtom)
-    const result = await fetchData('/api/users/add', "POST", JSON.stringify({ name, password, role, token }))
+    const result = await fetchData('/api/users/add', "POST", JSON.stringify({ name, password, roleId, token }))
     if (result.success) set(loadUsersAtom)
     return { success: result.success as boolean, message: result.message  as string }
 })
-export const updateUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, role: UserRole) => {
+export const updateUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, roleId: number) => {
     const {token} = get(userAtom)
-    const result = await fetchData('/api/users/update', "POST", JSON.stringify({ name, password, role, token }))
+    const result = await fetchData('/api/users/update', "POST", JSON.stringify({ name, password, roleId, token }))
     if (result.success) set(loadUsersAtom)
     return { success: result.success as boolean, message: result.message  as string }
 })
@@ -142,9 +142,9 @@ export const createRoleAtom = atom(null, async (get: Getter, set: Setter, { name
     return {success: result.success, message: result.message}
 })
 
-export const deleteRoleAtom = atom(null, async (get: Getter, set: Setter, { name }: { name: string}) => {
+export const deleteRoleAtom = atom(null, async (get: Getter, set: Setter, { id }: { id: number}) => {
     const {token} = get(userAtom)
-    const result = await fetchData('/api/users/deleteRole', "DELETE", JSON.stringify({ name, token }))
+    const result = await fetchData('/api/users/deleteRole', "DELETE", JSON.stringify({ id, token }))
     if (result.success) {
         set(loadUserRolesAtom)
     }
@@ -176,14 +176,14 @@ export function getInitialUser(): UserState {
     } catch (e) {
         storeUser = {
             name: "",
-            role: { name: "" },
+            roleId: 0,
             token,
             permissions: getInitialPermissions()
         }
     }
     const user = {
         name: storeUser.name,
-        role: storeUser.role,
+        roleId: storeUser.roleId,
         token,
         permissions: new Map(storeUser.permissions)
     }

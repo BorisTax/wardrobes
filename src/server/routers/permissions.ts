@@ -25,7 +25,7 @@ router.get("/resources", async (req, res) => {
 });
 
 router.delete("/", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
   const { roleId, resource } = req.body
   let result
   result = await deletePermissions(roleId, resource);

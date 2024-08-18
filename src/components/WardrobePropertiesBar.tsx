@@ -34,8 +34,8 @@ export default function WardrobePropertiesBar() {
     const undo = useSetAtom(undoAtom)
     const redo = useSetAtom(redoAtom)
     const perm = user.permissions.get(RESOURCE.COMBIFASADES)
-    const saveFileDisabled = !perm?.create
-    const readFileDisabled = !perm?.read
+    const saveFileDisabled = !perm?.Create
+    const readFileDisabled = !perm?.Read
     const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.CORPUS)), [])
     const wardTypeChangeConfirm = () => new Promise<boolean>((resolve) => {
         showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })

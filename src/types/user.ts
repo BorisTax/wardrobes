@@ -12,16 +12,16 @@ export enum RESOURCE {
     WARDROBES = 'wardrobes',
 }
 export enum PERMISSION {
-    READ = 'read',
-    CREATE = 'create',
-    UPDATE = 'update',
-    REMOVE = 'remove',
+    READ = 'READ',
+    CREATE = 'CREATE',
+    UPDATE = 'UPDATE',
+    DELETE = 'DELETE',
 }
 export type Permissions = {
-    read: boolean
-    create: boolean
-    update: boolean
-    remove: boolean
+    Read: boolean
+    Create: boolean
+    Update: boolean
+    Delete: boolean
 }
 export type Resource = {
     name: RESOURCE,
@@ -59,7 +59,7 @@ export type PERMISSIONS_SCHEMA = {
     create: boolean,
     read: boolean,
     update: boolean,
-    remove: boolean,
+    delete: boolean,
 }
 
 export type UserLoginResult = { token: string, permissions: PERMISSIONS_SCHEMA[] }

@@ -31,20 +31,20 @@ export default function EditBrush() {
     }, [brushList])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={name} items={editItems}
-            onUpdate={perm?.update ? async (checked, values) => {
+        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection name={name} items={editItems}
+            onUpdate={perm?.Update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
                 const result = await updateBrush({ name, newName: usedName, code: usedCode })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async (name) => {
+            onDelete={perm?.Delete ? async (name) => {
                 const index = brushList.findIndex((p: Brush) => p.name === name)
                 const result = await deleteBrush(brushList[index])
                 setSelectedIndex(0)
                 return result
             } : undefined}
-            onAdd={perm?.create ? async (checked, values) => {
+            onAdd={perm?.Create ? async (checked, values) => {
                 const name = values[0] as string
                 const code = values[1] as string
                 if (brushList.find((p: Brush) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }

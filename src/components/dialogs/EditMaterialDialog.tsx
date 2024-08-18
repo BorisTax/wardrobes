@@ -19,7 +19,7 @@ export default function EditMaterialDialog() {
     const header = [...MaterialGroupCaptions.entries()].map((item, index) => <div key={index} className={(group === item[0] ? "tab-button-active" : "tab-button-inactive")} onClick={() => { setGroup(item[0] as MaterialGroup) }} role="button">{item[1]}</div>)
     const content = getGroup(group)
     useEffect(() => {
-        if (!perm?.read) window.location.replace('/')
+        if (!perm?.Read) window.location.replace('/')
     }, [perm])
     return <div className="database-edit-container">
         <div className="tab-header-container">{header}</div>

@@ -278,7 +278,7 @@ $header_button_height: 32px;
   background-image: url($icon-url+'close.png');
   @include instruments_button();
 }
-.update {
+.Update {
   background-image: url($icon-url+'update.png');
   @include instruments_button();
 }

@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
   res.status(result.status).json(result);
 });
 router.delete("/", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.TEMPLATE, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.TEMPLATE, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name, table } = req.body
   let result
   result = await deleteTemplate(table, name);

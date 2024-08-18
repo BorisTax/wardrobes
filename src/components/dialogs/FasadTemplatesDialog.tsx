@@ -62,13 +62,13 @@ export default function FasadTemplatesDialog() {
             </div>
         </div>
         <hr />
-        {perm?.read && editMode ? <div className="d-flex flex-column gap-1">
+        {perm?.Read && editMode ? <div className="d-flex flex-column gap-1">
             <div className="d-flex gap-1 align-items-baseline">
                 <span className="text-end text-nowrap">Название шаблона:</span>
                 <input type="text" ref={nameRef} value={newName} onChange={(e) => { setNewName(e.target.value) }} />
             </div>
             <div className="d-flex gap-1">
-                {perm.remove && <input type="button" value="Удалить" disabled={!curTemplate} onClick={() => {
+                {perm.Delete && <input type="button" value="Удалить" disabled={!curTemplate} onClick={() => {
                     const message = `Удалить шаблон: "${newName}" ?`
                     showConfirm(message, () => {
                         deleteTemplate({ name: newName, table: TEMPLATE_TABLES.FASAD }, (result) => {
@@ -76,7 +76,7 @@ export default function FasadTemplatesDialog() {
                         });
                     })
                 }} />}
-                {perm.create && <Button caption="Добавить" onClick={() => {
+                {perm.Create && <Button caption="Добавить" onClick={() => {
                     if (!newName.trim()) return showMessage("Введите имя шаблона")
                     const message = `Добавить шаблон: "${newName}" ?`
                     showConfirm(message, () => {
@@ -85,7 +85,7 @@ export default function FasadTemplatesDialog() {
                         });
                     })
                 }} />}
-                {perm.update && <input type="button" value="Заменить" disabled={!curTemplate} onClick={() => {
+                {perm.Update && <input type="button" value="Заменить" disabled={!curTemplate} onClick={() => {
                     const name = curTemplate.name
                     const message = `Заменить шаблон: "${newName}" ?`
                     showConfirm(message, () => {
@@ -94,7 +94,7 @@ export default function FasadTemplatesDialog() {
                         })
                     })
                 }} />}
-                {perm.update && <input type="button" value="Переименовать" disabled={!curTemplate} onClick={() => {
+                {perm.Update && <input type="button" value="Переименовать" disabled={!curTemplate} onClick={() => {
                     const name = curTemplate.name
                     const message = `Переименовать шаблон "${name}" в "${newName}" ?`
                     showConfirm(message, () => {

@@ -46,16 +46,16 @@ export default function SpecificationTable(props: SpecificationTableProps) {
         const char = item.char && !item.useCharAsCode ? `${item.char.caption} ${charCode}` : ""
         const price = item.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"
-        const verbose = (item.verbose) ? { className: "table-data-cell table-data-cell-hover", role: "button", onClick: () => { if (!permSpec?.read) return; setVerboseData(item.verbose, item.name); showVerbose() } } : {}
+        const verbose = (item.verbose) ? { className: "table-data-cell table-data-cell-hover", role: "button", onClick: () => { if (!permSpec?.Read) return; setVerboseData(item.verbose, item.name); showVerbose() } } : {}
         return <tr key={index} className={"table-data-row " + className}>
             <td className="table-data-cell" >{item.code}</td>
             <td className="table-data-cell" {...verbose}>{item.caption}</td>
             <td className="table-data-cell">{Number(amount.toFixed(3))}</td>
             <td className="table-data-cell">{UnitCaptions.get(item.units || "")}</td>
             <td className="table-data-cell">{char}</td>
-            {permPrice?.read ? <td className="table-data-cell">{price.toFixed(2)}</td> : <></>}
-            {permPrice?.read ? <td className="table-data-cell">{(amount * price).toFixed(2)}</td> : <></>}
-            {permPrice?.read ? <td className="table-data-cell">{item.markup}</td> : <></>}
+            {permPrice?.Read ? <td className="table-data-cell">{price.toFixed(2)}</td> : <></>}
+            {permPrice?.Read ? <td className="table-data-cell">{(amount * price).toFixed(2)}</td> : <></>}
+            {permPrice?.Read ? <td className="table-data-cell">{item.markup}</td> : <></>}
         </tr >
     })
     return <div className="specification-table">
@@ -68,9 +68,9 @@ export default function SpecificationTable(props: SpecificationTableProps) {
                         <th className="table-header">Кол-во</th>
                         <th className="table-header">Ед</th>
                         <th className="table-header">Характеристика</th>
-                        {permPrice?.read ? <th className="table-header">Цена за ед</th> : <></>}
-                        {permPrice?.read ? <th className="table-header">Цена</th> : <></>}
-                        {permPrice?.read ? <th className="table-header">Наценка</th> : <></>}
+                        {permPrice?.Read ? <th className="table-header">Цена за ед</th> : <></>}
+                        {permPrice?.Read ? <th className="table-header">Цена</th> : <></>}
+                        {permPrice?.Read ? <th className="table-header">Наценка</th> : <></>}
                     </tr>
                 </thead>
                 <tbody>{contents}</tbody>

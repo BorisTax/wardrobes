@@ -27,7 +27,7 @@ export const userRolesAtom = atom<UserRole[]>([])
 export const loadUserRolesAtom = atom(null, async (get,set)=>{
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
-    if (!perm?.read) return
+    if (!perm?.Read) return
     const result = await fetchGetData(`/api/users/roles?token=${token}`)
     if(result.success){
         set(userRolesAtom, result.data as UserRole[])
@@ -39,7 +39,7 @@ export const activeUsersAtom = atom<ActiveUserState[]>([])
 export const loadUsersAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
-    if (!perm?.read) return
+    if (!perm?.Read) return
     const result = await fetchGetData(`/api/users/users?token=${token}`)
     if (result.success) {
         set(allUsersAtom, result.data as UserData[])
@@ -47,7 +47,7 @@ export const loadUsersAtom = atom(null, async (get, set) => {
 })
 export const loadActiveUsersAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
-    if (!permissions.get(RESOURCE.USERS)?.read) return
+    if (!permissions.get(RESOURCE.USERS)?.Read) return
     const result = await fetchGetData(`/api/users/active?token=${token}`)
     if(result.success){
         set(activeUsersAtom, result.data as ActiveUserState[])
@@ -153,7 +153,7 @@ export const deleteRoleAtom = atom(null, async (get: Getter, set: Setter, { id }
 
 
 export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESOURCE, Permissions>) => {
-    if (permissions.get(RESOURCE.MATERIALS)?.read) {
+    if (permissions.get(RESOURCE.MATERIALS)?.Read) {
         set(loadMaterialListAtom)
         set(loadProfileListAtom)
         set(loadEdgeListAtom)
@@ -162,10 +162,10 @@ export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESO
         set(loadZaglushkaListAtom)
         set(loadUplotnitelListAtom)
     }
-    if (permissions.get(RESOURCE.SPECIFICATION)?.read) {
+    if (permissions.get(RESOURCE.SPECIFICATION)?.Read) {
         set(loadSpecificationListAtom)
     }
-    if (permissions.get(RESOURCE.USERS)?.read) { set(loadUserRolesAtom) }
+    if (permissions.get(RESOURCE.USERS)?.Read) { set(loadUserRolesAtom) }
 })
 
 export function getInitialUser(): UserState {
@@ -192,14 +192,14 @@ export function getInitialUser(): UserState {
 
 export function getInitialPermissions(): Map<RESOURCE, Permissions> {
     const m = new Map<RESOURCE, Permissions>()
-    Object.keys(RESOURCE).forEach(k => m.set(k as RESOURCE, { create: false, update: false, read: false, remove: false }))
+    Object.keys(RESOURCE).forEach(k => m.set(k as RESOURCE, { Create: false, Update: false, Read: false, Delete: false }))
     return m
 }
 
 export function permissionsToMap(permissions: PERMISSIONS_SCHEMA[]): Map<RESOURCE, Permissions> {
     const m = new Map<RESOURCE, Permissions>()
     permissions.forEach(p => {
-        m.set(p.resource, { create: !!p.create, read: !!p.read, update: !!p.update, remove: !!p.remove })
+        m.set(p.resource, { Create: !!p.create, Read: !!p.read, Update: !!p.update, Delete: !!p.delete })
     })
     return m
 }

@@ -35,11 +35,11 @@ export default function EditPriceDialog() {
         loadPriceList()
     }, [loadPriceList])
     useEffect(() => {
-        if (!perm?.read) window.location.replace('/')
+        if (!perm?.Read) window.location.replace('/')
     }, [perm])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
-        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection items={editItems} onUpdate={async (checked, values) => {
+        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection items={editItems} onUpdate={async (checked, values) => {
             const data: PriceData = { name: name as SpecificationItem }
             if (checked[1]) data.price = +values[1]
             if (checked[2]) data.markup = +values[2]

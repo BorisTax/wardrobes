@@ -68,8 +68,8 @@ export default class UserServiceSQLite implements IUserServiceProvider {
 
     async getPermissions(roleId: number, resource: RESOURCE): Promise<Permissions> {
         const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS} where roleId=? and resource=?;`, [roleId, resource], { successStatusCode: StatusCodes.OK })
-        const perm = result.data as Permissions[]
-        return (perm.length > 0 && perm[0]) || { create: false, remove: false, read: false, update: false }
+        const perm = result.data as PERMISSIONS_SCHEMA[]
+        return (perm.length > 0 && { Create: perm[0].create, Read: perm[0].read, Update: perm[0].update, Delete: perm[0].delete }) || { Create: false, Delete: false, Read: false, Update: false }
     }
     async getAllUserPermissions(roleId: number): Promise<PERMISSIONS_SCHEMA[]> {
         const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS} where roleId=?;`, [roleId], { successStatusCode: StatusCodes.OK })

@@ -41,20 +41,20 @@ export default function EditProfile() {
             <hr />
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, profileIndex: index })) }} />
         </div>
-        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={profile.name} items={editItems}
-            onUpdate={perm?.update ? async (checked, values) => {
+        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection name={profile.name} items={editItems}
+            onUpdate={perm?.Update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
                 const usedBrush = checked[2] ? values[2] : ""
                 const result = await updateProfile({ name, type, newName: usedName, newCode: usedCode, newBrush: usedBrush })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async () => {
+            onDelete={perm?.Delete ? async () => {
                 const result = await deleteProfile(profile)
                 setState((prev) => ({ ...prev, profileIndex: 0 }))
                 return result
             } : undefined}
-            onAdd={perm?.create ? async (checked, values) => {
+            onAdd={perm?.Create ? async (checked, values) => {
                 const name = values[0] as string
                 const code = values[1] as string
                 const brush = values[2] as string

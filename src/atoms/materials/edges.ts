@@ -10,7 +10,7 @@ export const edgeListAtom = atom<Edge[]>([])
 
 export const loadEdgeListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/edge?token=${token}`)
         if(result.success) set(edgeListAtom, result.data as Edge[]);
@@ -19,7 +19,7 @@ export const loadEdgeListAtom = atom(null, async (get, set) => {
 
 export const deleteEdgeAtom = atom(null, async (get, set, edge: Edge) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
         const result = await fetchData("/api/materials/edge", "DELETE", JSON.stringify({ name: edge.name, token }))
         await set(loadEdgeListAtom)
@@ -32,7 +32,7 @@ export const deleteEdgeAtom = atom(null, async (get, set, edge: Edge) => {
 
 export const addEdgeAtom = atom(null, async (get, set, {name, dsp, code}: Edge) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.create) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.DSP]: dsp,
@@ -51,7 +51,7 @@ export const addEdgeAtom = atom(null, async (get, set, {name, dsp, code}: Edge) 
 
 export const updateEdgeAtom = atom(null, async (get, set, { name, dsp, newName, code }) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.update) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,

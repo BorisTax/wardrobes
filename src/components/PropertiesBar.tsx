@@ -56,13 +56,13 @@ export default function PropertiesBar() {
         <div className="property-bar-header">
             Параметры фасада
             <div className="d-flex gap-1">
-                {permSpec?.read &&
+                {permSpec?.Read &&
                     <>
                         <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
                         <ImageButton title="Cхема" icon="schemaButton" onClick={() => { navigate("/schema") }} />
                     </>}
-                {permTemp?.create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
-                {permTemp?.read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
+                {permTemp?.Create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
+                {permTemp?.Read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
                 {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />}
                 {onlyFasad && hasFasadImage(fasad) && <ToggleButton
                     title={stretchImage ? "Сбросить масштабирование" : "Подогнать изображение под размер"}
@@ -93,7 +93,7 @@ export default function PropertiesBar() {
             <ComboBox title="Направление профиля:" value={direction} items={directions} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
             <ComboBox title="Кол-во секций:" value={sectionCount} items={sections} disabled={!fasad} onChange={(_, value) => { divideFasad(+value) }} />
         </PropertyGrid>
-        {permPrice?.read && fasad && <FasadTotalPrice />}
+        {permPrice?.Read && fasad && <FasadTotalPrice />}
     </div>
 }
 

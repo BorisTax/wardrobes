@@ -1,6 +1,6 @@
 import express from "express";
 import { MyRequest, Result } from '../../types/server.js';
-import { materialServiceProvider, specificationPath } from '../options.js';
+import { materialServiceProvider, specificationPath, specServiceProvider } from '../options.js';
 import { CONSOLE_TYPE, DETAIL_NAME, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from '../../types/wardrobe.js';
 import SpecificationServiceSQLite from "../services/specificationServiceSQLite.js";
 import { Profile, ProfileType } from "../../types/materials.js";
@@ -34,13 +34,11 @@ router.get("/getDetail", async (req, res) => {
 });
 
 export async function getTable(kind: WARDROBE_KIND) {
-  const service = new SpecificationServiceSQLite(specificationPath)
-  return await service.getDetailTable({ kind })
+  return await specServiceProvider.getDetailTable({ kind })
 }
 
 export async function getDetail(kind: WARDROBE_KIND, detailName: DETAIL_NAME, width: number, height: number) {
-  const service = new SpecificationServiceSQLite(specificationPath)
-  const details = await service.getDetails(kind, width, height)
+  const details = await specServiceProvider.getDetails(kind, width, height)
   const detail = details.find(d => d.name === detailName)
   const shelf = details.find(d => d.name === DETAIL_NAME.SHELF)
   const standCount = details.find(d => d.name === DETAIL_NAME.INNER_STAND)?.count || 0

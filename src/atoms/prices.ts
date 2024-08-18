@@ -10,7 +10,7 @@ export const activeProfileIndexAtom = atom(0)
 
 export const loadPriceListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.PRICES)?.read) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.PRICES)?.Read) return { success: false, message: "" }
     try {
         const result: FetchResult<[] | string> = await fetchGetData('/api/prices/pricelist?token=' + token)
         if (!result.success) set(priceListAtom, []); else
@@ -21,7 +21,7 @@ export const loadPriceListAtom = atom(null, async (get, set) => {
 
 export const updatePriceListAtom = atom(null, async (get, set, { name, price, markup }: PriceData) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.PRICES)?.update) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.PRICES)?.Update) return { success: false, message: "" }
     const formData: { name: string, token: string, price?: number, markup?: number } = {
         [TableFields.NAME]: name,
         [TableFields.TOKEN]: token

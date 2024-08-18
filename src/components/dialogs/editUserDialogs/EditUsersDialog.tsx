@@ -53,8 +53,8 @@ export default function EditUsersDialog() {
         { caption: "Пароль:", type: InputType.TEXT, value: "", message: messages.ENTER_PASSWORD, checkValue: (value) => checkPassword(value as string) },
     ]
     useEffect(() => {
-        if (!perm?.read) navigate("/")
-    }, [perm?.read, navigate])
+        if (!perm?.Read) navigate("/")
+    }, [perm?.Read, navigate])
     useEffect(() => {
         loadUsers()
         loadActiveUsers()

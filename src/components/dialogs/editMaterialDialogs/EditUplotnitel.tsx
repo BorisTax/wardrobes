@@ -31,14 +31,14 @@ export default function EditUplotnitel() {
     }, [noSortedList])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={name} items={editItems}
-            onUpdate={perm?.update ? async (checked, values) => {
+        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection name={name} items={editItems}
+            onUpdate={perm?.Update ? async (checked, values) => {
                 const usedCode = checked[0] ? values[1] : ""
                 const usedCaption = checked[1] ? values[2] : ""
                 const result = await updateUplotnitel({ name, code: usedCode, caption: usedCaption })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async () => {
+            onDelete={perm?.Delete ? async () => {
                 const result = await deleteUplotnitel(list[selectedIndex])
                 setSelectedIndex(0)
                 return result

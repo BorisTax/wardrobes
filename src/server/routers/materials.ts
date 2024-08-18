@@ -27,7 +27,7 @@ router.get("/profile", async (req, res) => {
   res.status(result.status).json(result);
 });
 router.delete("/profile", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name, type } = req.body
   let result
   result = await deleteProfile(name, type);
@@ -59,7 +59,7 @@ router.get("/material", async (req, res) => {
 });
 
 router.delete("/material", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name, material } = req.body
   const result = await deleteExtMaterial(name, material);
   res.status(result.status).json(result)
@@ -94,7 +94,7 @@ router.get("/edge", async (req, res) => {
   res.status(result.status).json(result);
 });
 router.delete("/edge", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name } = req.body
   let result
   result = await deleteEdge(name);
@@ -125,7 +125,7 @@ router.get("/zaglushka", async (req, res) => {
   res.status(result.status).json(result);
 });
 router.delete("/zaglushka", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name } = req.body
   let result
   result = await deleteZaglushka(name);
@@ -155,7 +155,7 @@ router.get("/brush", async (req, res) => {
   res.status(result.status).json(result);
 });
 router.delete("/brush", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name } = req.body
   let result
   result = await deleteBrush(name);
@@ -185,7 +185,7 @@ router.get("/trempel", async (req, res) => {
   res.status(result.status).json(result);
 });
 router.delete("/trempel", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name } = req.body
   let result
   result = await deleteTrempel(name);
@@ -216,7 +216,7 @@ router.get("/uplotnitel", async (req, res) => {
   res.status(result.status).json(result);
 });
 router.delete("/uplotnitel", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name } = req.body
   let result
   result = await deleteUplotnitel(name);

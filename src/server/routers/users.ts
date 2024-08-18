@@ -121,7 +121,7 @@ router.post("/update", async (req, res) => {
   res.status(result.status).json(result);
 });
 router.delete("/delete", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const user = req.body;
   if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
@@ -161,7 +161,7 @@ router.post("/addRole", async (req, res) => {
 });
 
 router.delete("/deleteRole", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.REMOVE]))) return accessDenied(res)
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
   const { id } = req.body;
   if (!id) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
@@ -187,11 +187,11 @@ async function loginUser(user: User): Promise<Result<UserLoginResult | null>> {
 export async function hasPermission(req: MyRequest, resource: RESOURCE, permissions: PERMISSION[]): Promise<boolean>{
   const userRoleId = req.userRoleId as number;
   const userService = new UserService(userServiceProvider)
-  const { read, create, update, remove } = (await userService.getPermissions(userRoleId, resource))
+  const { Read, Create, Update, Delete } = (await userService.getPermissions(userRoleId, resource))
   return permissions.every(p => {
-    if (p === PERMISSION.CREATE) return create
-    if (p === PERMISSION.READ) return read
-    if (p === PERMISSION.UPDATE) return update
-    if (p === PERMISSION.REMOVE) return remove
+    if (p === PERMISSION.CREATE) return Create
+    if (p === PERMISSION.READ) return Read
+    if (p === PERMISSION.UPDATE) return Update
+    if (p === PERMISSION.DELETE) return Delete
   })
 }

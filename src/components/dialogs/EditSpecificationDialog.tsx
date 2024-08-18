@@ -32,11 +32,11 @@ export default function EditSpecificationDialog() {
         loadSpecList()
     }, [loadSpecList])
     useEffect(() => {
-        if (!perm?.read) window.location.replace('/')
+        if (!perm?.Read) window.location.replace('/')
     }, [perm])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
-        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection items={editItems} onUpdate={async (checked, values) => {
+        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection items={editItems} onUpdate={async (checked, values) => {
             const data: SpecificationData = { name: specList[selectedIndex].name }
             if (checked[0]) data.caption = values[0] as string
             if (checked[1]) data.coef = +values[1]

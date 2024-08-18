@@ -10,7 +10,7 @@ export const permissionsAtom = atom<PERMISSIONS_SCHEMA[]>([])
 export const loadPermissionsAtom = atom(null, async (get, set, roleId: number)=>{
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
-    if (!perm?.read) return
+    if (!perm?.Read) return
     const result = await fetchGetData(`/api/users/permissions?token=${token}&roleId=${roleId}`)
     if(result.success){
         set(permissionsAtom, result.data as PERMISSIONS_SCHEMA[])
@@ -20,7 +20,7 @@ export const resourceListAtom = atom<Resource[]>([])
 export const loadResourceListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
-    if (!perm?.read) return
+    if (!perm?.Read) return
     const result = await fetchGetData(`/api/users/permissions/resources?token=${token}`)
     if (result.success) {
         set(resourceListAtom, result.data as Resource[])

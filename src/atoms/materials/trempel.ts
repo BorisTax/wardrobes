@@ -10,7 +10,7 @@ export const trempelListAtom = atom<Trempel[]>([])
 
 export const loadTrempelListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/trempel?token=${token}`)
         if (result.success) set(trempelListAtom, result.data as Trempel[]);
@@ -19,7 +19,7 @@ export const loadTrempelListAtom = atom(null, async (get, set) => {
 
 export const deleteTrempelAtom = atom(null, async (get, set, trempel: Trempel) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try {
         const result = await fetchData("/api/materials/trempel", "DELETE", JSON.stringify({ name: trempel.name, token }))
         await set(loadTrempelListAtom)
@@ -32,7 +32,7 @@ export const deleteTrempelAtom = atom(null, async (get, set, trempel: Trempel) =
 
 export const addTrempelAtom = atom(null, async (get, set, { name, caption, code }: Trempel) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.create) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.CODE]: code,
@@ -51,7 +51,7 @@ export const addTrempelAtom = atom(null, async (get, set, { name, caption, code 
 
 export const updateTrempelAtom = atom(null, async (get, set, { name, caption, code }) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.update) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.CAPTION]: caption,

@@ -42,8 +42,8 @@ export default function EditPlates() {
             <hr />
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, extMaterialIndex: index })) }} />
         </div>
-        {(perm?.create || perm?.update || perm?.remove) ? <EditDataSection name={extMaterial.name} items={editItems}
-            onUpdate={perm?.update ? async (checked, values) => {
+        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection name={extMaterial.name} items={editItems}
+            onUpdate={perm?.Update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
                 const usedPurpose = checked[2] ? values[2] : MAT_PURPOSE.FASAD
@@ -51,12 +51,12 @@ export default function EditPlates() {
                 const result = await updateMaterial({ name: extMaterial.name, material: baseMaterial, newName: usedName, newCode: usedCode, image: usedFile, purpose: usedPurpose })
                 return result
             } : undefined}
-            onDelete={perm?.remove ? async () => {
+            onDelete={perm?.Delete ? async () => {
                 const result = await deleteMaterial(extMaterial)
                 setState((prev) => ({ ...prev, extMaterialIndex: 0 }))
                 return result
             } : undefined}
-            onAdd={perm?.create ? async (checked, values) => {
+            onAdd={perm?.Create ? async (checked, values) => {
                 const name = values[0] as string
                 const code = values[1] as string
                 const purpose = getMATPurpose(values[2] as string)

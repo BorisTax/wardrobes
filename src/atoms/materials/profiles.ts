@@ -11,7 +11,7 @@ export const activeProfileIndexAtom = atom(0)
 
 export const loadProfileListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.read) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
         const result: FetchResult<[] | string> = await fetchGetData(`/api/materials/profile?token=${token}`)
         if(result.success) set(profileListAtom, result.data as Profile[]);
@@ -20,7 +20,7 @@ export const loadProfileListAtom = atom(null, async (get, set) => {
 
 export const deleteProfileAtom = atom(null, async (get, set, profile: Profile) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.remove) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
         const result = await fetchData("/api/materials/profile", "DELETE", JSON.stringify({ name: profile.name, type: profile.type, token }))
         await set(loadProfileListAtom)
@@ -33,7 +33,7 @@ export const deleteProfileAtom = atom(null, async (get, set, profile: Profile) =
 
 export const addProfileAtom = atom(null, async (get, set, profile: Profile) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.create) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: profile.name,
         [TableFields.TYPE]: profile.type,
@@ -53,7 +53,7 @@ export const addProfileAtom = atom(null, async (get, set, profile: Profile) => {
 
 export const updateProfileAtom = atom(null, async (get, set, { name, type, newCode, newName, newBrush }) => {
     const { token, permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MATERIALS)?.update) return { success: false, message: "" }
+    if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,

@@ -15,19 +15,19 @@ export default function NavBar() {
   const permWard = permissions.get(RESOURCE.WARDROBES)
   const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   return <div className="data-navbar">
-    {permCombi?.read && <ImageLink link={"combi"} caption="Комби-фасады" icon="combiButton" />}
-    {permWard?.read && <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />}
+    {permCombi?.Read && <ImageLink link={"combi"} caption="Комби-фасады" icon="combiButton" />}
+    {permWard?.Read && <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />}
     <>
       <MenuSeparator />
-      {permMat?.read && <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />}
-      {permPrice?.read && <ImageLink link={"pricelist"} caption="База цен" icon="editPrice" />}
-      {permSpec?.read && <ImageLink link={"specification"} caption="База спецификации" icon="editSpecification" />}
+      {permMat?.Read && <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />}
+      {permPrice?.Read && <ImageLink link={"pricelist"} caption="База цен" icon="editPrice" />}
+      {permSpec?.Read && <ImageLink link={"specification"} caption="База спецификации" icon="editSpecification" />}
     </>
 
-    {permUsers?.read &&
+    {permUsers?.Read &&
       <>
         <MenuSeparator />
-      {(permUsers?.create || permUsers?.update || permUsers?.remove) && <ImageLink link={"users"} caption="Список пользователей" icon="userlistButton" />}
+      {(permUsers?.Create || permUsers?.Update || permUsers?.Delete) && <ImageLink link={"users"} caption="Список пользователей" icon="userlistButton" />}
       <ImageButton title="Скачать базу данных" caption="Скачать базу данных" icon="downloadButton" onClick={() => { downloadDatabase() }} />
       </>
     }

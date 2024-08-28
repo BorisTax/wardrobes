@@ -29,7 +29,7 @@ export default function EditTrempel() {
     }, [trempelNoSortedList])
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection name={name} items={editItems}
+        {(perm?.Read) ? <EditDataSection name={name} items={editItems}
             onUpdate={perm?.Update ? async (checked, values) => {
                 const usedCaption = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""

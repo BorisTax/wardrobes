@@ -5,7 +5,7 @@ export type AppSettings = {
 }
 
 export function getDefaultSettings(): AppSettings {
-    return { showFixIcons: true, minSize: 0 }
+    return { showFixIcons: true, minSize: 50 }
 }
 export function getStoredSettings(): AppSettings {
     const settings = localStorage.getItem("settings")

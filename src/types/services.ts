@@ -48,10 +48,10 @@ export interface IMaterialExtService<T> {
     updateExtData: ({ }: T & {newName: string}) => Promise<Result<null>>
 }
 interface ITemplateAbstractService {
-    getTemplates: (table: string) => Promise<Result<Template[]>>
-    addTemplate: (table: string, { }: Template) => Promise<Result<null>>
-    deleteTemplate: (table: string, name: string) => Promise<Result<null>>
-    updateTemplate: (table: string, { }: NewTemplate) => Promise<Result<null>>
+    getFasadTemplates: () => Promise<Result<Template[]>>
+    addFasadTemplate: ({ }: Template) => Promise<Result<null>>
+    deleteFasadTemplate: (name: string) => Promise<Result<null>>
+    updateFasadTemplate: ({ }: NewTemplate) => Promise<Result<null>>
 }
 interface IPriceAbstractService {
     getPriceList: () => Promise<Result<PriceData[]>>

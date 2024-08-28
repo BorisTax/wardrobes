@@ -33,7 +33,7 @@ export default function EditEdge() {
     ]
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection name={edgeName} items={editItems}
+        {(perm?.Read) ? <EditDataSection name={edgeName} items={editItems}
             onUpdate={perm?.Update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""

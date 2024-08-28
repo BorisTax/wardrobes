@@ -29,7 +29,7 @@ export const verboseDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>
 export const templatesDialogPropsAtom = atom(false)
 export const showTemplatesDialogAtom = atom(null, (get, set, table: string, edit: boolean) => {
     const dialogRef = get(templatesDialogAtom)
-    set(loadTemplateListAtom, table)
+    set(loadTemplateListAtom)
     set(templatesDialogPropsAtom, edit)
     dialogRef?.current?.showModal()
 })

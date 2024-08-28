@@ -41,7 +41,7 @@ export default function EditProfile() {
             <hr />
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setState((prev) => ({ ...prev, profileIndex: index })) }} />
         </div>
-        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection name={profile.name} items={editItems}
+        {(perm?.Read) ? <EditDataSection name={profile.name} items={editItems}
             onUpdate={perm?.Update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""

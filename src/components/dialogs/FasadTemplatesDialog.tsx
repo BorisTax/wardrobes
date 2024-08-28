@@ -70,48 +70,43 @@ export default function FasadTemplatesDialog() {
             <div className="d-flex gap-1">
                 {perm.Delete && <input type="button" value="Удалить" disabled={!curTemplate} onClick={() => {
                     const message = `Удалить шаблон: "${newName}" ?`
-                    showConfirm(message, () => {
-                        deleteTemplate({ name: newName, table: TEMPLATE_TABLES.FASAD }, (result) => {
-                            showMessage(rusMessages[result.message])
-                        });
+                    showConfirm(message, async () => {
+                        const result = await deleteTemplate({ name: newName })
+                        if (result.message) showMessage(rusMessages[result.message])
                     })
                 }} />}
                 {perm.Create && <Button caption="Добавить" onClick={() => {
                     if (!newName.trim()) return showMessage("Введите имя шаблона")
                     const message = `Добавить шаблон: "${newName}" ?`
-                    showConfirm(message, () => {
-                        addTemplate(newName, (result) => {
-                            showMessage(rusMessages[result.message])
-                        });
+                    showConfirm(message, async () => {
+                        const result = await addTemplate(newName)
+                        if (result.message) showMessage(rusMessages[result.message])
                     })
                 }} />}
                 {perm.Update && <input type="button" value="Заменить" disabled={!curTemplate} onClick={() => {
                     const name = curTemplate.name
                     const message = `Заменить шаблон: "${newName}" ?`
-                    showConfirm(message, () => {
-                        updateTemplate({ name, newName }, (result) => {
-                            showMessage(rusMessages[result.message])
-                        })
+                    showConfirm(message,  async () => {
+                        const result = await updateTemplate({ name, newName })
+                        if (result.message) showMessage(rusMessages[result.message])
                     })
                 }} />}
                 {perm.Update && <input type="button" value="Переименовать" disabled={!curTemplate} onClick={() => {
                     const name = curTemplate.name
                     const message = `Переименовать шаблон "${name}" в "${newName}" ?`
-                    showConfirm(message, () => {
-                        updateTemplate({ name, newName, rename: true }, (result) => {
-                            showMessage(rusMessages[result.message])
-                        })
+                    showConfirm(message, async () => {
+                        const result = await updateTemplate({ name, newName, rename: true })
+                        if (result.message) showMessage(rusMessages[result.message])
                     })
                 }} />}
             </div>
         </div> : <div>
             <input type="button" value="Применить" disabled={!curTemplate} onClick={() => {
                 const message = `Применить шаблон "${newName}" к выбранному фасаду?`
-                showConfirm(message, () => {
-                    applyTemplate(data, (result) => {
-                        if (!result.success) return showMessage(rusMessages[result.message])
-                        dialogRef.current?.close()
-                    })
+                showConfirm(message, async () => {
+                    const result = await applyTemplate(data)
+                    if (!result.success) return showMessage(rusMessages[result.message])
+                    dialogRef.current?.close()
                 })
             }} />
         </div>}

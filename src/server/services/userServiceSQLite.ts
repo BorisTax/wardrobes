@@ -32,7 +32,7 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         return dataBaseQuery(this.dbFile, `INSERT INTO ${TOKENS} (token, username, time, lastActionTime) VALUES(?, ?, ?, ?)`, [token, username, time, lastActionTime], { successStatusCode: StatusCodes.CREATED })
     }
     async updateToken(token: string, lastActionTime: number): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `UPDATE ${TOKENS} set lastActionTime=? WHERE token=?;`, [token, lastActionTime], { successStatusCode: StatusCodes.OK })
+        return dataBaseQuery(this.dbFile, `UPDATE ${TOKENS} set lastActionTime=? WHERE token=?;`, [lastActionTime, token], { successStatusCode: StatusCodes.OK })
     }
     async deleteToken(token: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM ${TOKENS} WHERE token=?`, [token], { successStatusCode: StatusCodes.OK })

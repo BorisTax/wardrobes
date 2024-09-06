@@ -76,14 +76,10 @@ async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<Sp
     spec.set(SpecificationItem.EVA, await calcEva(fasad)); 
     spec.set(SpecificationItem.Uplot, await calcUplotnitel(fasad, profile.type));
     spec.set(SpecificationItem.UplotSoedBavaria, await calcUplotnitelSoed(fasad, profile.type));
-    spec.set(SpecificationItem.ProfileSoedStandart, profile.type === ProfileType.STANDART ? await calcProfileSoed(fasad, profile) : [emptyFullData()])
-    spec.set(SpecificationItem.ProfileVertStandart, profile.type === ProfileType.STANDART ? await calcProfileVert(fasad, profile) : [emptyFullData()])
-    spec.set(SpecificationItem.ProfileHorTopStandart, profile.type === ProfileType.STANDART ? await calcProfileHor(fasad, profile, true) : [emptyFullData()])
-    spec.set(SpecificationItem.ProfileHorBottomStandart, profile.type === ProfileType.STANDART ? await calcProfileHor(fasad, profile, false) : [emptyFullData()])
-    spec.set(SpecificationItem.ProfileSoedBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileSoed(fasad, profile) : [emptyFullData()])
-    spec.set(SpecificationItem.ProfileVertBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileVert(fasad, profile) : [emptyFullData()])
-    spec.set(SpecificationItem.ProfileHorTopBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileHor(fasad, profile, true) : [emptyFullData()])
-    spec.set(SpecificationItem.ProfileHorBottomBavaria, profile.type === ProfileType.BAVARIA ? await calcProfileHor(fasad, profile, false) : [emptyFullData()])
+    spec.set(SpecificationItem.ProfileSoedStandart, await calcProfileSoed(fasad, profile))
+    spec.set(SpecificationItem.ProfileVertStandart, await calcProfileVert(fasad, profile))
+    spec.set(SpecificationItem.ProfileHorTopStandart, await calcProfileHor(fasad, profile, true))
+    spec.set(SpecificationItem.ProfileHorBottomStandart, await calcProfileHor(fasad, profile, false))
     spec.set(SpecificationItem.Streich, await calcStreich(fasad))
     spec.set(SpecificationItem.Karton, await calcKarton(fasad))
     spec.set(SpecificationItem.Roliki, await calcRoliki(fasad, profile))
@@ -388,7 +384,7 @@ async function calcProfileSoed(fasad: Fasad, profile: Profile): Promise<FullData
         fasad.Children.forEach((f: Fasad) => result = [...result, ...getProfiles(f)])
         return result;
     }
-    const coef = await getCoef(profile.type === ProfileType.STANDART ? SpecificationItem.ProfileSoedStandart : SpecificationItem.ProfileSoedBavaria)
+    const coef = await getCoef(SpecificationItem.ProfileSoedStandart)
     const prof = getProfiles(fasad)
     const sum = prof.reduce((a, i) => a + i, 0) / 1000
     const result = sum * coef
@@ -398,9 +394,8 @@ async function calcProfileSoed(fasad: Fasad, profile: Profile): Promise<FullData
     return [{ data: { amount: result, char: { code: profile.code, caption: profile.name } }, verbose: result > 0 ? verbose : undefined }]
 }
 async function calcProfileHor(fasad: Fasad, profile: Profile, top: boolean): Promise<FullData[]> {
-    const itemStandart = top ? SpecificationItem.ProfileHorTopStandart : SpecificationItem.ProfileHorBottomStandart
-    const itemBavaria = top ? SpecificationItem.ProfileHorTopBavaria : SpecificationItem.ProfileHorBottomBavaria
-    const coef = await getCoef(profile.type === ProfileType.STANDART ? itemStandart : itemBavaria)
+    const prof = top ? SpecificationItem.ProfileHorTopStandart : SpecificationItem.ProfileHorBottomStandart
+    const coef = await getCoef(prof)
     const width = fasad.Width - 13
     const result = (width / 1000) * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""

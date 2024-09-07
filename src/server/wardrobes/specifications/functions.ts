@@ -1,8 +1,8 @@
 import { FasadMaterial } from "../../../types/enums";
 import { ExtMaterial } from "../../../types/materials";
-import { WardrobeDetailSchema, WardrobeFurnitureTableSchema } from "../../../types/schemas";
+import { WardrobeDetailSchema, WardrobeDetailTableSchema, WardrobeFurnitureTableSchema } from "../../../types/schemas";
 import { SpecificationItem } from "../../../types/specification";
-import { DETAIL_NAME, Detail, FullData, IWardrobe, SpecificationResult, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../../../types/wardrobe";
+import { DETAIL_NAME, DRILL_TYPE, Detail, EDGE_SIDE, EDGE_TYPE, FullData, IWardrobe, SpecificationResult, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData, WardrobeDetailTable } from "../../../types/wardrobe";
 import { specServiceProvider, materialServiceProvider } from "../../options";
 import { MaterialService } from "../../services/materialService";
 import { SpecificationService } from "../../services/specificationService";
@@ -103,70 +103,69 @@ export async function getCoef(item: SpecificationItem): Promise<number> {
     const coef = list.data?.find(s => s.name === item)?.coef || 1
     return coef
 }
-export function getConfirmatByDetail(detail: DETAIL_NAME): number {
-    if ([DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT].includes(detail)) return 4
-    if ([DETAIL_NAME.PILLAR, DETAIL_NAME.DRAWER_SIDE].includes(detail)) return 2
-    return 0
+export function getConfirmatByDetail(detail: Detail): number {
+    return detail.drill?.reduce((prev, curr) => prev + (((curr === DRILL_TYPE.CONFIRMAT1) && 2) || ((curr === DRILL_TYPE.CONFIRMAT2) && 4) || 0), 0) || 0
 }
-export function getMinifixByDetail(detail: DETAIL_NAME): number {
-    if ([DETAIL_NAME.STAND, DETAIL_NAME.INNER_STAND].includes(detail)) return 4
-    if ([DETAIL_NAME.PILLAR].includes(detail)) return 2
-    return 0
-}
-export function hasEdge2(detail: DETAIL_NAME): boolean {
-    return detail === DETAIL_NAME.ROOF ||
-        detail === DETAIL_NAME.STAND ||
-        detail === DETAIL_NAME.CONSOLE_STAND ||
-        detail === DETAIL_NAME.CONSOLE_BACK_STAND ||
-        detail === DETAIL_NAME.CONSOLE_ROOF
-}
-export function hasEdge05(detail: DETAIL_NAME): boolean {
-    return detail === DETAIL_NAME.ROOF ||
-        detail === DETAIL_NAME.INNER_STAND ||
-        detail === DETAIL_NAME.SHELF ||
-        detail === DETAIL_NAME.SHELF_PLAT ||
-        detail === DETAIL_NAME.PILLAR ||
-        detail === DETAIL_NAME.DRAWER_FASAD ||
-        detail === DETAIL_NAME.DRAWER_SIDE ||
-        detail === DETAIL_NAME.DRAWER_BRIDGE
+export function getMinifixByDetail(detail: Detail): number {
+    return detail.drill?.reduce((prev, curr) => prev + (((curr === DRILL_TYPE.MINIFIX1) && 2) || ((curr === DRILL_TYPE.MINIFIX2) && 4) || 0), 0) || 0
 }
 
-export function getEdge2Length(detail: Detail): number {
-    if ([DETAIL_NAME.ROOF,
-    DETAIL_NAME.STAND,
-    DETAIL_NAME.CONSOLE_STAND,
-    DETAIL_NAME.CONSOLE_BACK_STAND,
-    DETAIL_NAME.BLINDER,
-    ].includes(detail.name)) return detail.length
-    if ([
-        DETAIL_NAME.CONSOLE_ROOF,
-        DETAIL_NAME.CONSOLE_SHELF,
-    ].includes(detail.name)) return detail.width + detail.length
-    return 0
+
+export function getEdgeLength(detail: Detail, edge: EDGE_TYPE): number {
+    let result = 0
+    if (detail.edge?.L1 === edge) result += detail.length
+    if (detail.edge?.L2 === edge) result += detail.length
+    if (detail.edge?.W1 === edge) result += detail.width
+    if (detail.edge?.W2 === edge) result += detail.width
+    return result
+}
+export function getEdgeDescripton(detail: Detail, edge: EDGE_TYPE): string {
+    let length = 0
+    let width = 0
+    const result = []
+    if (detail.edge?.L1 === edge) length = 1
+    if (detail.edge?.L2 === edge) length += 1
+    if (detail.edge?.W1 === edge) width = 1
+    if (detail.edge?.W2 === edge) width += 1
+    if (length > 0) result.push(`${length} по длине`)
+    if (width > 0) result.push(`${width} по ширине`)
+    return result.join(', ')
 }
 
-export function getEdge05Length(detail: Detail): number {
-    if ([DETAIL_NAME.INNER_STAND,
-    DETAIL_NAME.SHELF,
-    DETAIL_NAME.SHELF_PLAT,
-    DETAIL_NAME.PILLAR,
-    DETAIL_NAME.DRAWER_SIDE,
-    DETAIL_NAME.DRAWER_BRIDGE,
-    ].includes(detail.name)) return detail.length
-    if ([DETAIL_NAME.DRAWER_FASAD].includes(detail.name)) return (detail.width + detail.length) * 2
-    if ([DETAIL_NAME.ROOF, DETAIL_NAME.BLINDER].includes(detail.name)) return detail.width * 2
-    return 0
-}
 
-export function calcFunction(func: string, { width, height, shelfSize, standCount }: { width: number; height: number; shelfSize: number; standCount: number} ): number {
+export function calcFunction(func: string, { width, height }: { width: number; height: number} ): number {
     try {
-        const f = new Function('W', 'H', 'ShL', 'StN', 'return ' + func)
-        const result = f(width, height, shelfSize, standCount)
+        const f = new Function('W', 'H', 'return ' + func)
+        const result = f(width, height)
         return result
     } catch (e) {
         return 0
     }
 }
 
+export function singleLengthThickEdge(): EDGE_SIDE {
+    return { L1: EDGE_TYPE.THICK, L2: EDGE_TYPE.NONE, W1: EDGE_TYPE.NONE, W2: EDGE_TYPE.NONE }
+}
+export function singleLengthThinEdge(): EDGE_SIDE {
+    return { L1: EDGE_TYPE.THIN, L2: EDGE_TYPE.NONE, W1: EDGE_TYPE.NONE, W2: EDGE_TYPE.NONE }
+}
+export function singleLengthThickDoubleWidthThinEdge(): EDGE_SIDE {
+    return { L1: EDGE_TYPE.THICK, L2: EDGE_TYPE.NONE, W1: EDGE_TYPE.THIN, W2: EDGE_TYPE.THIN }
+}
+export function allThinEdge(): EDGE_SIDE {
+    return { L1: EDGE_TYPE.THIN, L2: EDGE_TYPE.THIN, W1: EDGE_TYPE.THIN, W2: EDGE_TYPE.THIN }
+}
 
+export function getDrill(detail: WardrobeDetailTable): DRILL_TYPE[] {
+    if ([DETAIL_NAME.STAND, DETAIL_NAME.INNER_STAND].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.MINIFIX2]
+    if ([DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.CONFIRMAT2]
+    if ([DETAIL_NAME.PILLAR].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.MINIFIX1, DRILL_TYPE.CONFIRMAT1]
+    return []
+} 
 
+export function getEdge(detail: WardrobeDetailTable): EDGE_SIDE | undefined {
+    if ([DETAIL_NAME.ROOF].includes(detail.name as DETAIL_NAME)) return singleLengthThickDoubleWidthThinEdge()
+    if ([DETAIL_NAME.STAND].includes(detail.name as DETAIL_NAME)) return singleLengthThickEdge()
+    if ([DETAIL_NAME.INNER_STAND, DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT, DETAIL_NAME.PILLAR].includes(detail.name as DETAIL_NAME)) return singleLengthThinEdge()
+    return undefined
+}

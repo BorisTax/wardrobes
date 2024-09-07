@@ -28,6 +28,8 @@ export const getInitExtComplect = (height: number, depth: number) => ({
 const initState: WardrobeData = {
     wardKind: WARDROBE_KIND.STANDART,
     wardType: WARDROBE_TYPE.WARDROBE,
+    schema: false,
+    details: [],
     width: 2400,
     depth: 600,
     height: 2400,
@@ -45,7 +47,9 @@ export const setWardrobeDataAtom = atom(null, (get, set, setter: (prev: Wardrobe
     const result = setter(prev)
     const dataDiffers = isDataDiffers(prev, result)
     set(wardrobeDataAtom, result)
-    if (loaded && dataDiffers) set(calculateSpecificationsAtom, result)
+    if (result.schema && !prev.schema) set(getDetailsAtom)
+    const resetDetails = isDimensionsDiffers(prev, result)
+    if (loaded && dataDiffers) set(calculateSpecificationsAtom, result, resetDetails)
 })
 
 export const loadedInitialWardrobeDataAtom = atom(false)
@@ -60,6 +64,15 @@ export const loadInitialWardrobeDataAtom = atom(null, async (get, set) => {
     }
 })
 
+export const getDetailsAtom = atom(null, async (get, set) => {
+    const { token } = get(userAtom)
+    const { wardKind, width, height, depth } = get(wardrobeDataAtom)
+    const result: FetchResult<Detail[]> = await fetchGetData(`/api/wardrobe/getDetails?token=${token}&kind=${wardKind}&width=${width}&height=${height}&depth=${depth}`)
+    const data = result.data as Detail[]
+    if (result.success) {
+        set(setWardrobeDataAtom, (prev) => ({ ...prev, details: data }))
+    }
+})
 export const detailAtom = atom<Detail | null>(null)
 export const loadDetailAtom = atom(null, async (get, set, detailName: DETAIL_NAME, kind: WARDROBE_KIND, width: number, height: number) => {
     const { token } = get(userAtom)
@@ -67,11 +80,16 @@ export const loadDetailAtom = atom(null, async (get, set, detailName: DETAIL_NAM
     if (result.success) set(detailAtom, result.data as Detail)
 })
 
-const isDataDiffers = (prev: WardrobeData, current: WardrobeData): boolean => {
-    return prev.depth !== current.depth || prev.height !== current.height || prev.width !== current.width || prev.wardType !== current.wardType ||
-        prev.wardKind !== current.wardKind || prev.dspName !== current.dspName || prev.profileName !== current.profileName || fasadesDiffers(prev.fasades, current.fasades)
-        || extComplectDiffers(prev.extComplect, current.extComplect)
 
+
+const isDataDiffers = (prev: WardrobeData, current: WardrobeData): boolean => {
+    return isDimensionsDiffers(prev, current) || ((current.schema === true) && (prev.schema !== current.schema)) || prev.dspName !== current.dspName || prev.profileName !== current.profileName || fasadesDiffers(prev.fasades, current.fasades)
+        || extComplectDiffers(prev.extComplect, current.extComplect)
+}
+
+const isDimensionsDiffers = (prev: WardrobeData, current: WardrobeData): boolean => {
+    return prev.depth !== current.depth || prev.height !== current.height || prev.width !== current.width || prev.wardType !== current.wardType ||
+        prev.wardKind !== current.wardKind
 }
 const fasadesDiffers = (prev: FasadesData, current: FasadesData): boolean => {
     return prev.dsp.count !== current.dsp.count || prev.dsp.names.find((n, index) => n !== current.dsp.names[index]) !== undefined

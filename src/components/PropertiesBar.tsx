@@ -15,12 +15,10 @@ import { userAtom } from "../atoms/users"
 import { getInitialBackImageProps } from "../classes/FasadState"
 import { settingsAtom } from "../atoms/settings"
 import { copyFasadDialogAtom, showSpecificationDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
-import { TEMPLATE_TABLES } from "../types/enums"
 import { hasFasadImage } from "../functions/fasades"
 import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { RESOURCE } from "../types/user"
-import FasadTotalPrice from "./fasad/FasadTotalPrice"
 import { useNavigate } from "react-router-dom"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8"]
 const directions: Map<string, string> = new Map()
@@ -61,8 +59,8 @@ export default function PropertiesBar() {
                         <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
                         <ImageButton title="Cхема" icon="schemaButton" onClick={() => { navigate("/schema") }} />
                     </>}
-                {permTemp?.Create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, true) }} />}
-                {permTemp?.Read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(TEMPLATE_TABLES.FASAD, false) }} />}
+                {permTemp?.Create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(true) }} />}
+                {permTemp?.Read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(false) }} />}
                 {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />}
                 {onlyFasad && hasFasadImage(fasad) && <ToggleButton
                     title={stretchImage ? "Сбросить масштабирование" : "Подогнать изображение под размер"}

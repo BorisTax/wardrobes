@@ -9,6 +9,7 @@ import { wardrobeDataAtom } from "./wardrobe";
 import messages from "../server/messages";
 import { appAtom } from "./app";
 import { AppState } from "../types/app";
+import { boolToYesNo } from "../functions/messages";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])
@@ -54,10 +55,11 @@ export const coefListAtom = atom<Map<SpecificationItem, number>>((get) => {
     return coef
 })
 
-export const calculateSpecificationsAtom = atom(null, async (get, set, data: WardrobeData) => {
+export const calculateSpecificationsAtom = atom(null, async (get, set, data: WardrobeData, resetDetails: boolean = false) => {
     const { token } = get(userAtom)
-    const formData: {data: WardrobeData, token: string} = {
+    const formData: { data: WardrobeData, resetDetails: boolean, token: string } = {
         [TableFields.DATA]: data,
+        resetDetails,
         [TableFields.TOKEN]: token
     }
     set(specificationInProgress, true)

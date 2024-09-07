@@ -37,6 +37,7 @@ import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import { loadInitialWardrobeDataAtom } from './atoms/wardrobe'
 import NavBar from './components/NavBar'
 import LoadIndicator from './components/LoadIndicator'
+import EditDetailDialog from './components/dialogs/EditDetailDialog'
 
 function App() {
   const user = useAtomValue(userAtom)

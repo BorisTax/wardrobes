@@ -4,7 +4,7 @@ import FasadState from "../classes/FasadState"
 import { getFasadState, newFasadFromState } from "./fasades"
 import { Division, FasadMaterial } from "../types/enums"
 import Fasad from "../classes/Fasad"
-import { CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
+import { CONSOLE_TYPE, Detail, EDGE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 
 export const WardTypes: Map<string, string> = new Map()
 WardTypes.set(WARDROBE_TYPE.WARDROBE, "ШКАФ")
@@ -86,4 +86,17 @@ export function getAppState(data: AppData): AppState {
 
 export function getFasadCount(data: WardrobeData): number {
     return Object.values(data.fasades).reduce((a, f) => f.count + a, 0);
+}
+
+export function getEdgeDescripton(detail: Detail, edge: EDGE_TYPE): string {
+    let length = 0
+    let width = 0
+    const result = []
+    if (detail.edge?.L1 === edge) length = 1
+    if (detail.edge?.L2 === edge) length += 1
+    if (detail.edge?.W1 === edge) width = 1
+    if (detail.edge?.W2 === edge) width += 1
+    if (length > 0) result.push(`${length} по длине`)
+    if (width > 0) result.push(`${width} по ширине`)
+    return result.join(', ')
 }

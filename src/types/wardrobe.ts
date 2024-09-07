@@ -44,9 +44,11 @@ export type ExtComplectData = {
 export type WardrobeData = {
     wardKind: WARDROBE_KIND
     wardType: WARDROBE_TYPE
+    schema: boolean
     width: number
     depth: number
     height: number
+    details: Detail[]
     dspName: string
     fasades: FasadesData
     profileName: string
@@ -104,11 +106,28 @@ export enum CONSOLE_TYPE {
     STANDART = 'STANDART',
     RADIAL = 'RADIAL',
 }
+export enum EDGE_TYPE {
+    THICK = 'THICK',
+    THIN = 'THIN',
+    NONE = 'NONE'
+}
+export type EDGE_SIDE = {
+    L1: EDGE_TYPE
+    L2: EDGE_TYPE
+    W1: EDGE_TYPE
+    W2: EDGE_TYPE
+}
+export enum DRILL_TYPE {
+    CONFIRMAT2 = 'CONFIRMAT2',
+    MINIFIX2 = 'MINIFIX2',
+    CONFIRMAT1 = 'CONFIRMAT2',
+    MINIFIX1 = 'MINIFIX2',
+    NONE = 'NONE'
+}
 
 export enum WARDROBE_KIND {
     STANDART = 'STANDART'
 }
-
 
 export type WardrobeDetailTable = {
     type: WARDROBE_KIND
@@ -124,9 +143,12 @@ export type WardrobeDetailTable = {
 
 export type Detail = {
     name: DETAIL_NAME
+    caption?: string
     length: number
     width: number
     count: number
+    edge?: EDGE_SIDE
+    drill?: DRILL_TYPE[]
 }
 
 export enum DETAIL_NAME {

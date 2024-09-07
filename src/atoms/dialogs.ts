@@ -26,11 +26,16 @@ export const editPriceDialogAtom = atom<React.RefObject<HTMLDialogElement> | nul
 export const editSpecificationDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const templatesDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const verboseDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
+export const editDetailDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const templatesDialogPropsAtom = atom(false)
-export const showTemplatesDialogAtom = atom(null, (get, set, table: string, edit: boolean) => {
+export const showTemplatesDialogAtom = atom(null, (get, set, edit: boolean) => {
     const dialogRef = get(templatesDialogAtom)
     set(loadTemplateListAtom)
     set(templatesDialogPropsAtom, edit)
+    dialogRef?.current?.showModal()
+})
+export const showDetailDialogAtom = atom(null, (get) => {
+    const dialogRef = get(editDetailDialogAtom)
     dialogRef?.current?.showModal()
 })
 export const showVerboseDialogAtom = atom(null, (get) => {

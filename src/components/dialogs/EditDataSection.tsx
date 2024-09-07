@@ -21,6 +21,7 @@ export type EditDataItem = {
 export type EditDataSectionProps = {
     items: EditDataItem[]
     name?: string
+    dontAsk?: boolean
     onUpdate?: (checked: boolean[], values: (string | boolean)[]) => Promise<{ success: boolean, message: string }>
     onAdd?: (checked: boolean[], values: (string | boolean)[]) => Promise<{ success: boolean, message: string }>
     onDelete?: (name: string | number) => Promise<{ success: boolean, message: string }>

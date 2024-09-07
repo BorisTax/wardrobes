@@ -25,13 +25,13 @@ export class SpecificationService implements ISpecificationService {
   async updateSpecList(item: SpecificationData): Promise<Result<null>> {
     return await this.provider.updateSpecList(item)
   }
-  async getSpecData(data: WardrobeData, verbose = false): Promise<Result<SpecificationMultiResult>> {
+  async getSpecData(data: WardrobeData, resetDetails: boolean, verbose = false): Promise<Result<SpecificationMultiResult>> {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: SpecificationMultiResult = []
     const profiles = (await this.matProvider.getProfiles()).data
     const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
     const fasades = createFasades(data, profile?.type as ProfileType)
-    const corpus = await getCorpusSpecification(data, profile as Profile, verbose)
+    const corpus = await getCorpusSpecification(data, resetDetails, profile as Profile, verbose)
     result.push({ type: CORPUS_SPECS.CORPUS, spec: corpus })
     for(let f of fasades){ 
       const fasadSpec = await getFasadSpecification(f, profile as Profile, verbose)

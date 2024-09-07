@@ -1,8 +1,7 @@
-import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, flattenSpecification, getConfirmatByDetail, getEdge05Length, getEdge2Length, getFasadCount, getMinifixByDetail } from "./functions"
-import { getSpecificationPattern } from "./functions"
+import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getEdge, getEdgeDescripton, getEdgeLength, getFasadCount, getMinifixByDetail, singleLengthThickDoubleWidthThinEdge, singleLengthThickEdge, singleLengthThinEdge } from "./functions"
 import { emptyFullData } from "./functions"
 import { SpecificationItem } from "../../../types/specification"
-import { DETAIL_NAME, DVPData, Detail, FullData, SpecificationResult, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"
+import { DETAIL_NAME, DRILL_TYPE, DVPData, Detail, EDGE_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"
 import { Edge, Profile, ProfileType, Trempel, Zaglushka } from "../../../types/materials"
 import { WardrobeData } from "../../../types/wardrobe"
 import { WardrobeDetailSchema } from "../../../types/schemas"
@@ -18,9 +17,9 @@ import { getDSP } from "./functions"
 import { getCoef } from "./functions"
 import { calcFunction } from "./functions"
 
-export async function getCorpusSpecification(data: WardrobeData, profile: Profile, verbose = false): Promise<SpecificationResult[]> {
+export async function getCorpusSpecification(data: WardrobeData, resetDetails: boolean, profile: Profile, verbose = false): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = await getDetails(data.wardKind, data.width, data.height, data.depth);
+    const details = !resetDetails ? data.details : await getDetails(data.wardKind, data.width, data.height, data.depth);
     const karton = await getKarton(data)
     const truba = await getTruba(data, details)
     const edge2 = (await getEdge2(data, details))
@@ -75,29 +74,26 @@ export async function getDetailNames(): Promise<WardrobeDetailSchema[]> {
 
 export async function getDetails(kind: WARDROBE_KIND, width: number, height: number, depth: number): Promise<Detail[]> {
     const service = new SpecificationService(specServiceProvider);
-    const details: Detail[] = [];
-    var { count, size } = await getDetail(service, kind, DETAIL_NAME.ROOF, width, height, 0, 0);
+    const detailsData = await service.getDetails(kind, width, height)
+    const detailNames = (await service.getDetailNames()).data || [];
     const offset = 100;
-    if (count > 0) details.push({ name: DETAIL_NAME.ROOF, length: size, width: depth, count });
-    var { count, size } = await getDetail(service, kind, DETAIL_NAME.STAND, width, height, 0, 0);
-    if (count > 0) details.push({ name: DETAIL_NAME.STAND, length: size, width: depth, count });
-    var { count, size } = await getDetail(service, kind, DETAIL_NAME.INNER_STAND, width, height, 0, 0);
-    const innerStandLCount = count;
-    if (count > 0) details.push({ name: DETAIL_NAME.INNER_STAND, length: size, width: depth - offset, count });
-    var { count, size } = await getDetail(service, kind, DETAIL_NAME.SHELF, width, height, 0, innerStandLCount);
-    const shelfSize = size;
-    if (count > 0) details.push({ name: DETAIL_NAME.SHELF, length: size, width: depth - offset, count });
-    var { count, size } = await getDetail(service, kind, DETAIL_NAME.SHELF_PLAT, width, height, shelfSize, innerStandLCount);
-    if (count > 0) details.push({ name: DETAIL_NAME.SHELF_PLAT, length: size, width: depth - offset, count });
-    var { count, size } = await getDetail(service, kind, DETAIL_NAME.PILLAR, width, height, shelfSize, innerStandLCount);
-    if (count > 0) details.push({ name: DETAIL_NAME.PILLAR, length: size, width: depth - offset, count });
+    const details: Detail[] = detailsData.map(dd => (
+        {
+            name: dd.name,
+            caption: detailNames.find(n => n.name === dd.name)?.caption || "",
+            length: calcFunction(dd.size, { width, height }),
+            width: dd.name === DETAIL_NAME.ROOF || dd.name === DETAIL_NAME.STAND ? depth : depth - offset,
+            count: dd.count,
+            drill: getDrill(dd),
+            edge: getEdge(dd)
+        }))
     return details;
 }
-async function getDetail(service: SpecificationService, kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number, shelfSize: number, standCount: number): Promise<{ count: number, size: number }> {
+async function getDetail(service: SpecificationService, kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number): Promise<{ count: number, size: number }> {
     const details = await service.getDetails(kind, width, height)
     const detail = details.find(d => d.name === name)
     if (!detail) return { count: 0, size: 0 };
-    const size = calcFunction(detail.size, { width, height, shelfSize, standCount });
+    const size = calcFunction(detail.size, { width, height });
     return { count: size ? detail.count : 0, size };
 }
 async function getDVP(data: WardrobeData): Promise<FullData> {
@@ -135,6 +131,7 @@ async function getDVPData(width: number, height: number, depth: number): Promise
         dvpRealWidth = Math.round((height - 30 - 2 * (dvpCount - 1)) / dvpCount)
     } while (dvpRealWidth > depth)
     const section = width > 2750 ? 2 : 1;
+    dvpCount *= section
     const roof = width / section;
     const dvpRealLength = roof - 3;
     const service = new SpecificationService(specServiceProvider);
@@ -174,7 +171,7 @@ export async function getConfirmat(data: WardrobeData, details: Detail[]): Promi
     const verbose: VerboseData = [["Деталь", "Кол-во", "Конфирматы"]];
     let total = 0;
     details.forEach(d => {
-        const conf = d.count * getConfirmatByDetail(d.name)
+        const conf = d.count * getConfirmatByDetail(d)
         if (conf === 0) return 
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
         verbose.push([caption, `${d.count}`, `${conf}`]);
@@ -200,7 +197,7 @@ export async function getMinifix(data: WardrobeData, details: Detail[]): Promise
     const verbose: VerboseData = [["Деталь", "Кол-во", "Минификсы"]];
     let total = 0;
     details.forEach(d => {
-        const count = d.count * getMinifixByDetail(d.name)
+        const count = d.count * getMinifixByDetail(d)
         if (count === 0) return
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
         verbose.push([caption, `${d.count}`, `${count}`]);
@@ -259,17 +256,18 @@ export async function getEdge2(data: WardrobeData, details: Detail[]): Promise<F
     const edge = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
     const { code, name: caption } = edge;
     const detailNames = await getDetailNames();
-    const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Длина кромки", ""]];
+    const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let totalEdge = 0;
     details.forEach(d => {
-        const edge = getEdge2Length(d) * d.count / 1000;
+        const edge = getEdgeLength(d, EDGE_TYPE.THICK) * d.count / 1000;
         if (edge === 0) return
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
-        verbose.push([caption, `${d.length}`, `${d.width}`, `${d.count}`, edge.toFixed(3), ""]);
+        const desc = getEdgeDescripton(d, EDGE_TYPE.THICK)
+        verbose.push([caption, `${d.length}`, `${d.width}`, `${d.count}`, desc, edge.toFixed(3), ""]);
         totalEdge += edge;
     });
     const coef = await getCoef(SpecificationItem.Kromka2);
-    verbose.push(["", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`]);
+    verbose.push(["", "", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`]);
     return { data: { amount: totalEdge * coef, char: { code, caption } }, verbose };
 }
 
@@ -280,17 +278,18 @@ export async function getEdge05(data: WardrobeData, details: Detail[]): Promise<
     const edge = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
     const { code, name: caption } = edge;
     const detailNames = await getDetailNames();
-    const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Длина кромки", ""]];
+    const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let totalEdge = 0;
     details.forEach(d => {
-        const edge = getEdge05Length(d) * d.count / 1000;
+        const edge = getEdgeLength(d, EDGE_TYPE.THIN) * d.count / 1000;
         if (edge === 0) return
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
-        verbose.push([caption, `${d.length}`, `${d.width}`, `${d.count}`, edge.toFixed(3), ""]);
+        const desc = getEdgeDescripton(d, EDGE_TYPE.THIN)
+        verbose.push([caption, `${d.length}`, `${d.width}`, `${d.count}`, desc, edge.toFixed(3), ""]);
         totalEdge += edge;
     });
     const coef = await getCoef(SpecificationItem.Kromka2);
-    verbose.push(["", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`]);
+    verbose.push(["", "", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`]);
     return { data: { amount: totalEdge * coef, char: { code, caption } }, verbose };
 }
 

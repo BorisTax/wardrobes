@@ -1,7 +1,7 @@
 import { SpecificationItem } from "../../../../types/specification";
-import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData } from "../../../../types/wardrobe";
+import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, EDGE_TYPE, DRILL_TYPE } from "../../../../types/wardrobe";
 import { getDetails, getEdge2, getEdge05, getGlue, getConfirmat, getDetailNames } from "../corpus";
-import { getDSP, getCoef, emptyFullData } from "../functions";
+import { getDSP, getCoef, emptyFullData, allThinEdge, singleLengthThinEdge } from "../functions";
 
 
 export async function getDrawerSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
@@ -10,9 +10,9 @@ export async function getDrawerSpecification(data: WardrobeData): Promise<Specif
     const shelf = details.find(d => d.name === DETAIL_NAME.SHELF)
     if (!shelf) return result
     const telDetails: Detail[] = [
-        { name: DETAIL_NAME.DRAWER_FASAD, count: 1, length: shelf.length - 8, width: 140 },
-        { name: DETAIL_NAME.DRAWER_SIDE, count: 2, length: data.depth - 150, width: 120 },
-        { name: DETAIL_NAME.DRAWER_BRIDGE, count: 2, length: shelf.length - 57, width: 120 }
+        { name: DETAIL_NAME.DRAWER_FASAD, count: 1, length: shelf.length - 8, width: 140, edge: allThinEdge(), drill: [DRILL_TYPE.NONE] },
+        { name: DETAIL_NAME.DRAWER_SIDE, count: 2, length: data.depth - 150, width: 120, edge: singleLengthThinEdge(), drill: [DRILL_TYPE.NONE] },
+        { name: DETAIL_NAME.DRAWER_BRIDGE, count: 2, length: shelf.length - 57, width: 120, edge:  singleLengthThinEdge(), drill: [DRILL_TYPE.CONFIRMAT1] }
     ]
     const edge2 = await getEdge2(data, telDetails)
     const edge05 = await getEdge05(data, telDetails)

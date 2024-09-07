@@ -25,11 +25,12 @@ router.put("/", async (req, res) => {
   const result = await updateSpecList({ name, caption, coef, code, id });
   res.status(result.status).json(result);
 });
+
 router.post("/data", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
   const verbose = await hasPermission(req as MyRequest, RESOURCE.VERBOSE, [PERMISSION.READ])
-  const { data } = req.body
-  const result = await getSpecData(data, verbose);
+  const { data, resetDetails } = req.body
+  const result = await getSpecData(data, resetDetails, verbose);
   res.status(result.status).json(result);
 });
 
@@ -57,9 +58,9 @@ export async function updateSpecList({ name, caption, coef, code, id }: Specific
   return await priceService.updateSpecList({ name, caption, coef, code, id })
 }
 
-export async function getSpecData(data: WardrobeData, verbose = false) {
+export async function getSpecData(data: WardrobeData, resetDetails: boolean, verbose = false) {
   const specService = new SpecificationService(specServiceProvider, materialServiceProvider)
-  return await specService.getSpecData(data, verbose)
+  return await specService.getSpecData(data, resetDetails, verbose)
 }
 
 export async function getSpecCombiData(data: AppState, pricePerm: boolean, verbose = false) {

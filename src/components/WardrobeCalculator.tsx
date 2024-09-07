@@ -11,11 +11,14 @@ import TextBox from "./inputs/TextBox"
 import { ConsoleTypes, WardKinds, WardTypes } from "../functions/wardrobe"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import WardrobeSpecification from "./WardrobeSpecification"
-import { getInitExtComplect, initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
+import { getDetailsAtom, getInitExtComplect, initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
 import { RESOURCE } from "../types/user"
 import { userAtom } from "../atoms/users"
 import CheckBox from "./inputs/CheckBox"
 import { useDetail } from "../custom-hooks/useDetail"
+import useConfirm from "../custom-hooks/useConfirm"
+import { showDetailDialogAtom } from "../atoms/dialogs"
+import EditDetailDialog from "./dialogs/EditDetailDialog"
 
 const numbers = [0, 1, 2, 3, 4, 5, 6]
 const styles = { fontStyle: "italic", color: "gray" }
@@ -23,6 +26,7 @@ const maxFasades = 6
 const consoleWidth = ['200', '250', '300', '350', '400', '450', '500']
 export default function WardrobeCalculator() {
     const { permissions } = useAtomValue(userAtom)
+    const getDetails = useSetAtom(getDetailsAtom)
     const perm = permissions.get(RESOURCE.SPECIFICATION)
     const data = useAtomValue(wardrobeDataAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
@@ -40,6 +44,8 @@ export default function WardrobeCalculator() {
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
     const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardKind, data.width, data.height) || {length: 0}
+    const confirm = useConfirm()
+    const showEditDetails = useSetAtom(showDetailDialogAtom)
     useEffect(() => {
         if (standSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: extStand.length } } }))
     }, [extStand.length, standSameHeight])
@@ -50,14 +56,19 @@ export default function WardrobeCalculator() {
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
                         <div className="text-center">Основные параметры</div>
                         <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
-                            <ComboBox title="Серия шкафа:" value={wardKind as string} items={WardKinds} onChange={(_, value) => { setData(prev => ({ ...prev, wardKind: value as WARDROBE_KIND })) }} />
-                            <ComboBox title="Тип шкафа:" value={wardType as string} items={WardTypes} onChange={(_, value) => { setData(prev => ({ ...prev, wardType: value as WARDROBE_TYPE, fasades: initFasades })) }} />
+                            <ComboBox disabled={data.schema} title="Серия шкафа:" value={wardKind as string} items={WardKinds} onChange={(_, value) => { setData(prev => ({ ...prev, wardKind: value as WARDROBE_KIND })) }} />
+                            <ComboBox disabled={data.schema} title="Тип шкафа:" value={wardType as string} items={WardTypes} onChange={(_, value) => { setData(prev => ({ ...prev, wardType: value as WARDROBE_TYPE, fasades: initFasades })) }} />
+                            <CheckBox caption="схемный" checked={data.schema} disabled={data.wardType===WARDROBE_TYPE.SYSTEM} onChange={()=>{
+                                if (data.schema) confirm("Все изменения в деталировке будут сброшены. Продолжить?", () => { setData(prev => ({ ...prev, schema: !data.schema })) }); 
+                                else setData(prev => ({ ...prev, schema: !data.schema }))
+                            }} />
+                            {data.schema ? <input type="button" value="Редактор деталей" onClick={() => { showEditDetails() }} /> : <div></div>}
                             <div className="text-end">Ширина: </div>
-                            <TextBox value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} />
+                            <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} />
                             <div className="text-end">Глубина: </div>
-                            <TextBox value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={400} max={700} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} />
+                            <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={400} max={700} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} />
                             <div className="text-end">Высота: </div>
-                            <TextBox value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1900} max={2750} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }} />
+                            <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1900} max={2750} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }} />
                             <ComboBox title="Цвет ДСП:" value={dspName} items={dspList} onChange={(_, value: string) => { setData(prev => ({ ...prev, dspName: value })) }} />
                             <ComboBox title="Цвет профиля:" value={profileName} items={profileNames} onChange={(_, value: string) => { setData(prev => ({ ...prev, profileName: value })) }} />
                         </PropertyGrid>
@@ -131,5 +142,6 @@ export default function WardrobeCalculator() {
                 <WardrobeSpecification />
             </div>}
         </div>
+        <EditDetailDialog />
     </div>
 }

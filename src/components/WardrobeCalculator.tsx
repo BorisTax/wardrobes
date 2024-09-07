@@ -51,7 +51,7 @@ export default function WardrobeCalculator() {
                         <div className="text-center">Основные параметры</div>
                         <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
                             <ComboBox title="Серия шкафа:" value={wardKind as string} items={WardKinds} onChange={(_, value) => { setData(prev => ({ ...prev, wardKind: value as WARDROBE_KIND })) }} />
-                            <ComboBox title="Тип шкафа:" value={wardType as string} items={WardTypes} onChange={(_, value) => { setData(prev => ({ ...prev, wardType: value as WARDROBE_TYPE })) }} />
+                            <ComboBox title="Тип шкафа:" value={wardType as string} items={WardTypes} onChange={(_, value) => { setData(prev => ({ ...prev, wardType: value as WARDROBE_TYPE, fasades: initFasades })) }} />
                             <div className="text-end">Ширина: </div>
                             <TextBox value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={3000} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} />
                             <div className="text-end">Глубина: </div>

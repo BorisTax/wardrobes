@@ -6,10 +6,16 @@ import ImageButton from "./inputs/ImageButton"
 import { saveToExcelAtom } from "../atoms/export"
 import SpecificationTable from "./SpecificationTable"
 import { SpecGroups } from "../functions/specification"
+import { wardrobeDataAtom } from "../atoms/wardrobe"
+import { WARDROBE_TYPE } from "../types/wardrobe"
+import { getFasadCount } from "../functions/wardrobe"
+import { CORPUS_SPECS } from "../types/specification"
+
 
 export default function WardrobeSpecification() {
     const saveToExcel = useSetAtom(saveToExcelAtom)
     const specifications = useAtomValue(specificationAtom)
+    const wardData = useAtomValue(wardrobeDataAtom)
     const [specIndex, setSpecIndex] = useState(0)
     const specification = specifications[specIndex] || specifications[0]
     const captionsMap = new Map()
@@ -22,6 +28,8 @@ export default function WardrobeSpecification() {
     const heads = useMemo(() => specifications.map((spec, index) => <div key={index} role="button" className={index === specIndex ? "tab-button-active" : "tab-button-inactive"} onClick={() => { setSpecIndex(index) }}>{`${captions[index]}`}</div>), [specifications, specIndex, captions])
     //const spec = useMemo(() => getSpecification(specification.spec), [specification])
     const purpose = Object.keys(FasadMaterial).find(k => k === specification.type) ? MAT_PURPOSE.FASAD : MAT_PURPOSE.CORPUS
+    const hint = ((wardData.wardType !== WARDROBE_TYPE.CORPUS) && (getFasadCount(wardData) < 2) && (specification.type === CORPUS_SPECS.CORPUS)) ? "При кол-ве фасадов < 2 спецификация может быть не полной!" : ""
+    
     useEffect(() => {
         if (specIndex >= specifications.length) setSpecIndex(0)
     }, [specifications, specIndex])
@@ -31,6 +39,6 @@ export default function WardrobeSpecification() {
             {heads}
         </div>
         <hr/>
-        <SpecificationTable purposes={[purpose, MAT_PURPOSE.BOTH]} specification={specification.spec} />
+        <SpecificationTable purposes={[purpose, MAT_PURPOSE.BOTH]} specification={specification.spec} hint={hint} />
     </div>
 }

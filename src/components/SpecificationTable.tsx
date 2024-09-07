@@ -10,10 +10,12 @@ import { setVerboseDataAtom } from "../atoms/verbose"
 import { showVerboseDialogAtom } from "../atoms/dialogs"
 import { SpecificationResult, TotalData, VerboseData } from "../types/wardrobe"
 import { RESOURCE } from "../types/user"
+import CheckBox from "./inputs/CheckBox"
 
 type SpecificationTableProps = {
     purposes: MAT_PURPOSE[],
-    specification: SpecificationResult[]
+    specification: SpecificationResult[],
+    hint?: string
 }
 
 export default function SpecificationTable(props: SpecificationTableProps) {
@@ -40,9 +42,10 @@ export default function SpecificationTable(props: SpecificationTableProps) {
         return [...specList]
     }, [specData, priceList, props.specification]) 
     const [showAll, setShowAll] = useState(false)
+    const [showCodes, setShowCodes] = useState(false)
     const contents = list.filter(i => props.purposes.some(p => i.purpose === p) && (i.amount !== 0 || showAll)).map((item: TotalData, index: number) => {
         const amount = item.amount || 0
-        const charCode = item?.char?.code ? `(${item.char.code})` : ""
+        const charCode = (item?.char?.code && showCodes) ? `(${item.char.code})` : ""
         const char = item.char && !item.useCharAsCode ? `${item.char.caption} ${charCode}` : ""
         const price = item.price || 0
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"
@@ -50,9 +53,9 @@ export default function SpecificationTable(props: SpecificationTableProps) {
         return <tr key={index} className={"table-data-row " + className}>
             <td className="table-data-cell" >{item.code}</td>
             <td className="table-data-cell" {...verbose}>{item.caption}</td>
+            <td className="table-data-cell">{char}</td>
             <td className="table-data-cell">{Number(amount.toFixed(3))}</td>
             <td className="table-data-cell">{UnitCaptions.get(item.units || "")}</td>
-            <td className="table-data-cell">{char}</td>
             {permPrice?.Read ? <td className="table-data-cell">{price.toFixed(2)}</td> : <></>}
             {permPrice?.Read ? <td className="table-data-cell">{(amount * price).toFixed(2)}</td> : <></>}
             {permPrice?.Read ? <td className="table-data-cell">{item.markup}</td> : <></>}
@@ -65,9 +68,9 @@ export default function SpecificationTable(props: SpecificationTableProps) {
                     <tr>
                         <th className="table-header">Код</th>
                         <th className="table-header">Наименование</th>
+                        <th className="table-header">Характеристика</th>
                         <th className="table-header">Кол-во</th>
                         <th className="table-header">Ед</th>
-                        <th className="table-header">Характеристика</th>
                         {permPrice?.Read ? <th className="table-header">Цена за ед</th> : <></>}
                         {permPrice?.Read ? <th className="table-header">Цена</th> : <></>}
                         {permPrice?.Read ? <th className="table-header">Наценка</th> : <></>}
@@ -77,10 +80,9 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             </table>
         </div>
         <hr />
-        <div className="d-flex justify-content-start gap-2">
-            <input id="showAll" type="checkbox" checked={showAll} onChange={() => { setShowAll(!showAll) }} />
-            <label htmlFor="showAll" >Показать все позиции</label>
-        </div>
+        {props.hint && <div className="fw-bold text-danger">{props.hint}</div>}
+        <CheckBox checked={showAll} caption="Показать все позиции" onChange={() => { setShowAll(!showAll) }} />
+        <CheckBox checked={showCodes} caption="Отображать код характеристики" onChange={() => { setShowCodes(!showCodes) }} />
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
     </div>
 }

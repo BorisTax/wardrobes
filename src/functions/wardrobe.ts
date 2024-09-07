@@ -4,7 +4,7 @@ import FasadState from "../classes/FasadState"
 import { getFasadState, newFasadFromState } from "./fasades"
 import { Division, FasadMaterial } from "../types/enums"
 import Fasad from "../classes/Fasad"
-import { CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE } from "../types/wardrobe"
+import { CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 
 export const WardTypes: Map<string, string> = new Map()
 WardTypes.set(WARDROBE_TYPE.WARDROBE, "ШКАФ")
@@ -81,4 +81,9 @@ export function getAppState(data: AppData): AppState {
         rootFasadesState: data.rootFasades.map((f: Fasad) => f.getState())
     }
     return state
+}
+
+
+export function getFasadCount(data: WardrobeData): number {
+    return Object.values(data.fasades).reduce((a, f) => f.count + a, 0);
 }

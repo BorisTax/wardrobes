@@ -14,7 +14,7 @@ import { RESOURCE } from "../../types/user"
 
 export default function EditMaterialDialog() {
     const { permissions } = useAtomValue(userAtom)
-    const perm = permissions.get(RESOURCE.PRICES)
+    const perm = permissions.get(RESOURCE.MATERIALS)
     const [group, setGroup] = useState<MaterialGroup>(MaterialGroup.PLATE)
     const header = [...MaterialGroupCaptions.entries()].map((item, index) => <div key={index} className={(group === item[0] ? "tab-button-active" : "tab-button-inactive")} onClick={() => { setGroup(item[0] as MaterialGroup) }} role="button">{item[1]}</div>)
     const content = getGroup(group)

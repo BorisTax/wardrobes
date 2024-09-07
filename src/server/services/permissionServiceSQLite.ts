@@ -24,7 +24,7 @@ export default class PermissionServiceSQLite implements IPermissionServiceProvid
     }
     async updatePermissions(roleId: number, resource: RESOURCE, permissions: Permissions): Promise<Result<null>>  {
         const { Create, Read, Update, Delete } = permissions
-        return dataBaseQuery(this.dbFile, `update ${PERMISSIONS} set 'create'=?, 'read'=?, 'update'=?, 'remove'=? where roleId=? and resource=?;`, [Create ? 1 : 0, Read ? 1 : 0, Update ? 1 : 0, Delete ? 1 : 0, roleId, resource], { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
+        return dataBaseQuery(this.dbFile, `update ${PERMISSIONS} set 'create'=?, 'read'=?, 'update'=?, 'delete'=? where roleId=? and resource=?;`, [Create ? 1 : 0, Read ? 1 : 0, Update ? 1 : 0, Delete ? 1 : 0, roleId, resource], { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
     }
     async getResourceList(): Promise<Result<Resource>>{
         return dataBaseQuery(this.dbFile, `select * from ${RESOURCES};`, [], { successStatusCode: StatusCodes.OK })

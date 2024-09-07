@@ -36,7 +36,9 @@ table {
   text-wrap: nowrap;
   height: 0.5rem;
 }
-
+.table-data-row-selected {
+  font-weight: bold;
+}
 .table-data-cell {
   border: 1px solid black;
   padding: 0.2em;

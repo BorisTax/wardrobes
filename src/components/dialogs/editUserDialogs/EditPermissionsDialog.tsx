@@ -62,13 +62,14 @@ export default function EditPermissionsDialog() {
             <div className="d-flex flex-nowrap gap-2 align-items-start position-relative">
                 <ComboBox title="Роль: " value={role.name} items={userRoles} onChange={(index) => { setRoleIndex(index); }} />
                 {perm?.Create && <ImageButton title="Добавить" icon='add' onClick={() => { addUserRoleDialogRef.current?.showModal() }} />}
-                {perm?.Delete && <ImageButton title="Удалить" icon='delete' onClick={() => showConfirm("Удалить роль " + role.name, async () => {
-                    setLoading(true)
-                    const result = await deleteRole({ id: role.id })
-                    setLoading(false)
-                    showMessage(rusMessages[result.message as string])
-                }
-                )} />}
+                {perm?.Delete && <ImageButton title="Удалить" icon='delete' onClick={async () => {
+                    if (await showConfirm("Удалить роль " + role.name)) {
+                        setLoading(true)
+                        const result = await deleteRole({ id: role.id })
+                        setLoading(false)
+                        showMessage(rusMessages[result.message as string])
+                    }
+                }} />}
             </div>
             <hr />
             <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />

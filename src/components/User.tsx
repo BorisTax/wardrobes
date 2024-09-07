@@ -14,8 +14,8 @@ export default function User() {
     const showConfirm = useConfirm()
     const version = useAtomValue(versionAtom)
     const loginButton = <button className="btn btn-primary" onClick={() => { navigate('/login') }}>Вход</button>
-    const logoutButton = <button className="btn btn-secondary" onClick={() => {
-        showConfirm("Завершить сеанс пользователя?", () => { logout(); navigate('/login') })
+    const logoutButton = <button className="btn btn-secondary" onClick={async () => {
+        if (await showConfirm("Завершить сеанс пользователя?")) { logout(); navigate('/login') }
     }
     }>Выход</button>
     useEffect(() => {

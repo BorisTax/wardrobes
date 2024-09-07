@@ -71,6 +71,9 @@ export const rusMessages = {
   [messages.ENTER_PASSWORD]: "Введите пароль",
   [messages.ENTER_PURPOSE]: "Выберите назначение",
   [messages.ENTER_NAME]: "Введите имя",
+  [messages.ENTER_LENGTH]: "Введите длину",
+  [messages.ENTER_WIDTH]: "Введите ширину",
+  [messages.ENTER_COUNT]: "Введите кол-во",
 }
 
 

@@ -47,9 +47,9 @@ export const setWardrobeDataAtom = atom(null, (get, set, setter: (prev: Wardrobe
     const result = setter(prev)
     const dataDiffers = isDataDiffers(prev, result)
     set(wardrobeDataAtom, result)
-    if (result.schema && !prev.schema) set(getDetailsAtom)
-    const resetDetails = isDimensionsDiffers(prev, result)
-    if (loaded && dataDiffers) set(calculateSpecificationsAtom, result, resetDetails)
+    if (result.schema !== prev.schema) set(getDetailsAtom)
+    const resetDetails = !result.schema 
+    if (loaded && dataDiffers) set(calculateSpecificationsAtom, resetDetails)
 })
 
 export const loadedInitialWardrobeDataAtom = atom(false)
@@ -83,7 +83,7 @@ export const loadDetailAtom = atom(null, async (get, set, detailName: DETAIL_NAM
 
 
 const isDataDiffers = (prev: WardrobeData, current: WardrobeData): boolean => {
-    return isDimensionsDiffers(prev, current) || ((current.schema === true) && (prev.schema !== current.schema)) || prev.dspName !== current.dspName || prev.profileName !== current.profileName || fasadesDiffers(prev.fasades, current.fasades)
+    return isDimensionsDiffers(prev, current) || (prev.schema !== current.schema) || prev.dspName !== current.dspName || prev.profileName !== current.profileName || fasadesDiffers(prev.fasades, current.fasades)
         || extComplectDiffers(prev.extComplect, current.extComplect)
 }
 

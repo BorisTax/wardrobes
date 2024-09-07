@@ -58,9 +58,10 @@ export default function WardrobeCalculator() {
                         <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
                             <ComboBox disabled={data.schema} title="Серия шкафа:" value={wardKind as string} items={WardKinds} onChange={(_, value) => { setData(prev => ({ ...prev, wardKind: value as WARDROBE_KIND })) }} />
                             <ComboBox disabled={data.schema} title="Тип шкафа:" value={wardType as string} items={WardTypes} onChange={(_, value) => { setData(prev => ({ ...prev, wardType: value as WARDROBE_TYPE, fasades: initFasades })) }} />
-                            <CheckBox caption="схемный" checked={data.schema} disabled={data.wardType===WARDROBE_TYPE.SYSTEM} onChange={()=>{
-                                if (data.schema) confirm("Все изменения в деталировке будут сброшены. Продолжить?", () => { setData(prev => ({ ...prev, schema: !data.schema })) }); 
-                                else setData(prev => ({ ...prev, schema: !data.schema }))
+                            <CheckBox caption="схемный" checked={data.schema} disabled={data.wardType === WARDROBE_TYPE.SYSTEM} onChange={async () => {
+                                if (data.schema) {
+                                    if (await confirm("Все изменения в деталировке будут сброшены. Продолжить?")) setData(prev => ({ ...prev, schema: !data.schema }))
+                                } else setData(prev => ({ ...prev, schema: !data.schema }));
                             }} />
                             {data.schema ? <input type="button" value="Редактор деталей" onClick={() => { showEditDetails() }} /> : <div></div>}
                             <div className="text-end">Ширина: </div>

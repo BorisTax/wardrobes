@@ -3,8 +3,10 @@ import { confirmDialogAtom } from "../atoms/dialogs";
 
 export default function useConfirm() {
     const [{ dialogRef }, setConfirm] = useAtom(confirmDialogAtom)
-    return (message: string, onYesAction: () => void, onNoAction?: () => void) => {
-        setConfirm({ message, onYesAction, onNoAction });
-        dialogRef?.current?.showModal()
+    return async (message: string) => {
+        return new Promise<boolean>((resolve)=>{
+            setConfirm({ message, onYesAction: () => resolve(true), onNoAction: () => resolve(false) });
+            dialogRef?.current?.showModal()
+        })
     }
 }

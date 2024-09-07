@@ -80,6 +80,9 @@ const messages = {
     ENTER_PRICE: "ENTER_PRICE",
     ENTER_MARKUP: "ENTER_MARKUP",
     ENTER_COEF: "ENTER_COEF",
+    ENTER_LENGTH: "ENTER_LENGTH",
+    ENTER_WIDTH: "ENTER_WIDTH",
+    ENTER_COUNT: "ENTER_COUNT",
   }
 
 export default messages

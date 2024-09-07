@@ -12,9 +12,11 @@ export type EditDataItem = {
     value: string | boolean
     valueCaption?: (value: string | boolean) => string
     list?: string[] | Map<string, string>
+    listWithoutEmptyRow?: boolean
     message: string
     readonly?: boolean
     type: InputType
+    optional?: boolean
     propertyType?: PropertyType
     checkValue?: (value: string | number) => { success: boolean, message: string }
 }
@@ -46,7 +48,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     {i.readonly ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
                     {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
                     {i.type === InputType.CHECKBOX && <CheckBox caption={i.valueCaption && i.valueCaption(newValues[index])} checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; return [...p] }) }} />}
-                    {(i.list && i.type === InputType.LIST) && <ComboBox value={newValues[index] as string} items={i.list} disabled={!checked[index] || i.readonly} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
+                    {(i.list && i.type === InputType.LIST) && <ComboBox value={newValues[index] as string} items={i.list} disabled={!checked[index] || i.readonly} withoutEmpty={i.listWithoutEmptyRow} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
                     {i.type === InputType.FILE && <div>
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]
@@ -65,42 +67,48 @@ export default function EditDataSection(props: EditDataSectionProps) {
                 )}
             </div>
             <div className="editmaterial-buttons-container">
-                {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every((c, index) => c || props.items[index].readonly))} onClick={() => {
+                {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every((c, index) => c || props.items[index].readonly))} onClick={async () => {
+                    if (!props.onAdd) return
                     const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
                     if (!check.success) { showMessage(rusMessages[check.message]); return }
                     const message = getAddMessage({ checked, items: props.items, newValues: values })
-                    showConfirm(message, async () => {
-                        if (!props.onAdd) return
-                        setLoading(true)
-                        const result = await props.onAdd(checked, newValues)
-                        setLoading(false)
-                        if (result.message) showMessage(rusMessages[result.message])
-                    })
+                    const conf = props.dontAsk || await showConfirm(message)
+                    if (!conf) return
+                    setLoading(true)
+                    const result = await props.onAdd(checked, newValues)
+                    setLoading(false)
+                    if (result.message) showMessage(rusMessages[result.message])
                 }} />}
-                {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some((c, index) => c && !props.items[index].readonly))} onClick={() => {
+                {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some((c, index) => c && !props.items[index].readonly))} onClick={ async () => {
+                    if (!props.onUpdate) return
                     const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
                     if (!check.success) { showMessage(rusMessages[check.message]); return }
                     const message = getMessage({ checked, items: props.items, newValues: values, extValue })
-                    showConfirm(message, async () => {
-                        if (!props.onUpdate) return
-                        setLoading(true)
-                        const result = await props.onUpdate(checked, newValues)
-                        setLoading(false)
-                        if (result.message) showMessage(rusMessages[result.message])
-                    })
+                    const conf = props.dontAsk || await showConfirm(message)
+                    if (!conf) return
+                    setLoading(true)
+                    const result = await props.onUpdate(checked, newValues)
+                    setLoading(false)
+                    if (result.message) showMessage(rusMessages[result.message])
                 }} />}
-                {props.onDelete && <input type="button" value="Удалить" onClick={() => {
+                {props.onDelete && <input type="button" value="Удалить" onClick={async () => {
+                    if (!props.onDelete) return
                     const message = getDeleteMessage(props.name as string)
-                    showConfirm(message, async () => {
-                        if (!props.onDelete) return
-                        setLoading(true)
-                        const result = await props.onDelete(props.name as string)
-                        setLoading(false)
-                        if (result.message) showMessage(rusMessages[result.message])
-                    })
+                    const conf = props.dontAsk || await showConfirm(message)
+                    if (!conf) return
+                    setLoading(true)
+                    const result = await props.onDelete(props.name as string)
+                    setLoading(false)
+                    if (result.message) showMessage(rusMessages[result.message])
                 }} />}
+                < input type="button" value="Выделить все" onClick={() => {
+                    setChecked(checked.map(c => true))
+                }} />
+                < input type="button" value="Снять выделение" onClick={() => {
+                    setChecked(checked.map(c => false))
+                }} />
             </div>
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
         </div>
@@ -120,7 +128,7 @@ function checkFields({ checked, items, newValues }: { checked: boolean[], items:
                 return false
             }
         }
-        if (typeof newValue === 'string' && (newValue as string).trim() === "") {
+        if (typeof newValue === 'string' && (newValue as string).trim() === "" && !item.optional) {
             message = item.message
             return false
         }

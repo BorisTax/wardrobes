@@ -40,8 +40,7 @@ export const updateSpecificationListAtom = atom(null, async (get, set, { name, c
     try {
         const result = await fetchData("/api/specification", "PUT", JSON.stringify(formData))
         await set(loadSpecificationListAtom)
-        const data = get(wardrobeDataAtom)
-        set(calculateSpecificationsAtom, data)
+        set(calculateSpecificationsAtom)
         return {success: result.success as boolean, message: result.message as string}
     } catch (e) { 
         console.error(e) 
@@ -55,8 +54,9 @@ export const coefListAtom = atom<Map<SpecificationItem, number>>((get) => {
     return coef
 })
 
-export const calculateSpecificationsAtom = atom(null, async (get, set, data: WardrobeData, resetDetails: boolean = false) => {
+export const calculateSpecificationsAtom = atom(null, async (get, set, resetDetails: boolean = false) => {
     const { token } = get(userAtom)
+    const data = get(wardrobeDataAtom)
     const formData: { data: WardrobeData, resetDetails: boolean, token: string } = {
         [TableFields.DATA]: data,
         resetDetails,

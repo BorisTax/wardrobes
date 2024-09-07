@@ -16,15 +16,14 @@ export default function AddUserRoleDialog({ dialogRef, setLoading }: DialogProps
     const showMessage = useMessage()
     const showConfirm = useConfirm()
     const createRole = useSetAtom(createRoleAtom)
-    const create = () => {
-        showConfirm(`Создать роль ${name} ?`, async () => {
+    const create = async () => {
+        if (await showConfirm(`Создать роль ${name} ?`)) {
             setLoading(true)
             const result = await createRole({ name })
             setLoading(false)
             showMessage(rusMessages[result.message as string])
-        })
+        }
     }
-
     return <dialog ref={dialogRef} onClose={() => { setState(prev => ({ ...prev, password: "" })) }}>
         <div className="dialog-header-bar">
             <div className="d-flex gap-2">

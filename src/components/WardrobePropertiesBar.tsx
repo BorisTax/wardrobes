@@ -37,26 +37,26 @@ export default function WardrobePropertiesBar() {
     const saveFileDisabled = !perm?.Create
     const readFileDisabled = !perm?.Read
     const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.CORPUS)), [])
-    const wardTypeChangeConfirm = () => new Promise<boolean>((resolve) => {
-        showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
-    })
-    const wardHeightConfirm = () => new Promise<boolean>((resolve) => {
-        showConfirm("При данной высоте шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
-    })
-    const wardWidthConfirm = () => new Promise<boolean>((resolve) => {
-        showConfirm("При данной ширине шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
-    })
-    const wardProfileConfirm = () => new Promise<boolean>((resolve) => {
-        showConfirm("При данном типе профиля не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
-    })
-    const wardFasadCountConfirm = () => new Promise<boolean>((resolve) => {
-        showConfirm("При данном кол-ве фасадов не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?", () => { resolve(true) }, () => { resolve(false) })
-    })
+    const wardTypeChangeConfirm = async () => {
+        return await showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+    }
+    const wardHeightConfirm = async () => {
+        return await showConfirm("При данной высоте шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+    }
+    const wardWidthConfirm = async () => {
+        return await showConfirm("При данной ширине шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+    }
+    const wardProfileConfirm = async () => {
+        return await showConfirm("При данном типе профиля не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+    }
+    const wardFasadCountConfirm = async () => {
+        return await showConfirm("При данном кол-ве фасадов не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+    }
     return <div className="properties-bar">
         <div className="d-flex flex-nowrap justify-content-between">
             <div>Параметры шкафа</div>
             <div className="d-flex flex-nowrap  align-self-center gap-2 h-100">
-                <ImageButton title="Настройки по умолчанию" icon="new" onClick={() => { showConfirm("Сбросить в первоначальное состояние?", () => resetAppData()) }} />
+                <ImageButton title="Настройки по умолчанию" icon="new" onClick={async () => { if (await showConfirm("Сбросить в первоначальное состояние?")) resetAppData() }} />
                 <ImageButton title="Открыть" icon="open" disabled={readFileDisabled} onClick={() => { openState() }} />
                 <ImageButton title="Сохранить" icon="save" disabled={saveFileDisabled} onClick={() => { saveState() }} />
                 <ImageButton title="Отменить" icon="undo" disabled={!previous} onClick={() => { undo() }} />

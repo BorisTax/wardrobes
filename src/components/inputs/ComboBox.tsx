@@ -2,6 +2,7 @@ export type ComboBoxProps = {
     onChange?: (index: number, value: string) => void
     items: number[] | string[] | Map<string, string>
     value: string
+    withoutEmpty?: boolean
     title?: string
     disabled?: boolean
     size?: number
@@ -15,7 +16,7 @@ export default function ComboBox(props: ComboBoxProps = { value: "", items: [], 
         const key = [...props.items].find(i => i[1] === props.value)
         if (key) value = key[0]
     }
-    const itemsWithNull = value === "" ? ["", ...items] : items
+    const itemsWithNull = (value === "" && !props.withoutEmpty) ? ["", ...items] : items
     const options = itemsWithNull?.map((i, index) => <option key={index}>{i}</option>)
     return (
         <>

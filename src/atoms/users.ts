@@ -11,6 +11,7 @@ import { loadZaglushkaListAtom } from "./materials/zaglushka"
 import { loadUplotnitelListAtom } from "./materials/uplotnitel"
 import { loadSpecificationListAtom } from "./specification"
 import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
+import { loadDspEdgeListAtom } from "./materials/dsp_edge"
 
 
 export type UserState = {
@@ -161,6 +162,7 @@ export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESO
         set(loadTrempelListAtom)
         set(loadZaglushkaListAtom)
         set(loadUplotnitelListAtom)
+        set(loadDspEdgeListAtom)
     }
     if (permissions.get(RESOURCE.SPECIFICATION)?.Read) {
         set(loadSpecificationListAtom)

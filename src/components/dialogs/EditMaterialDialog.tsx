@@ -11,6 +11,7 @@ import EditUplotnitel from "./editMaterialDialogs/EditUplotnitel"
 import { useAtomValue } from "jotai"
 import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
+import EditDSPEdge from "./editMaterialDialogs/EditDSPEdge"
 
 export default function EditMaterialDialog() {
     const { permissions } = useAtomValue(userAtom)
@@ -33,6 +34,7 @@ function getGroup(group: MaterialGroup) {
         [MaterialGroup.PROFILE]: <EditProfile />,
         [MaterialGroup.EDGE]: <EditEdge />,
         [MaterialGroup.ZAGLUSHKI]: <EditZaglushka />,
+        [MaterialGroup.DSP_EDGE_ZAGL]: <EditDSPEdge />,
         [MaterialGroup.BRUSH]: <EditBrush />,
         [MaterialGroup.TREMPEL]: <EditTrempel />,
         [MaterialGroup.UPLOTNITEL]: <EditUplotnitel />,

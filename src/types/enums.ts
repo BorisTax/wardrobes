@@ -21,6 +21,7 @@ export enum MaterialGroup {
     PROFILE = 'profile',
     EDGE = 'edge',
     ZAGLUSHKI = 'zaglushki',
+    DSP_EDGE_ZAGL = 'DSP_EDGE_ZAGL',
     BRUSH = 'brush',
     TREMPEL = 'trempel',
     UPLOTNITEL = 'uplotnitel'

@@ -30,12 +30,11 @@ export const deleteZaglushkaAtom = atom(null, async (get, set, zaglushka: Zaglus
      }
 })
 
-export const addZaglushkaAtom = atom(null, async (get, set, {name, dsp, code}: Zaglushka) => {
+export const addZaglushkaAtom = atom(null, async (get, set, {name, code}: Zaglushka) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
-        [TableFields.DSP]: dsp,
         [TableFields.CODE]: code,
         [TableFields.TOKEN]: token
     }
@@ -49,13 +48,12 @@ export const addZaglushkaAtom = atom(null, async (get, set, {name, dsp, code}: Z
     }
 })
 
-export const updateZaglushkaAtom = atom(null, async (get, set, { name, dsp, newName, code }) => {
+export const updateZaglushkaAtom = atom(null, async (get, set, { name, newName, code }) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,
-        [TableFields.DSP]: dsp,
         [TableFields.CODE]: code,
         [TableFields.TOKEN]: token
     }

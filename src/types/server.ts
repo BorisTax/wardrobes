@@ -28,6 +28,8 @@ export enum TableFields {
     NEWNAME = 'newName',
     TYPE = 'type',
     DSP = 'dsp',
+    EDGE = 'edge',
+    ZAGLUSHKA = 'zaglushka',
     CAPTION = 'caption',
     ID = 'id',
     COEF = 'coef',

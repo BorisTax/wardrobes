@@ -14,19 +14,19 @@ export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglus
     async getExtData(): Promise<Result<Zaglushka[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${ZAGLUSHKA};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ name, dsp, code }: Zaglushka): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, dsp, code) values(?, ?, ?);`, [name, dsp, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
+    async addExtData({ name, code }: Zaglushka): Promise<Result<null>> {
+        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, code) values(?, ?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE name=?;`, [name], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
-    async updateExtData({ newName, dsp, code, name }: NewZaglushka): Promise<Result<null>> {
-        const query = getZaglushkaQuery({ newName, dsp, code, name })
+    async updateExtData({ newName, code, name }: NewZaglushka): Promise<Result<null>> {
+        const query = getZaglushkaQuery({ newName, code, name })
         return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
-function getZaglushkaQuery({ newName, dsp, code, name }: NewZaglushka) {
+function getZaglushkaQuery({ newName, code, name }: NewZaglushka) {
     const parts = []
     const params = []
     if (newName) {
@@ -36,10 +36,6 @@ function getZaglushkaQuery({ newName, dsp, code, name }: NewZaglushka) {
     if (code) {
         parts.push(`code=?`)
         params.push(code)
-    }
-    if (dsp) {
-        parts.push(`dsp=?`)
-        params.push(dsp)
     }
     params.push(name)
     const query = parts.length > 0 ? `update ${ZAGLUSHKA} set ${parts.join(', ')} where name=?;` : ""

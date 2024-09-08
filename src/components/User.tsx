@@ -34,7 +34,7 @@ export default function User() {
              {logoutButton}
         </>}
         <div className="version">
-            {`v${version}`}
+            {version ? `v${version}` : ""}
         </div>
     </div>
 }

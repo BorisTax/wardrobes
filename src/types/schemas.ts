@@ -51,7 +51,8 @@ export enum MAT_TABLE_NAMES {
     EDGE = 'edge',
     TREMPEL = 'trempel',
     ZAGLUSHKA = 'zaglushka',
-    UPLOTNITEL = 'uplotnitel'
+    UPLOTNITEL = 'uplotnitel',
+    DSPEDGEZAGL = 'dsp_edge_zagl',
 }
 
 export enum SPEC_TABLE_NAMES {

@@ -1,13 +1,11 @@
-import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getEdge, getEdgeDescripton, getEdgeLength, getFasadCount, getMinifixByDetail, singleLengthThickDoubleWidthThinEdge, singleLengthThickEdge, singleLengthThinEdge } from "./functions"
+import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getEdge, getEdgeByDSP, getEdgeDescripton, getEdgeLength, getFasadCount, getMinifixByDetail, getZagByDSP, singleLengthThickDoubleWidthThinEdge, singleLengthThickEdge, singleLengthThinEdge } from "./functions"
 import { emptyFullData } from "./functions"
 import { SpecificationItem } from "../../../types/specification"
-import { DETAIL_NAME, DRILL_TYPE, DVPData, Detail, EDGE_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"
-import { Edge, Profile, ProfileType, Trempel, Zaglushka } from "../../../types/materials"
+import { DETAIL_NAME, DVPData, Detail, EDGE_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"
+import { Profile, ProfileType, Trempel } from "../../../types/materials"
 import { WardrobeData } from "../../../types/wardrobe"
 import { WardrobeDetailSchema } from "../../../types/schemas"
 import { specServiceProvider, materialServiceProvider, materialsPath } from "../../options"
-import EdgeServiceSQLite from "../../services/extServices/edgeServiceSQLite"
-import ZagluskaServiceSQLite from "../../services/extServices/zaglushkaServiceSQLite"
 import { MaterialExtService } from "../../services/materialExtService"
 import { SpecificationService } from "../../services/specificationService"
 import BrushServiceSQLite from "../../services/extServices/brushServiceSQLite"
@@ -168,49 +166,45 @@ async function getLegs(data: WardrobeData): Promise<FullData> {
 export async function getConfirmat(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = await getDetailNames();
-    const verbose: VerboseData = [["Деталь", "Кол-во", "Конфирматы"]];
+    const verbose: VerboseData = [["Деталь", "Кол-во", "Конфирматы \n на 1 деталь", "Итого"]];
     let total = 0;
     details.forEach(d => {
-        const conf = d.count * getConfirmatByDetail(d)
-        if (conf === 0) return 
+        const conf = getConfirmatByDetail(d)
+        if (conf === 0) return
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
-        verbose.push([caption, `${d.count}`, `${conf}`]);
-        total += conf;
+        verbose.push([caption, `${d.count}`, `${conf}`, `${d.count * conf}`]);
+        total += d.count * conf;
     });
-    verbose.push(["", "Итого:", total]);
+    verbose.push(["", "", "Итого:", total]);
     return { data: { amount: total, char: { code: "", caption: "" } }, verbose: total ? verbose : undefined };
 }
+
 async function getZagConfirmat(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullData()
-    const service = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
-    const list = (await service.getExtData()).data as Zaglushka[];
-    const zaglushka = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
+    const zaglushka = await getZagByDSP(data.dspName)
     const { code, name: caption } = zaglushka;
     const conf = await getConfirmat(data, details);
     return { data: { amount: conf.data.amount, char: { code, caption } } };
 }
 
-
 export async function getMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = await getDetailNames();
-    const verbose: VerboseData = [["Деталь", "Кол-во", "Минификсы"]];
+    const verbose: VerboseData = [["Деталь", "Кол-во", `Минификсы \n на 1 деталь`, "Итого"]];
     let total = 0;
     details.forEach(d => {
-        const count = d.count * getMinifixByDetail(d)
+        const count = getMinifixByDetail(d)
         if (count === 0) return
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
-        verbose.push([caption, `${d.count}`, `${count}`]);
-        total += count;
+        verbose.push([caption, `${d.count}`, `${count}`, `${d.count * count}`]);
+        total += d.count * count;
     });
-    verbose.push(["", "Итого:", total]);
+    verbose.push(["", "", "Итого:", total]);
     return { data: { amount: total, char: { code: "", caption: "" } }, verbose };
 }
 async function getZagMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullData()
-    const service = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
-    const list = (await service.getExtData()).data as Zaglushka[];
-    const zaglushka = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
+    const zaglushka = await getZagByDSP(data.dspName)
     const { code, name: caption } = zaglushka;
     const conf = await getMinifix(data, details);
     return { data: { amount: conf.data.amount, char: { code, caption } } };
@@ -251,9 +245,7 @@ async function getStyagka(data: WardrobeData): Promise<FullData> {
 
 export async function getEdge2(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const edgeService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath));
-    const list = (await edgeService.getExtData()).data as Edge[];
-    const edge = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
+    const edge = await getEdgeByDSP(data.dspName)
     const { code, name: caption } = edge;
     const detailNames = await getDetailNames();
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
@@ -273,9 +265,7 @@ export async function getEdge2(data: WardrobeData, details: Detail[]): Promise<F
 
 export async function getEdge05(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const edgeService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath));
-    const list = (await edgeService.getExtData()).data as Edge[];
-    const edge = list.find(m => m.dsp === data.dspName) || { code: "", name: "" };
+    const edge = await getEdgeByDSP(data.dspName)
     const { code, name: caption } = edge;
     const detailNames = await getDetailNames();
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];

@@ -103,12 +103,15 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     setLoading(false)
                     if (result.message) showMessage(rusMessages[result.message])
                 }} />}
-                < input type="button" value="Выделить все" onClick={() => {
-                    setChecked(checked.map(c => true))
-                }} />
-                < input type="button" value="Снять выделение" onClick={() => {
-                    setChecked(checked.map(c => false))
-                }} />
+                {(props.onAdd || props.onUpdate) && <>
+                    < input type="button" value="Выделить все" onClick={() => {
+                        setChecked(checked.map(c => true))
+                    }} />
+                    < input type="button" value="Снять выделение" onClick={() => {
+                        setChecked(checked.map(c => false))
+                    }} />
+                </>
+                }
             </div>
         {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
         </div>

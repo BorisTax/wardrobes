@@ -10,23 +10,22 @@ export async function getZaglushkas() {
   return await materialExtService.getExtData()
 }
 
-export async function addZaglushka({ name, dsp, code }: Zaglushka) {
+export async function addZaglushka({ name, code }: Zaglushka) {
   const materialExtService = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath))
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const zaglushkas = result.data
   if ((zaglushkas as Zaglushka[]).find(m => m.name === name)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_EXIST }
-  return await materialExtService.addExtData({ name, dsp, code })
+  return await materialExtService.addExtData({ name, code })
 }
 
-export async function updateZaglushka({ name, newName, dsp, code }: NewZaglushka) {
+export async function updateZaglushka({ name, newName, code }: NewZaglushka) {
   const materialExtService = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath))
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const zaglushkas = result.data
   if (!(zaglushkas as Zaglushka[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
-  if ((zaglushkas as Zaglushka[]).find(m => m.dsp === dsp)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_CORRESPOND_EXIST }
-  return await materialExtService.updateExtData({ name, dsp, newName, code })
+  return await materialExtService.updateExtData({ name, newName, code })
 }
 
 export async function deleteZaglushka(name: string) {

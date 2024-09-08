@@ -20,16 +20,15 @@ export default function EditEdge() {
     const materialList = useAtomValue(materialListAtom)
     const mList = useMemo(() => materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name), [materialList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name: edgeName, dsp, code } = edgeList[selectedIndex] || { name: "", dsp: "", code: "" } 
+    const { name: edgeName, code } = edgeList[selectedIndex] || { name: "", dsp: "", code: "" } 
     const deleteEdge = useSetAtom(deleteEdgeAtom)
     const addEdge = useSetAtom(addEdgeAtom)
     const updateEdge = useSetAtom(updateEdgeAtom)
-    const heads = ['Наименование', 'Код', 'Соответствие ДСП']
-    const contents = edgeList.map((i: Edge) => [i.name, i.code, i.dsp])
+    const heads = ['Наименование', 'Код']
+    const contents = edgeList.map((i: Edge) => [i.name, i.code])
     const editItems: EditDataItem[] = [
         { caption: "Наименование:", value: edgeName || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
         { caption: "Код:", value: code, message: messages.ENTER_CODE, type: InputType.TEXT },
-        { caption: "Соответствие ДСП:", value: dsp, list: mList, message: messages.ENTER_CORRESPOND, type: InputType.LIST },
     ]
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
@@ -50,9 +49,8 @@ export default function EditEdge() {
             onAdd={perm?.Create ? async (checked, values) => {
                 const name = values[0] as string
                 const code = values[1] as string
-                const dsp = values[2] as string
                 if (edgeList.find((p: Edge) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
-                const result = await addEdge({ name, dsp, code })
+                const result = await addEdge({ name, code })
                 return result
             } : undefined} /> : <div></div>}
 

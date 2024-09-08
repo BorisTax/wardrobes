@@ -30,12 +30,11 @@ export const deleteEdgeAtom = atom(null, async (get, set, edge: Edge) => {
      }
 })
 
-export const addEdgeAtom = atom(null, async (get, set, {name, dsp, code}: Edge) => {
+export const addEdgeAtom = atom(null, async (get, set, {name, code}: Edge) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
-        [TableFields.DSP]: dsp,
         [TableFields.CODE]: code,
         [TableFields.TOKEN]: token
     }
@@ -55,7 +54,6 @@ export const updateEdgeAtom = atom(null, async (get, set, { name, dsp, newName, 
     const data = {
         [TableFields.NAME]: name,
         [TableFields.NEWNAME]: newName,
-        [TableFields.DSP]: dsp,
         [TableFields.CODE]: code,
         [TableFields.TOKEN]: token
     }

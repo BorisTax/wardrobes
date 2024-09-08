@@ -1,9 +1,13 @@
 import { FasadMaterial } from "../../../types/enums";
-import { ExtMaterial } from "../../../types/materials";
+import { DSP_EDGE_ZAGL, Edge, ExtMaterial, Zaglushka } from "../../../types/materials";
 import { WardrobeDetailSchema, WardrobeDetailTableSchema, WardrobeFurnitureTableSchema } from "../../../types/schemas";
 import { SpecificationItem } from "../../../types/specification";
 import { DETAIL_NAME, DRILL_TYPE, Detail, EDGE_SIDE, EDGE_TYPE, FullData, IWardrobe, SpecificationResult, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData, WardrobeDetailTable } from "../../../types/wardrobe";
-import { specServiceProvider, materialServiceProvider } from "../../options";
+import { specServiceProvider, materialServiceProvider, materialsPath } from "../../options";
+import DSPEdgeZaglServiceSQLite from "../../services/extServices/DSPEdgeZaglServiceSQLite";
+import EdgeServiceSQLite from "../../services/extServices/edgeServiceSQLite";
+import ZagluskaServiceSQLite from "../../services/extServices/zaglushkaServiceSQLite";
+import { MaterialExtService } from "../../services/materialExtService";
 import { MaterialService } from "../../services/materialService";
 import { SpecificationService } from "../../services/specificationService";
 import StandartWardrobe from "../standart";
@@ -104,10 +108,10 @@ export async function getCoef(item: SpecificationItem): Promise<number> {
     return coef
 }
 export function getConfirmatByDetail(detail: Detail): number {
-    return detail.drill?.reduce((prev, curr) => prev + (((curr === DRILL_TYPE.CONFIRMAT1) && 2) || ((curr === DRILL_TYPE.CONFIRMAT2) && 4) || 0), 0) || 0
+    return detail.drill?.reduce((prev, curr) => prev + ((curr === DRILL_TYPE.CONFIRMAT1 ? 1 : 0) + (curr === DRILL_TYPE.CONFIRMAT2 ? 2 : 0)), 0) || 0
 }
 export function getMinifixByDetail(detail: Detail): number {
-    return detail.drill?.reduce((prev, curr) => prev + (((curr === DRILL_TYPE.MINIFIX1) && 2) || ((curr === DRILL_TYPE.MINIFIX2) && 4) || 0), 0) || 0
+    return detail.drill?.reduce((prev, curr) => prev + ((curr === DRILL_TYPE.MINIFIX1 ? 1 : 0) + (curr === DRILL_TYPE.MINIFIX2 ? 2 : 0)), 0) || 0
 }
 
 
@@ -157,9 +161,9 @@ export function allThinEdge(): EDGE_SIDE {
 }
 
 export function getDrill(detail: WardrobeDetailTable): DRILL_TYPE[] {
-    if ([DETAIL_NAME.STAND, DETAIL_NAME.INNER_STAND].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.MINIFIX2]
-    if ([DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.CONFIRMAT2]
-    if ([DETAIL_NAME.PILLAR].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.MINIFIX1, DRILL_TYPE.CONFIRMAT1]
+    if ([DETAIL_NAME.STAND, DETAIL_NAME.INNER_STAND].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.MINIFIX2]
+    if ([DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.CONFIRMAT2, DRILL_TYPE.CONFIRMAT2]
+    if ([DETAIL_NAME.PILLAR].includes(detail.name as DETAIL_NAME)) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.CONFIRMAT2]
     return []
 } 
 
@@ -168,4 +172,24 @@ export function getEdge(detail: WardrobeDetailTable): EDGE_SIDE | undefined {
     if ([DETAIL_NAME.STAND].includes(detail.name as DETAIL_NAME)) return singleLengthThickEdge()
     if ([DETAIL_NAME.INNER_STAND, DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT, DETAIL_NAME.PILLAR].includes(detail.name as DETAIL_NAME)) return singleLengthThinEdge()
     return undefined
+}
+
+export async function getZagByDSP(dsp: string): Promise<Zaglushka> {
+    let service = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath));
+    const list = (await service.getExtData()).data as DSP_EDGE_ZAGL[];
+    const zagservice = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
+    const zagList = (await zagservice.getExtData()).data as Zaglushka[];
+    const zagName = list.find(m => m.name === dsp)?.zaglushka
+    const zaglushka = zagList.find(z => z.name === zagName) || { code: "", name: "" }
+    return zaglushka;
+}
+
+export async function getEdgeByDSP(dsp: string): Promise<Edge> {
+    let service = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath));
+    const list = (await service.getExtData()).data as DSP_EDGE_ZAGL[];
+    const edgeservice = new MaterialExtService<Zaglushka>(new EdgeServiceSQLite(materialsPath));
+    const edgeList = (await edgeservice.getExtData()).data as Edge[];
+    const edgeName = list.find(m => m.name === dsp)?.edge
+    const edge = edgeList.find(z => z.name === edgeName) || { code: "", name: "" }
+    return edge;
 }

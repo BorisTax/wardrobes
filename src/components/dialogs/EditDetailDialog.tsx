@@ -4,7 +4,7 @@ import { editDetailDialogAtom } from "../../atoms/dialogs"
 import DialogWindow from "./DialogWindow"
 import TableData from "../TableData"
 import { setWardrobeDataAtom, wardrobeDataAtom } from "../../atoms/wardrobe"
-import { Detail, DETAIL_NAME, EDGE_TYPE } from "../../types/wardrobe"
+import { Detail, DETAIL_NAME, DRILL_TYPE, EDGE_TYPE } from "../../types/wardrobe"
 import { getEdgeDescripton } from "../../functions/wardrobe"
 import EditContainer from "../EditContainer"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
@@ -15,6 +15,17 @@ const edges = new Map<string, string>()
 edges.set(EDGE_TYPE.NONE, "нет")
 edges.set(EDGE_TYPE.THIN, "0,45мм")
 edges.set(EDGE_TYPE.THICK, "2мм")
+enum DRILL_CAPTIONS {
+    CONF = "CONF",
+    MINIF = "MINIF",
+    BOTH = "BOTH",
+    NONE = "NONE"
+}
+const drill = new Map<string, string>()
+drill.set(DRILL_CAPTIONS.CONF, "Конфирмат")
+drill.set(DRILL_CAPTIONS.MINIF, "Минификс")
+drill.set(DRILL_CAPTIONS.BOTH, "Конф. и миниф.")
+drill.set(DRILL_CAPTIONS.NONE, "нет")
 const defaultDetail: Detail = {
     name: DETAIL_NAME.SHELF,
     caption: ``,
@@ -37,7 +48,7 @@ export default function EditDetailDialog() {
     const detail = details[detIndex] || defaultDetail
     const [, setEditDetailDialogAtomRef] = useAtom(editDetailDialogAtom)
     const heads = ["Деталь", "Длина", "Ширина", "Кол-во", "Кромка 2", "Кромка 0.45", "Крепеж"]
-    const contents = details.map(d => [d.caption, d.length, d.width, d.count, getEdgeDescripton(d,EDGE_TYPE.THICK), getEdgeDescripton(d,EDGE_TYPE.THIN)])
+    const contents = details.map(d => [d.caption, d.length, d.width, d.count, getEdgeDescripton(d, EDGE_TYPE.THICK), getEdgeDescripton(d, EDGE_TYPE.THIN), drill.get(getDrillCaption(d)) || ""])
     const editItems: EditDataItem[] = [
         { caption: "Деталь:", value: detail.caption || "", message: messages.ENTER_CAPTION, type: InputType.TEXT, optional: true },
         { caption: "Длина:", value: `${detail.length}`, message: messages.ENTER_LENGTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
@@ -47,6 +58,7 @@ export default function EditDetailDialog() {
         { caption: "Кромка по длине 2:", value: `${detail.edge?.L2}`, list: edges, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
         { caption: "Кромка по ширине 1:", value: `${detail.edge?.W1}`, list: edges, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
         { caption: "Кромка по ширине 2:", value: `${detail.edge?.W2}`, list: edges, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Крепеж:", value: getDrillCaption(detail), list: drill, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
     ]
     useEffect(() => {
         setEditDetailDialogAtomRef(dialogRef)
@@ -65,6 +77,7 @@ export default function EditDetailDialog() {
                 if (checked[5] && newDetails[detIndex].edge) newDetails[detIndex].edge.L2 = values[5] as EDGE_TYPE
                 if (checked[6] && newDetails[detIndex].edge) newDetails[detIndex].edge.W1 = values[6] as EDGE_TYPE
                 if (checked[7] && newDetails[detIndex].edge) newDetails[detIndex].edge.W2 = values[7] as EDGE_TYPE
+                if (checked[8]) newDetails[detIndex].drill = getDrillByCaption(values[8] as DRILL_CAPTIONS)
                 setData(prev => ({ ...prev, details: newDetails }))
                 return { success: true, message: "" }
             }}
@@ -73,7 +86,7 @@ export default function EditDetailDialog() {
                 setData(prev => ({ ...prev, details: newDetails }))
                 return { success: true, message: "" }
             }}
-                onAdd={async (_, values) => {
+            onAdd={async (_, values) => {
                 const newDetails = [...details]
                 const detail: Detail = {
                     name: DETAIL_NAME.SHELF,
@@ -86,7 +99,8 @@ export default function EditDetailDialog() {
                         L2: values[5] as EDGE_TYPE,
                         W1: values[6] as EDGE_TYPE,
                         W2: values[7] as EDGE_TYPE
-                    }
+                    },
+                    drill: getDrillByCaption(values[8] as DRILL_CAPTIONS)
                 }
                 newDetails.push(detail)
                 setData(prev => ({ ...prev, details: newDetails }))
@@ -94,4 +108,25 @@ export default function EditDetailDialog() {
             }} />
         </EditContainer>
     </DialogWindow>
+}
+
+
+function getDrillCaption(detail: Detail): DRILL_CAPTIONS {
+    let conf = false
+    let min = false
+    detail.drill?.forEach(d => {
+        if (d === DRILL_TYPE.CONFIRMAT2) conf = true
+        if (d === DRILL_TYPE.MINIFIX2) min = true
+    })
+    if (conf && min) return DRILL_CAPTIONS.BOTH
+    if (conf) return DRILL_CAPTIONS.CONF
+    if (min) return DRILL_CAPTIONS.MINIF
+    return DRILL_CAPTIONS.NONE
+}
+
+function getDrillByCaption(drill: DRILL_CAPTIONS): DRILL_TYPE[] {
+    if (drill === DRILL_CAPTIONS.BOTH) return [DRILL_TYPE.CONFIRMAT2, DRILL_TYPE.MINIFIX2]
+    if (drill === DRILL_CAPTIONS.CONF) return [DRILL_TYPE.CONFIRMAT2, DRILL_TYPE.CONFIRMAT2]
+    if (drill === DRILL_CAPTIONS.MINIF) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.MINIFIX2]
+    return []
 }

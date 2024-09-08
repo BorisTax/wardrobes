@@ -22,7 +22,6 @@ export type NewProfile = Profile & {
 
 export type Edge = {
     name: string
-    dsp: string
     code: string
 }
 export type NewEdge = Edge & {
@@ -31,7 +30,6 @@ export type NewEdge = Edge & {
 
 export type Zaglushka = {
     name: string
-    dsp: string
     code: string
 }
 export type NewZaglushka = Zaglushka & {
@@ -52,6 +50,12 @@ export type Trempel = {
 export type Uplotnitel = {
     name: string
     code: string
+}
+
+export type DSP_EDGE_ZAGL = {
+    name: string
+    edge: string
+    zaglushka: string
 }
 
 export enum ProfileType {

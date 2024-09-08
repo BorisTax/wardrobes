@@ -20,16 +20,15 @@ export default function EditZaglushka() {
     const materialList = useAtomValue(materialListAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const mList = useMemo(() => materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name), [materialList])
-    const { name, dsp, code } = zaglushkaList[selectedIndex] || { name: "", dsp: "", code: "" }
+    const { name, code } = zaglushkaList[selectedIndex] || { name: "", code: "" }
     const deleteZaglushka = useSetAtom(deleteZaglushkaAtom)
     const addZaglushka = useSetAtom(addZaglushkaAtom)
     const updateZaglushka = useSetAtom(updateZaglushkaAtom)
-    const heads = ['Наименование', 'Код', 'Соответствие ДСП']
-    const contents = zaglushkaList.map((i: Zaglushka) => [i.name, i.code, i.dsp])
+    const heads = ['Наименование', 'Код']
+    const contents = zaglushkaList.map((i: Zaglushka) => [i.name, i.code])
     const editItems: EditDataItem[] = [
         { caption: "Наименование:", value: name || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
         { caption: "Код:", value: code, message: messages.ENTER_CODE, type: InputType.TEXT },
-        { caption: "Соответствие ДСП:", value: dsp, list: mList, message: messages.ENTER_CORRESPOND, type: InputType.LIST },
     ]
     useEffect(() => {
         setSelectedIndex(0)
@@ -40,8 +39,7 @@ export default function EditZaglushka() {
             onUpdate={perm?.Update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
-                const usedDSP = checked[2] ? values[2] : ""
-                const result = await updateZaglushka({ name, newName: usedName, code: usedCode, dsp: usedDSP })
+                const result = await updateZaglushka({ name, newName: usedName, code: usedCode })
                 return result
             } : undefined}
             onDelete={perm?.Delete ? async () => {
@@ -49,12 +47,11 @@ export default function EditZaglushka() {
                 setSelectedIndex(0)
                 return result
             } : undefined}
-            onAdd={perm?.Create ? async (checked, values) => {
+            onAdd={perm?.Create ? async (_, values) => {
                 const name = values[0] as string
                 const code = values[1] as string
-                const dsp = values[2] as string
                 if (zaglushkaList.find((p: Zaglushka) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
-                const result = await addZaglushka({ name, dsp, code })
+                const result = await addZaglushka({ name, code })
                 return result
             } : undefined} /> : <div></div>}
     </EditContainer>

@@ -13,6 +13,7 @@ import { addTrempel, deleteTrempel, getTrempels, updateTrempel } from './materia
 import { addUplotnitel, deleteUplotnitel, getUplotnitels, updateUplotnitel } from './materials/uplotnitel.js';
 import { hasPermission } from './users.js';
 import { StatusCodes } from 'http-status-codes';
+import { addDspEdge, deleteDspEdge, getDspEdges, updateDspEdge } from './materials/dspEdge.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -104,19 +105,49 @@ router.delete("/edge", async (req, res) => {
 
 router.post("/edge", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
-  const { name, dsp, code } = req.body
-  const result = await addEdge({ name, dsp, code });
+  const { name, code } = req.body
+  const result = await addEdge({ name, code });
   const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
 router.put("/edge", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const { name, dsp, newName, code } = req.body
-  const result = await updateEdge({ name, dsp, newName, code });
+  const { name, newName, code } = req.body
+  const result = await updateEdge({ name, newName, code });
   res.status(result.status).json(result);
 });
 
+router.get("/dsp_edge", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
+  const result = await getDspEdges();
+  if (!result.success) return res.json(result)
+  res.status(result.status).json(result);
+});
+
+router.delete("/dsp_edge", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
+  const { name } = req.body
+  let result
+  result = await deleteDspEdge(name);
+  const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
+  res.status(status).json(result);  
+});
+
+router.post("/dsp_edge", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
+  const { name, edge, zaglushka } = req.body
+  const result = await addDspEdge({ name, edge, zaglushka });
+  const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
+  res.status(status).json(result);
+});
+
+router.put("/dsp_edge", async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.UPDATE]))) return accessDenied(res)
+  const { name, edge, zaglushka } = req.body
+  const result = await updateDspEdge({ name, edge, zaglushka });
+  res.status(result.status).json(result);
+});
 
 router.get("/zaglushka", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
@@ -135,16 +166,16 @@ router.delete("/zaglushka", async (req, res) => {
 
 router.post("/zaglushka", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
-  const { name, dsp, code } = req.body
-  const result = await addZaglushka({ name, dsp, code });
+  const { name, code } = req.body
+  const result = await addZaglushka({ name, code });
   const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
 router.put("/zaglushka", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const { name, dsp, newName, code } = req.body
-  const result = await updateZaglushka({ name, dsp, newName, code });
+  const { name, newName, code } = req.body
+  const result = await updateZaglushka({ name, newName, code });
   res.status(result.status).json(result);
 });
 
@@ -154,6 +185,7 @@ router.get("/brush", async (req, res) => {
   if (!result.success) return res.json(result)
   res.status(result.status).json(result);
 });
+
 router.delete("/brush", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { name } = req.body

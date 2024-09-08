@@ -26,11 +26,11 @@ const maxFasades = 6
 const consoleWidth = ['200', '250', '300', '350', '400', '450', '500']
 export default function WardrobeCalculator() {
     const { permissions } = useAtomValue(userAtom)
-    const getDetails = useSetAtom(getDetailsAtom)
     const perm = permissions.get(RESOURCE.SPECIFICATION)
     const data = useAtomValue(wardrobeDataAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
     const materialList = useAtomValue(materialListAtom)
+    const [showExt, setShowExt] = useState(false)
     const dspList = useMemo(() => materialList.filter(m => m.purpose !== MAT_PURPOSE.FASAD).map(m => m.name), [materialList])
     const dsp10List = useMemo(() => materialList.filter(m => m.material === FasadMaterial.DSP && m.purpose !== MAT_PURPOSE.CORPUS).map(m => m.name), [materialList])
     const mirrorList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.MIRROR).map(m => m.name), [materialList])
@@ -91,8 +91,8 @@ export default function WardrobeCalculator() {
                         </PropertyGrid>}
                     </div>
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
-                        <div className="text-center">Доп. комплектация</div>
-                        <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
+                        <div className="text-center" role="button" onClick={() => setShowExt(!showExt)}>Доп. комплектация</div>
+                        <PropertyGrid hidden={!showExt} style={{ padding: "0.5em", border: "1px solid" }}>
                             <div></div><div className="d-flex align-items-center justify-content-between"><div></div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, extComplect: getInitExtComplect(prev.height, prev.depth) })); setConsoles({ consoleSameDepth: true, consoleSameHeight: true, standSameHeight: true }) }}>Сбросить</div></div>
                             <div className="text-end">Телескоп: </div>
                             <TextBox value={extComplect.telescope} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, telescope: +value } })) }} />

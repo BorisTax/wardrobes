@@ -6,7 +6,7 @@ import { getDSP, getCoef, emptyFullData, allThinEdge, singleLengthThinEdge } fro
 
 export async function getDrawerSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth))
+    const details = (await getDetails(data.wardType, data.wardKind, data.width, data.height, data.depth))
     const shelf = details.find(d => d.name === DETAIL_NAME.SHELF)
     if (!shelf) return result
     const telDetails: Detail[] = [

@@ -27,22 +27,22 @@ router.get("/initialWardrobeData", async (req, res) => {
 });
 router.get("/getDetail", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
-  const { kind, detailName, width, height } = req.query
-  const result = await getDetail(kind as WARDROBE_KIND, detailName as DETAIL_NAME, width ? (+width) : 0, height ? (+height) : 0)
+  const { wardType,kind, detailName, width, height } = req.query
+  const result = await getDetail(wardType as WARDROBE_TYPE, kind as WARDROBE_KIND, detailName as DETAIL_NAME, width ? (+width) : 0, height ? (+height) : 0)
   res.status(200).json({ success: true, data: result });
 });
 router.get("/getDetails", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
-  const { kind, width, height, depth } = req.query
-  const result = await getDetails(kind as WARDROBE_KIND, width ? (+width) : 0, height ? (+height) : 0, depth ? (+depth) : 0)
+  const { wardType, kind, width, height, depth } = req.query
+  const result = await getDetails(wardType as WARDROBE_TYPE, kind as WARDROBE_KIND, width ? (+width) : 0, height ? (+height) : 0, depth ? (+depth) : 0)
   res.status(200).json({ success: true, data: result });
 });
 export async function getTable(kind: WARDROBE_KIND) {
   return await specServiceProvider.getDetailTable({ kind })
 }
 
-export async function getDetail(kind: WARDROBE_KIND, detailName: DETAIL_NAME, width: number, height: number) {
-  const details = await getDetails(kind, width, height, 0)
+export async function getDetail(wardType:WARDROBE_TYPE, kind: WARDROBE_KIND, detailName: DETAIL_NAME, width: number, height: number) {
+  const details = await getDetails(wardType, kind, width, height,  0)
   const detail = details.find(d => d.name === detailName)
   if (detail) return detail
   return {
@@ -79,7 +79,7 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
   const { data: materials } = await service.getExtMaterials({})
   const { name } = (materials && materials.find(m => m.purpose === MAT_PURPOSE.BOTH)) || { name: "" }
   const { name: profileName } = (profiles && profiles[0]) || { name: "", code: "", type: ProfileType.STANDART, brush: "" }
-  const details = await getDetails(WARDROBE_KIND.STANDART, 2400, 2100, 600)
+  const details = await getDetails(WARDROBE_TYPE.WARDROBE, WARDROBE_KIND.STANDART, 2400, 2100, 600)
   return {
     success: true, status: StatusCodes.OK, data: {
       wardKind: WARDROBE_KIND.STANDART,
@@ -88,7 +88,7 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
       details,
       width: 2400,
       depth: 600,
-      height: 2100,
+      height: 2400,
       dspName: name,
       profileName,
       fasades: initFasades,

@@ -6,7 +6,7 @@ import { getDSP } from "../functions";
 
 export async function getShelfPlatSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = (await getDetails(data.wardKind, data.width, data.height, data.depth))
+    const details = (await getDetails(data.wardType, data.wardKind, data.width, data.height, data.depth))
     const shelf = details.find(d => d.name === DETAIL_NAME.SHELF_PLAT)
     if (!shelf) return result
     const shelves: Detail[] = [

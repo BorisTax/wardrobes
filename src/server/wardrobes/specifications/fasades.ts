@@ -81,7 +81,6 @@ async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<Sp
     spec.set(SpecificationItem.ProfileHorTopStandart, await calcProfileHor(fasad, profile, true))
     spec.set(SpecificationItem.ProfileHorBottomStandart, await calcProfileHor(fasad, profile, false))
     spec.set(SpecificationItem.Streich, await calcStreich(fasad))
-    spec.set(SpecificationItem.Karton, await calcKarton(fasad))
     spec.set(SpecificationItem.Roliki, await calcRoliki(fasad, profile))
     spec.set(SpecificationItem.RolikiBavaria, await calcRolikiBavaria(fasad, profile))
     return spec;

@@ -17,7 +17,7 @@ import { calcFunction } from "./functions"
 
 export async function getCorpusSpecification(data: WardrobeData, resetDetails: boolean, profile: Profile, verbose = false): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = !resetDetails ? data.details : await getDetails(data.wardKind, data.width, data.height, data.depth);
+    const details = !resetDetails ? data.details : await getDetails(data.wardType, data.wardKind, data.width, data.height, data.depth);
     const karton = await getKarton(data)
     const skotch = data.wardType === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
     const truba = await getTruba(data, details)
@@ -71,11 +71,11 @@ export async function getDetailNames(): Promise<WardrobeDetailSchema[]> {
     return result.data as WardrobeDetailSchema[];
 }
 
-export async function getDetails(kind: WARDROBE_KIND, width: number, height: number, depth: number): Promise<Detail[]> {
+export async function getDetails(wardType: WARDROBE_TYPE, kind: WARDROBE_KIND, width: number, height: number, depth: number): Promise<Detail[]> {
     const service = new SpecificationService(specServiceProvider);
     const detailsData = await service.getDetails(kind, width, height)
     const detailNames = (await service.getDetailNames()).data || [];
-    const offset = 100;
+    const offset = wardType === WARDROBE_TYPE.CORPUS ? 0 : 100;
     const details: Detail[] = detailsData.map(dd => (
         {
             name: dd.name,
@@ -88,13 +88,7 @@ export async function getDetails(kind: WARDROBE_KIND, width: number, height: num
         }))
     return details;
 }
-async function getDetail(service: SpecificationService, kind: WARDROBE_KIND, name: DETAIL_NAME, width: number, height: number): Promise<{ count: number, size: number }> {
-    const details = await service.getDetails(kind, width, height)
-    const detail = details.find(d => d.name === name)
-    if (!detail) return { count: 0, size: 0 };
-    const size = calcFunction(detail.size, { width, height });
-    return { count: size ? detail.count : 0, size };
-}
+
 async function getDVP(data: WardrobeData): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const dvp = await getDVPData(data.width, data.height, data.depth);

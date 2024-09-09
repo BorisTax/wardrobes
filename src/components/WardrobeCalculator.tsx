@@ -43,7 +43,7 @@ export default function WardrobeCalculator() {
     const { wardKind, wardType, width, depth, height, dspName, fasades, profileName, extComplect } = data
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
-    const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardKind, data.width, data.height) || {length: 0}
+    const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardType, data.wardKind, data.width, data.height) || { length: 0 }
     const confirm = useConfirm()
     const showEditDetails = useSetAtom(showDetailDialogAtom)
     useEffect(() => {

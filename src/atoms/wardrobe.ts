@@ -30,9 +30,9 @@ const initState: WardrobeData = {
     wardType: WARDROBE_TYPE.WARDROBE,
     schema: false,
     details: [],
-    width: 2400,
+    width: 2000,
     depth: 600,
-    height: 2400,
+    height: 2100,
     dspName: "",
     profileName: "",
     fasades: initFasades,
@@ -59,24 +59,24 @@ export const loadInitialWardrobeDataAtom = atom(null, async (get, set) => {
     const result: FetchResult<WardrobeData> = await fetchGetData(`/api/wardrobe/initialWardrobeData?token=${token}`)
     const data = result.data as WardrobeData
     if (result.success) {
-        set(setWardrobeDataAtom, () => data)
         set(loadedInitialWardrobeDataAtom, true)
+        set(setWardrobeDataAtom, () => data)
     }
 })
 
 export const getDetailsAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
-    const { wardKind, width, height, depth } = get(wardrobeDataAtom)
-    const result: FetchResult<Detail[]> = await fetchGetData(`/api/wardrobe/getDetails?token=${token}&kind=${wardKind}&width=${width}&height=${height}&depth=${depth}`)
+    const {wardType, wardKind, width, height, depth } = get(wardrobeDataAtom)
+    const result: FetchResult<Detail[]> = await fetchGetData(`/api/wardrobe/getDetails?token=${token}&wardType=${wardType}&kind=${wardKind}&width=${width}&height=${height}&depth=${depth}`)
     const data = result.data as Detail[]
     if (result.success) {
         set(setWardrobeDataAtom, (prev) => ({ ...prev, details: data }))
     }
 })
 export const detailAtom = atom<Detail | null>(null)
-export const loadDetailAtom = atom(null, async (get, set, detailName: DETAIL_NAME, kind: WARDROBE_KIND, width: number, height: number) => {
+export const loadDetailAtom = atom(null, async (get, set, detailName: DETAIL_NAME, wardType:WARDROBE_TYPE,  kind: WARDROBE_KIND, width: number, height: number) => {
     const { token } = get(userAtom)
-    const result = await fetchGetData(`/api/wardrobe/getDetail?token=${token}&kind=${kind}&detailName=${detailName}&width=${width}&height=${height}`)
+    const result = await fetchGetData(`/api/wardrobe/getDetail?token=${token}&wardType=${wardType}&kind=${kind}&detailName=${detailName}&width=${width}&height=${height}`)
     if (result.success) set(detailAtom, result.data as Detail)
 })
 

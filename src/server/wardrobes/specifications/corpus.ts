@@ -19,6 +19,7 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     const result: SpecificationResult[] = []
     const details = !resetDetails ? data.details : await getDetails(data.wardKind, data.width, data.height, data.depth);
     const karton = await getKarton(data)
+    const skotch = data.wardType === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
     const truba = await getTruba(data, details)
     const edge2 = (await getEdge2(data, details))
     const edge05 = await getEdge05(data, details)
@@ -34,7 +35,7 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     result.push([SpecificationItem.Planka, await getDVPPlanka(data)])
     result.push([SpecificationItem.Leg, await getLegs(data)])
     result.push([SpecificationItem.Karton, karton])
-    result.push([SpecificationItem.Skotch, { data: { amount: karton.data.amount * 20 } }])
+    result.push([SpecificationItem.Skotch, { data: { amount: skotch } }])
     result.push([SpecificationItem.Nails, await getNails(data)])
     result.push([SpecificationItem.Brush, await getBrush(data, profile, ProfileType.STANDART)])
     result.push([SpecificationItem.BrushBavaria, await getBrush(data, profile, ProfileType.BAVARIA)])

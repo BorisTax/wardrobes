@@ -11,6 +11,7 @@ import { showVerboseDialogAtom } from "../atoms/dialogs"
 import { SpecificationResult, TotalData, VerboseData } from "../types/wardrobe"
 import { RESOURCE } from "../types/user"
 import CheckBox from "./inputs/CheckBox"
+import TableData from "./TableData"
 
 type SpecificationTableProps = {
     purposes: MAT_PURPOSE[],
@@ -51,6 +52,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
         const className = (amount > 0) ? "tr-attention" : "tr-noattention"
         const verbose = (item.verbose) ? { className: "table-data-cell table-data-cell-hover", role: "button", onClick: () => { if (!permSpec?.Read) return; setVerboseData(item.verbose, item.name); showVerbose() } } : {}
         return <tr key={index} className={"table-data-row " + className}>
+            <td className="table-data-cell" >{index + 1}</td>
             <td className="table-data-cell" >{item.code}</td>
             <td className="table-data-cell" {...verbose}>{item.caption}</td>
             <td className="table-data-cell">{char}</td>
@@ -66,6 +68,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             <table>
                 <thead>
                     <tr>
+                        <th className="table-header">№</th>
                         <th className="table-header">Код</th>
                         <th className="table-header">Наименование</th>
                         <th className="table-header">Характеристика</th>

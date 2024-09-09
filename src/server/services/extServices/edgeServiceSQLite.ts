@@ -15,7 +15,7 @@ export default class EdgeServiceSQLite implements IMaterialExtService<Edge> {
         return dataBaseQuery<Edge[]>(this.dbFile, `select * from ${EDGE};`, [], {successStatusCode: StatusCodes.OK})
     }
     async addExtData({ name, code }: Edge): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${EDGE} (name, code) values(?, ?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${EDGE} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM ${EDGE} WHERE name=?;`, [name], { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})

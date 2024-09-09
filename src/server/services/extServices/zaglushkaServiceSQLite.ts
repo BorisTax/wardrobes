@@ -15,7 +15,7 @@ export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglus
         return dataBaseQuery(this.dbFile, `select * from ${ZAGLUSHKA};`, [], {successStatusCode: StatusCodes.OK})
     }
     async addExtData({ name, code }: Zaglushka): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, code) values(?, ?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
+        return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(name: string): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE name=?;`, [name], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})

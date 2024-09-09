@@ -33,7 +33,7 @@ export default function EditDSPEdge() {
     const heads = ['ДСП', 'Кромка', 'Заглушка']
     const contents = dspEdgeList.map((i: DSP_EDGE_ZAGL) => [i.name, i.edge, i.zaglushka])
     const editItems: EditDataItem[] = [
-        { caption: "ДСП:", value: name || "", message: messages.ENTER_CAPTION, type: InputType.TEXT, readonly: true },
+        { caption: "ДСП:", value: name || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: mList },
         { caption: "Кромка:", value: edge, message: messages.ENTER_CODE, type: InputType.LIST, list: edgeList, listWithoutEmptyRow: true },
         { caption: "Заглушка:", value: zaglushka, message: messages.ENTER_CODE, type: InputType.LIST, list: zagList, listWithoutEmptyRow: true },
     ]
@@ -44,6 +44,18 @@ export default function EditDSPEdge() {
                 const usedEdge = checked[1] ? values[1] : ""
                 const usedZag = checked[2] ? values[2] : ""
                 const result = await updateDspEdge({ name: dspEdgeList[selectedIndex].name, edge: usedEdge, zaglushka: usedZag })
+                return result
+            } : undefined}
+            onAdd={perm?.Create ? async (checked, values) => {
+                const usedName = checked[0] ? values[0] : ""
+                const usedEdge = checked[1] ? values[1] : ""
+                const usedZag = checked[2] ? values[2] : ""
+                const result = await addDspEdge({ name: usedName as string, edge: usedEdge as string, zaglushka: usedZag as string })
+                return result
+            } : undefined}
+            onDelete={perm?.Delete ? async (name) => {
+                const result = await deleteDspEdge(dspEdgeList[selectedIndex])
+                setSelectedIndex(0)
                 return result
             } : undefined}
         /> : <div></div>}

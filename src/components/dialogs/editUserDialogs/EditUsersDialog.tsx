@@ -74,7 +74,7 @@ export default function EditUsersDialog() {
                     const roleId = roles.find(r => r.name === role)?.id || 0
                     const password = values[2] as string
                     if (users.find(u => u.name === name)) { return { success: false, message: messages.USER_NAME_EXIST } }
-                    const result = await createUser(name as string, password, roleId)
+                    const result = await createUser(name, password, roleId)
                     return result
                 }}
                 onUpdate={async (checked, values) => {

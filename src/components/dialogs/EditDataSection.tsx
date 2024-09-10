@@ -7,10 +7,11 @@ import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
 import CheckBox from "../inputs/CheckBox"
 import { MAX_FILE_SIZE } from "../../options"
+type ValueType = string | boolean | number
 export type EditDataItem = {
     caption: string
-    value: string | boolean
-    valueCaption?: (value: string | boolean) => string
+    value: ValueType
+    valueCaption?: (value: ValueType) => string
     list?: string[] | Map<string, string>
     listWithoutEmptyRow?: boolean
     message: string
@@ -18,15 +19,15 @@ export type EditDataItem = {
     type: InputType
     optional?: boolean
     propertyType?: PropertyType
-    checkValue?: (value: string | number) => { success: boolean, message: string }
+    checkValue?: (value: ValueType) => { success: boolean, message: string }
 }
 export type EditDataSectionProps = {
     items: EditDataItem[]
     name?: string
     dontAsk?: boolean
-    onUpdate?: (checked: boolean[], values: (string | boolean)[]) => Promise<{ success: boolean, message: string }>
-    onAdd?: (checked: boolean[], values: (string | boolean)[]) => Promise<{ success: boolean, message: string }>
-    onDelete?: (name: string | number) => Promise<{ success: boolean, message: string }>
+    onUpdate?: (checked: boolean[], values: (ValueType)[]) => Promise<{ success: boolean, message: string }>
+    onAdd?: (checked: boolean[], values: (ValueType)[]) => Promise<{ success: boolean, message: string }>
+    onDelete?: (name: ValueType) => Promise<{ success: boolean, message: string }>
 }
 export default function EditDataSection(props: EditDataSectionProps) {
     const [loading, setLoading] = useState(false)
@@ -118,20 +119,20 @@ export default function EditDataSection(props: EditDataSectionProps) {
     </>
 }
 
-function checkFields({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: (string | boolean)[] }): { success: boolean, message: string } {
+function checkFields({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: ValueType[] }): { success: boolean, message: string } {
     let message = ""
     const success = checked.every((c, index) => {
         if (c === false) return true
         const item = items[index]
         const newValue = newValues[index]
         if (item.checkValue) {
-            const result = item.checkValue(newValue as string | number)
+            const result = item.checkValue(newValue)
             if (!result.success) {
                 message = result.message
                 return false
             }
         }
-        if (typeof newValue === 'string' && (newValue as string).trim() === "" && !item.optional) {
+        if (typeof newValue === 'string' && newValue.trim() === "" && !item.optional) {
             message = item.message
             return false
         }
@@ -140,7 +141,7 @@ function checkFields({ checked, items, newValues }: { checked: boolean[], items:
     return {success, message}
 }
 
-function getMessage({ checked, items, newValues, extValue }: { checked: boolean[], items: EditDataItem[], newValues: (string | boolean)[], extValue?: string }): string {
+function getMessage({ checked, items, newValues, extValue }: { checked: boolean[], items: EditDataItem[], newValues: ValueType[], extValue?: string }): string {
     const msg: string[] = []
     checked.forEach((c, index) => {
         if (c) msg.push(`${items[index].caption} "${extValue || newValues[index]}"`)
@@ -148,7 +149,7 @@ function getMessage({ checked, items, newValues, extValue }: { checked: boolean[
     return `Обновить - ${msg.join(' ')} ?`
 }
 
-function getAddMessage({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: (string|boolean)[] }): string {
+function getAddMessage({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: ValueType[] }): string {
     const msg: string[] = []
     checked.forEach((c, index) => {
         if (c) msg.push(`${items[index].caption} "${newValues[index]}"`)

@@ -59,7 +59,7 @@ export default function EditPlates() {
             onAdd={perm?.Create ? async (checked, values) => {
                 const name = values[0] as string
                 const code = values[1] as string
-                const purpose = getMATPurpose(values[2] as string)
+                const purpose = values[2] as MAT_PURPOSE
                 const file = values[3] as string
                 if (existMaterial(name, baseMaterial, materialList)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addMaterial({ name, material: baseMaterial, code, image: "", purpose }, file)

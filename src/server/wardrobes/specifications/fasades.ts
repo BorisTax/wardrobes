@@ -137,7 +137,7 @@ async function calcDSP10(fasad: Fasad, materials: ExtMaterial[]): Promise<FullDa
     return finalResult
 }
 async function calcMirror(fasad: Fasad, materials: ExtMaterial[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, materials, [FasadMaterial.MIRROR])
+    const result = await calcArea(fasad, materials, [FasadMaterial.MIRROR, FasadMaterial.SAND])
     const coef = await getCoef(SpecificationItem.Mirror)
     const finalResult = result.map(r => {
         const area = r.data.amount

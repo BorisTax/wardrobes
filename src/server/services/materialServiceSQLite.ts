@@ -32,8 +32,19 @@ export default class MaterialServiceSQLite implements IMaterialService {
     }
 
     async deleteExtMaterial(name: string, material: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${EXTMATERIALS} WHERE name=? and material=?;`, [name, material], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+        const queries = [
+            {
+                query: `DELETE FROM ${EXTMATERIALS} WHERE name=? and material=?;`,
+                params: [name, material]
+            },
+            {
+                query: `DELETE FROM ${EXTMATERIALS_IMAGES} WHERE name=? and material=?;`,
+                params: [name, material]
+            },
+        ]
+        return dataBaseTransaction(this.dbFile, queries, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED })
     }
+
     async getImage(material: FasadMaterial, name: string): Promise<Result<string>>{
         const result = await dataBaseQuery<string[]>(this.dbFile, `select image from ${EXTMATERIALS_IMAGES} where material=? and name=?;`, [material, name], { successStatusCode: StatusCodes.OK })
         return { ...result, data: (result.data && result.data[0] )|| "" }
@@ -60,7 +71,7 @@ function getQuery({ material, name, code }: ExtMaterialQuery): string {
     if (code !== undefined) parts.push(`code`)
     if (parts.length === 0) parts.push("name, material, code, purpose")
     const mat = material ? `where material='${material}'` : ""
-    const query = parts.length > 0 ? `select ${parts.join(", ")} from ${EXTMATERIALS} ${mat} order by material, name;` : ""
+    const query = parts.length > 0 ? `select ${parts.join(", ")} from ${EXTMATERIALS} ${mat};` : ""
     return query
 }
 

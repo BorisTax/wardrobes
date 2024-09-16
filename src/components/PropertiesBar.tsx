@@ -8,7 +8,7 @@ import ToggleButton from "./inputs/ToggleButton"
 import { ExtMaterial } from "../types/materials"
 import ImageButton from "./inputs/ImageButton"
 import { useAtomValue, useSetAtom } from "jotai"
-import { activeFasadAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setSandBaseAtom, setWidthAtom } from "../atoms/fasades"
+import { activeFasadAtom, divideFasadAtom, setActiveFasadAtom, setExtMaterialAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setMaterialAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
 import { materialListAtom } from "../atoms/materials/materials"
 import { Materials } from "../functions/materials"
 import { userAtom } from "../atoms/users"
@@ -84,7 +84,6 @@ function getProperties(fasad: Fasad | null) {
     const height = fasad?.cutHeight || ""
     const material = fasad?.Material || ""
     const extmaterial = fasad?.ExtMaterial || ""
-    const sandBase = (fasad?.Material === FasadMaterial.SAND && fasad?.SandBase) || ""
     const materials = fasad ? Materials : []
     directions.clear()
     if (fasad) {
@@ -101,5 +100,5 @@ function getProperties(fasad: Fasad | null) {
     const disabledFixHeight = !fasad || !fasad.Parent || (fasad.Level === 1 && fasad.Parent.Division === Division.WIDTH)
     disabledWidth = disabledWidth || !!(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.HEIGHT)
     disabledHeight = disabledHeight || !!(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.WIDTH)
-    return { width, height, material, extmaterial, sandBase, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth }
+    return { width, height, material, extmaterial, materials, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth }
 }

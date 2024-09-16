@@ -12,10 +12,7 @@ export enum FasadMaterial {
     FMP = 'FMP',
     SAND = 'SAND'
 }
-export enum SandBase {
-    MIRROR = 'MIRROR',
-    SAND = 'SAND'
-}
+
 export enum MaterialGroup {
     PLATE = 'plate',
     PROFILE = 'profile',

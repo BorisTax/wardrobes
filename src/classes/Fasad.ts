@@ -1,6 +1,6 @@
 import { newFasadFromState } from "../functions/fasades"
 import { FasadOuterEdges } from "../types/edges"
-import { Division, FasadMaterial, SandBase } from "../types/enums"
+import { Division, FasadMaterial } from "../types/enums"
 import { FasadProps } from "../types/fasadProps"
 import FasadState, { FasadBackImageProps, getInitialBackImageProps } from "./FasadState"
 
@@ -8,7 +8,6 @@ export default class Fasad {
     private active = false
     private material: FasadMaterial
     private extMaterial = ''
-    private sandBase = SandBase.MIRROR
     private division = Division.HEIGHT
     private outerRightEdge = true
     private outerLeftEdge = true
@@ -27,7 +26,6 @@ export default class Fasad {
         this.height = props?.height || 0
         this.material = props?.material || FasadMaterial.DSP
         this.extMaterial = props?.extMaterial || ""
-        this.sandBase = props?.sandBase || SandBase.MIRROR
         this.Children = []
         this.OuterEdges = { left: true, right: true, top: true, bottom: true }
         this.backImageProps = getInitialBackImageProps()
@@ -44,7 +42,6 @@ export default class Fasad {
         state.fixedHeight = this.fHeight
         state.material = this.material
         state.extMaterial = this.extMaterial
-        state.sandBase = this.sandBase
         state.backImageProps = { ...this.backImageProps }
         state.outerEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
         state.children = []
@@ -60,7 +57,6 @@ export default class Fasad {
         this.fHeight = state.fixedHeight
         if (!keepOriginalMaterial) this.material = state.material
         if (!keepOriginalMaterial) this.extMaterial = state.extMaterial
-        this.sandBase = state.sandBase
         this.division = state.division
         this.OuterEdges = { ...state.outerEdges }
         this.backImageProps = { ...state.backImageProps }
@@ -97,16 +93,7 @@ export default class Fasad {
     public get ExtMaterial() {
         return this.extMaterial
     }
-    public get SandBase() {
-        return this.sandBase
-    }
-    public setSandBase(value: SandBase, toChildren = true) {
-        this.sandBase = value
-        if (!toChildren) return
-        for (const f of this.Children) {
-            f.setSandBase(value, toChildren)
-        }
-    }
+
     public get Width() {
         return this.width
     }
@@ -187,7 +174,7 @@ export default class Fasad {
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
             const part = i < count ? partHeight : partLast
-            const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) 
+            const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize, material: this.material, extMaterial: this.extMaterial }) 
             const topEdge = i === 1 ? this.outerTopEdge : false
             const bottomEdge = i === count ? this.outerBottomEdge : false
             fasad.OuterEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: topEdge, bottom: bottomEdge }
@@ -206,7 +193,7 @@ export default class Fasad {
         this.Children = []
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
-            const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize, material: this.material, extMaterial: this.extMaterial, sandBase: this.sandBase }) 
+            const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize, material: this.material, extMaterial: this.extMaterial }) 
             const leftEdge = i === 1 ? this.outerLeftEdge : false
             const rightEdge = i === count ? this.outerRightEdge : false
             fasad.OuterEdges = { left: leftEdge, right: rightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
@@ -332,7 +319,6 @@ export default class Fasad {
         fasad.fixWidth(this.fWidth, false)
         fasad.OuterEdges = { ...this.OuterEdges }
         fasad.Parent = parent
-        fasad.setSandBase(this.sandBase, false)
         return fasad
     }
 }

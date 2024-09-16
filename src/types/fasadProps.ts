@@ -1,11 +1,10 @@
-import { FasadMaterial, SandBase } from "./enums"
+import { FasadMaterial } from "./enums"
 
 export type FasadProps = {
     width?: number
     height?: number
     material?: FasadMaterial
     extMaterial?: string
-    sandBase?: SandBase
     minSize?: number
 }
 export type FasadBackup = {

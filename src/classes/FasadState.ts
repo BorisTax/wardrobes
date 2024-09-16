@@ -1,4 +1,4 @@
-import { Division, FasadMaterial, SandBase } from "../types/enums"
+import { Division, FasadMaterial } from "../types/enums"
 
 export type FasadBackImageProps = {
     top: number
@@ -20,7 +20,6 @@ export default class FasadState {
     public outerEdges: {left: boolean, right: boolean, top: boolean, bottom: boolean} = {left: true, right: true, top: true, bottom: true}
     public material: FasadMaterial = FasadMaterial.EMPTY
     public extMaterial = ''
-    public sandBase: SandBase = SandBase.MIRROR
     public division: Division = Division.HEIGHT
     public children: FasadState[] = []
     public backImageProps: FasadBackImageProps = getInitialBackImageProps()

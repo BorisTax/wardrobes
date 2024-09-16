@@ -1,6 +1,6 @@
 import { MouseEvent, ReactElement, WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import Fasad from "../../classes/Fasad";
-import { Division, FasadMaterial, SandBase } from "../../types/enums";
+import { Division, FasadMaterial } from "../../types/enums";
 import FixedHeight from "./FixedHeight";
 import FixedWidth from "./FixedWidth";
 import FixedBoth from "./FixedBoth";
@@ -61,7 +61,6 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             backgroundPosition: `top ${top}px left ${left}px`,
             backgroundSize: typeof size === "number" ? `${size}%` : size,
             backgroundRepeat: repeat ? "repeat" : "no-repeat",
-            mixBlendMode: (fasad.Material === FasadMaterial.SAND && fasad.SandBase === SandBase.SAND) ? "difference" : "normal"
         }
         events = { 
             onClick: (e: MouseEvent) => { 

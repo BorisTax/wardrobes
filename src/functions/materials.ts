@@ -1,4 +1,4 @@
-import { MAT_PURPOSE, Division, FasadMaterial, MaterialGroup, SandBase } from "../types/enums";
+import { MAT_PURPOSE, Division, FasadMaterial, MaterialGroup } from "../types/enums";
 import { ExtMaterial, Profile, ProfileType } from "../types/materials";
 
 export const colors = {
@@ -33,15 +33,6 @@ Materials.set(FasadMaterial.LACOBEL, "ЛАКОБЕЛЬ")
 Materials.set(FasadMaterial.LACOBELGLASS, "ЛАКОБЕЛЬ(СТЕКЛО)")
 Materials.set(FasadMaterial.FMP, "ФМП")
 Materials.set(FasadMaterial.SAND, "ПЕСКОСТРУЙ")
-
-export const SandBases: Map<string, string> = new Map()
-SandBases.set( SandBase.MIRROR, "ЗЕРКАЛО")
-SandBases.set(SandBase.SAND, "ПЕСКОСТРУЙ")
-
-export const SandBasesCaptions: Map<string, string> = new Map()
-SandBasesCaptions.set(SandBase.MIRROR, "ОЗ")
-SandBasesCaptions.set(SandBase.SAND, "ОП")
-
 
 export const Profiles: Map<string, string> = new Map()
 Profiles.set(ProfileType.STANDART, "СТАНДАРТ")

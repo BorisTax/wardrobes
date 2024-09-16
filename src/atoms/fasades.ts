@@ -1,6 +1,6 @@
 import { atom } from 'jotai'
 import Fasad from '../classes/Fasad'
-import { FasadMaterial, SandBase } from '../types/enums'
+import { FasadMaterial } from '../types/enums'
 import { getRootFasad, isFasadExist, trySetHeight, trySetWidth } from '../functions/fasades'
 import { getProfileDirection } from '../functions/materials'
 import { materialListAtom } from './materials/materials'
@@ -109,13 +109,6 @@ export const setMaterialAtom = atom(null, (get, set, material: FasadMaterial, us
     set(appDataAtom, { ...appData }, useHistory as boolean)
 })
 
-export const setSandBaseAtom = atom(null, (get, set, sandBase: SandBase) => {
-    const activeFasad = get(activeFasadAtom)
-    if (!activeFasad) return
-    const appData = get(appDataAtom)
-    activeFasad.setSandBase(sandBase)
-    set(appDataAtom, { ...appData }, true)
-})
 
 export const setProfileDirectionAtom = atom(null, (get, set, direction: string) => {
     const activeFasad = get(activeFasadAtom)

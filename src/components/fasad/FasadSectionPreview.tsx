@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import Fasad from "../../classes/Fasad";
-import { Division, FasadMaterial, SandBase } from "../../types/enums";
+import { Division, FasadMaterial } from "../../types/enums";
 import { useImageUrl } from "../../atoms/materials/materials";
 import { FasadBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";
@@ -47,7 +47,6 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
             backgroundPosition: `top ${top}px left ${left}px`,
             backgroundSize: typeof size === "number" ? `${size}%` : size,
             backgroundRepeat: repeat ? "repeat" : "no-repeat",
-            mixBlendMode: (fasad.Material === FasadMaterial.SAND && fasad.SandBase === SandBase.SAND) ? "difference" : "normal"
         }
         classes = "fasad-section-preview"
     }else{

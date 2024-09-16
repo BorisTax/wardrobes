@@ -1,8 +1,8 @@
 import { ReactElement, useEffect, useRef, useState } from "react";
 import Hammer from "hammerjs"
 import Fasad from "../../classes/Fasad";
-import { Division, FasadMaterial } from "../../types/enums";
-import { Materials, SandBasesCaptions } from "../../functions/materials";
+import { Division } from "../../types/enums";
+import { Materials } from "../../functions/materials";
 import useDoubleClick from "../../custom-hooks/useDoubleClick";
 type FasadSectionProps = {
     fasad: Fasad
@@ -60,7 +60,7 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
         padding: "0px",
     }
     const caption = <div ref={captionRef} style={captionStyle}>
-        {`${Materials.get(fasad.Material)} ${fasad.ExtMaterial} ${fasad.Material === FasadMaterial.SAND ? SandBasesCaptions.get(fasad.SandBase) : ""} (${Math.floor(fasad.cutHeight)}x${Math.floor(fasad.cutWidth)})`}
+        {`${Materials.get(fasad.Material)} ${fasad.ExtMaterial} (${Math.floor(fasad.cutHeight)}x${Math.floor(fasad.cutWidth)})`}
     </div>
     const contents = !lastFasad ? fasad.Children.map((f: Fasad, i: number) => <FasadSchemaSection key={i} fasad={f} />) : caption
     const [, setHammer] = useState<HammerManager | null>(null)

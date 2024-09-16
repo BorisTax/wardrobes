@@ -27,7 +27,6 @@ export default function SchemaDialog() {
     const mirrorColors = [...combineColors(rootFasades, FasadMaterial.MIRROR)].join(", ")
     const lacobelColors = [...combineColors(rootFasades, FasadMaterial.LACOBEL), ...combineColors(rootFasades, FasadMaterial.LACOBELGLASS)].join(", ")
     const sandColors = [...combineColors(rootFasades, FasadMaterial.SAND)].join(", ")
-    const sandBases = [...combineColors(rootFasades, FasadMaterial.SAND, true)].join(", ")
     const FMPColors = [...combineColors(rootFasades, FasadMaterial.FMP)].join(", ")
     const viewStyle = { display: "grid", gridTemplateColumns: new Array(fasadCount).fill("1fr").join(' '), gap: "10px" }
     const fasades = rootFasades.map((r, index) => <FasadSchemaSection key={index} fasad={r} />)
@@ -95,7 +94,7 @@ export default function SchemaDialog() {
                             <div>{`5. Фасад (кол-во):`}<span className='schema-table-data'>{fasadCount}</span></div>
                             <div className='schema-table-row'>{`1. Цвет профиля:`}<span className='schema-table-data'>{profile.name}</span></div>
                             <div className='schema-table-row'>{`2. Цвет зеркала:`}<span className='schema-table-data'>{mirrorColors}</span></div>
-                            <div className='schema-table-row'>{`3. Основа:`}<span className='schema-table-data'>{sandBases}</span></div>
+                            <div className='schema-table-row'>{`3. Основа:`}<span className='schema-table-data'>{""}</span></div>
                             <div className='schema-table-row'>{`4. Рисунок:`}<span className='schema-table-data'>{sandColors}</span></div>
                             <div className='schema-table-row'>{`5. ДСП:`}<span className='schema-table-data'>{DSPColors}</span></div>
                             <div className='schema-table-row'>{`6. Лакобель:`}<span className='schema-table-data'>{lacobelColors}</span></div>

@@ -197,15 +197,32 @@ async function calcRitrama(fasad: Fasad): Promise<FullData[]> {
 }
 
 async function calcArmirovka(fasad: Fasad, tolerance = 5): Promise<FullData[]> {
+    function getTapes(width: number, tolerance: number): { tape400: number, tape200: number } {
+        let tape400 = 0
+        let tape200 = 0
+        let min = width * 2
+        let sum = 100
+        for (let t400 = 0; t400 * 400 <= width + 400; t400++) {
+            for (let t200 = 0; t200 * 200 <= width + 200; t200++) {
+                let m = t400 * 400 + t200 * 200 - width + tolerance
+                if (m >= 0 && m <= min) {
+                    if (Math.abs(m - min) < 0.001) {
+                        if (t400 + t200 > sum) continue
+                    }
+                    min = m
+                    tape400 = t400
+                    tape200 = t200
+                    sum = tape400 + tape200
+                }
+            }
+        }
+        return { tape400, tape200 }
+    }
     const dims = await calcDimensions(fasad, [FasadMaterial.FMP, FasadMaterial.LACOBELGLASS, FasadMaterial.MIRROR, FasadMaterial.SAND])
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Полоса 400мм", "Полоса 200мм", "", "Площадь"]]
     let total = 0
     for (let d of dims) {
-        let f = Math.floor(d.width / 400);
-        const tape400 = f + (d.width - f) * 400 > 205 ? 1 : 0;
-        f = d.width - tape400 * 400;
-        f = Math.ceil(f / 200) * 200 < tolerance ? 0 : Math.ceil((f - tolerance) / 200);
-        const tape200 = f < 0 ? 0 : f;
+        const { tape200, tape400 } = getTapes(d.width, tolerance)
         let area = (d.height + 100) * (tape400 * 400 + tape200 * 200) / 1000000;
         total += area
         verbose.push([d.height, d.width, `${tape400}шт`, `${tape200}шт`, `(${d.height}+100) x (400x${tape400}+200x${tape200})`, area.toFixed(3)])
@@ -213,6 +230,8 @@ async function calcArmirovka(fasad: Fasad, tolerance = 5): Promise<FullData[]> {
     verbose.push(["", "", "", "", `Итого:`, total.toFixed(3)])
     return [{ data: { amount: total }, verbose: total > 0 ? verbose : undefined }]
 }
+
+
 async function calcFMPPaper(fasad: Fasad, widthLimit = 700): Promise<FullData[]> {
     const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
     const coef = await getCoef(SpecificationItem.FMPPaper)

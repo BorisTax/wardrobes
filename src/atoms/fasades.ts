@@ -44,6 +44,7 @@ export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
     if (trySetHeight(newActiveFasad, height, minSize)) {
+        newActiveFasad?.fixHeight(true)
         appData.rootFasades[rootFasadIndex] = newRootFasad
         set(appDataAtom, { ...appData }, true)
     }
@@ -60,6 +61,7 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
     if (trySetWidth(newActiveFasad, width, minSize)) {
+        newActiveFasad?.fixWidth(true)
         appData.rootFasades[rootFasadIndex] = newRootFasad
         set(appDataAtom, { ...appData }, true)
     }

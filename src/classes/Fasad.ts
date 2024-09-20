@@ -16,6 +16,8 @@ export default class Fasad {
     public Children: Fasad[]
     private width = 0
     private height = 0
+    private widthRatio: number
+    private heightRatio: number
     private fWidth = false
     private fHeight = false
     public Parent: Fasad | null = null
@@ -24,6 +26,8 @@ export default class Fasad {
     constructor(props: FasadProps = {}) {
         this.width = props?.width || 0
         this.height = props?.height || 0
+        this.widthRatio = 1
+        this.heightRatio = 1
         this.material = props?.material || FasadMaterial.DSP
         this.extMaterial = props?.extMaterial || ""
         this.Children = []
@@ -38,6 +42,8 @@ export default class Fasad {
         state.division = this.division
         state.width = this.width
         state.height = this.height
+        state.widthRatio = this.widthRatio
+        state.heightRatio = this.heightRatio
         state.fixedWidth = this.fWidth
         state.fixedHeight = this.fHeight
         state.material = this.material
@@ -53,6 +59,8 @@ export default class Fasad {
         this.active = state.active
         this.width = state.width
         this.height = state.height
+        this.widthRatio = state.widthRatio
+        this.heightRatio = state.heightRatio
         this.fWidth = state.fixedWidth
         this.fHeight = state.fixedHeight
         if (!keepOriginalMaterial) this.material = state.material
@@ -105,6 +113,18 @@ export default class Fasad {
     }
     public set Height(value: number) {
         this.height = value
+    }
+    public get WidthRatio() {
+        return this.widthRatio
+    }
+    public set WidthRatio(value: number) {
+        this.widthRatio = value || 1
+    }
+    public get HeightRatio() {
+        return this.heightRatio
+    }
+    public set HeightRatio(value: number) {
+        this.heightRatio = value || 1
     }
     public fixWidth(value: boolean, toChildren = true) {
         this.fWidth = value
@@ -210,8 +230,8 @@ export default class Fasad {
         let totalFreeWidth = 0
         let totalFreeCount = 0
         let partFreeWidth = 0
-        let partLastWidth = 0
         let lastFreeIndex = 0
+        let totalRatio = 0
         const profile = 1
         let i = 0
         if (!useSameWidth) {
@@ -222,6 +242,7 @@ export default class Fasad {
                 if ((!c.FixedWidth()) && !(c === initiator)) {
                     totalFreeCount = totalFreeCount + 1
                     lastFreeIndex = i
+                    totalRatio += c.WidthRatio
                 }
                 if (i < this.Children.length) {
                     totalFixedWidth = totalFixedWidth + profile
@@ -229,17 +250,22 @@ export default class Fasad {
             }
             if (totalFreeCount === 0) return false
             totalFreeWidth = this.width - totalFixedWidth
-            partFreeWidth = +((totalFreeWidth / totalFreeCount).toFixed(1))
-            partLastWidth = +(totalFreeWidth - partFreeWidth * (totalFreeCount - 1)).toFixed(1)
-            if (partFreeWidth < minSize || partLastWidth < minSize) return false
+
         }
         let part = 0
         i = 0
+        let sumFreeWidth = 0
         for (const c of this.Children) {
             i = i + 1
             if (c.FixedWidth()) part = c.width
             if (c === initiator) part = newWidth
-            if (!c.FixedWidth() && !(c === initiator)) part = lastFreeIndex === i ? partLastWidth : partFreeWidth
+            if (!c.FixedWidth() && !(c === initiator)) {
+                partFreeWidth = +((totalFreeWidth * (c.WidthRatio / totalRatio)).toFixed(1))
+                let partLastWidth = +(totalFreeWidth - sumFreeWidth).toFixed(1)
+                if (partFreeWidth < minSize) return false               
+                part = lastFreeIndex === i ? partLastWidth : partFreeWidth
+                sumFreeWidth += partFreeWidth 
+            }
             if (useSameWidth) part = c.width
             c.width = part
             c.height = this.height
@@ -258,8 +284,8 @@ export default class Fasad {
         let totalFreeHeight = 0
         let totalFreeCount = 0
         let partFreeHeight = 0
-        let partLastHeight = 0
         let lastFreeIndex = 0
+        let totalRatio = 0
         const profile = 1
         let i = 0
         if (!useSameHeight) {
@@ -270,6 +296,7 @@ export default class Fasad {
                 if ((!c.FixedHeight()) && !(c === initiator)) {
                     totalFreeCount = totalFreeCount + 1
                     lastFreeIndex = i
+                    totalRatio += c.HeightRatio
                 }
                 if (i < this.Children.length) {
                     totalFixedHeight = totalFixedHeight + profile
@@ -277,17 +304,22 @@ export default class Fasad {
             }
             if (totalFreeCount === 0) return false
             totalFreeHeight = this.height - totalFixedHeight
-            partFreeHeight = +((totalFreeHeight / totalFreeCount).toFixed(1))
-            partLastHeight = +(totalFreeHeight - partFreeHeight * (totalFreeCount - 1)).toFixed(1)
-            if (partFreeHeight < minSize || partLastHeight < minSize) return false
+
         }
         let part = 0
         i = 0
+        let sumFreeHeight = 0
         for (const c of this.Children) {
             i = i + 1
             if (c.FixedHeight()) part = c.height
             if (c === initiator) part = newHeight
-            if (!c.FixedHeight() && !(c === initiator)) part = lastFreeIndex === i ? partLastHeight : partFreeHeight
+            if (!c.FixedHeight() && !(c === initiator)) {
+                partFreeHeight = +((totalFreeHeight * (c.HeightRatio / totalRatio)).toFixed(1))
+                if (partFreeHeight < minSize) return false
+                let partLastHeight = +(totalFreeHeight - sumFreeHeight).toFixed(1)
+                part = lastFreeIndex === i ? partLastHeight : partFreeHeight
+                sumFreeHeight += partFreeHeight
+            }
             if (useSameHeight) part = c.height
             c.height = part
             c.width = this.width
@@ -315,6 +347,8 @@ export default class Fasad {
         fasad.setMaterial(this.material, false)
         fasad.Height = this.height
         fasad.Width = this.width
+        fasad.WidthRatio = this.WidthRatio
+        fasad.HeightRatio = this.HeightRatio
         fasad.fixHeight(this.fHeight, false)
         fasad.fixWidth(this.fWidth, false)
         fasad.OuterEdges = { ...this.OuterEdges }

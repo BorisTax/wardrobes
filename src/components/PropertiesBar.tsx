@@ -18,6 +18,7 @@ import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { RESOURCE } from "../types/user"
 import { useNavigate } from "react-router-dom"
+import { getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
 const sectionsTemplate = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 const directions: Map<string, string> = new Map()
 export default function PropertiesBar() {
@@ -44,6 +45,8 @@ export default function PropertiesBar() {
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
     const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
     const extMaterialsName = useMemo(() => (materialList.filter(mat => mat.material === material) || [{ name: "", material: "" }]).map((m: ExtMaterial) => m.name).toSorted((m1, m2) => m1 > m2 ? 1 : -1), [materialList, material])
+    const totalWidthRatio = getTotalFasadWidthRatio(fasad)
+    const totalHeightRatio = getTotalFasadHeightRatio(fasad)
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}> 
         <div className="property-bar-header">
             Параметры фасада
@@ -63,12 +66,18 @@ export default function PropertiesBar() {
         <PropertyGrid>
             <div className="text-end">Высота: </div>
             <PropertyRow>
-                <TextBox value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minSize} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
+                <TextBox value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
+                {totalHeightRatio > 0 && !fixHeight &&
+                    <span>{`${fasad?.HeightRatio}/${totalHeightRatio}`}</span>
+                }
                 <ToggleButton pressed={fixHeight} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать высоту" visible={!disabledFixHeight} onClick={() => { setFixedHeight(!fixHeight) }} />
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <TextBox value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minSize} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
+                <TextBox value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
+                {totalWidthRatio > 0 && !fixWidth &&
+                    <span>{`${fasad?.WidthRatio}/${totalWidthRatio}`}</span>
+                }
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" visible={!disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
             <ComboBox title="Тип:" value={material} items={materials} disabled={!fasad} onChange={(_, value: string) => { setMaterial(value as FasadMaterial) }} />

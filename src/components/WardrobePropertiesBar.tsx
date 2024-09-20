@@ -72,13 +72,13 @@ export default function WardrobePropertiesBar() {
             <ComboBox title="Тип:" value={type} items={wardTypes} onChange={(_, value) => { 
                 setWardType([value as WARDROBE_TYPE, wardTypeChangeConfirm])
             }} />
-            <div className="text-end">Высота: </div>
-            <PropertyRow>
-                <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1800} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} />
-            </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <TextBox name="width" value={wardWidth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={4000} setValue={(value) => { setWardWidth([+value, wardWidthConfirm]) }} />
+                <TextBox name="width" value={wardWidth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={4000} setValue={(value) => { setWardWidth([+value, wardWidthConfirm]) }} submitOnLostFocus={true} />
+            </PropertyRow>
+            <div className="text-end">Высота: </div>
+            <PropertyRow>
+                <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1800} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} submitOnLostFocus={true} />
             </PropertyRow>
             <ComboBox title="Кол-во фасадов:" value={`${fasadCount}`} items={fasades} onChange={(_, value) => { setFasadCount([+value, wardFasadCountConfirm]) }} />
             <ComboBox title="Профиль:" value={profile?.name || ""} items={profileNames} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />

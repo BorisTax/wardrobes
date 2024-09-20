@@ -43,6 +43,13 @@ export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const height = activeFasad.Material === FasadMaterial.DSP ? newHeight : newHeight + 3
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
+    if (newActiveFasad && newHeight < 20) {
+        newActiveFasad.HeightRatio = newHeight
+        newActiveFasad.Parent?.DistributePartsOnHeight(null, 0, false, minSize)
+        appData.rootFasades[rootFasadIndex] = newRootFasad
+        set(appDataAtom, { ...appData }, true)
+        return
+    }
     if (trySetHeight(newActiveFasad, height, minSize)) {
         newActiveFasad?.fixHeight(true)
         appData.rootFasades[rootFasadIndex] = newRootFasad
@@ -60,6 +67,13 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
     const width = activeFasad.Material === FasadMaterial.DSP ? newWidth : newWidth + 3
     const newRootFasad = rootFasad.clone()
     const newActiveFasad = newRootFasad.getActiveFasad()
+    if (newActiveFasad && newWidth < 20) {
+        newActiveFasad.WidthRatio = newWidth
+        newActiveFasad.Parent?.DistributePartsOnWidth(null, 0, false, minSize)
+        appData.rootFasades[rootFasadIndex] = newRootFasad
+        set(appDataAtom, { ...appData }, true)
+        return
+    }
     if (trySetWidth(newActiveFasad, width, minSize)) {
         newActiveFasad?.fixWidth(true)
         appData.rootFasades[rootFasadIndex] = newRootFasad

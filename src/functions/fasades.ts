@@ -64,3 +64,21 @@ export function isFasadExist(root: Fasad, fasad: Fasad): boolean{
     if(root === fasad) return true
     return root.Children.some(c => isFasadExist(c, fasad))
 }
+
+export function getTotalFasadWidthRatio(fasad: Fasad | null): number {
+    let total = 0
+    if (!fasad || !fasad.Parent || fasad.Parent.Division===Division.HEIGHT) return total
+    for (let c of fasad.Parent.Children) {
+        if (!c.FixedWidth()) total += c.WidthRatio
+    }
+    return total
+}
+
+export function getTotalFasadHeightRatio(fasad: Fasad | null): number {
+    let total = 0
+    if (!fasad || !fasad.Parent || fasad.Parent.Division === Division.WIDTH) return total
+    for (let c of fasad.Parent.Children) {
+        if (!c.FixedHeight()) total += c.HeightRatio
+    }
+    return total
+}

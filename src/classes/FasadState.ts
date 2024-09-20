@@ -15,6 +15,8 @@ export default class FasadState {
     public level = 0
     public width = 0
     public height = 0
+    public widthRatio: number = 1
+    public heightRatio: number = 1
     public fixedWidth = false
     public fixedHeight = false
     public outerEdges: {left: boolean, right: boolean, top: boolean, bottom: boolean} = {left: true, right: true, top: true, bottom: true}

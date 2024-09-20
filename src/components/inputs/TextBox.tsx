@@ -9,6 +9,7 @@ export type TextBoxProps = {
     disabled?: boolean
     max?: number
     min?: number
+    submitOnLostFocus?: boolean
 }
 
 export default function TextBox(props: TextBoxProps) {
@@ -37,7 +38,7 @@ export default function TextBox(props: TextBoxProps) {
           e.stopPropagation();
         }}
         onBlur={() => {
-          submit();
+          if (props.submitOnLostFocus) submit();
         }}
       >
         <input

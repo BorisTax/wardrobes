@@ -1,6 +1,7 @@
 import { SpecificationItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData } from "../../../../types/wardrobe";
 import { getEdge2, getEdge05, getGlue, getDetailNames } from "../corpus";
+import { singleLengthThinEdge } from "../edges";
 import { getDSP } from "../functions";
 
 
@@ -9,7 +10,7 @@ export async function getStandSpecification(data: WardrobeData): Promise<Specifi
     const stand  = data.extComplect.stand
     if (stand.height === 0) return result
     const details: Detail[] = [
-        { name: DETAIL_NAME.INNER_STAND, count: 1, length: stand.height, width: data.depth - 100 },
+        { name: DETAIL_NAME.INNER_STAND, count: 1, length: stand.height, width: data.depth - 100, edge: singleLengthThinEdge() },
     ]
     const edge2 = await getEdge2(data, details)
     const edge05 = await getEdge05(data, details)

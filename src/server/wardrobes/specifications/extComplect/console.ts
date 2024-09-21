@@ -1,7 +1,8 @@
 import { SpecificationItem } from "../../../../types/specification";
-import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, CONSOLE_TYPE } from "../../../../types/wardrobe";
+import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, CONSOLE_TYPE, EDGE_TYPE } from "../../../../types/wardrobe";
 import { getEdge2, getEdge05, getGlue, getDetailNames } from "../corpus";
 import { getDSP } from "../functions";
+import { consoleRoofEdge, consoleShelfEdge, consoleStandEdge, consoleStandSideEdge, singleLengthThickDoubleWidthThinEdge } from "../edges";
 
 
 export async function getConsoleSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
@@ -10,16 +11,16 @@ export async function getConsoleSpecification(data: WardrobeData): Promise<Speci
     if (console.height === 0 || console.width === 0 || console.depth === 0) return result
     const shelfCount = console.height < 2300 ? 4 : 5
     const details: Detail[] = [
-        { name: DETAIL_NAME.CONSOLE_ROOF, count: 2, length: console.depth, width: console.width },
-        { name: DETAIL_NAME.CONSOLE_STAND, count: 1, length: console.height - 62, width: console.depth },
-        { name: DETAIL_NAME.CONSOLE_BACK_STAND, count: 1, length: console.height - 62, width: console.width - 16 },
+        { name: DETAIL_NAME.CONSOLE_ROOF, count: 2, length: console.depth, width: console.width, edge: consoleRoofEdge() },
+        { name: DETAIL_NAME.CONSOLE_STAND, count: 1, length: console.height - 62, width: console.depth, edge: consoleStandEdge() },
+        { name: DETAIL_NAME.CONSOLE_BACK_STAND, count: 1, length: console.height - 62, width: console.width - 16, edge: consoleStandSideEdge() },
     ]
     if (console.type === CONSOLE_TYPE.STANDART)
-        details.push({ name: DETAIL_NAME.CONSOLE_SHELF, count: shelfCount, length: console.depth - 20, width: console.width - 20 });
+        details.push({ name: DETAIL_NAME.CONSOLE_SHELF, count: shelfCount, length: console.depth - 20, width: console.width - 20, edge: consoleShelfEdge() });
     else {
-        details.push({ name: DETAIL_NAME.CONSOLE_SHELF, count: 2, length: console.depth - 20, width: console.width - 64 });
-        details.push({ name: DETAIL_NAME.CONSOLE_SHELF, count: 2, length: console.depth - 20, width: console.width - 89 });
-        if (console.height >= 2300) details.push({ name: DETAIL_NAME.CONSOLE_SHELF, count: 1, length: console.depth - 20, width: console.width - 96 });
+        details.push({ name: DETAIL_NAME.CONSOLE_SHELF, count: 2, length: console.depth - 20, width: console.width - 64, edge: consoleShelfEdge() });
+        details.push({ name: DETAIL_NAME.CONSOLE_SHELF, count: 2, length: console.depth - 20, width: console.width - 89, edge: consoleShelfEdge() });
+        if (console.height >= 2300) details.push({ name: DETAIL_NAME.CONSOLE_SHELF, count: 1, length: console.depth - 20, width: console.width - 96, edge: consoleShelfEdge() });
     }
     const edge2 = await getEdge2(data, details)
     const edge05 = await getEdge05(data, details)

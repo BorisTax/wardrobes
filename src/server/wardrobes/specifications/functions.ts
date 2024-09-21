@@ -12,6 +12,7 @@ import { MaterialService } from "../../services/materialService";
 import { SpecificationService } from "../../services/specificationService";
 import StandartWardrobe from "../standart";
 import { getDetailNames } from "./corpus";
+import { singleLengthThickDoubleWidthThinEdge, singleLengthThickEdge, singleLengthThinEdge } from "./edges";
 
 
 export function emptyFullData(): FullData {
@@ -145,19 +146,6 @@ export function calcFunction(func: string, { width, height }: { width: number; h
     } catch (e) {
         return 0
     }
-}
-
-export function singleLengthThickEdge(): EDGE_SIDE {
-    return { L1: EDGE_TYPE.THICK, L2: EDGE_TYPE.NONE, W1: EDGE_TYPE.NONE, W2: EDGE_TYPE.NONE }
-}
-export function singleLengthThinEdge(): EDGE_SIDE {
-    return { L1: EDGE_TYPE.THIN, L2: EDGE_TYPE.NONE, W1: EDGE_TYPE.NONE, W2: EDGE_TYPE.NONE }
-}
-export function singleLengthThickDoubleWidthThinEdge(): EDGE_SIDE {
-    return { L1: EDGE_TYPE.THICK, L2: EDGE_TYPE.NONE, W1: EDGE_TYPE.THIN, W2: EDGE_TYPE.THIN }
-}
-export function allThinEdge(): EDGE_SIDE {
-    return { L1: EDGE_TYPE.THIN, L2: EDGE_TYPE.THIN, W1: EDGE_TYPE.THIN, W2: EDGE_TYPE.THIN }
 }
 
 export function getDrill(detail: WardrobeDetailTable): DRILL_TYPE[] {

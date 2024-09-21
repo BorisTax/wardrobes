@@ -1,6 +1,7 @@
 import { SpecificationItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail } from "../../../../types/wardrobe";
 import { getDetails, getEdge2, getEdge05, getGlue, getConfirmat } from "../corpus";
+import { singleLengthThinEdge } from "../edges";
 import { getDSP } from "../functions";
 
 
@@ -10,7 +11,7 @@ export async function getShelfSpecification(data: WardrobeData): Promise<Specifi
     const shelf = details.find(d => d.name === DETAIL_NAME.SHELF)
     if (!shelf) return result
     const shelves: Detail[] = [
-        { name: DETAIL_NAME.SHELF, count: 1, length: shelf.length, width: shelf.width },
+        { name: DETAIL_NAME.SHELF, count: 1, length: shelf.length, width: shelf.width, edge: singleLengthThinEdge() },
     ]
     const edge2 = await getEdge2(data, shelves)
     const edge05 = await getEdge05(data, shelves)

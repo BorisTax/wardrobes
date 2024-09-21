@@ -1,7 +1,8 @@
 import { SpecificationItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, EDGE_TYPE, DRILL_TYPE } from "../../../../types/wardrobe";
 import { getDetails, getEdge2, getEdge05, getGlue, getConfirmat, getDetailNames } from "../corpus";
-import { getDSP, getCoef, emptyFullData, allThinEdge, singleLengthThinEdge } from "../functions";
+import { getDSP, getCoef, emptyFullData } from "../functions";
+import { allThinEdge, singleLengthThinEdge } from "../edges";
 
 
 export async function getDrawerSpecification(data: WardrobeData): Promise<SpecificationResult[]> {

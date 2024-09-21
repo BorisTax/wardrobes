@@ -1,4 +1,5 @@
-import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getEdge, getEdgeByDSP, getEdgeDescripton, getEdgeLength, getFasadCount, getMinifixByDetail, getZagByDSP, singleLengthThickDoubleWidthThinEdge, singleLengthThickEdge, singleLengthThinEdge } from "./functions"
+import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getEdge, getEdgeByDSP, getEdgeDescripton, getEdgeLength, getFasadCount, getMinifixByDetail, getZagByDSP } from "./functions"
+import { singleLengthThickDoubleWidthThinEdge, singleLengthThickEdge, singleLengthThinEdge } from "./edges"
 import { emptyFullData } from "./functions"
 import { SpecificationItem } from "../../../types/specification"
 import { DETAIL_NAME, DVPData, Detail, EDGE_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"

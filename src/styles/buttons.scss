@@ -87,7 +87,23 @@
   box-sizing: border-box;
   border: 1px solid black;
 }
+@mixin toggle-section-button {
+  border: 1px solid black;
+  border-radius: 2px;
+}
+.toggle-section-button-show {
+  @include toggle-section-button;
+  background-color: rgb(193, 193, 193);
+}
 
+.toggle-section-button-hidden {
+  @include toggle-section-button;
+  background-color: rgba(137, 137, 137, 0.402);
+}
+.toggle-section-button-hidden:hover {
+  @include toggle-section-button;
+  background-color: rgb(132, 132, 132);
+}
 @mixin fixed {
   width: 100%;
   height: 100%;

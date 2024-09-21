@@ -10,7 +10,6 @@ import { StatusCodes } from "http-status-codes";
 import { hasPermission } from "./users.js";
 import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { accessDenied } from "../functions/database.js";
-import { calcFunction } from "../wardrobes/specifications/functions.js";
 import { getDetails } from "../wardrobes/specifications/corpus.js";
 
 const router = express.Router();
@@ -95,7 +94,7 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
       extComplect: {
         telescope: 0,
         blinder: 0,
-        console: { count: 0, height: 2100, depth: 600, width: 200, type: CONSOLE_TYPE.STANDART },
+        console: { count: 0, height: 2400, depth: 600, width: 300, type: CONSOLE_TYPE.STANDART },
         shelf: 0,
         shelfPlat: 0,
         stand: { count: 0, height: 0, },

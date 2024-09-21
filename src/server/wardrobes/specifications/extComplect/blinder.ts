@@ -1,6 +1,7 @@
 import { SpecificationItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData } from "../../../../types/wardrobe";
 import { getEdge2, getEdge05, getGlue, getDetailNames } from "../corpus";
+import { singleLengthThickDoubleWidthThinEdge } from "../edges";
 import { getDSP } from "../functions";
 
 
@@ -9,7 +10,7 @@ export async function getBlinderSpecification(data: WardrobeData): Promise<Speci
     const blinder  = data.extComplect.blinder
     const count = data.width < 2750 ? 1 : 2
     const details: Detail[] = [
-        { name: DETAIL_NAME.BLINDER, count, length: Math.round(data.width / count), width: 284 },
+        { name: DETAIL_NAME.BLINDER, count, length: Math.round(data.width / count), width: 284, edge: singleLengthThickDoubleWidthThinEdge() },
     ]
     const edge2 = await getEdge2(data, details)
     const edge05 = await getEdge05(data, details)

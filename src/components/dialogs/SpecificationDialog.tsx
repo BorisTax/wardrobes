@@ -7,11 +7,13 @@ import ImageButton from "../inputs/ImageButton"
 import { saveToExcelAtom } from "../../atoms/export"
 import DialogWindow from "./DialogWindow"
 import SpecificationTable from "../SpecificationTable"
+import { activeRootFasadIndexAtom } from "../../atoms/fasades"
 
 export default function SpecificationDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const saveToExcel = useSetAtom(saveToExcelAtom)
     const specifications = useAtomValue(specificationCombiAtom)
+    const activeRootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
     const [fasadIndex, setFasadIndex] = useState(0)
     const [, setSpecificationDialogRef] = useAtom(specificationDialogAtom)
     const specification = specifications[fasadIndex]
@@ -20,6 +22,9 @@ export default function SpecificationDialog() {
     useEffect(() => {
         setSpecificationDialogRef(dialogRef)
     }, [setSpecificationDialogRef, dialogRef])
+    useEffect(() => {
+        setFasadIndex(activeRootFasadIndex)
+    }, [activeRootFasadIndex])
     return <DialogWindow dialogRef={dialogRef} menuButtons={
         <ImageButton icon="excel" title="Сохранить в Excel" caption="Сохранить в Excel" onClick={() => saveToExcel(specification, `Фасад (${fasadIndex + 1} из ${specifications.length})`)} />
     }>

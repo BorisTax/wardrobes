@@ -11,7 +11,7 @@ import TextBox from "./inputs/TextBox"
 import { ConsoleTypes, WardKinds, WardTypes } from "../functions/wardrobe"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import WardrobeSpecification from "./WardrobeSpecification"
-import { getDetailsAtom, getInitExtComplect, initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
+import { getInitExtComplect, initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
 import { RESOURCE } from "../types/user"
 import { userAtom } from "../atoms/users"
 import CheckBox from "./inputs/CheckBox"
@@ -31,8 +31,8 @@ export default function WardrobeCalculator() {
     const setData = useSetAtom(setWardrobeDataAtom)
     const materialList = useAtomValue(materialListAtom)
     const [showExt, setShowExt] = useState(false)
-    const dspList = useMemo(() => materialList.filter(m => m.purpose !== MAT_PURPOSE.FASAD).map(m => m.name), [materialList])
-    const dsp10List = useMemo(() => materialList.filter(m => m.material === FasadMaterial.DSP && m.purpose !== MAT_PURPOSE.CORPUS).map(m => m.name), [materialList])
+    const dspList = useMemo(() => materialList.filter(m => m.purpose !== MAT_PURPOSE.FASAD).map(m => m.name).toSorted((m1, m2) => m1 > m2 ? 1 : -1), [materialList])
+    const dsp10List = useMemo(() => materialList.filter(m => m.material === FasadMaterial.DSP && m.purpose !== MAT_PURPOSE.CORPUS).map(m => m.name).toSorted((m1, m2) => m1 > m2 ? 1 : -1), [materialList])
     const mirrorList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.MIRROR).map(m => m.name), [materialList])
     const fmpList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.FMP).map(m => m.name), [materialList])
     const sandList = useMemo(() => materialList.filter(m => m.material === FasadMaterial.SAND).map(m => m.name), [materialList])
@@ -49,6 +49,11 @@ export default function WardrobeCalculator() {
     useEffect(() => {
         if (standSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: extStand.length } } }))
     }, [extStand.length, standSameHeight])
+    useEffect(() => {
+        const newHeight = consoleSameHeight? height: extComplect.console.height
+        const newDepth = consoleSameDepth? depth: extComplect.console.depth
+        setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: newHeight, depth: newDepth } } }))
+    }, [depth, height])
     return <div className="container">
         <div className="row">
             <div className={`container col-xs-12 col-sm-12 ${perm?.Read ? "col-md-6 col-lg-4" : "col-md-12 col-lg-12"}`}>
@@ -67,7 +72,7 @@ export default function WardrobeCalculator() {
                             <div className="text-end">Ширина: </div>
                             <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={800} max={5400} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} submitOnLostFocus={true}/>
                             <div className="text-end">Глубина: </div>
-                            <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={400} max={1000} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }}  submitOnLostFocus={true}/>
+                            <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={350} max={1000} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }}  submitOnLostFocus={true}/>
                             <div className="text-end">Высота: </div>
                             <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1700} max={2700} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }}  submitOnLostFocus={true}/>
                             <ComboBox title="Цвет ДСП:" value={dspName} items={dspList} onChange={(_, value: string) => { setData(prev => ({ ...prev, dspName: value })) }} />

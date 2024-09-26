@@ -1,6 +1,6 @@
 import { atom } from 'jotai'
 import Fasad from '../classes/Fasad'
-import { FasadMaterial } from '../types/enums'
+import { Division, FasadMaterial } from '../types/enums'
 import { getRootFasad, isFasadExist, trySetHeight, trySetWidth } from '../functions/fasades'
 import { getProfileDirection } from '../functions/materials'
 import { materialListAtom } from './materials/materials'
@@ -92,18 +92,26 @@ export const divideFasadAtom = atom(null, (get, set, count: number) => {
 
 export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {
     const activeFasad = get(activeFasadAtom)
+    const { minSize } = get(settingsAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
-    //if (fixed && (activeFasad.Parent?.Division === Division.WIDTH)) activeFasad.Parent.fixHeight(fixed);
     activeFasad.fixHeight(fixed)
+    if (!fixed)
+        if (activeFasad.Parent?.Division === Division.WIDTH) 
+                activeFasad.Parent.DistributePartsOnWidth(null, 0, false, minSize);
+            else activeFasad.Parent?.DistributePartsOnHeight(null, 0, false, minSize);
     set(appDataAtom, { ...appData }, true)
 })
 export const setFixedWidthAtom = atom(null, (get, set, fixed: boolean) => {
     const activeFasad = get(activeFasadAtom)
+    const { minSize } = get(settingsAtom)
     if (!activeFasad) return
     const appData = get(appDataAtom)
-    //if (fixed && (activeFasad.Parent?.Division === Division.HEIGHT)) activeFasad.Parent.fixWidth(fixed);
     activeFasad.fixWidth(fixed)
+    if (!fixed)
+        if (activeFasad.Parent?.Division === Division.WIDTH) 
+                activeFasad.Parent.DistributePartsOnWidth(null, 0, false, minSize);
+            else activeFasad.Parent?.DistributePartsOnHeight(null, 0, false, minSize);
     set(appDataAtom, { ...appData }, true)
 })
 

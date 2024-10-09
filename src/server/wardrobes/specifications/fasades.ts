@@ -391,7 +391,7 @@ async function calcUplotnitelSoed(fasad: Fasad, profileType: ProfileType): Promi
     const result = sum * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
     verbose.push(["", "", "", `${sum.toFixed(3)}`, coefString])
-    return [{ data: { amount: result, char: { code, caption: name as string } }, verbose: result > 0 ? verbose : undefined }]
+    return [{ data: { amount: result, char: { code: "", caption: "" } }, verbose: result > 0 ? verbose : undefined }]
 }
 
 async function calcProfileSoed(fasad: Fasad, profile: Profile): Promise<FullData[]> {
@@ -423,9 +423,9 @@ async function calcProfileHor(fasad: Fasad, profile: Profile, top: boolean): Pro
 }
 
 async function calcProfileVert(fasad: Fasad, profile: Profile): Promise<FullData[]> {
-    const count = (fasad.Height > 2293) ? 2 : 1
+    const count = (fasad.Height > 2300) ? 2 : 1
     const verbose = [['Высота фасада', '', '']]
-    verbose.push([`${fasad.Height}`, `${count === 1 ? "меньше-равно" : "больше"} 2293 - ${count}шт`])
+    verbose.push([`${fasad.Height}`, `${count === 1 ? "меньше-равно" : "больше"} 2300 - ${count}шт`])
     return [{ data: { amount: count, char: { code: profile.code, caption: profile.name } }, verbose: count > 0 ? verbose : undefined }]
 }
 async function calcStreich(fasad: Fasad): Promise<FullData[]>  {

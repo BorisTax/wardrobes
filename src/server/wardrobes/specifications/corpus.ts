@@ -1,5 +1,4 @@
 import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getEdge, getEdgeByDSP, getEdgeDescripton, getEdgeLength, getFasadCount, getMinifixByDetail, getZagByDSP } from "./functions"
-import { singleLengthThickDoubleWidthThinEdge, singleLengthThickEdge, singleLengthThinEdge } from "./edges"
 import { emptyFullData } from "./functions"
 import { SpecificationItem } from "../../../types/specification"
 import { DETAIL_NAME, DVPData, Detail, EDGE_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"
@@ -130,17 +129,16 @@ async function getDVPData(width: number, height: number, depth: number): Promise
     const dvpRealLength = roof - 3;
     const service = new SpecificationService(specServiceProvider);
     const data = (await service.getDVPTemplates()).data || [{ width: 0, length: 0 }];
-    const { width: dvpWidth, length: dvpLength } = data.filter(d => d.width >= dvpRealWidth && d.length >= dvpRealLength).sort((i1, i2) => ((i1.width - dvpRealWidth) + (i1.length - dvpRealLength)) < ((i2.width - dvpRealWidth) + (i2.length - dvpRealLength)) ? -1 : 1)[0]
+    const dvpData = data.filter(d => d.width >= dvpRealWidth && d.length >= dvpRealLength).sort((i1, i2) => ((i1.width - dvpRealWidth) + (i1.length - dvpRealLength)) < ((i2.width - dvpRealWidth) + (i2.length - dvpRealLength)) ? -1 : 1)[0]
+    const { width: dvpWidth, length: dvpLength } = dvpData ? dvpData : { width: dvpRealWidth, length: dvpRealLength }
     const dvpPlanka = roof - 32;
     const dvpPlankaCount = section === 1 ? (dvpCount - 1) : (dvpCount / 2 - 1) * 2;
     return { dvpWidth, dvpLength, dvpRealWidth, dvpRealLength, dvpCount, dvpPlanka, dvpPlankaCount };
 }
 
 async function getKarton(data: WardrobeData): Promise<FullData> {
-    const { width, height, depth } = data;
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(data.wardKind, SpecificationItem.Karton, data.width, data.height, data.depth)
-    //const caption = await getWardrobeKind(data.wardKind);
     const coef = await getCoef(SpecificationItem.Karton) || 1;
     const verbose = [["Ширина шкафа", "Высота шкафа", "Глубина шкафа", "Кол-во"]];
     const result = item?.count || 0
@@ -152,7 +150,6 @@ async function getLegs(data: WardrobeData): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(data.wardKind, SpecificationItem.Leg, data.width, data.height, data.depth)
-    //const caption = await getWardrobeKind(data.wardKind);
     const result = item?.count || 0
     const verbose = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), `${result}`]);
@@ -209,7 +206,6 @@ export async function getNails(data: WardrobeData): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(data.wardKind, SpecificationItem.Nails, data.width, data.height, data.depth)
-    //const caption = await getWardrobeKind(wardKind);
     const result = item?.count || 0
     const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), `${result}`]);
@@ -221,7 +217,6 @@ export async function getSamorez16(data: WardrobeData): Promise<FullData> {
     const { wardKind, width, height, depth } = data;
     const service = new SpecificationService(specServiceProvider, materialServiceProvider);
     const item = await service.getFurniture(wardKind, SpecificationItem.Samorez16, width, height, depth);
-    //const caption = await getWardrobeKind(wardKind);
     const current = item?.count || 0
     const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minwidth || 0, item?.maxwidth || 0), `${current}`]);

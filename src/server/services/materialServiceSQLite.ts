@@ -1,4 +1,4 @@
-import { FasadMaterial, Profile } from '../../types/materials.js';
+import { FasadMaterial, OmitId, Profile } from '../../types/materials.js';
 import { ExtMaterialQuery, Result } from '../../types/server.js';
 import { IMaterialService } from '../../types/services.js';
 import { dataBaseQuery, dataBaseTransaction } from '../functions/database.js';
@@ -19,7 +19,7 @@ export default class MaterialServiceSQLite implements IMaterialService {
         return dataBaseQuery(this.dbFile, getQuery({ type, name, code }), [], {successStatusCode: StatusCodes.OK})
     }
 
-    async addExtMaterial({ name, type, image, code, purpose }: Omit<FasadMaterial, "id">): Promise<Result<null>> {
+    async addExtMaterial({ name, type, image, code, purpose }: OmitId<FasadMaterial>): Promise<Result<null>> {
         const query = `insert into ${MATERIALS} (name, type, code, purpose, image) values(?, ?, ?, ?, ?);`
         return dataBaseQuery(this.dbFile, query, [name, type, code, purpose, image], { successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED })
     }
@@ -41,7 +41,7 @@ export default class MaterialServiceSQLite implements IMaterialService {
     async getProfiles(): Promise<Result<Profile[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${PROFILE_COLORS};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addProfile({ name, code, type, brushId }: Omit<Profile,"id">): Promise<Result<null>> {
+    async addProfile({ name, code, type, brushId }: OmitId<Profile>): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into ${PROFILE_COLORS} (name, type, code, brushId) values(?, ?, ?, ?);`, [name, type, code, brushId], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteProfile(id: number): Promise<Result<null>> {
@@ -108,7 +108,7 @@ function getProfileQuery({ id, code, name, type, brushId }: Profile) {
         params.push(type)
     }
     if (brushId) {
-        parts.push(`brush=?`)
+        parts.push(`brushId=?`)
         params.push(brushId)
     }
     params.push(id)

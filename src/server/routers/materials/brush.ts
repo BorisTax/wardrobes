@@ -1,5 +1,5 @@
 import messages from '../../messages.js'
-import { Brush } from '../../../types/materials.js';
+import { Brush, OmitId } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import BrushServiceSQLite from '../../services/extServices/brushServiceSQLite.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
@@ -11,7 +11,7 @@ export async function getBrushes() {
   return await materialService.getExtData()
 }
 
-export async function addBrush({ name, code }: Omit<Brush, "id">) {
+export async function addBrush({ name, code }: OmitId<Brush>) {
   const materialService = new MaterialExtService<Brush>(new BrushServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result

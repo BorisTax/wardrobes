@@ -2,7 +2,7 @@ import messages from '../../messages.js'
 import { materialsPath } from '../../options.js';
 import EdgeServiceSQLite from '../../services/extServices/edgeServiceSQLite.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
-import { Edge, EdgeType } from '../../../types/materials.js';
+import { Edge, EdgeType, OmitId } from '../../../types/materials.js';
 import { StatusCodes } from 'http-status-codes';
 import EdgeTypeServiceSQLite from '../../services/extServices/edgeTypeServiceSQLite.js';
 
@@ -11,7 +11,7 @@ export async function getEdges() {
   return await materialService.getExtData()
 }
 
-export async function addEdge({ name, code, typeId }: Omit<Edge, "id">) {
+export async function addEdge({ name, code, typeId }: OmitId<Edge>) {
   const materialService = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result

@@ -4,6 +4,7 @@ import { dataBaseQuery } from '../functions/database.js';
 import messages from '../messages.js';
 import { Template } from '../../types/templates.js';
 import { StatusCodes } from 'http-status-codes';
+import { OmitId } from '../../types/materials.js';
 export default class TemplateServiceSQLite implements ITemplateServiceProvider {
     dbFile: string;
     constructor(dbFile: string) {
@@ -13,7 +14,7 @@ export default class TemplateServiceSQLite implements ITemplateServiceProvider {
     async getFasadTemplates(): Promise<Result<Template[]>> {
         return dataBaseQuery(this.dbFile, `select * from fasad;`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addFasadTemplate({ name, data }: Omit<Template, "id">): Promise<Result<null>>  {
+    async addFasadTemplate({ name, data }: OmitId<Template>): Promise<Result<null>>  {
         return dataBaseQuery(this.dbFile, `insert into fasad (name, data) values(?, ?);`, [name, data], {successStatusCode: StatusCodes.CREATED, successMessage: messages.TEMPLATE_ADDED})
     }
     async deleteFasadTemplate(id: number): Promise<Result<null>>  {

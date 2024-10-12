@@ -1,4 +1,4 @@
-import { EdgeType } from '../../../types/materials.js';
+import { EdgeType, OmitId } from '../../../types/materials.js';
 import { Result } from '../../../types/server.js';
 import { IMaterialExtService, IMaterialServiceProvider } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/database.js';
@@ -14,7 +14,7 @@ export default class EdgeTypeServiceSQLite implements IMaterialExtService<EdgeTy
     async getExtData(): Promise<Result<EdgeType[]>> {
         return dataBaseQuery<EdgeType[]>(this.dbFile, `select * from ${EDGE_TYPES};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ caption }: Omit<EdgeType, "id">): Promise<Result<null>> {
+    async addExtData({ caption }: OmitId<EdgeType>): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into ${EDGE_TYPES} (caption) values(?);`, [caption], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(id: number): Promise<Result<null>> {

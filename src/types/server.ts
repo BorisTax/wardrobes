@@ -32,7 +32,7 @@ export enum TableFields {
     ZAGLUSHKAID = 'zaglushkaId',
     CAPTION = 'caption',
     ID = 'id',
-    MATID = "matId",
+    DSPID = "dspId",
     COEF = 'coef',
     PRICE = 'price',
     MARKUP = 'markup',

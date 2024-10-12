@@ -1,5 +1,5 @@
 import messages from '../../messages.js'
-import { Trempel } from '../../../types/materials.js';
+import { OmitId, Trempel } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import TrempelServiceSQLite from '../../services/extServices/trempelServiceSQLite.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
@@ -10,7 +10,7 @@ export async function getTrempels() {
   return await materialService.getExtData()
 }
 
-export async function addTrempel({ name, code, caption }: Omit<Trempel, "id">) {
+export async function addTrempel({ name, code, caption }: OmitId<Trempel>) {
   const materialService = new MaterialExtService<Trempel>(new TrempelServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result

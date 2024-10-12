@@ -1,5 +1,5 @@
 import { SpecificationItem } from "./specification"
-import { FasadMaterial, Profile } from "./materials"
+import { FasadMaterial, OmitId, Profile } from "./materials"
 import { SpecificationData, Result, Token, PriceData, ExtMaterialQuery } from "./server"
 import { PERMISSIONS_SCHEMA, Resource, User } from "./user"
 import { Template } from "./templates"
@@ -33,24 +33,24 @@ interface IUserAbstractService {
 export interface IMaterialService {
     getMaterialTypes: () => Promise<Result<MaterialTypesSchema[]>>
     getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<FasadMaterial[]>>
-    addExtMaterial: ({ }: Omit<FasadMaterial, "id">) => Promise<Result<null>>
+    addExtMaterial: ({ }: OmitId<FasadMaterial>) => Promise<Result<null>>
     updateExtMaterial: ({ }: FasadMaterial) => Promise<Result<null>>
     deleteExtMaterial: (id: number) => Promise<Result<null>>
     getImage: (id: number) => Promise<Result<string>>
     getProfiles: () => Promise<Result<Profile[]>>
-    addProfile: ({ }: Omit<Profile, "id">) => Promise<Result<null>>
+    addProfile: ({ }: OmitId<Profile>) => Promise<Result<null>>
     deleteProfile: (id: number) => Promise<Result<null>>
     updateProfile: ({ }: Profile) => Promise<Result<null>>
 }
 export interface IMaterialExtService<T> {
     getExtData: () => Promise<Result<T[]>>
-    addExtData: ({ }: Omit<T, "id">) => Promise<Result<null>>
+    addExtData: ({ }: OmitId<T>) => Promise<Result<null>>
     deleteExtData: (id: number) => Promise<Result<null>>
     updateExtData: ({ }: T) => Promise<Result<null>>
 }
 interface ITemplateAbstractService {
     getFasadTemplates: () => Promise<Result<Template[]>>
-    addFasadTemplate: ({ }: Omit<Template, "id">) => Promise<Result<null>>
+    addFasadTemplate: ({ }: OmitId<Template>) => Promise<Result<null>>
     deleteFasadTemplate: (id: number) => Promise<Result<null>>
     updateFasadTemplate: ({ }: Template) => Promise<Result<null>>
 }

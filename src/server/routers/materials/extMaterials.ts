@@ -1,6 +1,6 @@
 import messages from '../../messages.js'
 import { MaterialService } from '../../services/materialService.js';
-import { FasadMaterial } from '../../../types/materials.js';
+import { FasadMaterial, OmitId } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import MaterialServiceSQLite from '../../services/materialServiceSQLite.js';
 import { StatusCodes } from 'http-status-codes';
@@ -16,7 +16,7 @@ export async function getExtMaterials({}) {
   return await materialService.getExtMaterials({})
 }
 
-export async function addExtMaterial({ name, type: material, image, code, purpose }: Omit<FasadMaterial, "id">) {
+export async function addExtMaterial({ name, type: material, image, code, purpose }: OmitId<FasadMaterial>) {
   const materialService = new MaterialService(new MaterialServiceSQLite(materialsPath))
   const result = await materialService.getExtMaterials({})
   if (!result.success) return result

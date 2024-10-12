@@ -15,7 +15,7 @@ import { RESOURCE } from "../../../types/user"
 
 export default function EditPlates() {
     const { permissions } = useAtomValue(userAtom)
-    const perm = permissions.get(RESOURCE.MATERIALS)
+    const perm = permissions.get(RESOURCE.MATERIALS_DB)
     const materialList = useAtomValue(materialListAtom)
     const materialTypes =  useAtomValue(materialTypesAtom)
 

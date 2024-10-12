@@ -40,12 +40,13 @@ export const deleteEdgeAtom = atom(null, async (get, set, id: number) => {
      }
 })
 
-export const addEdgeAtom = atom(null, async (get, set, {name, code}: OmitId<Edge>) => {
+export const addEdgeAtom = atom(null, async (get, set, {name, code, typeId}: OmitId<Edge>) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.CODE]: code,
+        [TableFields.TYPEID]: typeId,
         [TableFields.TOKEN]: token
     }
     try {

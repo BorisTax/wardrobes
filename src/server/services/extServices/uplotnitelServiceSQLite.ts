@@ -1,4 +1,4 @@
-import { Uplotnitel } from '../../../types/materials.js';
+import { OmitId, Uplotnitel } from '../../../types/materials.js';
 import { Result } from '../../../types/server.js';
 import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/database.js';
@@ -14,7 +14,7 @@ export default class UplotnitelServiceSQLite implements IMaterialExtService<Uplo
     async getExtData(): Promise<Result<Uplotnitel[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${UPLOTNITEL};`, [], { successStatusCode: StatusCodes.OK })
     }
-    async addExtData({ name, code }: Omit<Uplotnitel, "id">): Promise<Result<null>> {
+    async addExtData({ name, code }: OmitId<Uplotnitel>): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into ${UPLOTNITEL} (name, code) values(?, ?);`, [name, code], { successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED })
     }
     async deleteExtData(id: number): Promise<Result<null>> {

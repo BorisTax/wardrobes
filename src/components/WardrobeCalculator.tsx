@@ -77,7 +77,7 @@ export default function WardrobeCalculator() {
                             <div className="text-end">Высота: </div>
                             <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1700} max={2700} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }}  submitOnLostFocus={true}/>
                             <ComboBox<FasadMaterial> title="Цвет ДСП:" value={dsp} items={dspList} displayValue={value => materials.get(value?.id)?.name} onChange={(_, value) => { setData(prev => ({ ...prev, dspId: value?.id })) }} />
-                            <ComboBox<Profile> title="Цвет профиля:" value={profile} items={profileList} displayValue={value => profileNames.get(value?.id)}  onChange={(_, value) => { setData(prev => ({ ...prev, profileId: value?.id })) }} />
+                            {wardType !== WARDROBE_TYPE.GARDEROB && <ComboBox<Profile> title="Цвет профиля:" value={profile} items={profileList} displayValue={value => profileNames.get(value?.id)} onChange={(_, value) => { setData(prev => ({ ...prev, profileId: value?.id })) }} />}
                         </PropertyGrid>
                         {wardType !== WARDROBE_TYPE.GARDEROB && <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
                             <div className="text-end">Фасадов всего: </div>

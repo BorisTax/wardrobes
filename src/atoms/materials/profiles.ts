@@ -22,7 +22,7 @@ export const deleteProfileAtom = atom(null, async (get, set, profile: Profile) =
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
-        const result = await fetchData("/api/materials/profile", "DELETE", JSON.stringify({ name: profile.name, type: profile.type, token }))
+        const result = await fetchData("/api/materials/profile", "DELETE", JSON.stringify({ id: profile.id, token }))
         await set(loadProfileListAtom)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 

@@ -17,11 +17,11 @@ export const loadUplotnitelListAtom = atom(null, async (get, set) => {
     } catch (e) { console.error(e) }
 })
 
-export const deleteUplotnitelAtom = atom(null, async (get, set, uplotnitel: Uplotnitel) => {
+export const deleteUplotnitelAtom = atom(null, async (get, set, id: number) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try {
-        const result = await fetchData("/api/materials/uplotnitel", "DELETE", JSON.stringify({ name: uplotnitel.name, token }))
+        const result = await fetchData("/api/materials/uplotnitel", "DELETE", JSON.stringify({ id, token }))
         await set(loadUplotnitelListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
@@ -48,12 +48,12 @@ export const addUplotnitelAtom = atom(null, async (get, set, { name, code }: Omi
     }
 })
 
-export const updateUplotnitelAtom = atom(null, async (get, set, { name, caption, code }) => {
+export const updateUplotnitelAtom = atom(null, async (get, set, {id, name, code }) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
+        [TableFields.ID]: id,
         [TableFields.NAME]: name,
-        [TableFields.CAPTION]: caption,
         [TableFields.CODE]: code,
         [TableFields.TOKEN]: token
     }

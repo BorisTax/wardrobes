@@ -1,3 +1,4 @@
+import { OmitId } from "../../types/materials"
 import { IMaterialExtService } from "../../types/services"
 
 export class MaterialExtService<T> {
@@ -8,7 +9,7 @@ export class MaterialExtService<T> {
     async getExtData() {
         return await this.provider.getExtData()
     }
-    async addExtData(data: Omit<T, "id">) {
+    async addExtData(data: OmitId<T>) {
         return await this.provider.addExtData(data)
     }
     async deleteExtData(id: number) {

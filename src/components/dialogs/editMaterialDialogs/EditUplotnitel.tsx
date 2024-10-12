@@ -16,7 +16,7 @@ export default function EditUplotnitel() {
     const noSortedList = useAtomValue(uplotnitelListAtom)
     const list = useMemo(() => noSortedList.toSorted((i1, i2) => i1.name > i2.name ? 1 : -1), [noSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name, code } = list[selectedIndex] || { name: "", code: "" }
+    const { id, name, code } = list[selectedIndex] 
     const deleteUplotnitel = useSetAtom(deleteUplotnitelAtom)
     const addUplotnitel = useSetAtom(addUplotnitelAtom)
     const updateUplotnitel = useSetAtom(updateUplotnitelAtom)
@@ -33,19 +33,19 @@ export default function EditUplotnitel() {
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
         {(perm?.Read) ? <EditDataSection name={name} items={editItems}
             onUpdate={perm?.Update ? async (checked, values) => {
-                const usedCode = checked[0] ? values[1] : ""
-                const usedCaption = checked[1] ? values[2] : ""
-                const result = await updateUplotnitel({ name, code: usedCode, caption: usedCaption })
+                const name = values[0]
+                const code = values[1]
+                const result = await updateUplotnitel({ id, name, code })
                 return result
             } : undefined}
             onDelete={perm?.Delete ? async () => {
-                const result = await deleteUplotnitel(list[selectedIndex])
+                const result = await deleteUplotnitel(id)
                 setSelectedIndex(0)
                 return result
             } : undefined}
             onAdd={async (checked, values) => {
-                const code = values[0] as string
-                if (list.find((p: Uplotnitel) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
+                const name = values[0] as string
+                const code = values[1] as string
                 const result = await addUplotnitel({ name, code })
                 return result
             }} /> : <div></div>}

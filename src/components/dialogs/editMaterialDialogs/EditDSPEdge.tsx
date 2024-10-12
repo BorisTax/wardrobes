@@ -1,10 +1,8 @@
 import { useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { DSP_EDGE_ZAGL, FasadMaterial } from "../../../types/materials"
 import { edgeListAtom } from "../../../atoms/materials/edges"
 import messages from "../../../server/messages"
 import { materialListAtom } from "../../../atoms/materials/materials"
-import { FASAD_TYPE } from "../../../types/enums"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import TableData from "../../TableData"
 import { InputType } from "../../../types/property"
@@ -13,55 +11,54 @@ import { userAtom } from "../../../atoms/users"
 import { RESOURCE } from "../../../types/user"
 import { addDspEdgeAtom, deleteDspEdgeAtom, dspEdgeListAtom, updateDspEdgeAtom } from "../../../atoms/materials/dsp_edge"
 import { zaglushkaListAtom } from "../../../atoms/materials/zaglushka"
+import { useMapValue } from "../../../custom-hooks/useMaterialMap"
+import { FASAD_TYPE } from "../../../types/enums"
 
 export default function EditDSPEdge() {
     const { permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.MATERIALS)
-    const edgeNotSortedList = useAtomValue(edgeListAtom)
-    const zagNotSortedList = useAtomValue(zaglushkaListAtom)
-    const dspEdgeNotSortedList = useAtomValue(dspEdgeListAtom)
-    const materialList = useAtomValue(materialListAtom)
-    const dspList = useMemo(() => materialList.filter(mat => mat.type === FASAD_TYPE.DSP), [materialList])
-    const dspEdgeList = useMemo(() => dspEdgeNotSortedList.map(m =>
-        ({
-            dsp: materialList.find(mat => mat.id === m.matId),
-            edge: edgeNotSortedList.find(e => e.id === m.edgeId),
-            zaglushka: zagNotSortedList.find(z => z.id === m.zaglushkaId)
-        })).toSorted((m1, m2) => (m1.dsp && m2.dsp) && (m1.dsp?.name > m2.dsp.name) ? 1 : -1),
-        [dspEdgeNotSortedList, edgeNotSortedList, zagNotSortedList])
-    const mList = useMemo(() => dspList.map((m: FasadMaterial) => m.name), [materialList])
-    const edgeList = useMemo(() => edgeNotSortedList.toSorted((e1, e2) => e1?.name > e2?.name ? 1 : -1).map(e => e.name), [edgeNotSortedList])
-    const zagList = useMemo(() => zagNotSortedList.toSorted((e1, e2) => e1?.name > e2?.name ? 1 : -1).map(e => e.name), [zagNotSortedList])
+    const edgeList = useAtomValue(edgeListAtom).toSorted((e1, e2) => e1.name > e2.name ? 1 : -1)
+    const zagList = useAtomValue(zaglushkaListAtom).toSorted((e1, e2) => e1.name > e2.name ? 1 : -1)
+    const matAllList = useAtomValue(materialListAtom)
+    const matList = useMemo(() => matAllList.filter(m => m.type === FASAD_TYPE.DSP).toSorted((e1, e2) => e1.name > e2.name ? 1 : -1), [matAllList])
+    const dspMap = useMapValue(matList, value => value.name)
+    const zagMap = useMapValue(zagList, value => value.name)
+    const edgeMap = useMapValue(edgeList, value => value.name)
+    const dspEdgeZagNotSortedList = useAtomValue(dspEdgeListAtom)
+    const dspEdgeZagList = useMemo(() => dspEdgeZagNotSortedList.toSorted((d1, d2) => (dspMap.get(d1.dspId) as string) > (dspMap.get(d2.dspId) as string) ? 1 : -1), [dspEdgeZagNotSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { dsp, edge, zaglushka } = dspEdgeList[selectedIndex] 
+    const dspIdList = matList.map(m => m.id)
+    const edgeIdList = edgeList.map(d => d.id)
+    const zagIdList = zagList.map(d => d.id)
+    const { dspId, edgeId, zaglushkaId } = dspEdgeZagList[selectedIndex] 
     const deleteDspEdge = useSetAtom(deleteDspEdgeAtom)
     const addDspEdge = useSetAtom(addDspEdgeAtom)
     const updateDspEdge = useSetAtom(updateDspEdgeAtom)
     const heads = ['ДСП', 'Кромка', 'Заглушка']
-    const contents = dspEdgeList.map(item => [item.dsp?.name, item.edge?.name, item.zaglushka?.name])
+    const contents = dspEdgeZagList.map(item => [dspMap.get(item.dspId), edgeMap.get(item.edgeId), zagMap.get(item.zaglushkaId)])
     const editItems: EditDataItem[] = [
-        { caption: "ДСП:", value: dsp?.name || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: mList },
-        { caption: "Кромка:", value: edge?.name || "", message: messages.ENTER_CODE, type: InputType.LIST, list: edgeList },
-        { caption: "Заглушка:", value: zaglushka?.name || "", message: messages.ENTER_CODE, type: InputType.LIST, list: zagList },
+        { caption: "ДСП:", value: dspId, valueCaption: value => dspMap.get(value), message: messages.ENTER_CAPTION, type: InputType.LIST, list: dspIdList },
+        { caption: "Кромка:", value: edgeId, valueCaption: value => edgeMap.get(value), message: messages.ENTER_CODE, type: InputType.LIST, list: edgeIdList },
+        { caption: "Заглушка:", value: zaglushkaId, valueCaption: value => zagMap.get(value), message: messages.ENTER_CODE, type: InputType.LIST, list: zagIdList },
     ]
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        {(perm?.Read) ? <EditDataSection items={editItems}
+        {(perm?.Read) ? <EditDataSection name={dspMap.get(dspId)} items={editItems}
             onUpdate={perm?.Update ? async (checked, values) => {
-                const usedEdgeId = checked[1] ? edgeNotSortedList.find(e => e.name === values[1])?.id : -1
-                const usedZagId = checked[2] ? zagNotSortedList.find(z => z.name === values[2]) : -1
-                const result = await updateDspEdge({ matId: dspEdgeList[selectedIndex].dsp?.id, edgeId: usedEdgeId, zaglushkaId: usedZagId })
+                const usedEdgeId = checked[1] ? values[1] : 0
+                const usedZagId = checked[2] ? values[2] : 0
+                const result = await updateDspEdge({ dspId: dspEdgeZagList[selectedIndex].dspId, edgeId: usedEdgeId, zaglushkaId: usedZagId })
                 return result
             } : undefined}
             onAdd={perm?.Create ? async (checked, values) => {
-                const usedMatId = checked[0] ? dspList.find(d=>d.name===values[0])?.id : -1
-                const usedEdgeId = checked[1] ? edgeNotSortedList.find(e => e.name === values[1])?.id : -1
-                const usedZagId = checked[2] ? zagNotSortedList.find(z => z.name === values[2])?.id : -1
-                const result = await addDspEdge({ matId: usedMatId||-1, edgeId: usedEdgeId || -1, zaglushkaId: usedZagId || -1 })
+                const usedDspId = values[0]
+                const usedEdgeId = values[1] 
+                const usedZagId = values[2] 
+                const result = await addDspEdge({ dspId: usedDspId, edgeId: usedEdgeId, zaglushkaId: usedZagId })
                 return result
             } : undefined}
             onDelete={perm?.Delete ? async () => {
-                const result = await deleteDspEdge(dspEdgeList[selectedIndex].dsp?.id || -1)
+                const result = await deleteDspEdge(dspEdgeZagList[selectedIndex].dspId || -1)
                 setSelectedIndex(0)
                 return result
             } : undefined}

@@ -1,5 +1,5 @@
 import messages from '../../messages.js'
-import { Uplotnitel } from '../../../types/materials.js';
+import { OmitId, Uplotnitel } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
 import UplotnitelServiceSQLite from '../../services/extServices/uplotnitelServiceSQLite.js';
@@ -10,12 +10,11 @@ export async function getUplotnitels() {
   return await materialExtService.getExtData()
 }
 
-export async function addUplotnitel({ name, code }: Omit<Uplotnitel, "id">) {
+export async function addUplotnitel({ name, code }: OmitId<Uplotnitel>) {
   const materialExtService = new MaterialExtService<Uplotnitel>(new UplotnitelServiceSQLite(materialsPath))
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const list = result.data
-  if ((list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_EXIST }
   return await materialExtService.addExtData({ name, code })
 }
 

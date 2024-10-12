@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { Brush } from "../../types/materials";
+import { Brush, OmitId } from "../../types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
 import { TableFields } from "../../types/server";
@@ -30,7 +30,7 @@ export const deleteBrushAtom = atom(null, async (get, set, id: number) => {
     }
 })
 
-export const addBrushAtom = atom(null, async (get, set, {name, code}: Omit<Brush, "id">) => {
+export const addBrushAtom = atom(null, async (get, set, {name, code}: OmitId<Brush>) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {

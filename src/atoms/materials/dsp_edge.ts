@@ -30,11 +30,11 @@ export const deleteDspEdgeAtom = atom(null, async (get, set, id: number) => {
      }
 })
 
-export const addDspEdgeAtom = atom(null, async (get, set, {matId, edgeId, zaglushkaId}: DSP_EDGE_ZAGL) => {
+export const addDspEdgeAtom = atom(null, async (get, set, {dspId, edgeId, zaglushkaId}) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
-        [TableFields.MATID]: matId,
+        [TableFields.DSPID]: dspId,
         [TableFields.EDGEID]: edgeId,
         [TableFields.ZAGLUSHKAID]: zaglushkaId,
         [TableFields.TOKEN]: token
@@ -49,11 +49,11 @@ export const addDspEdgeAtom = atom(null, async (get, set, {matId, edgeId, zaglus
      }
 })
 
-export const updateDspEdgeAtom = atom(null, async (get, set, { matId, edgeId, zaglushkaId }) => {
+export const updateDspEdgeAtom = atom(null, async (get, set, { dspId, edgeId, zaglushkaId }) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
-        [TableFields.MATID]: matId,
+        [TableFields.DSPID]: dspId,
         [TableFields.ZAGLUSHKAID]: zaglushkaId,
         [TableFields.EDGEID]: edgeId,
         [TableFields.TOKEN]: token

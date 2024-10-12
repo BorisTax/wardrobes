@@ -109,9 +109,9 @@ router.get("/edge", async (req, res) => {
 });
 router.delete("/edge", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
-  const { name } = req.body
+  const { id } = req.body
   let result
-  result = await deleteEdge(name);
+  result = await deleteEdge(id);
   const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
@@ -149,16 +149,16 @@ router.delete("/dsp_edge", async (req, res) => {
 
 router.post("/dsp_edge", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
-  const { matId, edgeId, zaglushkaId } = req.body
-  const result = await addDspEdge({ matId, edgeId, zaglushkaId });
+  const { dspId, edgeId, zaglushkaId } = req.body
+  const result = await addDspEdge({ dspId, edgeId, zaglushkaId });
   const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
 router.put("/dsp_edge", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const { matId, edgeId, zaglushkaId } = req.body
-  const result = await updateDspEdge({ matId, edgeId, zaglushkaId });
+  const { dspId, edgeId, zaglushkaId } = req.body
+  const result = await updateDspEdge({ dspId, edgeId, zaglushkaId });
   res.status(result.status).json(result);
 });
 

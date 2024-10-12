@@ -1,4 +1,4 @@
-import { Trempel } from '../../../types/materials.js';
+import { OmitId, Trempel } from '../../../types/materials.js';
 import { Result } from '../../../types/server.js';
 import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/database.js';
@@ -14,7 +14,7 @@ export default class TrempelServiceSQLite implements IMaterialExtService<Trempel
     async getExtData(): Promise<Result<Trempel[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${TREMPEL};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ name, code }: Omit<Trempel, "id">): Promise<Result<null>> {
+    async addExtData({ name, code }: OmitId<Trempel>): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into ${TREMPEL} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(id: number): Promise<Result<null>> {

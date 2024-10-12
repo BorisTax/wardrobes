@@ -167,7 +167,7 @@ export async function getZagByDSP(dspId: number): Promise<Zaglushka> {
     const list = (await service.getExtData()).data as DSP_EDGE_ZAGL[];
     const zagservice = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
     const zagList = (await zagservice.getExtData()).data as Zaglushka[];
-    const zagId = list.find(m => m.matId === dspId)?.zaglushkaId
+    const zagId = list.find(m => m.dspId === dspId)?.zaglushkaId
     const zaglushka = zagList.find(z => z.id === zagId) || { id: -1, code: "", name: "" }
     return zaglushka;
 }
@@ -177,7 +177,7 @@ export async function getEdgeByDSP(dspId: number): Promise<Edge> {
     const list = (await service.getExtData()).data as DSP_EDGE_ZAGL[];
     const edgeservice = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath));
     const edgeList = (await edgeservice.getExtData()).data as Edge[];
-    const edgeId = list.find(m => m.matId === dspId)?.edgeId
+    const edgeId = list.find(m => m.dspId === dspId)?.edgeId
     const edge = edgeList.find(z => z.id === edgeId) || { id: -1, code: "", name: "", typeId: -1 }
     return edge;
 }

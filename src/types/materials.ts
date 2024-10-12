@@ -63,7 +63,7 @@ export type Uplotnitel = {
 }
 
 export type DSP_EDGE_ZAGL = {
-    matId: number
+    dspId: number
     edgeId: number
     zaglushkaId: number
 }

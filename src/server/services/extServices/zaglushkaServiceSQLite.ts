@@ -1,4 +1,4 @@
-import { Zaglushka } from '../../../types/materials.js';
+import { OmitId, Zaglushka } from '../../../types/materials.js';
 import { Result } from '../../../types/server.js';
 import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/database.js';
@@ -14,7 +14,7 @@ export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglus
     async getExtData(): Promise<Result<Zaglushka[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${ZAGLUSHKA};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ name, code }: Omit<Zaglushka, "id">): Promise<Result<null>> {
+    async addExtData({ name, code }: OmitId<Zaglushka>): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
     async deleteExtData(id: number): Promise<Result<null>> {

@@ -35,12 +35,12 @@ export default function EditEdge() {
     ]
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
-        {(perm?.Read) ? <EditDataSection items={editItems}
+        {(perm?.Read) ? <EditDataSection name={edgeName} items={editItems}
             onUpdate={perm?.Update ? async (checked, values) => {
-                const usedName = checked[0] ? values[0] : ""
-                const usedCode = checked[1] ? values[1] : ""
-                const usedType = checked[2] ? edgeTypeNotSortedList.find(e => e.caption === values[2])?.id : -1
-                const result = await updateEdge({ id, name: usedName as string, code: usedCode as string, typeId: usedType || -1 })
+                const usedName = values[0] as string
+                const usedCode = values[1] as string
+                const usedType = values[2] as number
+                const result = await updateEdge({ id, name: usedName, code: usedCode, typeId: usedType })
                 return result
             } : undefined}
             onDelete={perm?.Delete ? async () => {
@@ -51,9 +51,9 @@ export default function EditEdge() {
             onAdd={perm?.Create ? async (checked, values) => {
                 const name = values[0] as string
                 const code = values[1] as string
-                const usedType = checked[2] ? edgeTypeNotSortedList.find(e => e.caption === values[2])?.id : -1
+                const usedType = values[2] as number
                 if (edgeList.find((p: Edge) => p.name === name)) { return { success: false, message: messages.MATERIAL_EXIST } }
-                const result = await addEdge({ name, code, typeId: usedType || -1 })
+                const result = await addEdge({ name, code, typeId: usedType })
                 return result
             } : undefined} /> : <div></div>}
 

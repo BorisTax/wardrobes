@@ -209,6 +209,7 @@
 .editmaterial-container {
   position: relative;
   display: flex;
+  align-items: start;
   flex-wrap: nowrap;
   gap: 1em;
   padding: 1rem;

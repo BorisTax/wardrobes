@@ -24,3 +24,11 @@ export function useEdgeTypeMap(edgeTypeList: EdgeType[]) {
         return m 
     }, [edgeTypeList])
 }
+
+export function useMapValue<T extends { id: number }>(list: T[], getValue: (value: T) => string) {
+    return useMemo(() => {
+        const m = new Map()
+        list.forEach(l => m.set(l.id, getValue(l)))
+        return m 
+    }, [list])
+}

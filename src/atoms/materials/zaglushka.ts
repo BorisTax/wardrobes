@@ -21,7 +21,7 @@ export const deleteZaglushkaAtom = atom(null, async (get, set, zaglushka: Zaglus
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
-        const result = await fetchData("/api/materials/zaglushka", "DELETE", JSON.stringify({ name: zaglushka.name, token }))
+        const result = await fetchData("/api/materials/zaglushka", "DELETE", JSON.stringify({ id: zaglushka.id, token }))
         await set(loadZaglushkaListAtom)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 

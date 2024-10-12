@@ -38,7 +38,7 @@ export default function WardrobePropertiesBar() {
     const perm = user.permissions.get(RESOURCE.COMBIFASADES)
     const saveFileDisabled = !perm?.Create
     const readFileDisabled = !perm?.Read
-    const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.GARDEROB)), [])
+    const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[0] !== WARDROBE_TYPE.GARDEROB)), [])
     const wardTypeChangeConfirm = async () => {
         return await showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
     }
@@ -67,10 +67,10 @@ export default function WardrobePropertiesBar() {
         </div>
         <hr />
         <PropertyGrid>
-            <div className="text-end">Заказ: </div>
+            {/* <div className="text-end">Заказ: </div>
             <PropertyRow>
                 <TextBox name="order" value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
-            </PropertyRow>
+            </PropertyRow> */}
             <ComboBox<WARDROBE_TYPE> title="Тип:" value={type} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={(_, value) => { 
                 setWardType([value as WARDROBE_TYPE, wardTypeChangeConfirm])
             }} />

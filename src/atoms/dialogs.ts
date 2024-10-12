@@ -1,8 +1,10 @@
 import { Getter, Setter, atom } from "jotai";
 import React from "react";
-import { loadSpecificationListAtom } from "./specification";
+import { calculateCombiSpecificationsAtom, loadSpecificationListAtom } from "./specification";
 import { loadActiveUsersAtom, loadUsersAtom } from "./users";
 import { loadTemplateListAtom } from "./templates";
+import { activeRootFasadIndexAtom, setActiveFasadAtom } from "./fasades";
+import { appDataAtom } from "./app";
 
 type MessageAtom = {
     dialogRef: React.RefObject<HTMLDialogElement> | null
@@ -44,8 +46,11 @@ export const showVerboseDialogAtom = atom(null, (get) => {
     dialogRef?.current?.showModal()
 })
 export const specificationDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
-export const showSpecificationDialogAtom = atom(null, (get) => {
+export const showSpecificationDialogAtom = atom(null, (get, set) => {
     const dialogRef = get(specificationDialogAtom)
+    const index = get(activeRootFasadIndexAtom)
+    const appData = get(appDataAtom)
+    if (index < 0) set(setActiveFasadAtom, appData.rootFasades[0]) 
     dialogRef?.current?.showModal()
 })
 export const showEditSpecificationDialogAtom = atom(null, (get, set) => {

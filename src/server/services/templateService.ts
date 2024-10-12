@@ -1,3 +1,4 @@
+import { OmitId } from "../../types/materials"
 import { ITemplateService, ITemplateServiceProvider } from "../../types/services"
 import { Template } from "../../types/templates"
 
@@ -10,7 +11,7 @@ export class TemplateService implements ITemplateService {
     async getFasadTemplates() {
         return await this.provider.getFasadTemplates()
     }
-    async addFasadTemplate(template: Omit<Template, "id">) {
+    async addFasadTemplate(template: OmitId<Template>) {
         return await this.provider.addFasadTemplate(template)
     }
     async deleteFasadTemplate(id: number) {

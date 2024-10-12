@@ -1,5 +1,5 @@
 import messages from '../../messages.js'
-import { Zaglushka } from '../../../types/materials.js';
+import { OmitId, Zaglushka } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
 import ZagluskaServiceSQLite from '../../services/extServices/zaglushkaServiceSQLite.js';
@@ -10,7 +10,7 @@ export async function getZaglushkas() {
   return await materialExtService.getExtData()
 }
 
-export async function addZaglushka({ name, code }: Omit<Zaglushka, "id">) {
+export async function addZaglushka({ name, code }: OmitId<Zaglushka>) {
   const materialExtService = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath))
   const result = await materialExtService.getExtData()
   if (!result.success) return result

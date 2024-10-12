@@ -1,6 +1,6 @@
 import messages from '../../messages.js'
 import { MaterialService } from '../../services/materialService.js';
-import { Profile } from '../../../types/materials.js';
+import { OmitId, Profile } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import MaterialServiceSQLite from '../../services/materialServiceSQLite.js';
 import { StatusCodes } from 'http-status-codes';
@@ -10,7 +10,7 @@ export async function getProfiles() {
   return await materialService.getProfiles()
 }
 
-export async function addProfile({ name, type, code, brushId }: Omit<Profile, "id">) {
+export async function addProfile({ name, type, code, brushId }: OmitId<Profile>) {
   const materialService = new MaterialService(new MaterialServiceSQLite(materialsPath))
   const result = await materialService.getProfiles()
   if (!result.success) return result

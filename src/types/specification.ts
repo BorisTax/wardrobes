@@ -1,4 +1,4 @@
-import { FasadMaterial } from "./enums";
+import { FASAD_TYPE } from "./enums";
 
 export enum SpecificationItem {
     DSP10 = "DSP10",
@@ -74,5 +74,5 @@ export enum CORPUS_SPECS {
     EXT_BLINDER = "blinder",
     EXT_LIGHT = "light"
 }
-export type SPEC_GROUP = FasadMaterial | CORPUS_SPECS;
+export type SPEC_GROUP = FASAD_TYPE | CORPUS_SPECS;
 

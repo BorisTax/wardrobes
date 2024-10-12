@@ -1,7 +1,7 @@
 import Fasad from "../../../classes/Fasad";
 import { getFasadHeight, getFasadWidth } from "../../../functions/wardrobe";
-import { Division, FasadMaterial } from "../../../types/enums";
-import { ExtMaterial, Profile, ProfileType } from "../../../types/materials";
+import { Division, FASAD_TYPE } from "../../../types/enums";
+import { FasadMaterial, Profile, ProfileType } from "../../../types/materials";
 import { FullData, SpecificationResult, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe";
 import { SpecificationItem } from "../../../types/specification";
 import { WardrobeData } from "../../../types/wardrobe";
@@ -18,31 +18,31 @@ export function createFasades(data: WardrobeData, profileType: ProfileType): Fas
     const fasades: Fasad[] = []
     const count = getFasadCount(data)
     if (!correctFasadCount(count)) return fasades
-    if (data.wardType === WARDROBE_TYPE.CORPUS) return fasades
+    if (data.wardType === WARDROBE_TYPE.GARDEROB) return fasades
     const width = getFasadWidth(data.width, count, data.wardType, profileType)
     const height = getFasadHeight(data.height, data.wardType, profileType)
-    data.fasades.dsp.names.forEach(n => {
-        const fasad = new Fasad({ width, height, material: FasadMaterial.DSP, extMaterial: n })
+    data.fasades.dsp.matId.forEach(id => {
+        const fasad = new Fasad({ width, height, fasadType: FASAD_TYPE.DSP, materialId: id })
         fasades.push(fasad)
     })
-    data.fasades.mirror.names.forEach(n => {
-        const fasad = new Fasad({ width, height, material: FasadMaterial.MIRROR, extMaterial: n })
+    data.fasades.mirror.matId.forEach(id => {
+        const fasad = new Fasad({ width, height, fasadType: FASAD_TYPE.MIRROR, materialId: id })
         fasades.push(fasad)
     })
-    data.fasades.fmp.names.forEach(n => {
-        const fasad = new Fasad({ width, height, material: FasadMaterial.FMP, extMaterial: n })
+    data.fasades.fmp.matId.forEach(id => {
+        const fasad = new Fasad({ width, height, fasadType: FASAD_TYPE.FMP, materialId: id })
         fasades.push(fasad)
     })
-    data.fasades.sand.names.forEach(n => {
-        const fasad = new Fasad({ width, height, material: FasadMaterial.SAND, extMaterial: n })
+    data.fasades.sand.matId.forEach(id => {
+        const fasad = new Fasad({ width, height, fasadType: FASAD_TYPE.SAND, materialId: id })
         fasades.push(fasad)
     })
-    data.fasades.lacobel.names.forEach(n => {
-        const fasad = new Fasad({ width, height, material: FasadMaterial.LACOBEL, extMaterial: n })
+    data.fasades.lacobel.matId.forEach(id => {
+        const fasad = new Fasad({ width, height, fasadType: FASAD_TYPE.LACOBEL, materialId: id })
         fasades.push(fasad)
     })
-    data.fasades.lacobelGlass.names.forEach(n => {
-        const fasad = new Fasad({ width, height, material: FasadMaterial.LACOBELGLASS, extMaterial: n })
+    data.fasades.lacobelGlass.matId.forEach(id => {
+        const fasad = new Fasad({ width, height, fasadType: FASAD_TYPE.LACOBELGLASS, materialId: id })
         fasades.push(fasad)
     })
     return fasades
@@ -62,7 +62,7 @@ export async function getFasadSpecification(fasad: Fasad, profile: Profile, verb
 async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<SpecificationItem, FullData[]>> {
     const spec = getSpecificationPattern();
     const matService = new MaterialService(materialServiceProvider)
-    const materials = (await matService.getExtMaterials({})).data as ExtMaterial[]
+    const materials = (await matService.getExtMaterials({})).data as FasadMaterial[]
     spec.set(SpecificationItem.DSP10, await calcDSP10(fasad, materials))
     spec.set(SpecificationItem.Mirror, await calcMirror(fasad, materials));
     spec.set(SpecificationItem.Arakal, await calcArakal(fasad, materials));
@@ -85,11 +85,11 @@ async function calcSpecification(fasad: Fasad, profile: Profile): Promise<Map<Sp
     spec.set(SpecificationItem.RolikiBavaria, await calcRolikiBavaria(fasad, profile))
     return spec;
 }
-async function calcArea(fasad: Fasad, materials: ExtMaterial[], material: FasadMaterial[], useChar: boolean = true): Promise<FullData[]> {
+async function calcArea(fasad: Fasad, materials: FasadMaterial[], material: FASAD_TYPE[], useChar: boolean = true): Promise<FullData[]> {
     const result: FullData[] = []
     if (fasad.Children.length === 0) {
-        if (!material.includes(fasad.Material)) return result
-        const mat = materials.find(m => material.includes(m.material as FasadMaterial) && m.name === fasad.ExtMaterial) || { code: "", name: "" }
+        if (!material.includes(fasad.FasadType)) return result
+        const mat = materials.find(m => material.includes(m.type as FASAD_TYPE) && m.id === fasad.MaterialId) || { code: "", name: "" }
         const code = mat.code
         const caption = useChar ? mat.name : ""
         const area = fasad.cutWidth * fasad.cutHeight / 1000000;
@@ -109,10 +109,10 @@ async function calcArea(fasad: Fasad, materials: ExtMaterial[], material: FasadM
     }
     return result
 }
-async function calcDimensions(fasad: Fasad, material: FasadMaterial[]): Promise<{height: number, width: number}[]> {
+async function calcDimensions(fasad: Fasad, material: FASAD_TYPE[]): Promise<{height: number, width: number}[]> {
     const result: {height: number, width: number}[] = []
     if (fasad.Children.length === 0) {
-        if (!material.includes(fasad.Material)) return result
+        if (!material.includes(fasad.FasadType)) return result
         result.push({ width: fasad.cutWidth, height: fasad.cutHeight});
         if (fasad.Parent !== null) return result
     }
@@ -125,8 +125,8 @@ async function calcDimensions(fasad: Fasad, material: FasadMaterial[]): Promise<
     return result
 }
 
-async function calcDSP10(fasad: Fasad, materials: ExtMaterial[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, materials, [FasadMaterial.DSP])
+async function calcDSP10(fasad: Fasad, materials: FasadMaterial[]): Promise<FullData[]> {
+    const result = await calcArea(fasad, materials, [FASAD_TYPE.DSP])
     const coef = await getCoef(SpecificationItem.DSP10)
     const finalResult = result.map(r => {
         const area = r.data.amount
@@ -136,8 +136,8 @@ async function calcDSP10(fasad: Fasad, materials: ExtMaterial[]): Promise<FullDa
     })
     return finalResult
 }
-async function calcMirror(fasad: Fasad, materials: ExtMaterial[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, materials, [FasadMaterial.MIRROR, FasadMaterial.SAND])
+async function calcMirror(fasad: Fasad, materials: FasadMaterial[]): Promise<FullData[]> {
+    const result = await calcArea(fasad, materials, [FASAD_TYPE.MIRROR, FASAD_TYPE.SAND])
     const coef = await getCoef(SpecificationItem.Mirror)
     const finalResult = result.map(r => {
         const area = r.data.amount
@@ -147,8 +147,8 @@ async function calcMirror(fasad: Fasad, materials: ExtMaterial[]): Promise<FullD
     })
     return finalResult
 }
-async function calcArakal(fasad: Fasad, materials: ExtMaterial[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, materials, [FasadMaterial.SAND], false)
+async function calcArakal(fasad: Fasad, materials: FasadMaterial[]): Promise<FullData[]> {
+    const result = await calcArea(fasad, materials, [FASAD_TYPE.SAND], false)
     const coef = await getCoef(SpecificationItem.Arakal)
     const finalResult = result.map(r => {
         const area = r.data.amount
@@ -158,8 +158,8 @@ async function calcArakal(fasad: Fasad, materials: ExtMaterial[]): Promise<FullD
     })
     return finalResult
 }
-async function calcHydro(fasad: Fasad, materials: ExtMaterial[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, materials, [FasadMaterial.SAND], false)
+async function calcHydro(fasad: Fasad, materials: FasadMaterial[]): Promise<FullData[]> {
+    const result = await calcArea(fasad, materials, [FASAD_TYPE.SAND], false)
     const coef = await getCoef(SpecificationItem.Hydro)
     const mult = 0.035
     if (result.length > 0) {
@@ -171,8 +171,8 @@ async function calcHydro(fasad: Fasad, materials: ExtMaterial[]): Promise<FullDa
     }
     return result
 }
-async function calcLacobel(fasad: Fasad, materials: ExtMaterial[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, materials, [FasadMaterial.LACOBELGLASS])
+async function calcLacobel(fasad: Fasad, materials: FasadMaterial[]): Promise<FullData[]> {
+    const result = await calcArea(fasad, materials, [FASAD_TYPE.LACOBELGLASS])
     const coef = await getCoef(SpecificationItem.Lacobel)
     const finalResult = result.map(r => {
         const area = r.data.amount
@@ -184,7 +184,7 @@ async function calcLacobel(fasad: Fasad, materials: ExtMaterial[]): Promise<Full
 }
 
 async function calcRitrama(fasad: Fasad): Promise<FullData[]> {
-    const dims = await calcDimensions(fasad, [FasadMaterial.LACOBEL])
+    const dims = await calcDimensions(fasad, [FASAD_TYPE.LACOBEL])
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Ритрама", "Площадь"]]
     let total = 0
     for (let d of dims) {
@@ -218,7 +218,7 @@ async function calcArmirovka(fasad: Fasad, tolerance = 5): Promise<FullData[]> {
         }
         return { tape400, tape200 }
     }
-    const dims = await calcDimensions(fasad, [FasadMaterial.FMP, FasadMaterial.LACOBELGLASS, FasadMaterial.MIRROR, FasadMaterial.SAND])
+    const dims = await calcDimensions(fasad, [FASAD_TYPE.FMP, FASAD_TYPE.LACOBELGLASS, FASAD_TYPE.MIRROR, FASAD_TYPE.SAND])
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Полоса 400мм", "Полоса 200мм", "", "Площадь"]]
     let total = 0
     for (let d of dims) {
@@ -233,7 +233,7 @@ async function calcArmirovka(fasad: Fasad, tolerance = 5): Promise<FullData[]> {
 
 
 async function calcFMPPaper(fasad: Fasad, widthLimit = 700): Promise<FullData[]> {
-    const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
+    const dims = await calcDimensions(fasad, [FASAD_TYPE.FMP])
     const coef = await getCoef(SpecificationItem.FMPPaper)
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Ширина полосы", "", "Площадь"]]
     let total = 0
@@ -252,7 +252,7 @@ async function calcFMPPaper(fasad: Fasad, widthLimit = 700): Promise<FullData[]>
 }
 
 async function calcFMPGlass(fasad: Fasad): Promise<FullData[]> {
-    const dims = await calcDimensions(fasad, [FasadMaterial.FMP, FasadMaterial.LACOBEL])
+    const dims = await calcDimensions(fasad, [FASAD_TYPE.FMP, FASAD_TYPE.LACOBEL])
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Площадь",""]]
     let total = 0
     const coef = await getCoef(SpecificationItem.FMPGlass)
@@ -268,7 +268,7 @@ async function calcFMPGlass(fasad: Fasad): Promise<FullData[]> {
 }
 
 async function calcPaint(fasad: Fasad): Promise<FullData[]> {
-    const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
+    const dims = await calcDimensions(fasad, [FASAD_TYPE.FMP])
     const coef = await getCoef(SpecificationItem.Paint)
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Площадь",""]]
     let total = 0
@@ -284,7 +284,7 @@ async function calcPaint(fasad: Fasad): Promise<FullData[]> {
     return [{ data: { amount: result }, verbose: result > 0 ? verbose : undefined }]
 }
 async function calcEva(fasad: Fasad): Promise<FullData[]>  {
-    const dims = await calcDimensions(fasad, [FasadMaterial.FMP])
+    const dims = await calcDimensions(fasad, [FASAD_TYPE.FMP])
     const coef = await getCoef(SpecificationItem.EVA)
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Площадь",""]]
     let total = 0
@@ -317,7 +317,7 @@ const EdgeSideCaptions = {
 async function calcEdges(fasad: Fasad): Promise<{ outer: EdgesData[], inner: EdgesData[], full: EdgesData[] }> {
     const result: { outer: EdgesData[], inner: EdgesData[], full: EdgesData[] } = { outer: [], inner: [], full: [] }
     if (fasad.Children.length === 0) {
-        if (fasad.Material === FasadMaterial.DSP) return result
+        if (fasad.FasadType === FASAD_TYPE.DSP) return result
         const { top, bottom, left, right } = fasad.OuterEdges;
         const outer: EdgesData = { width: fasad.Width, height: fasad.Height, edges: [] }
         const inner: EdgesData = { width: fasad.Width, height: fasad.Height, edges: [] }

@@ -1,15 +1,17 @@
-import { FasadMaterial } from "./enums"
+import { FASAD_TYPE } from "./enums"
+import { FasadMaterial } from "./materials"
 
 export type FasadProps = {
     width?: number
     height?: number
-    material?: FasadMaterial
-    extMaterial?: string
+    materialId?: number
+    fasadType?: FASAD_TYPE
     minSize?: number
 }
 export type FasadBackup = {
     height?: number
     width?: number
-    material?: FasadMaterial
+    materialId?: number
+    fasadType?: FASAD_TYPE
     hasBackup?: boolean
 }

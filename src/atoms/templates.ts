@@ -3,7 +3,6 @@ import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { userAtom } from "./users";
 import { appDataAtom } from "./app";
 import { TableFields } from "../types/server";
-import { AtomCallbackResult } from "../types/atoms";
 import { Template } from "../types/templates";
 import { activeRootFasadIndexAtom } from "./fasades";
 import FasadState from "../classes/FasadState";
@@ -22,9 +21,9 @@ export const loadTemplateListAtom = atom(null, async (get, set) => {
     } catch (e) { console.error(e) }
 })
 
-export const deleteTemplateAtom = atom(null, async (get, set, {name}) => {
+export const deleteTemplateAtom = atom(null, async (get, set, id) => {
     const user = get(userAtom)
-    const result = await fetchData("/api/templates", "DELETE", JSON.stringify({ name, token: user.token }))
+    const result = await fetchData("/api/templates", "DELETE", JSON.stringify({ id, token: user.token }))
     await set(loadTemplateListAtom)
     return { success: result.success as boolean, message: result.message as string }
 })
@@ -45,12 +44,12 @@ export const addFasadTemplateAtom = atom(null, async (get, set, name: string) =>
     }
 })
 
-export const updateFasadTemplateAtom = atom(null, async (get, set, { name, newName, rename = false }) => {
+export const updateFasadTemplateAtom = atom(null, async (get, set, { name, id, rename = false }) => {
     const user = get(userAtom)
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(appDataAtom)
     const data = JSON.stringify(rootFasades[index].getState())
-    const formData = {[TableFields.NAME]: name, [TableFields.NEWNAME]: newName, [TableFields.DATA]: data, [TableFields.TOKEN]: user.token}
+    const formData = {[TableFields.NAME]: name, [TableFields.ID]: id, [TableFields.DATA]: data, [TableFields.TOKEN]: user.token}
     if(!rename) formData[TableFields.DATA] = data
     try {
         const result = await fetchData("/api/templates", "PUT", JSON.stringify(formData))

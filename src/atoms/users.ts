@@ -4,7 +4,7 @@ import { fetchData, fetchGetData } from "../functions/fetch"
 import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserData, UserLoginResult, UserRole } from "../types/user"
 import { loadMaterialListAtom } from "./materials/materials"
 import { loadProfileListAtom } from "./materials/profiles"
-import { loadEdgeListAtom } from "./materials/edges"
+import { loadEdgeListAtom, loadEdgeTypeListAtom } from "./materials/edges"
 import { loadBrushListAtom } from "./materials/brush"
 import { loadTrempelListAtom } from "./materials/trempel"
 import { loadZaglushkaListAtom } from "./materials/zaglushka"
@@ -157,6 +157,7 @@ export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESO
     if (permissions.get(RESOURCE.MATERIALS)?.Read) {
         set(loadMaterialListAtom)
         set(loadProfileListAtom)
+        set(loadEdgeTypeListAtom)
         set(loadEdgeListAtom)
         set(loadBrushListAtom)
         set(loadTrempelListAtom)

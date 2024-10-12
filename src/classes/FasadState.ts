@@ -1,4 +1,5 @@
-import { Division, FasadMaterial } from "../types/enums"
+import { Division, FASAD_TYPE } from "../types/enums"
+import { FasadEmptyMaterial, FasadMaterial } from "../types/materials"
 
 export type FasadBackImageProps = {
     top: number
@@ -20,7 +21,8 @@ export default class FasadState {
     public fixedWidth = false
     public fixedHeight = false
     public outerEdges: {left: boolean, right: boolean, top: boolean, bottom: boolean} = {left: true, right: true, top: true, bottom: true}
-    public material: FasadMaterial = FasadMaterial.EMPTY
+    public materialId: number = -1
+    public fasadType: FASAD_TYPE = FASAD_TYPE.DSP
     public extMaterial = ''
     public division: Division = Division.HEIGHT
     public children: FasadState[] = []

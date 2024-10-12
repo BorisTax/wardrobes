@@ -29,13 +29,13 @@ export class SpecificationService implements ISpecificationService {
     if(!this.matProvider) throw new Error('Material service provider not provided')
     const result: SpecificationMultiResult = []
     const profiles = (await this.matProvider.getProfiles()).data
-    const profile: Profile | undefined = profiles?.find(p => p.name === data.profileName)
+    const profile: Profile | undefined = profiles?.find(p => p.id === data.profileId)
     const fasades = createFasades(data, profile?.type as ProfileType)
     const corpus = await getCorpusSpecification(data, resetDetails, profile as Profile, verbose)
     result.push({ type: CORPUS_SPECS.CORPUS, spec: corpus })
     for(let f of fasades){ 
       const fasadSpec = await getFasadSpecification(f, profile as Profile, verbose)
-      result.push({ type: f.Material, spec: fasadSpec })
+      result.push({ type: f.FasadType, spec: fasadSpec })
      }
     const extSpec = await getExtComplectSpecification(data, verbose)
     for(let ext of extSpec){
@@ -77,6 +77,12 @@ export class SpecificationService implements ISpecificationService {
   }
   async getWardobeKinds(): Promise<Result<WardrobeTableSchema[]>>{
     return await this.provider.getWardobeKinds()
+  }
+  async getWardobeTypes(): Promise<Result<WardrobeTableSchema[]>>{
+    return await this.provider.getWardobeTypes()
+  }
+  async getConsoleTypes(): Promise<Result<WardrobeTableSchema[]>>{
+      return await this.provider.getConsoleTypes()
   }
 }
 

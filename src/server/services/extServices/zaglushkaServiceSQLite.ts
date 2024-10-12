@@ -1,4 +1,4 @@
-import { NewZaglushka, Zaglushka } from '../../../types/materials.js';
+import { Zaglushka } from '../../../types/materials.js';
 import { Result } from '../../../types/server.js';
 import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/database.js';
@@ -14,30 +14,30 @@ export default class ZagluskaServiceSQLite implements IMaterialExtService<Zaglus
     async getExtData(): Promise<Result<Zaglushka[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${ZAGLUSHKA};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ name, code }: Zaglushka): Promise<Result<null>> {
+    async addExtData({ name, code }: Omit<Zaglushka, "id">): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into ${ZAGLUSHKA} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
-    async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE name=?;`, [name], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+    async deleteExtData(id: number): Promise<Result<null>> {
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${ZAGLUSHKA} WHERE id=?;`, [id], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
-    async updateExtData({ newName, code, name }: NewZaglushka): Promise<Result<null>> {
-        const query = getZaglushkaQuery({ newName, code, name })
+    async updateExtData({ id, code, name }: Zaglushka): Promise<Result<null>> {
+        const query = getZaglushkaQuery({ id, code, name })
         return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
-function getZaglushkaQuery({ newName, code, name }: NewZaglushka) {
+function getZaglushkaQuery({ id, code, name }: Zaglushka) {
     const parts = []
     const params = []
-    if (newName) {
+    if (name) {
         parts.push(`name=?`)
-        params.push(newName)
+        params.push(name)
     }
     if (code) {
         parts.push(`code=?`)
         params.push(code)
     }
-    params.push(name)
-    const query = parts.length > 0 ? `update ${ZAGLUSHKA} set ${parts.join(', ')} where name=?;` : ""
+    params.push(id)
+    const query = parts.length > 0 ? `update ${ZAGLUSHKA} set ${parts.join(', ')} where id=?;` : ""
     return { query, params }
 }

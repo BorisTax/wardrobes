@@ -8,13 +8,13 @@ export class MaterialExtService<T> {
     async getExtData() {
         return await this.provider.getExtData()
     }
-    async addExtData(data: T) {
+    async addExtData(data: Omit<T, "id">) {
         return await this.provider.addExtData(data)
     }
-    async deleteExtData(name: string) {
-        return await this.provider.deleteExtData(name)
+    async deleteExtData(id: number) {
+        return await this.provider.deleteExtData(id)
     }
-    async updateExtData(data: T & {newName: string}) {
+    async updateExtData(data: T) {
         return await this.provider.updateExtData(data)
     }
 }

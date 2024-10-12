@@ -9,7 +9,6 @@ import { wardrobeDataAtom } from "./wardrobe";
 import messages from "../server/messages";
 import { appAtom } from "./app";
 import { AppState } from "../types/app";
-import { boolToYesNo } from "../functions/messages";
 
 
 export const specificationDataAtom = atom<SpecificationData[]>([])

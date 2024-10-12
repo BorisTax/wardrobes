@@ -1,5 +1,5 @@
 import messages from '../../messages.js'
-import { Brush, NewBrush } from '../../../types/materials.js';
+import { Brush } from '../../../types/materials.js';
 import { materialsPath } from '../../options.js';
 import BrushServiceSQLite from '../../services/extServices/brushServiceSQLite.js';
 import { MaterialExtService } from '../../services/materialExtService.js';
@@ -11,7 +11,7 @@ export async function getBrushes() {
   return await materialService.getExtData()
 }
 
-export async function addBrush({ name, code }: Brush) {
+export async function addBrush({ name, code }: Omit<Brush, "id">) {
   const materialService = new MaterialExtService<Brush>(new BrushServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
@@ -20,25 +20,24 @@ export async function addBrush({ name, code }: Brush) {
   return await materialService.addExtData({ name, code })
 }
 
-export async function updateBrush({ name, newName, code }: NewBrush) {
+export async function updateBrush({ id, name, code }: Brush) {
   const materialService = new MaterialExtService<Brush>(new BrushServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
   const brushes = result.data
-  if (!(brushes as Brush[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
-  if ((brushes as Brush[]).find(m => m.name === newName)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_EXIST }
-  return await materialService.updateExtData({ name, newName, code })
+  if (!(brushes as Brush[]).find(m => m.id === id)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  return await materialService.updateExtData({ id, name, code })
 }
 
-export async function deleteBrush(name: string) {
+export async function deleteBrush(id: number) {
   const materialService = new MaterialExtService<Brush>(new BrushServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
   const brushes = result.data
-  if (!(brushes as Brush[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  if (!(brushes as Brush[]).find(m => m.id === id)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
   const {success, data: profiles} = await getProfiles()
   if(success){
-    if(profiles?.find(p => p.brush === name)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_LINKED }
+    if(profiles?.find(p => p.brushId === id)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_LINKED }
   }
-  return await materialService.deleteExtData(name)
+  return await materialService.deleteExtData(id)
 }

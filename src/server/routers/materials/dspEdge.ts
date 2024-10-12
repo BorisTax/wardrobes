@@ -10,29 +10,29 @@ export async function getDspEdges() {
   return await materialService.getExtData()
 }
 
-export async function addDspEdge({ name, edge, zaglushka }: DSP_EDGE_ZAGL) {
+export async function addDspEdge({ matId, edgeId, zaglushkaId }: DSP_EDGE_ZAGL) {
   const materialService = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
   const edges = result.data
-  if ((edges as DSP_EDGE_ZAGL[]).find(m => m.name === name)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_EXIST }
-  return await materialService.addExtData({ name, edge, zaglushka })
+  if ((edges as DSP_EDGE_ZAGL[]).find(m => m.matId === matId)) return { success: false, status: StatusCodes.CONFLICT, message: messages.MATERIAL_EXIST }
+  return await materialService.addExtData({ matId, edgeId, zaglushkaId })
 }
 
-export async function updateDspEdge({ name, edge, zaglushka }: DSP_EDGE_ZAGL) {
+export async function updateDspEdge({ matId, edgeId, zaglushkaId }: DSP_EDGE_ZAGL) {
   const materialService = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
   const edges = result.data
-  if (!(edges as DSP_EDGE_ZAGL[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
-  return await materialService.updateExtData({ newName: "", name, edge, zaglushka})
+  if (!(edges as DSP_EDGE_ZAGL[]).find(m => m.matId === matId)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  return await materialService.updateExtData({ matId, edgeId, zaglushkaId})
 }
 
-export async function deleteDspEdge(name: string) {
+export async function deleteDspEdge(matId: number) {
   const materialService = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
   const edges = result.data
-  if (!(edges as DSP_EDGE_ZAGL[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
-  return await materialService.deleteExtData(name)
+  if (!(edges as DSP_EDGE_ZAGL[]).find(m => m.matId === matId)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  return await materialService.deleteExtData(matId)
 }

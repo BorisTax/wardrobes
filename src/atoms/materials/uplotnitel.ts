@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { Uplotnitel } from "../../types/materials";
+import { OmitId, Uplotnitel } from "../../types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
 import { TableFields } from "../../types/server";
@@ -30,7 +30,7 @@ export const deleteUplotnitelAtom = atom(null, async (get, set, uplotnitel: Uplo
     }
 })
 
-export const addUplotnitelAtom = atom(null, async (get, set, { name, code }: Uplotnitel) => {
+export const addUplotnitelAtom = atom(null, async (get, set, { name, code }: OmitId<Uplotnitel>) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {

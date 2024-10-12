@@ -6,7 +6,7 @@ import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
 import EditContainer from "../../EditContainer"
 import { deleteRoleAtom, userAtom, userRolesAtom } from "../../../atoms/users"
-import { PERMISSIONS_SCHEMA, RESOURCE } from "../../../types/user"
+import { PERMISSIONS_SCHEMA, RESOURCE, UserRole } from "../../../types/user"
 import { addPermissionsAtom, deletePermissionsAtom, loadPermissionsAtom, loadResourceListAtom, permissionsAtom, resourceAsMap, updatePermissionsAtom } from "../../../atoms/permissions"
 import ComboBox from "../../inputs/ComboBox"
 import AddUserRoleDialog from "./AddUserRoleDialog"
@@ -39,7 +39,7 @@ export default function EditPermissionsDialog() {
     const contents = permData.map((p: PERMISSIONS_SCHEMA) => [resourceList.get(p.resource), boolToYesNo(p.read as boolean), boolToYesNo(p.create as boolean), boolToYesNo(p.update as boolean), boolToYesNo(p.delete as boolean)])
     const editItems: EditDataItem[] = [
         { caption: "Роль:", value: role.name, message: messages.ENTER_ROLE, type: InputType.TEXT, readonly: true },
-        { caption: "Права:", value: resource, valueCaption: (value) => { return resourceList.get(value) }, message: messages.ENTER_RESOURCE, type: InputType.LIST, list: resourceList },
+        { caption: "Права:", value: resource, valueCaption: (value) => { return resourceList.get(value) }, message: messages.ENTER_RESOURCE, type: InputType.LIST, list: [...resourceList.keys()] },
         { caption: "Чтение:", value: Read, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
         { caption: "Создание:", value: Create, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
         { caption: "Обновление:", value: Update, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
@@ -60,7 +60,7 @@ export default function EditPermissionsDialog() {
     return <EditContainer>
         <div>
             <div className="d-flex flex-nowrap gap-2 align-items-start position-relative">
-                <ComboBox title="Роль: " value={role.name} items={userRoles} onChange={(index) => { setRoleIndex(index); }} />
+                <ComboBox<UserRole> title="Роль: " value={role} items={roles} displayValue={value => value?.name} onChange={(index) => { setRoleIndex(index); }} />
                 {perm?.Create && <ImageButton title="Добавить" icon='add' onClick={() => { addUserRoleDialogRef.current?.showModal() }} />}
                 {perm?.Delete && <ImageButton title="Удалить" icon='delete' onClick={async () => {
                     if (await showConfirm("Удалить роль " + role.name)) {

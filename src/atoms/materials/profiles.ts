@@ -1,11 +1,11 @@
 import { atom } from "jotai";
-import { Profile, ProfileType } from "../../types/materials";
+import { OmitId, Profile, ProfileType } from "../../types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
 import { TableFields } from "../../types/server";
 import messages from "../../server/messages";
 import { RESOURCE } from "../../types/user";
-const initProfile: Profile = { type: ProfileType.STANDART, name: "", brush: "", code: "" }
+const initProfile: Profile = { id: -1, type: ProfileType.STANDART, name: "", brushId: 0, code: "" }
 export const profileListAtom = atom<Profile[]>([initProfile])
 export const activeProfileIndexAtom = atom(0)
 
@@ -31,14 +31,14 @@ export const deleteProfileAtom = atom(null, async (get, set, profile: Profile) =
      }
 })
 
-export const addProfileAtom = atom(null, async (get, set, profile: Profile) => {
+export const addProfileAtom = atom(null, async (get, set, profile: OmitId<Profile>) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: profile.name,
         [TableFields.TYPE]: profile.type,
         [TableFields.CODE]: profile.code,
-        [TableFields.BRUSH]: profile.brush,
+        [TableFields.BRUSHID]: profile.brushId,
         [TableFields.TOKEN]: token
     }
     try {
@@ -51,15 +51,15 @@ export const addProfileAtom = atom(null, async (get, set, profile: Profile) => {
      }
 })
 
-export const updateProfileAtom = atom(null, async (get, set, { name, type, newCode, newName, newBrush }) => {
+export const updateProfileAtom = atom(null, async (get, set, { id, name, type, code, brushId }) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
-        [TableFields.NEWNAME]: newName,
+        [TableFields.ID]: id,
         [TableFields.TYPE]: type,
-        [TableFields.CODE]: newCode,
-        [TableFields.BRUSH]: newBrush,
+        [TableFields.CODE]: code,
+        [TableFields.BRUSHID]: brushId,
         [TableFields.TOKEN]: token
     }
     try {

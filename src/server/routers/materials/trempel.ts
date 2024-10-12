@@ -10,7 +10,7 @@ export async function getTrempels() {
   return await materialService.getExtData()
 }
 
-export async function addTrempel({ name, code, caption }: Trempel) {
+export async function addTrempel({ name, code, caption }: Omit<Trempel, "id">) {
   const materialService = new MaterialExtService<Trempel>(new TrempelServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
@@ -19,20 +19,20 @@ export async function addTrempel({ name, code, caption }: Trempel) {
   return await materialService.addExtData({ name, code, caption })
 }
 
-export async function updateTrempel({ name, caption, code }: Trempel) {
+export async function updateTrempel({ id, name, caption, code }: Trempel) {
   const materialService = new MaterialExtService<Trempel>(new TrempelServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
   const trempels = result.data
-  if (!(trempels as Trempel[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
-  return await materialService.updateExtData({ name, caption, newName: "", code })
+  if (!(trempels as Trempel[]).find(m => m.id === id)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  return await materialService.updateExtData({  id, name, caption, code })
 }
 
-export async function deleteTrempel(name: string) {
+export async function deleteTrempel(id: number) {
   const materialService = new MaterialExtService<Trempel>(new TrempelServiceSQLite(materialsPath))
   const result = await materialService.getExtData()
   if (!result.success) return result
   const trempels = result.data
-  if (!(trempels as Trempel[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
-  return await materialService.deleteExtData(name)
+  if (!(trempels as Trempel[]).find(m => m.id === id)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  return await materialService.deleteExtData(id)
 }

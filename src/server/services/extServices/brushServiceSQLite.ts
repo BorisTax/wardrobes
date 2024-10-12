@@ -1,6 +1,6 @@
-import { Brush, NewBrush } from '../../../types/materials.js';
+import { Brush } from '../../../types/materials.js';
 import { Result } from '../../../types/server.js';
-import { IMaterialExtService, IMaterialServiceProvider } from '../../../types/services.js';
+import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/database.js';
 import messages from '../../messages.js';
 import { MAT_TABLE_NAMES } from '../../../types/schemas.js';
@@ -14,31 +14,31 @@ export default class BrushServiceSQLite implements IMaterialExtService<Brush> {
     async getExtData(): Promise<Result<Brush[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${BRUSH};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ name, code }: Brush): Promise<Result<null>> {
+    async addExtData({ name, code }: Omit<Brush, "id">): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into ${BRUSH} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
-    async deleteExtData(name: string): Promise<Result<null>> {
+    async deleteExtData(id: number): Promise<Result<null>> {
         
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${BRUSH} WHERE name=?;`, [name], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${BRUSH} WHERE id=?;`, [id], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
-    async updateExtData({ newName, code, name }: NewBrush): Promise<Result<null>> {
-        const query = getBrushQuery({ newName, code, name })
+    async updateExtData({ id, code, name }: Brush): Promise<Result<null>> {
+        const query = getBrushQuery({ id, code, name })
         return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
-function getBrushQuery({ newName, code, name }: NewBrush) {
+function getBrushQuery({ id, code, name }: Brush) {
     const parts = []
     const params = []
-    if (newName) {
+    if (name) {
         parts.push(`name=?`)
-        params.push(newName)
+        params.push(name)
     }
     if (code) {
         parts.push(`code=?`)
         params.push(code)
     }
-    params.push(name)
-    const query = parts.length > 0 ? `update ${BRUSH} set ${parts.join(', ')} where name=?;` : ""
+    params.push(id)
+    const query = parts.length > 0 ? `update ${BRUSH} set ${parts.join(', ')} where id=?;` : ""
     return { query, params }
 }

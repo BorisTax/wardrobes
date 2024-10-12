@@ -1,6 +1,6 @@
 import { Request } from "express"
 import { SpecificationItem } from "./specification"
-import { FasadMaterial } from "./enums"
+import { FASAD_TYPE } from "./enums"
 export type Token = {
     token: string
     username: string
@@ -23,15 +23,16 @@ export enum TableFields {
     IMAGE = 'image',
     CODE = 'code',
     PURPOSE = 'purpose',
-    BRUSH = 'brush',
+    BRUSHID = 'brushId',
     TOKEN = 'token',
-    NEWNAME = 'newName',
     TYPE = 'type',
+    TYPEID = 'typeId',
     DSP = 'dsp',
-    EDGE = 'edge',
-    ZAGLUSHKA = 'zaglushka',
+    EDGEID = 'edgeId',
+    ZAGLUSHKAID = 'zaglushkaId',
     CAPTION = 'caption',
     ID = 'id',
+    MATID = "matId",
     COEF = 'coef',
     PRICE = 'price',
     MARKUP = 'markup',
@@ -68,7 +69,7 @@ export type Result<T> = {
 
 
 export type ExtMaterialQuery = {
-    material?: FasadMaterial
+    type?: FASAD_TYPE
     name?: string
     code?: string
 }

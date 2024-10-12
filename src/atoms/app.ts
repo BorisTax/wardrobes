@@ -6,7 +6,7 @@ import Fasad from "../classes/Fasad";
 import { trySetHeight, trySetWidth } from "../functions/fasades";
 import { openFile, readFile, saveState } from '../functions/file';
 import { materialListAtom, setInitialMaterials } from './materials/materials';
-import { FasadMaterial } from '../types/enums';
+import { FASAD_TYPE } from '../types/enums';
 import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
@@ -22,8 +22,8 @@ export const loadInitialStateAtom = atom(null, async (get, set) => {
     set(loadedInitialStateAtom, false)
     const result: FetchResult<InitialAppState> = await fetchGetData(`/api/wardrobe/initial`)
     if (result.success){
-        const { wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial } = result.data as InitialAppState
-        const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, material, extMaterial)
+        const { wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId } = result.data as InitialAppState
+        const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId)
         set(appAtom, { state, next: null, previous: null })
         set(calculateCombiSpecificationsAtom)
         set(loadedInitialStateAtom, true)
@@ -65,12 +65,13 @@ export const openStateAtom = atom(null, async (get: Getter, set: Setter) => {
     }
 })
 export const resetAppDataAtom = atom(null, (get: Getter, set: Setter) => {
-    set(appAtom, { state: getInitialAppState(), next: null, previous: null })
-    const mList = get(materialListAtom)
-    const material = mList[0].material
-    const extMaterial = mList[0].name
-    const { rootFasades } = get(appDataAtom)
-    setInitialMaterials(rootFasades, material as FasadMaterial, extMaterial)
+    set(loadInitialStateAtom)
+    // set(appAtom, { state: getInitialAppState(), next: null, previous: null })
+    // const mList = get(materialListAtom)
+    // const fasadType = mList[0].type
+    // const materialId = mList[0].id
+    // const { rootFasades } = get(appDataAtom)
+    // setInitialMaterials(rootFasades, fasadType, materialId)
 })
 export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmCallback]: SetAtomComfirm<number>) => {
     const { order, wardWidth, wardHeight, profile, type, rootFasades } = get(appDataAtom)

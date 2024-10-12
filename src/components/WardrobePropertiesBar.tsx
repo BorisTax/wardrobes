@@ -6,7 +6,6 @@ import { profileListAtom } from "../atoms/materials/profiles"
 import { Profile } from "../types/materials"
 import ComboBox from "./inputs/ComboBox"
 import { appDataAtom, historyAppAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setOrderAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"
-import { WardTypes } from "../functions/wardrobe"
 import useConfirm from "../custom-hooks/useConfirm"
 import ImageButton from "./inputs/ImageButton"
 import { userAtom } from "../atoms/users"
@@ -14,9 +13,12 @@ import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { WARDROBE_TYPE } from "../types/wardrobe"
 import { RESOURCE } from "../types/user"
-const fasades = ["2", "3", "4", "5", "6"]
+import { wardrobeTypesAtom } from "../atoms/wardrobe"
+import { Value } from "sass"
+const fasades = [ 2, 3, 4, 5, 6]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)
+    const WardTypes = useAtomValue(wardrobeTypesAtom)
     const profileList = useAtomValue(profileListAtom)
     const profileNames = useMemo(() => profileList.map((p: Profile) => p.name), [profileList])
     const { order, profile, fasadCount, type, wardHeight, wardWidth } = useAtomValue(appDataAtom)
@@ -36,7 +38,7 @@ export default function WardrobePropertiesBar() {
     const perm = user.permissions.get(RESOURCE.COMBIFASADES)
     const saveFileDisabled = !perm?.Create
     const readFileDisabled = !perm?.Read
-    const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.CORPUS)), [])
+    const wardTypes = useMemo(() => new Map([...WardTypes.entries()].filter(v => v[1] !== WARDROBE_TYPE.GARDEROB)), [])
     const wardTypeChangeConfirm = async () => {
         return await showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
     }
@@ -69,7 +71,7 @@ export default function WardrobePropertiesBar() {
             <PropertyRow>
                 <TextBox name="order" value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
             </PropertyRow>
-            <ComboBox title="Тип:" value={type} items={wardTypes} onChange={(_, value) => { 
+            <ComboBox<WARDROBE_TYPE> title="Тип:" value={type} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={(_, value) => { 
                 setWardType([value as WARDROBE_TYPE, wardTypeChangeConfirm])
             }} />
             <div className="text-end">Ширина: </div>
@@ -80,8 +82,8 @@ export default function WardrobePropertiesBar() {
             <PropertyRow>
                 <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1800} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} submitOnLostFocus={true} />
             </PropertyRow>
-            <ComboBox title="Кол-во фасадов:" value={`${fasadCount}`} items={fasades} onChange={(_, value) => { setFasadCount([+value, wardFasadCountConfirm]) }} />
-            <ComboBox title="Профиль:" value={profile?.name || ""} items={profileNames} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />
+            <ComboBox<number> title="Кол-во фасадов:" value={fasadCount} items={fasades} displayValue={value => `${value}`} onChange={(_, value) => { setFasadCount([+value, wardFasadCountConfirm]) }} />
+            <ComboBox<Profile> title="Профиль:" value={profile} items={profileList} displayValue={value => value?.name} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />
         </PropertyGrid>
     </div>
 }

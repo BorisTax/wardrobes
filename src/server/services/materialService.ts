@@ -1,5 +1,5 @@
-import { FasadMaterial } from "../../types/enums"
-import { ExtMaterial, ExtNewMaterial, NewProfile, Profile } from "../../types/materials"
+import { FASAD_TYPE } from "../../types/enums"
+import { FasadMaterial, Profile } from "../../types/materials"
 import { ExtMaterialQuery } from "../../types/server"
 import { IMaterialService, IMaterialServiceProvider } from "../../types/services"
 
@@ -8,31 +8,34 @@ export class MaterialService implements IMaterialService {
     constructor(provider: IMaterialServiceProvider) {
         this.provider = provider
     }
+    async getMaterialTypes() { 
+        return await this.provider.getMaterialTypes()
+    }
     async getExtMaterials(matQuery: ExtMaterialQuery) { 
         return await this.provider.getExtMaterials(matQuery)
     }
-    async addExtMaterial({ name, material, image, code, purpose }: ExtMaterial) {
-        return await this.provider.addExtMaterial({ name, material, image, code, purpose })
+    async addExtMaterial({ name, type: material, image, code, purpose }: Omit<FasadMaterial, "id">) {
+        return await this.provider.addExtMaterial({ name, type: material, image, code, purpose })
     }
-    async updateExtMaterial({ name, material, newName, image, code, purpose }: ExtNewMaterial) {
-        return await this.provider.updateExtMaterial({ name, material, newName, image, code, purpose })
+    async updateExtMaterial({ id, name, type: material, image, code, purpose }: FasadMaterial) {
+        return await this.provider.updateExtMaterial({ id, name, type: material, image, code, purpose })
     }
-    async deleteExtMaterial(name: string, material: string) {
-        return await this.provider.deleteExtMaterial(name, material)
+    async deleteExtMaterial(id: number) {
+        return await this.provider.deleteExtMaterial(id)
     }
-    async getImage(material: FasadMaterial, name: string){
-        return await this.provider.getImage(material, name)
+    async getImage(id: number){
+        return await this.provider.getImage(id)
     }
     async getProfiles() {
         return await this.provider.getProfiles()
     }
-    async addProfile(profile: Profile) {
+    async addProfile(profile: Omit<Profile, "id">) {
         return await this.provider.addProfile(profile)
     }
-    async deleteProfile(name: string, type: string) {
-        return await this.provider.deleteProfile(name, type)
+    async deleteProfile(id: number) {
+        return await this.provider.deleteProfile(id)
     }
-    async updateProfile(profile: NewProfile) {
+    async updateProfile(profile: Profile) {
         return await this.provider.updateProfile(profile)
     }
 }

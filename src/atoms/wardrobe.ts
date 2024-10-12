@@ -3,14 +3,15 @@ import { CONSOLE_TYPE, DETAIL_NAME, Detail, ExtComplectData, FasadesData, WARDRO
 import { FetchResult, fetchGetData } from "../functions/fetch"
 import { userAtom } from "./users"
 import { calculateSpecificationsAtom } from "./specification"
+import { WardrobeTableSchema } from "../types/schemas"
 
 export const initFasades: FasadesData = {
-    dsp: { count: 0, names: [] },
-    mirror: { count: 0, names: [] },
-    fmp: { count: 0, names: [] },
-    sand: { count: 0, names: [] },
-    lacobel: { count: 0, names: [] },
-    lacobelGlass: { count: 0, names: [] }
+    dsp: { count: 0, matId: [] },
+    mirror: { count: 0, matId: [] },
+    fmp: { count: 0, matId: [] },
+    sand: { count: 0, matId: [] },
+    lacobel: { count: 0, matId: [] },
+    lacobelGlass: { count: 0, matId: [] }
 }
 
 export const getInitExtComplect = (height: number, depth: number) => ({
@@ -33,13 +34,19 @@ const initState: WardrobeData = {
     width: 2000,
     depth: 600,
     height: 2100,
-    dspName: "",
-    profileName: "",
+    dspId: -1,
+    profileId: -1,
     fasades: initFasades,
     extComplect: getInitExtComplect(2400, 600)
 }
+export type WardTypes = Map<WARDROBE_TYPE, string>
+export type WardKinds = Map<WARDROBE_KIND, string> 
+export type ConsoleTypes = Map<CONSOLE_TYPE, string> 
 
 export const wardrobeDataAtom = atom<WardrobeData>(initState)
+export const wardrobeKindsAtom = atom<WardKinds>(new Map())
+export const wardrobeTypesAtom = atom<WardTypes>(new Map())
+export const consoleTypesAtom = atom<ConsoleTypes>(new Map())
 
 export const setWardrobeDataAtom = atom(null, (get, set, setter: (prev: WardrobeData) => WardrobeData) => {
     const loaded = get(loadedInitialWardrobeDataAtom)
@@ -56,6 +63,30 @@ export const loadedInitialWardrobeDataAtom = atom(false)
 export const loadInitialWardrobeDataAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
     set(loadedInitialWardrobeDataAtom, false)
+    const fetchWardTypes: FetchResult<WardrobeTableSchema[]> = await fetchGetData(`/api/wardrobe/wardrobe_types?token=${token}`)
+    if (fetchWardTypes.success) {
+        const m = new Map()
+        fetchWardTypes.data?.forEach(element => {
+            m.set(element.name, element.caption)
+        });
+        set(wardrobeTypesAtom, m)
+    }
+    const fetchWardKinds: FetchResult<WardrobeTableSchema[]> = await fetchGetData(`/api/wardrobe/wardrobe_kinds?token=${token}`)
+    if (fetchWardKinds.success) {
+        const m = new Map()
+        fetchWardKinds.data?.forEach(element => {
+            m.set(element.name, element.caption)
+        });
+        set(wardrobeKindsAtom, m)
+    }
+    const fetchConsoleTypes: FetchResult<WardrobeTableSchema[]> = await fetchGetData(`/api/wardrobe/console_types?token=${token}`)
+    if (fetchWardTypes.success) {
+        const m = new Map()
+        fetchConsoleTypes.data?.forEach(element => {
+            m.set(element.name, element.caption)
+        });
+        set(consoleTypesAtom, m)
+    }
     const result: FetchResult<WardrobeData> = await fetchGetData(`/api/wardrobe/initialWardrobeData?token=${token}`)
     const data = result.data as WardrobeData
     if (result.success) {
@@ -83,7 +114,7 @@ export const loadDetailAtom = atom(null, async (get, set, detailName: DETAIL_NAM
 
 
 const isDataDiffers = (prev: WardrobeData, current: WardrobeData): boolean => {
-    return isDimensionsDiffers(prev, current) || (prev.schema !== current.schema) || prev.dspName !== current.dspName || prev.profileName !== current.profileName || fasadesDiffers(prev.fasades, current.fasades)
+    return isDimensionsDiffers(prev, current) || (prev.schema !== current.schema) || prev.dspId !== current.dspId || prev.profileId !== current.profileId || fasadesDiffers(prev.fasades, current.fasades)
         || extComplectDiffers(prev.extComplect, current.extComplect)
 }
 
@@ -92,12 +123,12 @@ const isDimensionsDiffers = (prev: WardrobeData, current: WardrobeData): boolean
         prev.wardKind !== current.wardKind
 }
 const fasadesDiffers = (prev: FasadesData, current: FasadesData): boolean => {
-    return prev.dsp.count !== current.dsp.count || prev.dsp.names.find((n, index) => n !== current.dsp.names[index]) !== undefined
-        || prev.fmp.count !== current.fmp.count || prev.fmp.names.find((n, index) => n !== current.fmp.names[index]) !== undefined
-        || prev.lacobel.count !== current.lacobel.count || prev.lacobel.names.find((n, index) => n !== current.lacobel.names[index]) !== undefined
-        || prev.lacobelGlass.count !== current.lacobelGlass.count || prev.lacobelGlass.names.find((n, index) => n !== current.lacobelGlass.names[index]) !== undefined
-        || prev.mirror.count !== current.mirror.count || prev.mirror.names.find((n, index) => n !== current.mirror.names[index]) !== undefined
-        || prev.sand.count !== current.sand.count || prev.sand.names.find((n, index) => n !== current.sand.names[index]) !== undefined
+    return prev.dsp.count !== current.dsp.count || prev.dsp.matId.find((n, index) => n !== current.dsp.matId[index]) !== undefined
+        || prev.fmp.count !== current.fmp.count || prev.fmp.matId.find((n, index) => n !== current.fmp.matId[index]) !== undefined
+        || prev.lacobel.count !== current.lacobel.count || prev.lacobel.matId.find((n, index) => n !== current.lacobel.matId[index]) !== undefined
+        || prev.lacobelGlass.count !== current.lacobelGlass.count || prev.lacobelGlass.matId.find((n, index) => n !== current.lacobelGlass.matId[index]) !== undefined
+        || prev.mirror.count !== current.mirror.count || prev.mirror.matId.find((n, index) => n !== current.mirror.matId[index]) !== undefined
+        || prev.sand.count !== current.sand.count || prev.sand.matId.find((n, index) => n !== current.sand.matId[index]) !== undefined
 }
 const extComplectDiffers = (prev: ExtComplectData, current: ExtComplectData): boolean => {
     return prev.telescope !== current.telescope || prev.shelf !== current.shelf || prev.shelfPlat !== current.shelfPlat || prev.pillar !== current.pillar

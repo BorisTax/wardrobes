@@ -1,5 +1,5 @@
-import { FasadMaterial } from "../../../types/enums";
-import { DSP_EDGE_ZAGL, Edge, ExtMaterial, Zaglushka } from "../../../types/materials";
+import { FASAD_TYPE } from "../../../types/enums";
+import { DSP_EDGE_ZAGL, Edge, FasadMaterial, Zaglushka } from "../../../types/materials";
 import { WardrobeDetailSchema, WardrobeDetailTableSchema, WardrobeFurnitureTableSchema } from "../../../types/schemas";
 import { SpecificationItem } from "../../../types/specification";
 import { DETAIL_NAME, DRILL_TYPE, Detail, EDGE_SIDE, EDGE_TYPE, FullData, IWardrobe, SpecificationResult, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData, WardrobeDetailTable } from "../../../types/wardrobe";
@@ -86,8 +86,8 @@ export async function getWardrobeKind(kind: WARDROBE_KIND): Promise<string> {
 export async function getDSP(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const matService = new MaterialService(materialServiceProvider)
-    const materials = (await matService.getExtMaterials({ material: FasadMaterial.DSP, name: "", code: "" })).data as ExtMaterial[]
-    const mat = materials.find(m => m.name === data.dspName) || { code: "", name: "" }
+    const materials = (await matService.getExtMaterials({ type: FASAD_TYPE.DSP, name: "", code: "" })).data as FasadMaterial[]
+    const mat = materials.find(m => m.id === data.dspId) || { code: "", name: "" }
     const { code, name: caption } = mat
     const detailNames = await getDetailNames()
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""]]
@@ -162,22 +162,22 @@ export function getEdge(detail: WardrobeDetailTable): EDGE_SIDE | undefined {
     return undefined
 }
 
-export async function getZagByDSP(dsp: string): Promise<Zaglushka> {
+export async function getZagByDSP(dspId: number): Promise<Zaglushka> {
     let service = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath));
     const list = (await service.getExtData()).data as DSP_EDGE_ZAGL[];
     const zagservice = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
     const zagList = (await zagservice.getExtData()).data as Zaglushka[];
-    const zagName = list.find(m => m.name === dsp)?.zaglushka
-    const zaglushka = zagList.find(z => z.name === zagName) || { code: "", name: "" }
+    const zagId = list.find(m => m.matId === dspId)?.zaglushkaId
+    const zaglushka = zagList.find(z => z.id === zagId) || { id: -1, code: "", name: "" }
     return zaglushka;
 }
 
-export async function getEdgeByDSP(dsp: string): Promise<Edge> {
+export async function getEdgeByDSP(dspId: number): Promise<Edge> {
     let service = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath));
     const list = (await service.getExtData()).data as DSP_EDGE_ZAGL[];
-    const edgeservice = new MaterialExtService<Zaglushka>(new EdgeServiceSQLite(materialsPath));
+    const edgeservice = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath));
     const edgeList = (await edgeservice.getExtData()).data as Edge[];
-    const edgeName = list.find(m => m.name === dsp)?.edge
-    const edge = edgeList.find(z => z.name === edgeName) || { code: "", name: "" }
+    const edgeId = list.find(m => m.matId === dspId)?.edgeId
+    const edge = edgeList.find(z => z.id === edgeId) || { id: -1, code: "", name: "", typeId: -1 }
     return edge;
 }

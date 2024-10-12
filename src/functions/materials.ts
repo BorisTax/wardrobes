@@ -1,14 +1,14 @@
-import { MAT_PURPOSE, Division, FasadMaterial, MaterialGroup } from "../types/enums";
-import { ExtMaterial, Profile, ProfileType } from "../types/materials";
+import { MAT_PURPOSE, Division, FASAD_TYPE, MaterialGroup } from "../types/enums";
+import { FasadMaterial, Profile, ProfileType } from "../types/materials";
 
 export const colors = {
-    [FasadMaterial.EMPTY]: "#ff7b00",
-    [FasadMaterial.DSP]: "#ff7b00",
-    [FasadMaterial.FMP]: "#ff00f2",
-    [FasadMaterial.MIRROR]: "#00e1ff",
-    [FasadMaterial.LACOBEL]: "#ffc400",
-    [FasadMaterial.LACOBELGLASS]: "#fffb00",
-    [FasadMaterial.SAND]: "#15ff00"
+    [FASAD_TYPE.EMPTY]: "#ff7b00",
+    [FASAD_TYPE.DSP]: "#ff7b00",
+    [FASAD_TYPE.FMP]: "#ff00f2",
+    [FASAD_TYPE.MIRROR]: "#00e1ff",
+    [FASAD_TYPE.LACOBEL]: "#ffc400",
+    [FASAD_TYPE.LACOBELGLASS]: "#fffb00",
+    [FASAD_TYPE.SAND]: "#15ff00"
 }
 
 export const MaterialGroupCaptions: Map<string, string> = new Map()
@@ -26,19 +26,19 @@ MATPurpose.set(MAT_PURPOSE.FASAD, "Фасад")
 MATPurpose.set(MAT_PURPOSE.CORPUS, "Корпус")
 MATPurpose.set(MAT_PURPOSE.BOTH, "Фасад и корпус")
 
-export const Materials: Map<string, string> = new Map()
-Materials.set(FasadMaterial.DSP, "ДСП")
-Materials.set(FasadMaterial.MIRROR, "ЗЕРКАЛО")
-Materials.set(FasadMaterial.LACOBEL, "ЛАКОБЕЛЬ")
-Materials.set(FasadMaterial.LACOBELGLASS, "ЛАКОБЕЛЬ(СТЕКЛО)")
-Materials.set(FasadMaterial.FMP, "ФМП")
-Materials.set(FasadMaterial.SAND, "ПЕСКОСТРУЙ")
+// export const Materials: Map<string, string> = new Map()
+// Materials.set(FASAD_TYPE.DSP, "ДСП")
+// Materials.set(FASAD_TYPE.MIRROR, "ЗЕРКАЛО")
+// Materials.set(FASAD_TYPE.LACOBEL, "ЛАКОБЕЛЬ")
+// Materials.set(FASAD_TYPE.LACOBELGLASS, "ЛАКОБЕЛЬ(СТЕКЛО)")
+// Materials.set(FASAD_TYPE.FMP, "ФМП")
+// Materials.set(FASAD_TYPE.SAND, "ПЕСКОСТРУЙ")
 
-export const Profiles: Map<string, string> = new Map()
+export const Profiles: Map<ProfileType, string> = new Map()
 Profiles.set(ProfileType.STANDART, "СТАНДАРТ")
 Profiles.set(ProfileType.BAVARIA, "БАВАРИЯ")
 
-export type MaterialList = Map<string, ExtMaterial[]>
+// export type MaterialList = Map<string, FasadMaterial[]>
 export type ProfileList = Map<string, Profile[]>
 
 export const UnitCaptions: Map<string, string> = new Map()
@@ -64,43 +64,44 @@ export function getPurpose(fasad: boolean, corpus: boolean): MAT_PURPOSE {
     return MAT_PURPOSE.FASAD
 }
 
-export function getMaterialList(materials: ExtMaterial[]): MaterialList {
-    const list = new Map<string, ExtMaterial[]>()
-    if (!materials) return list
-    materials.forEach((m: ExtMaterial) => {
-        if (!list.has(m.material)) list.set(m.material, []);
-        list.get(m.material)?.push({ name: m.name, material: m.material, image: m.image, code: m.code, purpose: m.purpose })
-    })
-    return list
-}
+// export function getMaterialList(materials: FasadMaterial[]): MaterialList {
+//     const list = new Map<string, FasadMaterial[]>()
+//     if (!materials) return list
+//     materials.forEach((m: FasadMaterial) => {
+//         if (!list.has(m.type)) list.set(m.type, []);
+//         list.get(m.type)?.push({ name: m.name, type: m.type, image: m.image, code: m.code, purpose: m.purpose })
+//     })
+//     return list
+// }
 
-export function getProfileList(profiles: Profile[]): ProfileList {
-    const list = new Map()
-    if (!profiles) return list
-    profiles.forEach((m: Profile) => {
-        if (!list.has(m.name)) list.set(m.name, []);
-        list.get(m.name).push({ name: m.name, type: m.type, code: m.code })
-    })
-    return list
-}
+// export function getProfileList(profiles: Profile[]): ProfileList {
+//     const list = new Map()
+//     if (!profiles) return list
+//     profiles.forEach((m: Profile) => {
+//         if (!list.has(m.name)) list.set(m.name, []);
+//         list.get(m.name).push({ name: m.name, type: m.type, code: m.code })
+//     })
+//     return list
+// }
 
-export function getInitialMaterialList(): ExtMaterial[] {
-    const list: ExtMaterial[] = []
-    list.push({ name: "белый110", material: "DSP", image: "", code: "", purpose: MAT_PURPOSE.BOTH })
-    return list
-}
+// export function getInitialMaterialList(): FasadMaterial[] {
+//     const list: FasadMaterial[] = []
+//     list.push({ name: "белый110", type: "DSP", image: "", code: "", purpose: MAT_PURPOSE.BOTH })
+//     return list
+// }
 
-export function getFasadMaterial(material: string): FasadMaterial {
-    switch (material) {
-        case FasadMaterial.DSP: return FasadMaterial.DSP
-        case FasadMaterial.MIRROR: return FasadMaterial[material]
-        case FasadMaterial.LACOBEL: return FasadMaterial[material]
-        case FasadMaterial.LACOBELGLASS: return FasadMaterial[material]
-        case FasadMaterial.FMP: return FasadMaterial[material]
-        case FasadMaterial.SAND: return FasadMaterial[material]
-        default: return FasadMaterial.DSP
-    }
-}
+// export function getFasadMaterial(material: string): FASAD_TYPE {
+//     switch (material) {
+//         case FASAD_TYPE.DSP: return FASAD_TYPE.DSP
+//         case FASAD_TYPE.MIRROR: return FASAD_TYPE[material]
+//         case FASAD_TYPE.LACOBEL: return FASAD_TYPE[material]
+//         case FASAD_TYPE.LACOBELGLASS: return FASAD_TYPE[material]
+//         case FASAD_TYPE.FMP: return FASAD_TYPE[material]
+//         case FASAD_TYPE.SAND: return FASAD_TYPE[material]
+//         default: return FASAD_TYPE.DSP
+//     }
+// }
+
 export function getProfileDirection(direction: string): Division {
     switch (direction) {
         case Division.HEIGHT: return Division.HEIGHT
@@ -109,7 +110,7 @@ export function getProfileDirection(direction: string): Division {
     }
 }
 
-export function existMaterial(name: string, material: string, materialList: ExtMaterial[]): boolean {
-    const f = materialList.find((m: ExtMaterial) => m.name === name && m.material === material)
+export function existMaterial(name: string, material: string, materialList: FasadMaterial[]): boolean {
+    const f = materialList.find((m: FasadMaterial) => m.name === name && m.type === material)
     return !!f
 }

@@ -7,8 +7,7 @@ import { DETAIL_NAME, WARDROBE_KIND, WardrobeDetailTable } from '../../types/war
 import { DVPTableSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from '../../types/schemas.js';
 import { SpecificationItem } from '../../types/specification.js';
 import { StatusCodes } from 'http-status-codes';
-import { it } from 'node:test';
-const { MATERIALS, DETAIL_TABLE, DETAILS, DVP_TEMPLATES, FURNITURE, WARDROBES } = SPEC_TABLE_NAMES
+const { MATERIALS, DETAIL_TABLE, DETAILS, DVP_TEMPLATES, FURNITURE, WARDROBES, WARDROBE_TYPES, CONSOLE_TYPES } = SPEC_TABLE_NAMES
 export default class SpecificationServiceSQLite implements ISpecificationServiceProvider {
     dbFile: string;
     constructor(dbFile: string) {
@@ -47,6 +46,12 @@ export default class SpecificationServiceSQLite implements ISpecificationService
     }
     async getWardobeKinds(): Promise<Result<WardrobeTableSchema[]>>{
         return dataBaseQuery(this.dbFile, `select * from ${WARDROBES};`, [], { successStatusCode: StatusCodes.OK })
+    }
+    async getWardobeTypes(): Promise<Result<WardrobeTableSchema[]>>{
+        return dataBaseQuery(this.dbFile, `select * from ${WARDROBE_TYPES};`, [], { successStatusCode: StatusCodes.OK })
+    }
+    async getConsoleTypes(): Promise<Result<WardrobeTableSchema[]>>{
+        return dataBaseQuery(this.dbFile, `select * from ${CONSOLE_TYPES};`, [], { successStatusCode: StatusCodes.OK })
     }
 }
 

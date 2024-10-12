@@ -71,7 +71,7 @@ export default function FasadTemplatesDialog() {
                 {perm.Delete && <input type="button" value="Удалить" disabled={!curTemplate} onClick={async () => {
                     const message = `Удалить шаблон: "${newName}" ?`
                     if (await showConfirm(message)) {
-                        const result = await deleteTemplate({ name: newName })
+                        const result = await deleteTemplate(curTemplate.id)
                         if (result.message) showMessage(rusMessages[result.message])
                     }
                 }} />}
@@ -87,7 +87,7 @@ export default function FasadTemplatesDialog() {
                     const name = curTemplate.name
                     const message = `Заменить шаблон: "${newName}" ?`
                     if (await showConfirm(message)) {
-                        const result = await updateTemplate({ name, newName })
+                        const result = await updateTemplate({ id: curTemplate.id, name })
                         if (result.message) showMessage(rusMessages[result.message])
                     }
                 }} />}
@@ -95,7 +95,7 @@ export default function FasadTemplatesDialog() {
                     const name = curTemplate.name
                     const message = `Переименовать шаблон "${name}" в "${newName}" ?`
                     if (await showConfirm(message)) {
-                        const result = await updateTemplate({ name, newName, rename: true })
+                        const result = await updateTemplate({id: curTemplate.id, name: newName, rename: true })
                         if (result.message) showMessage(rusMessages[result.message])
                     }
                 }} />}

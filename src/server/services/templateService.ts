@@ -1,5 +1,5 @@
 import { ITemplateService, ITemplateServiceProvider } from "../../types/services"
-import { NewTemplate, Template } from "../../types/templates"
+import { Template } from "../../types/templates"
 
 export class TemplateService implements ITemplateService {
     provider: ITemplateServiceProvider
@@ -10,13 +10,13 @@ export class TemplateService implements ITemplateService {
     async getFasadTemplates() {
         return await this.provider.getFasadTemplates()
     }
-    async addFasadTemplate(template: Template) {
+    async addFasadTemplate(template: Omit<Template, "id">) {
         return await this.provider.addFasadTemplate(template)
     }
-    async deleteFasadTemplate(name: string) {
-        return await this.provider.deleteFasadTemplate(name)
+    async deleteFasadTemplate(id: number) {
+        return await this.provider.deleteFasadTemplate(id)
     }
-    async updateFasadTemplate(template: NewTemplate) {
+    async updateFasadTemplate(template: Template) {
         return await this.provider.updateFasadTemplate(template)
     }
 }

@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import Fasad from "../../classes/Fasad";
-import { Division, FasadMaterial } from "../../types/enums";
+import { Division, FASAD_TYPE } from "../../types/enums";
 import { useImageUrl } from "../../atoms/materials/materials";
 import { FasadBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";
@@ -19,7 +19,7 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
     }
     const [{ top, left, size, repeat }, setBackImagePosition] = useState({...backImageProps })
     useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [backImageProps])
-    const imageUrl = useImageUrl(fasad.Material, fasad.ExtMaterial)
+    const imageUrl = useImageUrl(fasad.MaterialId)
     const fasadRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
     let gridTemplate: {

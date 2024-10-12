@@ -14,30 +14,30 @@ export default class DSPEdgeZaglServiceSQLite implements IMaterialExtService<DSP
     async getExtData(): Promise<Result<DSP_EDGE_ZAGL[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${DSPEDGEZAGL};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ name, edge, zaglushka }: DSP_EDGE_ZAGL): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${DSPEDGEZAGL} (name, edge, zaglushka) values(?, ?, ?);`, [name, edge, zaglushka], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
+    async addExtData({ matId, edgeId, zaglushkaId }: DSP_EDGE_ZAGL): Promise<Result<null>> {
+        return dataBaseQuery(this.dbFile, `insert into ${DSPEDGEZAGL} (matId, edgeId, zaglushkaId) values(?, ?, ?);`, [matId, edgeId, zaglushkaId], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
-    async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${DSPEDGEZAGL} WHERE name=?;`, [name], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+    async deleteExtData(id: number): Promise<Result<null>> {
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${DSPEDGEZAGL} WHERE id=?;`, [id], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
-    async updateExtData({ name , edge, zaglushka }: DSP_EDGE_ZAGL): Promise<Result<null>> {
-        const query = getQuery({ name, edge, zaglushka })
+    async updateExtData({ matId, edgeId, zaglushkaId }: DSP_EDGE_ZAGL): Promise<Result<null>> {
+        const query = getQuery({ matId, edgeId, zaglushkaId })
         return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
-function getQuery({ name, edge, zaglushka}: DSP_EDGE_ZAGL) {
+function getQuery({ matId, edgeId, zaglushkaId}: DSP_EDGE_ZAGL) {
     const parts = []
     const params = []
-    if (edge) {
-        parts.push(`edge=?`)
-        params.push(edge)
+    if (edgeId) {
+        parts.push(`edgeId=?`)
+        params.push(edgeId)
     }
-    if (zaglushka) {
+    if (zaglushkaId) {
         parts.push(`zaglushka=?`)
-        params.push(zaglushka)
+        params.push(zaglushkaId)
     }
-    params.push(name)
-    const query = parts.length > 0 ? `update ${DSPEDGEZAGL} set ${parts.join(', ')} where name=?;` : ""
+    params.push(matId)
+    const query = parts.length > 0 ? `update ${DSPEDGEZAGL} set ${parts.join(', ')} where matId=?;` : ""
     return { query, params }
 }

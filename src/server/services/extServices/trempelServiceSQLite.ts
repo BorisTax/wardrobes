@@ -14,19 +14,19 @@ export default class TrempelServiceSQLite implements IMaterialExtService<Trempel
     async getExtData(): Promise<Result<Trempel[]>> {
         return dataBaseQuery(this.dbFile, `select * from ${TREMPEL};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ name, code }: Trempel): Promise<Result<null>> {
+    async addExtData({ name, code }: Omit<Trempel, "id">): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `insert into ${TREMPEL} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
-    async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${TREMPEL} WHERE name=?;`, [name], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+    async deleteExtData(id: number): Promise<Result<null>> {
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${TREMPEL} WHERE id=?;`, [id], {successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
-    async updateExtData({ caption, code, name }: Trempel ): Promise<Result<null>> {
-        const query = getQuery({ caption, code, name })
+    async updateExtData({ id, caption, code, name }: Trempel ): Promise<Result<null>> {
+        const query = getQuery({ id, caption, code, name })
         return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
-function getQuery({ caption, code, name }: Trempel) {
+function getQuery({ id, caption, code }: Trempel) {
     const parts = []
     const params = []
     if (caption) {
@@ -37,7 +37,7 @@ function getQuery({ caption, code, name }: Trempel) {
         parts.push(`code=?`)
         params.push(code)
     }
-    params.push(name)
-    const query = parts.length > 0 ? `update ${TREMPEL} set ${parts.join(', ')} where name=?;` : ""
+    params.push(id)
+    const query = parts.length > 0 ? `update ${TREMPEL} set ${parts.join(', ')} where id=?;` : ""
     return { query, params }
 }

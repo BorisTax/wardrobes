@@ -16,7 +16,7 @@ export default function EditBrush() {
     const brushNoSortedList = useAtomValue(brushListAtom)
     const brushList = useMemo(() => brushNoSortedList.toSorted((b1, b2) => b1.name > b2.name ? 1 : -1), [brushNoSortedList])
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const { name, code } = brushList[selectedIndex] || { name: "", code: "" }
+    const { id, name, code } = brushList[selectedIndex] || { id:-1, name: "", code: "" }
     const deleteBrush = useSetAtom(deleteBrushAtom)
     const addBrush = useSetAtom(addBrushAtom)
     const updateBrush = useSetAtom(updateBrushAtom)
@@ -35,12 +35,11 @@ export default function EditBrush() {
             onUpdate={perm?.Update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
-                const result = await updateBrush({ name, newName: usedName, code: usedCode })
+                const result = await updateBrush({ name, id, code: usedCode })
                 return result
             } : undefined}
-            onDelete={perm?.Delete ? async (name) => {
-                const index = brushList.findIndex((p: Brush) => p.name === name)
-                const result = await deleteBrush(brushList[index])
+            onDelete={perm?.Delete ? async () => {
+                const result = await deleteBrush(id)
                 setSelectedIndex(0)
                 return result
             } : undefined}

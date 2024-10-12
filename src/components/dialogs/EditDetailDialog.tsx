@@ -54,11 +54,11 @@ export default function EditDetailDialog() {
         { caption: "Длина:", value: `${detail.length}`, message: messages.ENTER_LENGTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
         { caption: "Ширина:", value: `${detail.width}`, message: messages.ENTER_WIDTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
         { caption: "Кол-во:", value: `${detail.count}`,message: messages.ENTER_COUNT, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Кромка по длине 1:", value: `${detail.edge?.L1}`, list: edges, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по длине 2:", value: `${detail.edge?.L2}`, list: edges, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по ширине 1:", value: `${detail.edge?.W1}`, list: edges, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по ширине 2:", value: `${detail.edge?.W2}`, list: edges, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Крепеж:", value: getDrillCaption(detail), list: drill, message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по длине 1:", value: `${detail.edge?.L1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по длине 2:", value: `${detail.edge?.L2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по ширине 1:", value: `${detail.edge?.W1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по ширине 2:", value: `${detail.edge?.W2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Крепеж:", value: getDrillCaption(detail), list: [...drill.keys()], valueCaption: value => drill.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
     ]
     useEffect(() => {
         setEditDetailDialogAtomRef(dialogRef)

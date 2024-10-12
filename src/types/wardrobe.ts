@@ -1,4 +1,4 @@
-import { FasadMaterial } from "./enums"
+import { FASAD_TYPE } from "./enums"
 import { PriceData, SpecificationData } from "./server"
 import { SPEC_GROUP } from "./specification"
 import { SpecificationItem } from "./specification"
@@ -11,12 +11,12 @@ export interface IWardrobe {
 }
 
 export type FasadesData = {
-    dsp: { count: number, names: string[] },
-    mirror: { count: number, names: string[] },
-    fmp: { count: number, names: string[] },
-    sand: { count: number, names: string[] },
-    lacobel: { count: number, names: string[] },
-    lacobelGlass: { count: number, names: string[] }
+    dsp: { count: number, matId: number[] },
+    mirror: { count: number, matId: number[] },
+    fmp: { count: number, matId: number[] },
+    sand: { count: number, matId: number[] },
+    lacobel: { count: number, matId: number[] },
+    lacobelGlass: { count: number, matId: number[] }
 }
 export type ExtComplectData = {
     telescope: number
@@ -49,9 +49,9 @@ export type WardrobeData = {
     depth: number
     height: number
     details: Detail[]
-    dspName: string
+    dspId: number
     fasades: FasadesData
-    profileName: string
+    profileId: number
     extComplect: ExtComplectData
 }
 
@@ -80,12 +80,12 @@ export type VerboseData = (string | number)[][]
 export type FullData = { data: SpecificationResultItem; verbose?: VerboseData}
 
 export type SpecificationMultiResultFasades = [
-    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FasadMaterial, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
 ]
 
 export type CombiSpecificationResult = { specifications: SpecificationResult[][], totalPrice: number[] }
@@ -98,7 +98,7 @@ export type SpecificationMultiResult = {
 
 export enum WARDROBE_TYPE {
     WARDROBE = 'WARDROBE',
-    CORPUS = 'CORPUS',
+    GARDEROB = 'GARDEROB',
     SYSTEM = 'SYSTEM',
 }
 

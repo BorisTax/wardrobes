@@ -1,39 +1,41 @@
-export type ComboBoxProps = {
-    onChange?: (index: number, value: string) => void
-    items: number[] | string[] | Map<string, string>
-    value: string
-    withoutEmpty?: boolean
+import { ReactNode, ReactNodeArray } from "react"
+
+export type ComboBoxProps<T> = {
+    onChange?: (index: number, value: T) => void
+    items: T[]
+    value?: T
+    displayValue: (value: T) => string | undefined
+    withEmpty?: boolean
     title?: string
     disabled?: boolean
     size?: number
     styles?: object
 }
 
-export default function ComboBox(props: ComboBoxProps = { value: "", items: [], disabled: false, title: "", size: 1, styles: {} }) {
-    const items: number[] | string[] = props.items instanceof Map ? [...props.items.values()] : props.items
-    let value = props.items instanceof Map ? props.items.get(props.value) || "" : props.value || ""
-    if (props.items instanceof Map) {
-        const key = [...props.items].find(i => i[1] === props.value)
-        if (key) value = key[0]
-    }
-    const itemsWithNull = (value === "" && !props.withoutEmpty) ? ["", ...items] : items
-    const options = itemsWithNull?.map((i, index) => <option key={index}>{i}</option>)
+export default function ComboBox<T>(props: ComboBoxProps<T> = { items: [], disabled: false, title: "", size: 1, styles: {}, displayValue: () => "" }) {
+    const items: T[] = props.items instanceof Map ? [...props.items.values()] : props.items
+    let value: T = items.find(i => i === props.value) as T
+    const options: ReactNode[] = []
+    if (props.withEmpty) options.push(<option key={-1}>{""}</option>)
+    items?.forEach((i, index) =>
+        options.push(
+            <option key={index}>
+                {props.displayValue(i) || ""}
+            </option>))
     return (
         <>
             {props.title ? <span className="text-end text-nowrap" style={{ ...props.styles }}>{props.title}</span> : <></>}
             <select size={!props.size ? 1 : props.size}
-                value={value}
+                value={props.displayValue(value)}
                 style={{ ...props.styles }}
                 disabled={props.disabled}
                 onClick={(e) => { e.stopPropagation() }}
                 onChange={(e) => {
-                    const index = items.findIndex(i => i === e.target.value) || 0
-                    const value = props.items instanceof Map ? ([...(props.items as Map<string, string>).entries()].find(entry => entry[1] === e.target.value) || ["", ""])[0] : e.target.value 
-                    if (props.onChange) props.onChange(index, value)
+                    const index = props.withEmpty ? e.target.selectedIndex - 1 : e.target.selectedIndex 
+                    if (props.onChange) props.onChange(index, items[index])
                 }}>
                 {options}
             </select >
-
         </>
     );
 }

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { Zaglushka, ExtMaterial } from "../../../types/materials"
+import { Zaglushka, FasadMaterial } from "../../../types/materials"
 import { addZaglushkaAtom, deleteZaglushkaAtom, zaglushkaListAtom, updateZaglushkaAtom } from "../../../atoms/materials/zaglushka"
 import messages from "../../../server/messages"
 import { materialListAtom } from "../../../atoms/materials/materials"
-import { FasadMaterial } from "../../../types/enums"
+import { FASAD_TYPE } from "../../../types/enums"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import TableData from "../../TableData"
@@ -19,8 +19,8 @@ export default function EditZaglushka() {
     const zaglushkaList = useMemo(() => zaglushkaNoSortedList.toSorted((i1, i2) => i1.name > i2.name ? 1 : -1), [zaglushkaNoSortedList])
     const materialList = useAtomValue(materialListAtom)
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const mList = useMemo(() => materialList.filter(mat => mat.material === FasadMaterial.DSP).map((m: ExtMaterial) => m.name), [materialList])
-    const { name, code } = zaglushkaList[selectedIndex] || { name: "", code: "" }
+    const mList = useMemo(() => materialList.filter(mat => mat.type === FASAD_TYPE.DSP).map((m: FasadMaterial) => m.name), [materialList])
+    const { id, name, code } = zaglushkaList[selectedIndex] || { name: "", code: "" }
     const deleteZaglushka = useSetAtom(deleteZaglushkaAtom)
     const addZaglushka = useSetAtom(addZaglushkaAtom)
     const updateZaglushka = useSetAtom(updateZaglushkaAtom)
@@ -39,7 +39,7 @@ export default function EditZaglushka() {
             onUpdate={perm?.Update ? async (checked, values) => {
                 const usedName = checked[0] ? values[0] : ""
                 const usedCode = checked[1] ? values[1] : ""
-                const result = await updateZaglushka({ name, newName: usedName, code: usedCode })
+                const result = await updateZaglushka({ id, name: usedName as string, code: usedCode as string })
                 return result
             } : undefined}
             onDelete={perm?.Delete ? async () => {

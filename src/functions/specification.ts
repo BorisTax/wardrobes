@@ -1,4 +1,4 @@
-import { FasadMaterial } from "../types/enums";
+import { FASAD_TYPE } from "../types/enums";
 import { SpecificationData } from "../types/server";
 import { CORPUS_SPECS } from "../types/specification";
 import { SpecificationItem } from "../types/specification";
@@ -7,12 +7,12 @@ import { FullData, SpecificationMultiResult, SpecificationResultItem } from "../
 export function getInitSpecification(): SpecificationMultiResult {
     return [
         { type: CORPUS_SPECS.CORPUS, spec: [] },
-        // { type: FasadMaterial.DSP, spec: [] },
-        // { type: FasadMaterial.MIRROR, spec: [] },
-        // { type: FasadMaterial.FMP, spec: [] },
-        // { type: FasadMaterial.SAND, spec: [] },
-        // { type: FasadMaterial.LACOBEL, spec: [] },
-        // { type: FasadMaterial.LACOBELGLASS, spec: [] },
+        // { type: FASAD_TYPE.DSP, spec: [] },
+        // { type: FASAD_TYPE.MIRROR, spec: [] },
+        // { type: FASAD_TYPE.FMP, spec: [] },
+        // { type: FASAD_TYPE.SAND, spec: [] },
+        // { type: FASAD_TYPE.LACOBEL, spec: [] },
+        // { type: FASAD_TYPE.LACOBELGLASS, spec: [] },
         // { type: CORPUS_SPECS.EXT_TEL, spec: [] },
         // { type: CORPUS_SPECS.EXT_CONSOLE, spec: [] },
         // { type: CORPUS_SPECS.EXT_BLINDER, spec: [] },
@@ -28,12 +28,12 @@ export function getInitSpecification(): SpecificationMultiResult {
 
 export const SpecGroups: Map<string, string> = new Map()
 SpecGroups.set(CORPUS_SPECS.CORPUS, "Корпус")
-SpecGroups.set(FasadMaterial.DSP, "Фасад ДСП")
-SpecGroups.set(FasadMaterial.MIRROR, "Фасад зеркало")
-SpecGroups.set(FasadMaterial.FMP, "Фасад ФМП")
-SpecGroups.set(FasadMaterial.SAND, "Фасад песок")
-SpecGroups.set(FasadMaterial.LACOBEL, "Фасад лакобель")
-SpecGroups.set(FasadMaterial.LACOBELGLASS, "Фасад лакобель(стекло)")
+SpecGroups.set(FASAD_TYPE.DSP, "Фасад ДСП")
+SpecGroups.set(FASAD_TYPE.MIRROR, "Фасад зеркало")
+SpecGroups.set(FASAD_TYPE.FMP, "Фасад ФМП")
+SpecGroups.set(FASAD_TYPE.SAND, "Фасад песок")
+SpecGroups.set(FASAD_TYPE.LACOBEL, "Фасад лакобель")
+SpecGroups.set(FASAD_TYPE.LACOBELGLASS, "Фасад лакобель(стекло)")
 SpecGroups.set(CORPUS_SPECS.EXT_TEL, "Телескоп")
 SpecGroups.set(CORPUS_SPECS.EXT_CONSOLE, "Консоль")
 SpecGroups.set(CORPUS_SPECS.EXT_BLINDER, "Козырек")

@@ -10,7 +10,7 @@ export async function getUplotnitels() {
   return await materialExtService.getExtData()
 }
 
-export async function addUplotnitel({ name, code }: Uplotnitel) {
+export async function addUplotnitel({ name, code }: Omit<Uplotnitel, "id">) {
   const materialExtService = new MaterialExtService<Uplotnitel>(new UplotnitelServiceSQLite(materialsPath))
   const result = await materialExtService.getExtData()
   if (!result.success) return result
@@ -19,20 +19,20 @@ export async function addUplotnitel({ name, code }: Uplotnitel) {
   return await materialExtService.addExtData({ name, code })
 }
 
-export async function updateUplotnitel({ name, code }: Uplotnitel) {
+export async function updateUplotnitel({ id, name, code }: Uplotnitel) {
   const materialExtService = new MaterialExtService<Uplotnitel>(new UplotnitelServiceSQLite(materialsPath))
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const list = result.data
-  if (!(list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
-  return await materialExtService.updateExtData({ name, newName: "", code })
+  if (!(list as Uplotnitel[]).find(m => m.id === id)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  return await materialExtService.updateExtData({ id, name, code })
 }
 
-export async function deleteUplotnitel(name: string) {
+export async function deleteUplotnitel(id: number) {
   const materialExtService = new MaterialExtService<Uplotnitel>(new UplotnitelServiceSQLite(materialsPath))
   const result = await materialExtService.getExtData()
   if (!result.success) return result
   const list = result.data
-  if (!(list as Uplotnitel[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
-  return await materialExtService.deleteExtData(name)
+  if (!(list as Uplotnitel[]).find(m => m.id === id)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.MATERIAL_NO_EXIST }
+  return await materialExtService.deleteExtData(id)
 }

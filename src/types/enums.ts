@@ -3,7 +3,11 @@ export enum Division {
     HEIGHT = "HEIGHT",
     WIDTH = "WIDTH"
 }
-export enum FasadMaterial {
+export enum ProfileDirection {
+    VERTICAL = "VERTICAL",
+    HORIZONTAL = "HORIZONTAL"
+}
+export enum FASAD_TYPE {
     EMPTY = '',
     DSP = 'DSP',
     MIRROR = 'MIRROR',

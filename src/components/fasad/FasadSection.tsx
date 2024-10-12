@@ -1,6 +1,6 @@
 import { MouseEvent, ReactElement, WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import Fasad from "../../classes/Fasad";
-import { Division, FasadMaterial } from "../../types/enums";
+import { Division, FASAD_TYPE } from "../../types/enums";
 import FixedHeight from "./FixedHeight";
 import FixedWidth from "./FixedWidth";
 import FixedBoth from "./FixedBoth";
@@ -30,7 +30,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [fasad, backImageProps.top, backImageProps.left, backImageProps.size, backImageProps.repeat])
     const { showFixIcons } = useAtomValue(settingsAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
-    const imageUrl = useImageUrl(fasad.Material, fasad.ExtMaterial)
+    const imageUrl = useImageUrl(fasad.MaterialId)
     const fasadRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
     let gridTemplate: {

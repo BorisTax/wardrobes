@@ -1,8 +1,6 @@
 export type Template = {
+    id: number
     name: string
     data: string
 }
 
-export type NewTemplate = Template & {
-    newName: string
-}

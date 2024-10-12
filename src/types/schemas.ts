@@ -1,9 +1,16 @@
+import { FASAD_TYPE } from "./enums"
 import { SpecificationItem } from "./specification"
 
 export type Query = {
     query: string,
     params: any[]
 }
+
+export type MaterialTypesSchema = {
+    type: FASAD_TYPE,
+    caption: string
+}
+
 export type WardrobeTableSchema = {
     name: string,
     caption: string
@@ -43,12 +50,13 @@ export type WardrobeFurnitureTableSchema = {
     enable: number
 }
 export enum MAT_TABLE_NAMES {
+    MATERIAL_TYPES = 'material_types',
     MATERIALS = 'materials',
-    EXTMATERIALS = 'extmaterials',
-    EXTMATERIALS_IMAGES = 'extmaterials_images',
+    MATERIALS_IMAGES = 'materials_images',
     PROFILE_COLORS = 'profilecolors',
     BRUSH = 'brush',
     EDGE = 'edge',
+    EDGE_TYPES = 'edge_types',
     TREMPEL = 'trempel',
     ZAGLUSHKA = 'zaglushka',
     UPLOTNITEL = 'uplotnitel',
@@ -60,6 +68,8 @@ export enum SPEC_TABLE_NAMES {
     MATERIALS = 'materials',
     UNITS = 'units',
     WARDROBES = 'wardrobes',
+    WARDROBE_TYPES = 'wardrobe_types',
+    CONSOLE_TYPES = 'console_types',
     DETAILS = 'details',
     DETAIL_TABLE = 'detail_table',
     DVP_TEMPLATES = 'dvp_templates',

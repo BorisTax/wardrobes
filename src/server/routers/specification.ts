@@ -9,7 +9,6 @@ import messages from "../messages.js";
 import { AppState } from "../../types/app.js";
 import { hasPermission } from "./users.js";
 import { PriceService } from "../services/priceService.js";
-import { verbose } from "sqlite3";
 
 const router = express.Router();
 export default router

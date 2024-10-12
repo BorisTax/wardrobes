@@ -1,6 +1,6 @@
-import { Edge, NewEdge } from '../../../types/materials.js';
+import { Edge } from '../../../types/materials.js';
 import { Result } from '../../../types/server.js';
-import { IMaterialExtService, IMaterialServiceProvider } from '../../../types/services.js';
+import { IMaterialExtService } from '../../../types/services.js';
 import { dataBaseQuery } from '../../functions/database.js';
 import messages from '../../messages.js';
 import { MAT_TABLE_NAMES } from '../../../types/schemas.js';
@@ -14,30 +14,34 @@ export default class EdgeServiceSQLite implements IMaterialExtService<Edge> {
     async getExtData(): Promise<Result<Edge[]>> {
         return dataBaseQuery<Edge[]>(this.dbFile, `select * from ${EDGE};`, [], {successStatusCode: StatusCodes.OK})
     }
-    async addExtData({ name, code }: Edge): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `insert into ${EDGE} (name, code) values(?, ?);`, [name, code], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
+    async addExtData({ name, code, typeId }: Omit<Edge, "id">): Promise<Result<null>> {
+        return dataBaseQuery(this.dbFile, `insert into ${EDGE} (name, code, typeId) values(?, ?, ?);`, [name, code, typeId], {successStatusCode: StatusCodes.CREATED, successMessage: messages.MATERIAL_ADDED})
     }
-    async deleteExtData(name: string): Promise<Result<null>> {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${EDGE} WHERE name=?;`, [name], { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
+    async deleteExtData(id: number): Promise<Result<null>> {
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${EDGE} WHERE id=?;`, [id], { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_DELETED})
     }
-    async updateExtData({ newName, code, name }: NewEdge): Promise<Result<null>> {
-        const query =getEdgeQuery({ newName, code, name })
+    async updateExtData({ id, code, name, typeId }: Edge): Promise<Result<null>> {
+        const query =getEdgeQuery({ id, code, name, typeId })
         return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.MATERIAL_UPDATED })
     }
 }
 
-function getEdgeQuery({ newName, code, name }: NewEdge) {
+function getEdgeQuery({ id, code, name, typeId }: Edge) {
     const parts = []
     const params = []
-    if (newName) {
+    if (name) {
         parts.push(`name=?`)
-        params.push(newName)
+        params.push(name)
     }
     if (code) {
         parts.push(`code=?`)
         params.push(code)
     }
-    params.push(name)
-    const query = parts.length > 0 ? `update ${EDGE} set ${parts.join(', ')} where name=?;` : ""
+    if (typeId) {
+        parts.push(`typeId=?`)
+        params.push(typeId)
+    }
+    params.push(id)
+    const query = parts.length > 0 ? `update ${EDGE} set ${parts.join(', ')} where id=?;` : ""
     return { query, params }
 }

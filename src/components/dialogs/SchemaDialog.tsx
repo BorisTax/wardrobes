@@ -8,7 +8,7 @@ import jsPDF from 'jspdf'
 import { rerenderDialogAtom } from "../../atoms/dialogs"
 import { appDataAtom } from "../../atoms/app"
 import { combineColors } from "../../functions/schema"
-import { FasadMaterial } from "../../types/enums"
+import { FASAD_TYPE } from "../../types/enums"
 import Fasad from '../../classes/Fasad'
 import FasadSchemaSection from '../fasad/FasadSchemaSection'
 import ImageButton from '../inputs/ImageButton'
@@ -23,11 +23,11 @@ export default function SchemaDialog() {
     const { rootFasades, fasadCount, order, profile, wardHeight, wardWidth } = useAtomValue(appDataAtom)
     const totalWidth = rootFasades.reduce((prev, r: Fasad) => r.Width + prev, 0) + 5
     const ratio = totalWidth / rootFasades[0].Height
-    const DSPColors = [...combineColors(rootFasades, FasadMaterial.DSP)].join(", ")
-    const mirrorColors = [...combineColors(rootFasades, FasadMaterial.MIRROR)].join(", ")
-    const lacobelColors = [...combineColors(rootFasades, FasadMaterial.LACOBEL), ...combineColors(rootFasades, FasadMaterial.LACOBELGLASS)].join(", ")
-    const sandColors = [...combineColors(rootFasades, FasadMaterial.SAND)].join(", ")
-    const FMPColors = [...combineColors(rootFasades, FasadMaterial.FMP)].join(", ")
+    const DSPColors = [...combineColors(rootFasades, FASAD_TYPE.DSP)].join(", ")
+    const mirrorColors = [...combineColors(rootFasades, FASAD_TYPE.MIRROR)].join(", ")
+    const lacobelColors = [...combineColors(rootFasades, FASAD_TYPE.LACOBEL), ...combineColors(rootFasades, FASAD_TYPE.LACOBELGLASS)].join(", ")
+    const sandColors = [...combineColors(rootFasades, FASAD_TYPE.SAND)].join(", ")
+    const FMPColors = [...combineColors(rootFasades, FASAD_TYPE.FMP)].join(", ")
     const viewStyle = { display: "grid", gridTemplateColumns: new Array(fasadCount).fill("1fr").join(' '), gap: "10px" }
     const fasades = rootFasades.map((r, index) => <FasadSchemaSection key={index} fasad={r} />)
     useLayoutEffect(() => {

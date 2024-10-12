@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { Zaglushka } from "../../types/materials";
+import { OmitId, Zaglushka } from "../../types/materials";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
 import { userAtom } from "../users";
 import { TableFields } from "../../types/server";
@@ -30,7 +30,7 @@ export const deleteZaglushkaAtom = atom(null, async (get, set, zaglushka: Zaglus
      }
 })
 
-export const addZaglushkaAtom = atom(null, async (get, set, {name, code}: Zaglushka) => {
+export const addZaglushkaAtom = atom(null, async (get, set, {name, code}: OmitId<Zaglushka>) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
@@ -48,12 +48,12 @@ export const addZaglushkaAtom = atom(null, async (get, set, {name, code}: Zaglus
     }
 })
 
-export const updateZaglushkaAtom = atom(null, async (get, set, { name, newName, code }) => {
+export const updateZaglushkaAtom = atom(null, async (get, set, { id, name, code }) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
-        [TableFields.NEWNAME]: newName,
+        [TableFields.ID]: id,
         [TableFields.CODE]: code,
         [TableFields.TOKEN]: token
     }

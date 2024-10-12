@@ -1,6 +1,6 @@
 import Fasad from "../classes/Fasad"
 import FasadState from "../classes/FasadState"
-import { Division, FasadMaterial } from "../types/enums"
+import { Division, FASAD_TYPE } from "../types/enums"
 
 export function trySetWidth(fasad: Fasad | null, width: number, minSize: number): boolean {
     if (!fasad) return false
@@ -36,13 +36,13 @@ export function trySetHeight(fasad: Fasad | null, height: number, minSize: numbe
         return fasad.Parent.DistributePartsOnHeight(fasad, height, false, minSize) || false
 }
 
-export function getFasadState(width: number, height: number, division: Division, material: FasadMaterial, extMaterial: string) {
+export function getFasadState(width: number, height: number, division: Division, fasadType: FASAD_TYPE, materialId: number) {
     const state = new FasadState()
     state.height = height
     state.width = width
     state.division = division
-    state.material = material
-    state.extMaterial = extMaterial
+    state.fasadType = fasadType
+    state.materialId = materialId
     return state
 }
 
@@ -57,7 +57,7 @@ export function getRootFasad(fasad: Fasad): Fasad {
     return fasad
 }
 export function hasFasadImage(fasad: Fasad){
-    return fasad.Material === FasadMaterial.FMP || fasad.Material === FasadMaterial.SAND
+    return fasad.FasadType === FASAD_TYPE.FMP || fasad.FasadType === FASAD_TYPE.SAND
 }
 
 export function isFasadExist(root: Fasad, fasad: Fasad): boolean{

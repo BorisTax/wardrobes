@@ -17,11 +17,11 @@ export const loadDspEdgeListAtom = atom(null, async (get, set) => {
     } catch (e) { console.error(e) }
 })
 
-export const deleteDspEdgeAtom = atom(null, async (get, set, dsp_edge: DSP_EDGE_ZAGL) => {
+export const deleteDspEdgeAtom = atom(null, async (get, set, id: number) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
-        const result = await fetchData("/api/materials/dsp_edge", "DELETE", JSON.stringify({ name: dsp_edge.name, token }))
+        const result = await fetchData("/api/materials/dsp_edge", "DELETE", JSON.stringify({ id, token }))
         await set(loadDspEdgeListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
@@ -30,13 +30,13 @@ export const deleteDspEdgeAtom = atom(null, async (get, set, dsp_edge: DSP_EDGE_
      }
 })
 
-export const addDspEdgeAtom = atom(null, async (get, set, {name, edge, zaglushka}: DSP_EDGE_ZAGL) => {
+export const addDspEdgeAtom = atom(null, async (get, set, {matId, edgeId, zaglushkaId}: DSP_EDGE_ZAGL) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
-        [TableFields.NAME]: name,
-        [TableFields.EDGE]: edge,
-        [TableFields.ZAGLUSHKA]: zaglushka,
+        [TableFields.MATID]: matId,
+        [TableFields.EDGEID]: edgeId,
+        [TableFields.ZAGLUSHKAID]: zaglushkaId,
         [TableFields.TOKEN]: token
     }
     try {
@@ -49,13 +49,13 @@ export const addDspEdgeAtom = atom(null, async (get, set, {name, edge, zaglushka
      }
 })
 
-export const updateDspEdgeAtom = atom(null, async (get, set, { name, edge, zaglushka }) => {
+export const updateDspEdgeAtom = atom(null, async (get, set, { matId, edgeId, zaglushkaId }) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
-        [TableFields.NAME]: name,
-        [TableFields.ZAGLUSHKA]: zaglushka,
-        [TableFields.EDGE]: edge,
+        [TableFields.MATID]: matId,
+        [TableFields.ZAGLUSHKAID]: zaglushkaId,
+        [TableFields.EDGEID]: edgeId,
         [TableFields.TOKEN]: token
     }
     try {

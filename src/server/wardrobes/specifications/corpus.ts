@@ -75,8 +75,8 @@ export async function getDetails(wardType: WARDROBE_TYPE, kind: WARDROBE_KIND, w
     const service = new SpecificationService(specServiceProvider);
     const detailsData = await service.getDetails(kind, width, height)
     const detailNames = (await service.getDetailNames()).data || [];
-    const offset = wardType === WARDROBE_TYPE.CORPUS ? 0 : 100;
-    const details: Detail[] = detailsData.map(dd => (
+    const offset = wardType === WARDROBE_TYPE.GARDEROB ? 0 : 100;
+    const details: Detail[] =  detailsData.map(dd => (
         {
             name: dd.name,
             caption: detailNames.find(n => n.name === dd.name)?.caption || "",
@@ -174,7 +174,7 @@ export async function getConfirmat(data: WardrobeData, details: Detail[]): Promi
 
 async function getZagConfirmat(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullData()
-    const zaglushka = await getZagByDSP(data.dspName)
+    const zaglushka = await getZagByDSP(data.dspId)
     const { code, name: caption } = zaglushka;
     const conf = await getConfirmat(data, details);
     return { data: { amount: conf.data.amount, char: { code, caption } } };
@@ -197,7 +197,7 @@ export async function getMinifix(data: WardrobeData, details: Detail[]): Promise
 }
 async function getZagMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullData()
-    const zaglushka = await getZagByDSP(data.dspName)
+    const zaglushka = await getZagByDSP(data.dspId)
     const { code, name: caption } = zaglushka;
     const conf = await getMinifix(data, details);
     return { data: { amount: conf.data.amount, char: { code, caption } } };
@@ -236,7 +236,7 @@ async function getStyagka(data: WardrobeData): Promise<FullData> {
 
 export async function getEdge2(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const edge = await getEdgeByDSP(data.dspName)
+    const edge = await getEdgeByDSP(data.dspId)
     const { code, name: caption } = edge;
     const detailNames = await getDetailNames();
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
@@ -256,7 +256,7 @@ export async function getEdge2(data: WardrobeData, details: Detail[]): Promise<F
 
 export async function getEdge05(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardType === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const edge = await getEdgeByDSP(data.dspName)
+    const edge = await getEdgeByDSP(data.dspId)
     const { code, name: caption } = edge;
     const detailNames = await getDetailNames();
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
@@ -289,7 +289,7 @@ async function getBrush(data: WardrobeData, profile: Profile, type: ProfileType)
     if (profile.type !== type) return emptyFullData()
     const service = new MaterialExtService(new BrushServiceSQLite(materialsPath))
     const brushList = (await (service.getExtData())).data
-    const brush = brushList && brushList.find(b => b.name === profile.brush) || { name: "", code: "" }
+    const brush = brushList && brushList.find(b => b.id === profile.brushId) || { name: "", code: "" }
     const { code, name: caption } = brush
     const coef = await getCoef(type === ProfileType.STANDART ? SpecificationItem.Brush : SpecificationItem.BrushBavaria);
     const verbose = [["Высота стойки", "Кол-во фасадов", ""]]
@@ -300,7 +300,7 @@ async function getBrush(data: WardrobeData, profile: Profile, type: ProfileType)
 }
 
 async function getNaprav(data: WardrobeData, profile: Profile, top: boolean): Promise<FullData> {
-    if (data.wardType === WARDROBE_TYPE.CORPUS) return emptyFullDataIfCorpus()
+    if (data.wardType === WARDROBE_TYPE.GARDEROB) return emptyFullDataIfCorpus()
     const item = top ? SpecificationItem.NapravTop : SpecificationItem.NapravBottom
     const coef = await getCoef(item)
     const width = data.width - 32

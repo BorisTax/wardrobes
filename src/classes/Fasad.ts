@@ -1,13 +1,14 @@
 import { newFasadFromState } from "../functions/fasades"
 import { FasadOuterEdges } from "../types/edges"
-import { Division, FasadMaterial } from "../types/enums"
+import { Division, FASAD_TYPE } from "../types/enums"
 import { FasadProps } from "../types/fasadProps"
+import { FasadEmptyMaterial, FasadMaterial } from "../types/materials"
 import FasadState, { FasadBackImageProps, getInitialBackImageProps } from "./FasadState"
 
 export default class Fasad {
     private active = false
-    private material: FasadMaterial
-    private extMaterial = ''
+    private materialId: number
+    private fasadType: FASAD_TYPE
     private division = Division.HEIGHT
     private outerRightEdge = true
     private outerLeftEdge = true
@@ -28,8 +29,8 @@ export default class Fasad {
         this.height = props?.height || 0
         this.widthRatio = 1
         this.heightRatio = 1
-        this.material = props?.material || FasadMaterial.DSP
-        this.extMaterial = props?.extMaterial || ""
+        this.materialId = props?.materialId || -1
+        this.fasadType = props.fasadType || FASAD_TYPE.DSP
         this.Children = []
         this.OuterEdges = { left: true, right: true, top: true, bottom: true }
         this.backImageProps = getInitialBackImageProps()
@@ -46,8 +47,8 @@ export default class Fasad {
         state.heightRatio = this.heightRatio
         state.fixedWidth = this.fWidth
         state.fixedHeight = this.fHeight
-        state.material = this.material
-        state.extMaterial = this.extMaterial
+        state.materialId = this.materialId
+        state.fasadType = this.fasadType
         state.backImageProps = { ...this.backImageProps }
         state.outerEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
         state.children = []
@@ -63,8 +64,10 @@ export default class Fasad {
         this.heightRatio = state.heightRatio
         this.fWidth = state.fixedWidth
         this.fHeight = state.fixedHeight
-        if (!keepOriginalMaterial) this.material = state.material
-        if (!keepOriginalMaterial) this.extMaterial = state.extMaterial
+        if (!keepOriginalMaterial) {
+            this.materialId = state.materialId
+            this.fasadType = state.fasadType
+        }
         this.division = state.division
         this.OuterEdges = { ...state.outerEdges }
         this.backImageProps = { ...state.backImageProps }
@@ -80,28 +83,26 @@ export default class Fasad {
     public get BackImageProps(): FasadBackImageProps {
         return this.backImageProps
     }
-    public get Material() {
-        return this.material
+    public get MaterialId() {
+        return this.materialId
     }
-    public setMaterial(value: FasadMaterial, toChildren = true) {
-        this.material = value
+    public get FasadType() {
+        return this.fasadType
+    }
+    public setMaterialId(value: number, toChildren = true) {
+        this.materialId = value
         if (!toChildren) return
         for (const f of this.Children) {
-            f.setMaterial(value, toChildren)
+            f.setMaterialId(value, toChildren)
         }
     }
-    public setExtMaterial(value: string, toChildren = true) {
-        if (this.extMaterial !== value) this.backImageProps = getInitialBackImageProps()
-        this.extMaterial = value
+    public setFasadType(value: FASAD_TYPE, toChildren = true) {
+        this.fasadType = value
         if (!toChildren) return
         for (const f of this.Children) {
-            f.setExtMaterial(value, toChildren)
+            f.setFasadType(value, toChildren)
         }
     }
-    public get ExtMaterial() {
-        return this.extMaterial
-    }
-
     public get Width() {
         return this.width
     }
@@ -143,10 +144,10 @@ export default class Fasad {
         return this.fHeight || (this.Division === Division.WIDTH && this.Children.some((f: Fasad) => f.FixedHeight()))
     }
     public get cutWidth() {
-        return this.width - (this.material === FasadMaterial.DSP ? 0 : 3)
+        return this.width - (this.fasadType === FASAD_TYPE.DSP ? 0 : 3)
     }
     public get cutHeight() {
-        return this.height - (this.material === FasadMaterial.DSP ? 0 : 3)
+        return this.height - (this.fasadType === FASAD_TYPE.DSP ? 0 : 3)
     }
     public get Division() {
         return this.division
@@ -186,7 +187,7 @@ export default class Fasad {
     }
     public divideOnHeight(count: number, minSize: number): boolean {
         const profileTotal = (count - 1)
-        if (this.Children.length > 1) this.setMaterial(this.Children[0].Material)
+        if (this.Children.length > 1) this.setMaterialId(this.Children[0].MaterialId)
         const partHeight = +((this.Height - profileTotal) / count).toFixed(1)
         if (partHeight < minSize) return false
         const partLast = +(this.height - partHeight * (count - 1) - profileTotal).toFixed(1)
@@ -194,7 +195,7 @@ export default class Fasad {
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
             const part = i < count ? partHeight : partLast
-            const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize, material: this.material, extMaterial: this.extMaterial }) 
+            const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize, materialId: this.materialId}) 
             const topEdge = i === 1 ? this.outerTopEdge : false
             const bottomEdge = i === count ? this.outerBottomEdge : false
             fasad.OuterEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: topEdge, bottom: bottomEdge }
@@ -207,13 +208,13 @@ export default class Fasad {
     }
     public divideOnWidth(count: number, minSize: number): boolean {
         const profileTotal = (count - 1)
-        if (this.Children.length > 1) this.setMaterial(this.Children[0].Material)
+        if (this.Children.length > 1) this.setMaterialId(this.Children[0].MaterialId)
         const partWidth = +((this.width - profileTotal) / count).toFixed(1)
         if (partWidth < minSize) return false
         this.Children = []
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
-            const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize, material: this.material, extMaterial: this.extMaterial }) 
+            const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize, materialId: this.materialId }) 
             const leftEdge = i === 1 ? this.outerLeftEdge : false
             const rightEdge = i === count ? this.outerRightEdge : false
             fasad.OuterEdges = { left: leftEdge, right: rightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }
@@ -343,8 +344,8 @@ export default class Fasad {
         fasad.Active = this.Active
         fasad.Level = this.level
         fasad.Division = this.division
-        fasad.setExtMaterial(this.extMaterial, false)
-        fasad.setMaterial(this.material, false)
+        fasad.setMaterialId(this.materialId, false)
+        fasad.setFasadType(this.fasadType, false)
         fasad.Height = this.height
         fasad.Width = this.width
         fasad.WidthRatio = this.WidthRatio

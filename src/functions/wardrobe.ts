@@ -4,7 +4,7 @@ import FasadState from "../classes/FasadState"
 import { getFasadState, newFasadFromState } from "./fasades"
 import { Division, FASAD_TYPE } from "../types/enums"
 import Fasad from "../classes/Fasad"
-import { CONSOLE_TYPE, Detail, EDGE_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
+import { CONSOLE_TYPE, Detail, KROMKA_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 
 
 
@@ -78,7 +78,7 @@ export function getFasadCount(data: WardrobeData): number {
     return Object.values(data.fasades).reduce((a, f) => f.count + a, 0);
 }
 
-export function getEdgeDescripton(detail: Detail, edge: EDGE_TYPE): string {
+export function getEdgeDescripton(detail: Detail, edge: KROMKA_TYPE): string {
     let length = 0
     let width = 0
     const result = []

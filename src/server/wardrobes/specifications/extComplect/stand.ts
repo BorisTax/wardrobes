@@ -16,7 +16,7 @@ export async function getStandSpecification(data: WardrobeData): Promise<Specifi
     const edge05 = await getEdge05(data, details)
     const minifix = await getMinifix()
     result.push([SpecificationItem.DSP, await getDSP(data, details)])
-    result.push([SpecificationItem.Kromka05, edge05])
+    result.push([SpecificationItem.Kromka045, edge05])
     result.push([SpecificationItem.Glue, await getGlue(data, edge2.data.amount, edge05.data.amount)])
     result.push([SpecificationItem.Minifix, minifix])
     result.push([SpecificationItem.ZagMinifix, { data: { amount: minifix.data.amount } }])

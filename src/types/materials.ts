@@ -12,7 +12,7 @@ export type FasadMaterial = {
 }
 
 export const FasadEmptyMaterial: FasadMaterial = {
-    id: -1,
+    id: 0,
     name: "",
     type: FASAD_TYPE.DSP,
     image: "",
@@ -27,14 +27,14 @@ export type Profile = {
     brushId: number
 }
 
-export type Edge = {
+export type Kromka = {
     id: number
     name: string
     code: string
     typeId: number
 }
 
-export type EdgeType = {
+export type KromkaType = {
     id: number
     caption: string
 }
@@ -62,9 +62,9 @@ export type Uplotnitel = {
     code: string
 }
 
-export type DSP_EDGE_ZAGL = {
+export type DspKromkaZagl = {
     dspId: number
-    edgeId: number
+    kromkaId: number
     zaglushkaId: number
 }
 

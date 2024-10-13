@@ -6,14 +6,14 @@ import { addProfile, deleteProfile, getProfiles, updateProfile } from './materia
 import { addExtMaterial, deleteExtMaterial, getExtMaterials, getImage, getMaterialTypes, updateExtMaterial } from './materials/extMaterials.js';
 import { MyRequest } from '../../types/server.js';
 import { PERMISSION, RESOURCE } from "../../types/user.js";
-import { addEdge, deleteEdge, getEdges, getEdgeTypes, updateEdge } from './materials/edges.js';
+import { addKromka, deleteKromka, getKromka, getKromkaTypes, updateKromka } from './materials/kromka.js';
 import { addZaglushka, deleteZaglushka, getZaglushkas, updateZaglushka } from './materials/zaglushka.js';
 import { addBrush, deleteBrush, getBrushes } from './materials/brush.js';
 import { addTrempel, deleteTrempel, getTrempels, updateTrempel } from './materials/trempel.js';
 import { addUplotnitel, deleteUplotnitel, getUplotnitels, updateUplotnitel } from './materials/uplotnitel.js';
 import { hasPermission } from './users.js';
 import { StatusCodes } from 'http-status-codes';
-import { addDspEdge, deleteDspEdge, getDspEdges, updateDspEdge } from './materials/dspEdge.js';
+import { addDspKromkaZag, deleteDspKromkaZag, getDspKromkaZag, updateDspKromkaZag } from './materials/dspEdgeZag.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -94,71 +94,71 @@ router.post("/image", async (req, res) => {
   res.status(result.status).json(result);
 });
 
-router.get("/edgetypes", async (req, res) => {
+router.get("/kromka_types", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
-  const result = await getEdgeTypes();
+  const result = await getKromkaTypes();
   if (!result.success) return res.json(result)
   res.status(result.status).json(result);
 });
 
-router.get("/edge", async (req, res) => {
+router.get("/kromka", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
-  const result = await getEdges();
+  const result = await getKromka();
   if (!result.success) return res.json(result)
   res.status(result.status).json(result);
 });
-router.delete("/edge", async (req, res) => {
+router.delete("/kromka", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { id } = req.body
   let result
-  result = await deleteEdge(id);
+  result = await deleteKromka(id);
   const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
-router.post("/edge", async (req, res) => {
+router.post("/kromka", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
   const { name, code, typeId } = req.body
-  const result = await addEdge({ name, code, typeId });
+  const result = await addKromka({ name, code, typeId });
   const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
-router.put("/edge", async (req, res) => {
+router.put("/kromka", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.UPDATE]))) return accessDenied(res)
   const { id, name, typeId, code } = req.body
-  const result = await updateEdge({ id, name, typeId, code });
+  const result = await updateKromka({ id, name, typeId, code });
   res.status(result.status).json(result);
 });
 
-router.get("/dsp_edge", async (req, res) => {
+router.get("/dsp_kromka_zagl", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
-  const result = await getDspEdges();
+  const result = await getDspKromkaZag();
   if (!result.success) return res.json(result)
   res.status(result.status).json(result);
 });
 
-router.delete("/dsp_edge", async (req, res) => {
+router.delete("/dsp_kromka_zagl", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
   const { id } = req.body
   let result
-  result = await deleteDspEdge(id);
+  result = await deleteDspKromkaZag(id);
   const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
 
-router.post("/dsp_edge", async (req, res) => {
+router.post("/dsp_kromka_zagl", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
-  const { dspId, edgeId, zaglushkaId } = req.body
-  const result = await addDspEdge({ dspId, edgeId, zaglushkaId });
+  const { dspId, kromkaId, zaglushkaId } = req.body
+  const result = await addDspKromkaZag({ dspId, kromkaId, zaglushkaId });
   const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
 });
 
-router.put("/dsp_edge", async (req, res) => {
+router.put("/dsp_kromka_zagl", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const { dspId, edgeId, zaglushkaId } = req.body
-  const result = await updateDspEdge({ dspId, edgeId, zaglushkaId });
+  const { dspId, kromkaId, zaglushkaId } = req.body
+  const result = await updateDspKromkaZag({ dspId, kromkaId, zaglushkaId });
   res.status(result.status).json(result);
 });
 

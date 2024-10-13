@@ -4,14 +4,14 @@ import { fetchData, fetchGetData } from "../functions/fetch"
 import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserData, UserLoginResult, UserRole } from "../types/user"
 import { loadMaterialListAtom } from "./materials/materials"
 import { loadProfileListAtom } from "./materials/profiles"
-import { loadEdgeListAtom, loadEdgeTypeListAtom } from "./materials/edges"
+import { loadKromkaListAtom, loadKromkaTypeListAtom } from "./materials/kromka"
 import { loadBrushListAtom } from "./materials/brush"
 import { loadTrempelListAtom } from "./materials/trempel"
 import { loadZaglushkaListAtom } from "./materials/zaglushka"
 import { loadUplotnitelListAtom } from "./materials/uplotnitel"
 import { loadSpecificationListAtom } from "./specification"
 import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
-import { loadDspEdgeListAtom } from "./materials/dsp_edge"
+import { loadDspKromkaZagListAtom } from "./materials/dsp_kromka_zagl"
 
 
 export type UserState = {
@@ -157,13 +157,13 @@ export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESO
     if (permissions.get(RESOURCE.MATERIALS)?.Read) {
         set(loadMaterialListAtom)
         set(loadProfileListAtom)
-        set(loadEdgeTypeListAtom)
-        set(loadEdgeListAtom)
+        set(loadKromkaTypeListAtom)
+        set(loadKromkaListAtom)
         set(loadBrushListAtom)
         set(loadTrempelListAtom)
         set(loadZaglushkaListAtom)
         set(loadUplotnitelListAtom)
-        set(loadDspEdgeListAtom)
+        set(loadDspKromkaZagListAtom)
     }
     if (permissions.get(RESOURCE.SPECIFICATION)?.Read) {
         set(loadSpecificationListAtom)

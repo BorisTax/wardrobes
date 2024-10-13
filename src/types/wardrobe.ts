@@ -106,16 +106,16 @@ export enum CONSOLE_TYPE {
     STANDART = 'STANDART',
     RADIAL = 'RADIAL',
 }
-export enum EDGE_TYPE {
+export enum KROMKA_TYPE {
     THICK = 'THICK',
     THIN = 'THIN',
     NONE = 'NONE'
 }
-export type EDGE_SIDE = {
-    L1: EDGE_TYPE
-    L2: EDGE_TYPE
-    W1: EDGE_TYPE
-    W2: EDGE_TYPE
+export type KROMKA_SIDE = {
+    L1: KROMKA_TYPE
+    L2: KROMKA_TYPE
+    W1: KROMKA_TYPE
+    W2: KROMKA_TYPE
 }
 export enum DRILL_TYPE {
     CONFIRMAT2 = 'CONFIRMAT2',
@@ -147,7 +147,7 @@ export type Detail = {
     length: number
     width: number
     count: number
-    edge?: EDGE_SIDE
+    edge?: KROMKA_SIDE
     drill?: DRILL_TYPE[]
 }
 

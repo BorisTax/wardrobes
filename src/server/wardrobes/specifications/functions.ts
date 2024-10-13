@@ -1,11 +1,11 @@
 import { FASAD_TYPE } from "../../../types/enums";
-import { DSP_EDGE_ZAGL, Edge, FasadMaterial, Zaglushka } from "../../../types/materials";
+import { DspKromkaZagl, Kromka, FasadMaterial, Zaglushka } from "../../../types/materials";
 import { WardrobeDetailSchema, WardrobeDetailTableSchema, WardrobeFurnitureTableSchema } from "../../../types/schemas";
 import { SpecificationItem } from "../../../types/specification";
-import { DETAIL_NAME, DRILL_TYPE, Detail, EDGE_SIDE, EDGE_TYPE, FullData, IWardrobe, SpecificationResult, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData, WardrobeDetailTable } from "../../../types/wardrobe";
+import { DETAIL_NAME, DRILL_TYPE, Detail, KROMKA_SIDE, KROMKA_TYPE, FullData, IWardrobe, SpecificationResult, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData, WardrobeDetailTable } from "../../../types/wardrobe";
 import { specServiceProvider, materialServiceProvider, materialsPath } from "../../options";
-import DSPEdgeZaglServiceSQLite from "../../services/extServices/DSPEdgeZaglServiceSQLite";
-import EdgeServiceSQLite from "../../services/extServices/edgeServiceSQLite";
+import DSPKromkaZaglServiceSQLite from "../../services/extServices/DSPKromkaZaglServiceSQLite";
+import KromkaServiceSQLite from "../../services/extServices/kromkaServiceSQLite";
 import ZagluskaServiceSQLite from "../../services/extServices/zaglushkaServiceSQLite";
 import { MaterialExtService } from "../../services/materialExtService";
 import { MaterialService } from "../../services/materialService";
@@ -116,7 +116,7 @@ export function getMinifixByDetail(detail: Detail): number {
 }
 
 
-export function getEdgeLength(detail: Detail, edge: EDGE_TYPE): number {
+export function getEdgeLength(detail: Detail, edge: KROMKA_TYPE): number {
     let result = 0
     if (detail.edge?.L1 === edge) result += detail.length
     if (detail.edge?.L2 === edge) result += detail.length
@@ -124,7 +124,7 @@ export function getEdgeLength(detail: Detail, edge: EDGE_TYPE): number {
     if (detail.edge?.W2 === edge) result += detail.width
     return result
 }
-export function getEdgeDescripton(detail: Detail, edge: EDGE_TYPE): string {
+export function getEdgeDescripton(detail: Detail, edge: KROMKA_TYPE): string {
     let length = 0
     let width = 0
     const result = []
@@ -155,7 +155,7 @@ export function getDrill(detail: WardrobeDetailTable): DRILL_TYPE[] {
     return []
 } 
 
-export function getEdge(detail: WardrobeDetailTable): EDGE_SIDE | undefined {
+export function getEdge(detail: WardrobeDetailTable): KROMKA_SIDE | undefined {
     if ([DETAIL_NAME.ROOF].includes(detail.name as DETAIL_NAME)) return singleLengthThickDoubleWidthThinEdge()
     if ([DETAIL_NAME.STAND].includes(detail.name as DETAIL_NAME)) return singleLengthThickEdge()
     if ([DETAIL_NAME.INNER_STAND, DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT, DETAIL_NAME.PILLAR].includes(detail.name as DETAIL_NAME)) return singleLengthThinEdge()
@@ -163,8 +163,8 @@ export function getEdge(detail: WardrobeDetailTable): EDGE_SIDE | undefined {
 }
 
 export async function getZagByDSP(dspId: number): Promise<Zaglushka> {
-    let service = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath));
-    const list = (await service.getExtData()).data as DSP_EDGE_ZAGL[];
+    let service = new MaterialExtService<DspKromkaZagl>(new DSPKromkaZaglServiceSQLite(materialsPath));
+    const list = (await service.getExtData()).data as DspKromkaZagl[];
     const zagservice = new MaterialExtService<Zaglushka>(new ZagluskaServiceSQLite(materialsPath));
     const zagList = (await zagservice.getExtData()).data as Zaglushka[];
     const zagId = list.find(m => m.dspId === dspId)?.zaglushkaId
@@ -172,12 +172,12 @@ export async function getZagByDSP(dspId: number): Promise<Zaglushka> {
     return zaglushka;
 }
 
-export async function getEdgeByDSP(dspId: number): Promise<Edge> {
-    let service = new MaterialExtService<DSP_EDGE_ZAGL>(new DSPEdgeZaglServiceSQLite(materialsPath));
-    const list = (await service.getExtData()).data as DSP_EDGE_ZAGL[];
-    const edgeservice = new MaterialExtService<Edge>(new EdgeServiceSQLite(materialsPath));
-    const edgeList = (await edgeservice.getExtData()).data as Edge[];
-    const edgeId = list.find(m => m.dspId === dspId)?.edgeId
+export async function getEdgeByDSP(dspId: number): Promise<Kromka> {
+    let service = new MaterialExtService<DspKromkaZagl>(new DSPKromkaZaglServiceSQLite(materialsPath));
+    const list = (await service.getExtData()).data as DspKromkaZagl[];
+    const edgeservice = new MaterialExtService<Kromka>(new KromkaServiceSQLite(materialsPath));
+    const edgeList = (await edgeservice.getExtData()).data as Kromka[];
+    const edgeId = list.find(m => m.dspId === dspId)?.kromkaId
     const edge = edgeList.find(z => z.id === edgeId) || { id: -1, code: "", name: "", typeId: -1 }
     return edge;
 }

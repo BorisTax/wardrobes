@@ -1,7 +1,7 @@
 import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getEdge, getEdgeByDSP, getEdgeDescripton, getEdgeLength, getFasadCount, getMinifixByDetail, getZagByDSP } from "./functions"
 import { emptyFullData } from "./functions"
 import { SpecificationItem } from "../../../types/specification"
-import { DETAIL_NAME, DVPData, Detail, EDGE_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"
+import { DETAIL_NAME, DVPData, Detail, KROMKA_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_KIND, WARDROBE_TYPE } from "../../../types/wardrobe"
 import { Profile, ProfileType, Trempel } from "../../../types/materials"
 import { WardrobeData } from "../../../types/wardrobe"
 import { WardrobeDetailSchema } from "../../../types/schemas"
@@ -26,7 +26,7 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     result.push([SpecificationItem.DSP, await getDSP(data, details)])
     result.push([SpecificationItem.DVP, await getDVP(data)])
     result.push([SpecificationItem.Kromka2, edge2])
-    result.push([SpecificationItem.Kromka05, edge05])
+    result.push([SpecificationItem.Kromka045, edge05])
     result.push([SpecificationItem.Confirmat, await getConfirmat(data, details)])
     result.push([SpecificationItem.ZagConfirmat, await getZagConfirmat(data, details)])
     result.push([SpecificationItem.Minifix, await getMinifix(data, details)])
@@ -242,10 +242,10 @@ export async function getEdge2(data: WardrobeData, details: Detail[]): Promise<F
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let totalEdge = 0;
     details.forEach(d => {
-        const edge = getEdgeLength(d, EDGE_TYPE.THICK) * d.count / 1000;
+        const edge = getEdgeLength(d, KROMKA_TYPE.THICK) * d.count / 1000;
         if (edge === 0) return
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
-        const desc = getEdgeDescripton(d, EDGE_TYPE.THICK)
+        const desc = getEdgeDescripton(d, KROMKA_TYPE.THICK)
         verbose.push([caption, `${d.length}`, `${d.width}`, `${d.count}`, desc, edge.toFixed(3), ""]);
         totalEdge += edge;
     });
@@ -262,10 +262,10 @@ export async function getEdge05(data: WardrobeData, details: Detail[]): Promise<
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let totalEdge = 0;
     details.forEach(d => {
-        const edge = getEdgeLength(d, EDGE_TYPE.THIN) * d.count / 1000;
+        const edge = getEdgeLength(d, KROMKA_TYPE.THIN) * d.count / 1000;
         if (edge === 0) return
         const caption = detailNames.find(n => n.name === d.name)?.caption || "";
-        const desc = getEdgeDescripton(d, EDGE_TYPE.THIN)
+        const desc = getEdgeDescripton(d, KROMKA_TYPE.THIN)
         verbose.push([caption, `${d.length}`, `${d.width}`, `${d.count}`, desc, edge.toFixed(3), ""]);
         totalEdge += edge;
     });

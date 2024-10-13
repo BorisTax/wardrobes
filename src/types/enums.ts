@@ -20,7 +20,7 @@ export enum FASAD_TYPE {
 export enum MaterialGroup {
     PLATE = 'plate',
     PROFILE = 'profile',
-    EDGE = 'edge',
+    KROMKA = 'kromka',
     ZAGLUSHKI = 'zaglushki',
     DSP_EDGE_ZAGL = 'DSP_EDGE_ZAGL',
     BRUSH = 'brush',

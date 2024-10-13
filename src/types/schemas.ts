@@ -55,12 +55,12 @@ export enum MAT_TABLE_NAMES {
     MATERIALS_IMAGES = 'materials_images',
     PROFILE_COLORS = 'profilecolors',
     BRUSH = 'brush',
-    EDGE = 'edge',
-    EDGE_TYPES = 'edge_types',
+    KROMKA = 'kromka',
+    KROMKA_TYPES = 'kromka_types',
     TREMPEL = 'trempel',
     ZAGLUSHKA = 'zaglushka',
     UPLOTNITEL = 'uplotnitel',
-    DSPEDGEZAGL = 'dsp_edge_zagl',
+    DSP_KROMKA_ZAGL = 'dsp_kromka_zagl',
 }
 
 export enum SPEC_TABLE_NAMES {

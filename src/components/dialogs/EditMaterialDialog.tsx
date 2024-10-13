@@ -32,7 +32,7 @@ function getGroup(group: MaterialGroup) {
     const groups = {
         [MaterialGroup.PLATE]: <EditPlates />,
         [MaterialGroup.PROFILE]: <EditProfile />,
-        [MaterialGroup.EDGE]: <EditEdge />,
+        [MaterialGroup.KROMKA]: <EditEdge />,
         [MaterialGroup.ZAGLUSHKI]: <EditZaglushka />,
         [MaterialGroup.DSP_EDGE_ZAGL]: <EditDSPEdge />,
         [MaterialGroup.BRUSH]: <EditBrush />,

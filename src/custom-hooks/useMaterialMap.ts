@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { EdgeType, FasadMaterial, Profile } from "../types/materials"
+import { KromkaType, FasadMaterial, Profile } from "../types/materials"
 
 export function useMaterialMap(materialList: FasadMaterial[]): Map<number, FasadMaterial> {
     return useMemo(() => {
@@ -17,7 +17,7 @@ export function useProfileNamesMap(profileList: Profile[]) {
     }, [profileList])
 }
 
-export function useEdgeTypeMap(edgeTypeList: EdgeType[]) {
+export function useEdgeTypeMap(edgeTypeList: KromkaType[]) {
     return useMemo(() => {
         const m = new Map()
         edgeTypeList.forEach(mat => m.set(mat.id, mat.caption))

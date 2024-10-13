@@ -28,7 +28,7 @@ export enum TableFields {
     TYPE = 'type',
     TYPEID = 'typeId',
     DSP = 'dsp',
-    EDGEID = 'edgeId',
+    KROMKAID = 'kromkaId',
     ZAGLUSHKAID = 'zaglushkaId',
     CAPTION = 'caption',
     ID = 'id',

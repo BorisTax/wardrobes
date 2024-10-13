@@ -1,5 +1,5 @@
 import { SpecificationItem } from "../../../../types/specification";
-import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, CONSOLE_TYPE, EDGE_TYPE } from "../../../../types/wardrobe";
+import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, CONSOLE_TYPE, KROMKA_TYPE } from "../../../../types/wardrobe";
 import { getEdge2, getEdge05, getGlue, getDetailNames } from "../corpus";
 import { getDSP } from "../functions";
 import { consoleRoofEdge, consoleShelfEdge, consoleStandEdge, consoleStandSideEdge, singleLengthThickDoubleWidthThinEdge } from "../edges";

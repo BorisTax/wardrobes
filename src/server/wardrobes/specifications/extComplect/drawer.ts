@@ -1,5 +1,5 @@
 import { SpecificationItem } from "../../../../types/specification";
-import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, EDGE_TYPE, DRILL_TYPE } from "../../../../types/wardrobe";
+import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, KROMKA_TYPE, DRILL_TYPE } from "../../../../types/wardrobe";
 import { getDetails, getEdge2, getEdge05, getGlue, getConfirmat, getDetailNames } from "../corpus";
 import { getDSP, getCoef, emptyFullData } from "../functions";
 import { allThinEdge, singleLengthThinEdge } from "../edges";
@@ -19,7 +19,7 @@ export async function getDrawerSpecification(data: WardrobeData): Promise<Specif
     const edge05 = await getEdge05(data, telDetails)
     result.push([SpecificationItem.DSP, await getDSP(data, telDetails)])
     result.push([SpecificationItem.DVP, await getTelDVP(shelf.length, data.depth)])
-    result.push([SpecificationItem.Kromka05, edge05])
+    result.push([SpecificationItem.Kromka045, edge05])
     result.push([SpecificationItem.Glue, await getGlue(data, edge2.data.amount, edge05.data.amount)])
     result.push([SpecificationItem.Confirmat, await getConfirmat(data, telDetails)])
     result.push([SpecificationItem.Nails, { data: { amount: 0.0125 } }])

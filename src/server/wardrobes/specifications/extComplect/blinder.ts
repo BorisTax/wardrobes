@@ -15,7 +15,7 @@ export async function getBlinderSpecification(data: WardrobeData): Promise<Speci
     const edge2 = await getEdge2(data, details)
     const edge05 = await getEdge05(data, details)
     result.push([SpecificationItem.DSP, await getDSP(data, details)])
-    result.push([SpecificationItem.Kromka05, edge05])
+    result.push([SpecificationItem.Kromka045, edge05])
     result.push([SpecificationItem.Kromka2, edge2])
     result.push([SpecificationItem.Glue, await getGlue(data, edge2.data.amount, edge05.data.amount)])
     result.push([SpecificationItem.Samorez30, { data: { amount: 10 } }])

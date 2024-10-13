@@ -4,7 +4,7 @@ import { editDetailDialogAtom } from "../../atoms/dialogs"
 import DialogWindow from "./DialogWindow"
 import TableData from "../TableData"
 import { setWardrobeDataAtom, wardrobeDataAtom } from "../../atoms/wardrobe"
-import { Detail, DETAIL_NAME, DRILL_TYPE, EDGE_TYPE } from "../../types/wardrobe"
+import { Detail, DETAIL_NAME, DRILL_TYPE, KROMKA_TYPE } from "../../types/wardrobe"
 import { getEdgeDescripton } from "../../functions/wardrobe"
 import EditContainer from "../EditContainer"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
@@ -12,9 +12,9 @@ import { InputType, PropertyType } from "../../types/property"
 import messages from "../../server/messages"
 import { calculateSpecificationsAtom } from "../../atoms/specification"
 const edges = new Map<string, string>()
-edges.set(EDGE_TYPE.NONE, "нет")
-edges.set(EDGE_TYPE.THIN, "0,45мм")
-edges.set(EDGE_TYPE.THICK, "2мм")
+edges.set(KROMKA_TYPE.NONE, "нет")
+edges.set(KROMKA_TYPE.THIN, "0,45мм")
+edges.set(KROMKA_TYPE.THICK, "2мм")
 enum DRILL_CAPTIONS {
     CONF = "CONF",
     MINIF = "MINIF",
@@ -33,10 +33,10 @@ const defaultDetail: Detail = {
     width: 0,
     count: 0,
     edge: {
-        L1: EDGE_TYPE.NONE,
-        L2: EDGE_TYPE.NONE,
-        W1: EDGE_TYPE.NONE,
-        W2: EDGE_TYPE.NONE
+        L1: KROMKA_TYPE.NONE,
+        L2: KROMKA_TYPE.NONE,
+        W1: KROMKA_TYPE.NONE,
+        W2: KROMKA_TYPE.NONE
     }
 }
 export default function EditDetailDialog() {
@@ -48,7 +48,7 @@ export default function EditDetailDialog() {
     const detail = details[detIndex] || defaultDetail
     const [, setEditDetailDialogAtomRef] = useAtom(editDetailDialogAtom)
     const heads = ["Деталь", "Длина", "Ширина", "Кол-во", "Кромка 2", "Кромка 0.45", "Крепеж"]
-    const contents = details.map(d => [d.caption, d.length, d.width, d.count, getEdgeDescripton(d, EDGE_TYPE.THICK), getEdgeDescripton(d, EDGE_TYPE.THIN), drill.get(getDrillCaption(d)) || ""])
+    const contents = details.map(d => [d.caption, d.length, d.width, d.count, getEdgeDescripton(d, KROMKA_TYPE.THICK), getEdgeDescripton(d, KROMKA_TYPE.THIN), drill.get(getDrillCaption(d)) || ""])
     const editItems: EditDataItem[] = [
         { caption: "Деталь:", value: detail.caption || "", message: messages.ENTER_CAPTION, type: InputType.TEXT, optional: true },
         { caption: "Длина:", value: `${detail.length}`, message: messages.ENTER_LENGTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
@@ -73,10 +73,10 @@ export default function EditDetailDialog() {
                 if (checked[1]) newDetails[detIndex].length = +values[1]
                 if (checked[2]) newDetails[detIndex].width = +values[2]
                 if (checked[3]) newDetails[detIndex].count = +values[3]
-                if (checked[4] && newDetails[detIndex].edge) newDetails[detIndex].edge.L1 = values[4] as EDGE_TYPE
-                if (checked[5] && newDetails[detIndex].edge) newDetails[detIndex].edge.L2 = values[5] as EDGE_TYPE
-                if (checked[6] && newDetails[detIndex].edge) newDetails[detIndex].edge.W1 = values[6] as EDGE_TYPE
-                if (checked[7] && newDetails[detIndex].edge) newDetails[detIndex].edge.W2 = values[7] as EDGE_TYPE
+                if (checked[4] && newDetails[detIndex].edge) newDetails[detIndex].edge.L1 = values[4] as KROMKA_TYPE
+                if (checked[5] && newDetails[detIndex].edge) newDetails[detIndex].edge.L2 = values[5] as KROMKA_TYPE
+                if (checked[6] && newDetails[detIndex].edge) newDetails[detIndex].edge.W1 = values[6] as KROMKA_TYPE
+                if (checked[7] && newDetails[detIndex].edge) newDetails[detIndex].edge.W2 = values[7] as KROMKA_TYPE
                 if (checked[8]) newDetails[detIndex].drill = getDrillByCaption(values[8] as DRILL_CAPTIONS)
                 setData(prev => ({ ...prev, details: newDetails }))
                 return { success: true, message: "" }
@@ -95,10 +95,10 @@ export default function EditDetailDialog() {
                     width: +values[2],
                     count: +values[3],
                     edge: {
-                        L1: values[4] as EDGE_TYPE,
-                        L2: values[5] as EDGE_TYPE,
-                        W1: values[6] as EDGE_TYPE,
-                        W2: values[7] as EDGE_TYPE
+                        L1: values[4] as KROMKA_TYPE,
+                        L2: values[5] as KROMKA_TYPE,
+                        W1: values[6] as KROMKA_TYPE,
+                        W2: values[7] as KROMKA_TYPE
                     },
                     drill: getDrillByCaption(values[8] as DRILL_CAPTIONS)
                 }

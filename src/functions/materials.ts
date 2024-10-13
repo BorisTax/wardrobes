@@ -13,7 +13,7 @@ export const colors = {
 
 export const MaterialGroupCaptions: Map<string, string> = new Map()
 MaterialGroupCaptions.set(MaterialGroup.PLATE, "Площадные")
-MaterialGroupCaptions.set(MaterialGroup.EDGE, "Кромка")
+MaterialGroupCaptions.set(MaterialGroup.KROMKA, "Кромка")
 MaterialGroupCaptions.set(MaterialGroup.ZAGLUSHKI, "Заглушки")
 MaterialGroupCaptions.set(MaterialGroup.DSP_EDGE_ZAGL, "Соответствие с ДСП")
 MaterialGroupCaptions.set(MaterialGroup.PROFILE, "Профиля")

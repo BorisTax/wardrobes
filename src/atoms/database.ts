@@ -3,5 +3,5 @@ import { userAtom } from "./users";
 
 export const downloadDatabaseAtom = atom(null, async (get) => {
     const { token } = get(userAtom)
-    window.open(`/api/database/download?token=${token}`);
+    window.open(`${API_ROUTE}/database/download?token=${token}`);
 })

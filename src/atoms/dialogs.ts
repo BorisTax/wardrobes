@@ -1,6 +1,5 @@
 import { Getter, Setter, atom } from "jotai";
 import React from "react";
-import { calculateCombiSpecificationsAtom, loadSpecificationListAtom } from "./specification";
 import { loadActiveUsersAtom, loadUsersAtom } from "./users";
 import { loadTemplateListAtom } from "./templates";
 import { activeRootFasadIndexAtom, setActiveFasadAtom } from "./fasades";
@@ -55,7 +54,6 @@ export const showSpecificationDialogAtom = atom(null, (get, set) => {
 })
 export const showEditSpecificationDialogAtom = atom(null, (get, set) => {
     const dialogRef = get(editSpecificationDialogAtom)
-    set(loadSpecificationListAtom)
     dialogRef?.current?.showModal()
 })
 export const schemaDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)

@@ -1,25 +1,27 @@
-import { SpecificationItem } from "../../../../types/specification";
+import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail } from "../../../../types/wardrobe";
-import { getEdge2, getEdge05, getGlue, getConfirmat, getMinifix } from "../corpus";
+import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
+import { getKromkaPrimary, getKromkaSecondary, getGlue, getConfirmat, getMinifix } from "../corpus";
 import { getDSP } from "../functions";
 
 
 export async function getPillarSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const shelves: Detail[] = [
-        { name: DETAIL_NAME.PILLAR, count: 1, length: 282, width: data.depth - 100 },
+    const details: Detail[] = [
+        { id: DETAIL_NAME.PILLAR, count: 1, length: 282, width: data.depth - 100 },
     ]
-    const edge2 = await getEdge2(data, shelves)
-    const edge05 = await getEdge05(data, shelves)
-    const conf = await getConfirmat(data, shelves)
-    const minifix = await getMinifix(data, shelves)
-    result.push([SpecificationItem.DSP, await getDSP(data, shelves)])
-    result.push([SpecificationItem.Kromka045, edge05])
-    result.push([SpecificationItem.Glue, await getGlue(data, edge2.data.amount, edge05.data.amount)])
-    result.push([SpecificationItem.Confirmat, conf])
-    result.push([SpecificationItem.ZagConfirmat, { data: { amount: conf.data.amount } }])
-    result.push([SpecificationItem.Minifix, minifix])
-    result.push([SpecificationItem.ZagMinifix, { data: { amount: minifix.data.amount } }])
+    const kromka = await getKromkaByDSP(data.dspId)
+    const kromkaPrimary = (await getKromkaPrimary(data, details, kromka.kromkaId))
+    const kromkaSecondary = await getKromkaSecondary(data, details, kromka.kromkaSpecId, kromka.kromkaId)
+    const conf = await getConfirmat(data, details)
+    const minifix = await getMinifix(data, details)
+    result.push([SpecItem.DSP16, await getDSP(data, details)])
+    result.push([kromka.kromkaSpecId, kromkaSecondary])
+    result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaPrimary.data.amount)])
+    result.push([SpecItem.Confirmat, conf])
+    result.push([SpecItem.ZagConfirmat, { data: { amount: conf.data.amount } }])
+    result.push([SpecItem.Minifix, minifix])
+    result.push([SpecItem.ZagMinifix, { data: { amount: minifix.data.amount } }])
     //const karton = 2
     //result.push([SpecificationItem.Karton, { data: { amount: karton } }])
     //result.push([SpecificationItem.Skotch, { data: { amount: karton * 20 } }])

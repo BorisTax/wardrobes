@@ -6,6 +6,7 @@ import CheckBox from "../inputs/CheckBox"
 import { userAtom } from "../../atoms/users"
 import { useNavigate } from "react-router-dom"
 import { UserLoginResult } from "../../types/user"
+import { API_ROUTE } from "../../types/routes"
 
 export default function LoginDialog() {
     const navigate = useNavigate()
@@ -18,7 +19,7 @@ export default function LoginDialog() {
         const onResolve = (r: Result<UserLoginResult | null>) => { setUser({ token: r.data?.token || "", permissions: r.data?.permissions || [] }); navigate('/') }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }
         const onCatch = () => { setState({ loading: false, message: "Ошибка сервера" }) }
-        onFetch('/api/users/login', JSON.stringify({ name, password }), onResolve, onReject, onCatch)
+        onFetch(`${API_ROUTE}/users/login`, JSON.stringify({ name, password }), onResolve, onReject, onCatch)
     }
 
     return <div className="login-container">

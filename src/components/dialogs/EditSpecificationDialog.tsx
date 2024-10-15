@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { SpecificationData } from "../../types/server"
+import { SpecSchema } from "../../types/server"
 import { UnitCaptions } from "../../functions/materials"
 import { loadSpecificationListAtom, specificationDataAtom, updateSpecificationListAtom } from "../../atoms/specification"
 import TableData from "../TableData"
@@ -21,7 +21,7 @@ export default function EditSpecificationDialog() {
     const { caption, coef, code, id } = (specList && specList[selectedIndex]) ? ({ ...(specList[selectedIndex] || def) }) : def
     const updateSpecList = useSetAtom(updateSpecificationListAtom)
     const heads = ['Наименование', 'Ед', 'Коэф-т', 'Код', 'Идентификатор']
-    const contents = specList.map((i: SpecificationData) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.coef}`, i.code || "", i.id || ""])
+    const contents = specList.map((i: SpecSchema) => [i.caption || "", UnitCaptions.get(i.units || "") || "", `${i.coef}`, i.code || "", i.id || ""])
     const editItems: EditDataItem[] =  [
         { caption: "Наименование:", value: caption || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
         { caption: "Коэф-т:", value: `${coef}`, message: messages.ENTER_COEF, type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
@@ -37,7 +37,7 @@ export default function EditSpecificationDialog() {
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
         {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection items={editItems} onUpdate={async (checked, values) => {
-            const data: SpecificationData = { name: specList[selectedIndex].name }
+            const data: SpecSchema = { name: specList[selectedIndex].name }
             if (checked[0]) data.caption = values[0] as string
             if (checked[1]) data.coef = +values[1]
             if (checked[2]) data.code = values[2] as string

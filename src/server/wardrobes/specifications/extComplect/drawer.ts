@@ -1,61 +1,64 @@
-import { SpecificationItem } from "../../../../types/specification";
-import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, KROMKA_TYPE, DRILL_TYPE } from "../../../../types/wardrobe";
-import { getDetails, getEdge2, getEdge05, getGlue, getConfirmat, getDetailNames } from "../corpus";
+import { SpecItem } from "../../../../types/specification";
+import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, DRILL_TYPE } from "../../../../types/wardrobe";
+import { getKromkaPrimary, getKromkaSecondary, getGlue, getConfirmat, getDetailNames, getDetails } from "../corpus";
 import { getDSP, getCoef, emptyFullData } from "../functions";
 import { allThinEdge, singleLengthThinEdge } from "../edges";
+import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
+import { getDetailsFromTable } from "../../../routers/functions/details";
 
 
 export async function getDrawerSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = (await getDetails(data.wardType, data.wardKind, data.width, data.height, data.depth))
-    const shelf = details.find(d => d.name === DETAIL_NAME.SHELF)
+    const details = (await getDetails(data.wardTypeId, data.wardKindId, data.width, data.height, data.depth))
+    const shelf = details.find(d => d.id === DETAIL_NAME.SHELF)
     if (!shelf) return result
     const telDetails: Detail[] = [
-        { name: DETAIL_NAME.DRAWER_FASAD, count: 1, length: shelf.length - 8, width: 140, edge: allThinEdge(), drill: [DRILL_TYPE.NONE] },
-        { name: DETAIL_NAME.DRAWER_SIDE, count: 2, length: data.depth - 150, width: 120, edge: singleLengthThinEdge(), drill: [DRILL_TYPE.NONE] },
-        { name: DETAIL_NAME.DRAWER_BRIDGE, count: 2, length: shelf.length - 57, width: 120, edge:  singleLengthThinEdge(), drill: [DRILL_TYPE.CONFIRMAT1] }
+        { id: DETAIL_NAME.DRAWER_FASAD, count: 1, length: shelf.length - 8, width: 140, kromka: allThinEdge(), drill: [DRILL_TYPE.NONE] },
+        { id: DETAIL_NAME.DRAWER_SIDE, count: 2, length: data.depth - 150, width: 120, kromka: singleLengthThinEdge(), drill: [DRILL_TYPE.NONE] },
+        { id: DETAIL_NAME.DRAWER_BRIDGE, count: 2, length: shelf.length - 57, width: 120, kromka:  singleLengthThinEdge(), drill: [DRILL_TYPE.CONFIRMAT1] }
     ]
-    const edge2 = await getEdge2(data, telDetails)
-    const edge05 = await getEdge05(data, telDetails)
-    result.push([SpecificationItem.DSP, await getDSP(data, telDetails)])
-    result.push([SpecificationItem.DVP, await getTelDVP(shelf.length, data.depth)])
-    result.push([SpecificationItem.Kromka045, edge05])
-    result.push([SpecificationItem.Glue, await getGlue(data, edge2.data.amount, edge05.data.amount)])
-    result.push([SpecificationItem.Confirmat, await getConfirmat(data, telDetails)])
-    result.push([SpecificationItem.Nails, { data: { amount: 0.0125 } }])
-    result.push([SpecificationItem.Samorez16, { data: { amount: 8 } }])
-    result.push([SpecificationItem.Samorez30, { data: { amount: 2 } }])
+    const kromka = await getKromkaByDSP(data.dspId)
+    const kromkaPrimary = (await getKromkaPrimary(data, telDetails, kromka.kromkaId))
+    const kromkaSecondary = await getKromkaSecondary(data, telDetails, kromka.kromkaSpecId, kromka.kromkaId)
+    result.push([SpecItem.DSP16, await getDSP(data, telDetails)])
+    result.push([SpecItem.DVP, await getTelDVP(shelf.length, data.depth)])
+    result.push([kromka.kromkaSpecId, kromkaPrimary])
+    result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])
+    result.push([SpecItem.Confirmat, await getConfirmat(data, telDetails)])
+    result.push([SpecItem.Nails, { data: { amount: 0.0125 } }])
+    result.push([SpecItem.Samorez16, { data: { amount: 8 } }])
+    result.push([SpecItem.Samorez30, { data: { amount: 2 } }])
     const tel = getTelescope(data.depth)
     if (tel.item) result.push([tel.item, tel.data])
     const karton = 2
-    result.push([SpecificationItem.Karton, { data: { amount: karton } }])
-    result.push([SpecificationItem.Skotch, { data: { amount: karton * 20 } }])
-    result.push([SpecificationItem.ConfKluch, { data: { amount: 1 } }])
+    result.push([SpecItem.Karton, { data: { amount: karton } }])
+    result.push([SpecItem.Skotch, { data: { amount: karton * 20 } }])
+    result.push([SpecItem.ConfKluch, { data: { amount: 1 } }])
     return result
 }
 
 export async function getTelDVP(shelfLength: number, depth: number): Promise<FullData> {
     const detailNames = await getDetailNames()
-    const detail: Detail = { name: DETAIL_NAME.DRAWER_BOTTOM_DVP, count: 1, length: shelfLength - 29, width: depth - 154 }
+    const detail: Detail = { id: DETAIL_NAME.DRAWER_BOTTOM_DVP, count: 1, length: shelfLength - 29, width: depth - 154 }
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""]]
     let totalArea = 0
     const area = detail.length * detail.width * detail.count / 1000000
-    const caption = detailNames.find(n => n.name === detail.name)?.caption || ""
+    const caption = detailNames.find(n => n.id === detail.id)?.name || ""
     verbose.push([caption, `${detail.length}`, `${detail.width}`, `${detail.count}`, area.toFixed(3), ""])
     totalArea += area
-    const coef = await getCoef(SpecificationItem.DVP)
+    const coef = await getCoef(SpecItem.DVP)
     verbose.push(["", "", "", "", totalArea.toFixed(3), `x ${coef} = ${(totalArea * coef).toFixed(3)}`])
     return { data: { amount: totalArea * coef }, verbose }
 }
-function getTelescope(depth: number): { item: SpecificationItem | null; data: FullData}  {
+function getTelescope(depth: number): { item: SpecItem | null; data: FullData}  {
     const telescopes = [
-        { depth: 550, item: SpecificationItem.Telescope550 },
-        { depth: 500, item: SpecificationItem.Telescope500 },
-        { depth: 450, item: SpecificationItem.Telescope450 },
-        { depth: 300, item: SpecificationItem.Telescope400 },
-        { depth: 350, item: SpecificationItem.Telescope350 },
-        { depth: 300, item: SpecificationItem.Telescope300 },
-        { depth: 250, item: SpecificationItem.Telescope250 },
+        { depth: 550, item: SpecItem.Telescope550 },
+        { depth: 500, item: SpecItem.Telescope500 },
+        { depth: 450, item: SpecItem.Telescope450 },
+        { depth: 300, item: SpecItem.Telescope400 },
+        { depth: 350, item: SpecItem.Telescope350 },
+        { depth: 300, item: SpecItem.Telescope300 },
+        { depth: 250, item: SpecItem.Telescope250 },
     ]
     const tel = telescopes.find(t => t.depth <= depth - 150)
     if (!tel) return { item: null, data: emptyFullData() }

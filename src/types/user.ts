@@ -17,7 +17,7 @@ export enum PERMISSION {
     UPDATE = 'UPDATE',
     DELETE = 'DELETE',
 }
-export type Permissions = {
+export type UserPermissions = {
     Read: boolean
     Create: boolean
     Update: boolean

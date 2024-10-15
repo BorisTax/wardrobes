@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { KromkaType, FasadMaterial, Profile } from "../types/materials"
+import { KromkaType, FasadMaterial, ProfileSchema } from "../types/materials"
 
 export function useMaterialMap(materialList: FasadMaterial[]): Map<number, FasadMaterial> {
     return useMemo(() => {
@@ -9,7 +9,7 @@ export function useMaterialMap(materialList: FasadMaterial[]): Map<number, Fasad
     }, [materialList])
 }
 
-export function useProfileNamesMap(profileList: Profile[]) {
+export function useProfileNamesMap(profileList: ProfileSchema[]) {
     return useMemo(() => {
         const m = new Map()
         profileList.forEach(mat => m.set(mat.id, mat.name))

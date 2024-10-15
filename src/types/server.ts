@@ -1,5 +1,5 @@
 import { Request } from "express"
-import { SpecificationItem } from "./specification"
+import { SpecItem } from "./specification"
 import { FASAD_TYPE } from "./enums"
 export type Token = {
     token: string
@@ -43,17 +43,10 @@ export enum TableFields {
     PERMISSIONS = 'permissions'
 }
 
-export type SpecificationData = {
-    name: SpecificationItem
-    caption?: string
-    units?: string
-    coef?: number
-    id?: string
-    code?: string
-    purpose?: string
-}
+
+
 export type PriceData = {
-    name: SpecificationItem
+    name: SpecItem
     price?: number
     markup?: number
 }

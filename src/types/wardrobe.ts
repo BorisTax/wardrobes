@@ -1,14 +1,8 @@
 import { FASAD_TYPE } from "./enums"
-import { PriceData, SpecificationData } from "./server"
+import { SpecSchema } from "./schemas"
+import { PriceData } from "./server"
 import { SPEC_GROUP } from "./specification"
-import { SpecificationItem } from "./specification"
-
-export interface IWardrobe {
-    getTrempel: () => {length: number, count: number}
-    getTruba: () => {length: number, count: number}
-    getStyagka: () => number
-    getNaprav: () => number
-}
+import { SpecItem } from "./specification"
 
 export type FasadesData = {
     dsp: { count: number, matId: number[] },
@@ -16,7 +10,6 @@ export type FasadesData = {
     fmp: { count: number, matId: number[] },
     sand: { count: number, matId: number[] },
     lacobel: { count: number, matId: number[] },
-    lacobelGlass: { count: number, matId: number[] }
 }
 export type ExtComplectData = {
     telescope: number
@@ -25,7 +18,7 @@ export type ExtComplectData = {
         height: number
         depth: number
         width: number
-        type: CONSOLE_TYPE
+        typeId: CONSOLE_TYPE
     }
     blinder: number
     shelf: number
@@ -42,8 +35,8 @@ export type ExtComplectData = {
 
 
 export type WardrobeData = {
-    wardKind: WARDROBE_KIND
-    wardType: WARDROBE_TYPE
+    wardKindId: WARDROBE_KIND
+    wardTypeId: WARDROBE_TYPE
     schema: boolean
     width: number
     depth: number
@@ -65,31 +58,26 @@ export type DVPData = {
     dvpPlankaCount: number
 }
 
-export type TotalData = PriceData & SpecificationData & SpecificationResultItem & {verbose: VerboseData}
+export type TotalData = SpecSchema & SpecResultItem & {verbose: VerboseData}
 
-export type SpecificationResultItem = {
+export type SpecResultItem = {
     amount: number
-    char?: {
-        code: string
-        caption: string
-    }
-    useCharAsCode?: boolean
+    charId?: number
 }
 
 export type VerboseData = (string | number)[][]
-export type FullData = { data: SpecificationResultItem; verbose?: VerboseData}
+export type FullData = { data: SpecResultItem; verbose?: VerboseData}
 
 export type SpecificationMultiResultFasades = [
-    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
-    { type: FASAD_TYPE, spec: [SpecificationItem, SpecificationResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecItem, SpecResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecItem, SpecResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecItem, SpecResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecItem, SpecResultItem][] },
+    { type: FASAD_TYPE, spec: [SpecItem, SpecResultItem][] },
 ]
 
 export type CombiSpecificationResult = { specifications: SpecificationResult[][], totalPrice: number[] }
-export type SpecificationResult = [SpecificationItem, FullData]
+export type SpecificationResult = [SpecItem, FullData]
 
 export type SpecificationMultiResult = { 
     type: SPEC_GROUP, 
@@ -97,14 +85,14 @@ export type SpecificationMultiResult = {
 }[]
 
 export enum WARDROBE_TYPE {
-    WARDROBE = 'WARDROBE',
-    GARDEROB = 'GARDEROB',
-    SYSTEM = 'SYSTEM',
+    WARDROBE = 1,
+    SYSTEM = 2,
+    GARDEROB = 3,
 }
 
 export enum CONSOLE_TYPE {
-    STANDART = 'STANDART',
-    RADIAL = 'RADIAL',
+    STANDART = 1,
+    RADIAL = 2,
 }
 export enum KROMKA_TYPE {
     THICK = 'THICK',
@@ -126,47 +114,34 @@ export enum DRILL_TYPE {
 }
 
 export enum WARDROBE_KIND {
-    STANDART = 'STANDART'
-}
-
-export type WardrobeDetailTable = {
-    type: WARDROBE_KIND
-    name: DETAIL_NAME
-    minwidth: number
-    maxwidth: number
-    minheight: number
-    maxheight: number
-    count: number
-    size: string
-    enabled: boolean
+    STANDART = 1
 }
 
 export type Detail = {
-    name: DETAIL_NAME
-    caption?: string
+    id: number
     length: number
     width: number
     count: number
-    edge?: KROMKA_SIDE
+    kromka?: KROMKA_SIDE
     drill?: DRILL_TYPE[]
 }
 
 export enum DETAIL_NAME {
-    ROOF = 'ROOF',
-    STAND = 'STAND',
-    INNER_STAND = 'INNER_STAND',
-    SHELF = 'SHELF',
-    SHELF_PLAT = 'SHELF_PLAT',
-    PILLAR = 'PILLAR',
-    CONSOLE_STAND= "CONSOLE_STAND",
-    CONSOLE_BACK_STAND= "CONSOLE_BACK_STAND",
-    CONSOLE_ROOF = 'CONSOLE_ROOF',
-    CONSOLE_SHELF = 'CONSOLE_SHELF',
-    DRAWER_FASAD = 'DRAWER_FASAD',
-    DRAWER_SIDE = 'DRAWER_SIDE', 
-    DRAWER_BRIDGE = 'DRAWER_BRIDGE',
-    DRAWER_BOTTOM_DVP = 'DRAWER_BOTTOM_DVP',
-    BLINDER = 'BLINDER',
+    ROOF = 1,
+    STAND = 2,
+    INNER_STAND = 3,
+    SHELF = 4,
+    SHELF_PLAT = 5,
+    PILLAR = 6,
+    DRAWER_FASAD = 7,
+    DRAWER_SIDE = 8,
+    DRAWER_BRIDGE = 9,
+    DRAWER_BOTTOM_DVP = 10,
+    CONSOLE_STAND = 11,
+    CONSOLE_BACK_STAND = 12,
+    CONSOLE_ROOF = 13,
+    CONSOLE_SHELF = 14,
+    BLINDER = 15,
 }
 
 

@@ -2,11 +2,12 @@ import messages from '../messages.js'
 import express from "express";
 import { accessDenied } from '../functions/database.js';
 import { MyRequest } from '../../types/server.js';
-import { PERMISSION, PERMISSIONS_SCHEMA, Permissions, RESOURCE } from "../../types/user.js";
+import { PERMISSION, PERMISSIONS_SCHEMA, UserPermissions, RESOURCE } from "../../types/user.js";
 import { permissionServiceProvider } from '../options.js';
 import { hasPermission } from './users.js';
 import { PermissionService } from '../services/permissionService.js';
 import { StatusCodes } from 'http-status-codes';
+import { RESOURCES_ROUTE } from '../../types/routes.js';
 
 const router = express.Router();
 export default router
@@ -17,7 +18,7 @@ router.get("/", async (req, res) => {
   if (!result.success) return res.json(result)
   res.status(result.status).json(result);
 });
-router.get("/resources", async (req, res) => {
+router.get(RESOURCES_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const result = await getResourceList();
   if (!result.success) return res.json(result)
@@ -56,7 +57,7 @@ export async function getResourceList() {
   const service = new PermissionService(permissionServiceProvider)
   return await service.getResourceList()
 }
-export async function addPermissions(roleId: number, resource: RESOURCE, permissions: Permissions) {
+export async function addPermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions) {
   const service = new PermissionService(permissionServiceProvider)
   const result = await service.getPermissions(roleId)
   if (!result.success) return result
@@ -65,7 +66,7 @@ export async function addPermissions(roleId: number, resource: RESOURCE, permiss
   return await service.addPermissions(roleId, resource, permissions)
 }
 
-export async function updatePermissions(roleId: number, resource: RESOURCE, permissions: Permissions) {
+export async function updatePermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions) {
   const service = new PermissionService(permissionServiceProvider)
   const result = await service.getPermissions(roleId)
   if (!result.success) return result

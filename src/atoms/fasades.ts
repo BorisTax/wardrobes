@@ -3,7 +3,7 @@ import Fasad from '../classes/Fasad'
 import { Division, FASAD_TYPE } from '../types/enums'
 import { getRootFasad, isFasadExist, trySetHeight, trySetWidth } from '../functions/fasades'
 import { getProfileDirection } from '../functions/materials'
-import { materialListAtom } from './materials/materials'
+import { materialListAtom } from "./materials/chars"
 import { appDataAtom } from './app'
 import { AppData } from '../types/app'
 import { settingsAtom } from './settings'

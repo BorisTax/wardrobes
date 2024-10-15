@@ -1,10 +1,11 @@
 import { AppData, AppState } from "../types/app"
-import { Profile, ProfileType } from "../types/materials"
+import { ProfileType } from "../types/enums"
 import FasadState from "../classes/FasadState"
 import { getFasadState, newFasadFromState } from "./fasades"
 import { Division, FASAD_TYPE } from "../types/enums"
 import Fasad from "../classes/Fasad"
-import { CONSOLE_TYPE, Detail, KROMKA_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
+import {  Detail, KROMKA_TYPE, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
+import { Profile } from "../types/materials"
 
 
 
@@ -29,7 +30,7 @@ export function getAppDataFromState(state: AppState, keepOriginalMaterial = fals
         wardHeight: state.wardHeight,
         wardWidth: state.wardWidth,
         fasadCount: state.fasadCount,
-        profile: { ...state.profile },
+        profile: state.profile,
         type: state.type,
         rootFasades: state.rootFasadesState.map((s: FasadState) => newFasadFromState(s, keepOriginalMaterial))
     }
@@ -40,21 +41,21 @@ export function getInitialAppState(): AppState {
     const wardWidth = 2400
     const wardHeight = 2400
     const fasadCount = 3
-    const profile: Profile = {id:-1, type: ProfileType.STANDART, name: "", code: "", brushId: -1 }
-    const wardType: WARDROBE_TYPE = WARDROBE_TYPE.WARDROBE
-    return createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, FASAD_TYPE.EMPTY, -1)
+    const profile = {id: 0, type: ProfileType.STANDART}
+    const wardTypeId = WARDROBE_TYPE.WARDROBE
+    return createAppState("", wardWidth, wardHeight, fasadCount, profile, wardTypeId, FASAD_TYPE.EMPTY, 0)
 }
 
-export function createAppState(order: string, wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardType: WARDROBE_TYPE, fasadType = FASAD_TYPE.EMPTY, materialId = -1): AppState {
-    const fasadHeight = getFasadHeight(wardHeight, wardType, profile.type)
-    const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardType, profile.type)
+export function createAppState(order: string, wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardTypeId: WARDROBE_TYPE, fasadType = FASAD_TYPE.EMPTY, materialId = 0): AppState {
+    const fasadHeight = getFasadHeight(wardHeight, wardTypeId, profile.type)
+    const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardTypeId, profile.type)
     const state: AppState = {
         order,
         wardWidth,
         wardHeight,
         fasadCount,
         profile,
-        type: wardType,
+        type: wardTypeId,
         rootFasadesState: new Array(fasadCount).fill(null).map(() => getFasadState(fasadWidth, fasadHeight, Division.HEIGHT, fasadType, materialId))
     }
     return state
@@ -66,7 +67,7 @@ export function getAppState(data: AppData): AppState {
         wardHeight: data.wardHeight,
         wardWidth: data.wardWidth,
         fasadCount: data.fasadCount,
-        profile: { ...data.profile },
+        profile: data.profile,
         type: data.type,
         rootFasadesState: data.rootFasades.map((f: Fasad) => f.getState())
     }
@@ -82,10 +83,10 @@ export function getEdgeDescripton(detail: Detail, edge: KROMKA_TYPE): string {
     let length = 0
     let width = 0
     const result = []
-    if (detail.edge?.L1 === edge) length = 1
-    if (detail.edge?.L2 === edge) length += 1
-    if (detail.edge?.W1 === edge) width = 1
-    if (detail.edge?.W2 === edge) width += 1
+    if (detail.kromka?.L1 === edge) length = 1
+    if (detail.kromka?.L2 === edge) length += 1
+    if (detail.kromka?.W1 === edge) width = 1
+    if (detail.kromka?.W2 === edge) width += 1
     if (length > 0) result.push(`${length} по длине`)
     if (width > 0) result.push(`${width} по ширине`)
     return result.join(', ')

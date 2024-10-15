@@ -1,26 +1,27 @@
 import { Getter, Setter, atom } from 'jotai';
 import { AppData, AppState, HistoryState, InitialAppState, SetAtomComfirm } from "../types/app";
 import { createAppState, getAppDataFromState, getAppState, getFasadHeight, getFasadWidth, getInitialAppState } from "../functions/wardrobe";
-import { Profile } from "../types/materials";
 import Fasad from "../classes/Fasad";
 import { trySetHeight, trySetWidth } from "../functions/fasades";
 import { openFile, readFile, saveState } from '../functions/file';
-import { materialListAtom, setInitialMaterials } from './materials/materials';
-import { FASAD_TYPE } from '../types/enums';
 import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
 import { WARDROBE_TYPE } from '../types/wardrobe';
+import { API_ROUTE, INITIAL_COMBISTATE_ROUTE, VERSION_ROUTE, WARDROBE_ROUTE } from '../types/routes';
+import { ProfileSchema } from '../types/schemas';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
-    const result: FetchResult<[] | string> = await fetchGetData(`/api/version`)
+    const result: FetchResult<[] | string> = await fetchGetData(`${API_ROUTE}${VERSION_ROUTE}`)
     if (result.success) set(versionAtom, result.data as string)
 })
+
+
 export const loadedInitialStateAtom = atom(false)
 export const loadInitialStateAtom = atom(null, async (get, set) => {
     set(loadedInitialStateAtom, false)
-    const result: FetchResult<InitialAppState> = await fetchGetData(`/api/wardrobe/initial`)
+    const result: FetchResult<InitialAppState> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_COMBISTATE_ROUTE}`) 
     if (result.success){
         const { wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId } = result.data as InitialAppState
         const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId)
@@ -88,7 +89,7 @@ export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmC
     await setAppDataAtom(setWidth, newAppData, newRootFasades, set, confirmCallback, true)
 })
 
-export const setProfileAtom = atom(null, async (get, set, [newProfile, confirmCallback]: SetAtomComfirm<Profile>) => {
+export const setProfileAtom = atom(null, async (get, set, [newProfile, confirmCallback]: SetAtomComfirm<ProfileSchema>) => {
     const appData = get(appDataAtom)
     const { order, wardWidth, wardHeight, fasadCount, profile, type, rootFasades } = appData
     if (profile.type === newProfile.type) {

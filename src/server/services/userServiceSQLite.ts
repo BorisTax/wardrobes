@@ -4,7 +4,7 @@ import { Result, Token } from '../../types/server.js';
 import { PERMISSIONS_SCHEMA, USER_ROLE_SCHEMA, User } from "../../types/user.js";
 import messages from '../messages.js';
 import { Query, USER_TABLE_NAMES } from '../../types/schemas.js';
-import { Permissions, RESOURCE, UserRole } from '../../types/user.js';
+import { UserPermissions, RESOURCE, UserRole } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
 const { USERS, TOKENS, PERMISSIONS, USER_ROLES, ROLES, SUPERUSERS, SUPERROLES } = USER_TABLE_NAMES
 export default class UserServiceSQLite implements IUserServiceProvider {
@@ -66,7 +66,7 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         ], { successStatusCode: StatusCodes.OK, successMessage: messages.USER_DELETED })
     }
 
-    async getPermissions(roleId: number, resource: RESOURCE): Promise<Permissions> {
+    async getPermissions(roleId: number, resource: RESOURCE): Promise<UserPermissions> {
         const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS} where roleId=? and resource=?;`, [roleId, resource], { successStatusCode: StatusCodes.OK })
         const perm = result.data as PERMISSIONS_SCHEMA[]
         return (perm.length > 0 && { Create: perm[0].create, Read: perm[0].read, Update: perm[0].update, Delete: perm[0].delete }) || { Create: false, Delete: false, Read: false, Update: false }

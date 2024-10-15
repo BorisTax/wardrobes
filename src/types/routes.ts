@@ -1,0 +1,30 @@
+
+export const API_ROUTE = '/api';
+export const USERS_ROUTE = '/users';
+export const PERMISSIONS_ROUTE = USERS_ROUTE + '/permissions';
+export const RESOURCES_ROUTE = '/resources';
+export const ALLDATA_ROUTE = '/all_data';
+export const MATERIALS_ROUTE = '/materials';
+export const MATERIAL_ROUTE = '/material';
+export const PROFILES_ROUTE = '/profile';
+export const PROFILE_TYPES_ROUTE = '/profile_types';
+export const CHARS_ROUTE = '/chars';
+export const IMAGE_ROUTE = '/image';
+export const FASAD_TYPES_ROUTE = '/fasad_types';
+export const SPECIFICATION_ROUTE = '/specification';
+export const SPECIFICATION_DATA_ROUTE = '/data';
+export const SPECIFICATION_COMBIDATA_ROUTE = '/combidata';
+export const TEMPLATES_ROUTE = '/templates';
+export const DATABASE_ROUTE = '/database';
+export const WARDROBE_ROUTE = '/wardrobe';
+export const VERSION_ROUTE = '/version';
+export const PRICES_ROUTE = '/prices';
+export const DSP_KROMKA_ZAG_ROUTE = '/dsp_kromka_zagl';
+export const INITIAL_COMBISTATE_ROUTE = '/initialCombiState';
+export const INITIAL_WARDROBEDATA_ROUTE = '/initialWardrobeData';
+export const WARDROBE_KINDS_ROUTE = '/wardrobe_kinds';
+export const WARDROBE_TYPES_ROUTE = '/wardrobe_types';
+export const CONSOLE_TYPES_ROUTE = '/console_types';
+export const DETAIL_ROUTE = '/detail';
+export const DETAILS_ROUTE = '/details';
+

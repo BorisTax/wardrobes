@@ -6,7 +6,7 @@ import { specificationDataAtom } from "../../atoms/specification"
 import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { UnitCaptions } from "../../functions/materials"
 import TableData from "../TableData"
-import { SpecificationItem } from "../../types/specification"
+import { SpecItem } from "../../types/specification"
 import { InputType, PropertyType } from "../../types/property"
 import EditContainer from "../EditContainer"
 import { userAtom } from "../../atoms/users"
@@ -40,7 +40,7 @@ export default function EditPriceDialog() {
     return <EditContainer>
         <TableData heads={heads} content={contents} onSelectRow={(index) => setSelectedIndex(index)} />
         {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection items={editItems} onUpdate={async (checked, values) => {
-            const data: PriceData = { name: name as SpecificationItem }
+            const data: PriceData = { name: name as SpecItem }
             if (checked[1]) data.price = +values[1]
             if (checked[2]) data.markup = +values[2]
             const result = await updatePriceList(data)

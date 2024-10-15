@@ -34,7 +34,6 @@ const EditSpecificationDialog = lazy(()=>import('./components/dialogs/EditSpecif
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
 import SpecificationDialog from './components/dialogs/SpecificationDialog'
-import { loadInitialWardrobeDataAtom } from './atoms/wardrobe'
 import NavBar from './components/NavBar'
 import LoadIndicator from './components/LoadIndicator'
 
@@ -43,16 +42,14 @@ function App() {
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
   const loadInitialAppState = useSetAtom(loadInitialStateAtom)
-  const loadInitialWardrobeData = useSetAtom(loadInitialWardrobeDataAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
     const storage = localStorage.getItem('appState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
     setAppData(getAppDataFromState(appState), false)
     loadInitialAppState()
-    loadInitialWardrobeData()
     loadVersion()
-  }, [user.name, setAppData, loadInitialAppState, loadInitialWardrobeData, loadVersion])
+  }, [user.name, setAppData, loadInitialAppState, loadVersion])
   useEffect(() => {
     const onContextMenu = (e: Event) => { e.preventDefault() }
     const onBeforeUnload = () => { saveToStorage() }

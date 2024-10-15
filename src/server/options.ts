@@ -5,11 +5,9 @@ import { Response, NextFunction, Request } from "express"
 import UserServiceSQLite from './services/userServiceSQLite.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import PriceServiceSQLite from './services/priceServiceSQLite.js'
 import TemplateServiceSQLite from './services/templateServiceSQLite.js'
-import SpecificationServiceSQLite from './services/specificationServiceSQLite.js'
-import MaterialServiceSQLite from './services/materialServiceSQLite.js'
 import PermissionServiceSQLite from './services/permissionServiceSQLite.js'
+import DataBaseServiceSQLite from './services/dataBaseServiceSQLite.js'
 
 export const JWT_SECRET = "secretkey"
 const __filename = fileURLToPath(import.meta.url);
@@ -17,16 +15,17 @@ const __dirname = path.dirname(__filename);
 export const databaseZipFile = path.resolve(__dirname, 'database.zip')
 export const databaseFolder = path.resolve(__dirname, 'database')
 export const usersPath = path.resolve(__dirname, 'database/users.db')
-export const materialsPath = path.resolve(__dirname, 'database/materials.db')
+export const dataPath = path.resolve(__dirname, 'database/data.db')
 export const specificationPath = path.resolve(__dirname, 'database/specification.db')
 export const templatePath = path.resolve(__dirname, 'database/templates.db')
 export const wardrobePath = path.resolve(__dirname, 'database/wardrobe.db')
-export const materialServiceProvider = new MaterialServiceSQLite(materialsPath)
 export const userServiceProvider = new UserServiceSQLite(usersPath)
-export const priceServiceProvider = new PriceServiceSQLite(specificationPath)
-export const specServiceProvider = new SpecificationServiceSQLite(specificationPath)
 export const templateServiceProvider = new TemplateServiceSQLite(templatePath)
 export const permissionServiceProvider = new PermissionServiceSQLite(usersPath)
+
+export function getDataBaseProvider<T extends { id: number }>() {
+  return new DataBaseServiceSQLite<T>(dataPath)
+}
 
 export const userRoleParser = async (req: Request, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)

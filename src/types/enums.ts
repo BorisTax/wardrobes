@@ -8,36 +8,46 @@ export enum ProfileDirection {
     HORIZONTAL = "HORIZONTAL"
 }
 export enum FASAD_TYPE {
-    EMPTY = '',
-    DSP = 'DSP',
-    MIRROR = 'MIRROR',
-    LACOBEL = 'LACOBEL',
-    LACOBELGLASS = 'LACOBELGLASS',
-    FMP = 'FMP',
-    SAND = 'SAND'
+    EMPTY = 0,
+    DSP = 1,
+    MIRROR = 2,
+    LACOBEL = 3,
+    FMP = 4,
+    SAND = 5
 }
 
-export enum MaterialGroup {
-    PLATE = 'plate',
-    PROFILE = 'profile',
-    KROMKA = 'kromka',
-    ZAGLUSHKI = 'zaglushki',
-    DSP_EDGE_ZAGL = 'DSP_EDGE_ZAGL',
-    BRUSH = 'brush',
-    TREMPEL = 'trempel',
-    UPLOTNITEL = 'uplotnitel'
+export enum LACOBEL_TYPE {
+    LACOBEL = 1,
+    LACOBELGLASS = 2,
 }
 
 export enum MAT_PURPOSE {
-    FASAD = 'fasad',
-    CORPUS = 'corpus',
-    BOTH = 'both'
+    CORPUS = 1,
+    FASAD = 2,
+    BOTH = 3
 }
+
 export enum SERVER_EVENTS {
     LOGOUT = "LOGOUT",
     UPDATE_ACTIVE_USERS = "UPDATE_ACTIVE_USERS"
 }
+
 export enum TEMPLATE_TABLES {
     FASAD = "fasad"
 }
 
+export enum CHAR_TYPE {
+    COLOR = 1,
+    MIRROR = 2,
+    LACOBEL = 3,
+    PROFILE = 4,
+    TREMPEL = 5,
+    SAND = 6,
+    FMP = 7,
+    UPLOTNITEL = 8,
+}
+
+export enum ProfileType {
+    STANDART = 1,
+    BAVARIA = 2
+}

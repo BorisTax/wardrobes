@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import Fasad from "../../classes/Fasad";
 import { Division, FASAD_TYPE } from "../../types/enums";
-import { useImageUrl } from "../../atoms/materials/materials";
+import { useImageUrl } from "../../custom-hooks/useImage";
 import { FasadBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";
 type FasadSectionProps = {

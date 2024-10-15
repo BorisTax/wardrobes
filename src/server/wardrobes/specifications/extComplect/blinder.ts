@@ -1,29 +1,26 @@
-import { SpecificationItem } from "../../../../types/specification";
+import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData } from "../../../../types/wardrobe";
-import { getEdge2, getEdge05, getGlue, getDetailNames } from "../corpus";
+import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
+import { getKromkaPrimary, getKromkaSecondary, getGlue, getDetailNames } from "../corpus";
 import { singleLengthThickDoubleWidthThinEdge } from "../edges";
 import { getDSP } from "../functions";
 
 
 export async function getBlinderSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const blinder  = data.extComplect.blinder
     const count = data.width < 2750 ? 1 : 2
     const details: Detail[] = [
-        { name: DETAIL_NAME.BLINDER, count, length: Math.round(data.width / count), width: 284, edge: singleLengthThickDoubleWidthThinEdge() },
+        { id: DETAIL_NAME.BLINDER, count, length: Math.round(data.width / count), width: 284, kromka: singleLengthThickDoubleWidthThinEdge() },
     ]
-    const edge2 = await getEdge2(data, details)
-    const edge05 = await getEdge05(data, details)
-    result.push([SpecificationItem.DSP, await getDSP(data, details)])
-    result.push([SpecificationItem.Kromka045, edge05])
-    result.push([SpecificationItem.Kromka2, edge2])
-    result.push([SpecificationItem.Glue, await getGlue(data, edge2.data.amount, edge05.data.amount)])
-    result.push([SpecificationItem.Samorez30, { data: { amount: 10 } }])
-    //const karton = 2
-    //result.push([SpecificationItem.Karton, { data: { amount: karton } }])
-    //result.push([SpecificationItem.Skotch, { data: { amount: karton * 20 } }])
-    //result.push([SpecificationItem.ConfKluch, { data: { amount: 1 } }])
-    result.push([SpecificationItem.Streich, await getStreich(data.width)])
+    const kromka = await getKromkaByDSP(data.dspId)
+    const kromkaPrimary = (await getKromkaPrimary(data, details, kromka.kromkaId))
+    const kromkaSecondary = await getKromkaSecondary(data, details, kromka.kromkaSpecId, kromka.kromkaId)
+    result.push([SpecItem.DSP16, await getDSP(data, details)])
+    result.push([kromka.kromkaSpecId, kromkaSecondary])
+    result.push([SpecItem.Kromka2, kromkaPrimary])
+    result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])
+    result.push([SpecItem.Samorez30, { data: { amount: 10 } }])
+    result.push([SpecItem.Streich, await getStreich(data.width)])
     return result
 }
 

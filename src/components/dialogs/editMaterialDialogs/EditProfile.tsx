@@ -2,7 +2,8 @@ import { useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { Profiles } from "../../../functions/materials"
 import ComboBox from "../../inputs/ComboBox"
-import { Profile, ProfileType } from "../../../types/materials"
+import { ProfileSchema } from "../../../types/materials"
+import { ProfileType } from "../../../types/enums"
 import { addProfileAtom, deleteProfileAtom, profileListAtom, updateProfileAtom } from "../../../atoms/materials/profiles"
 import messages from "../../../server/messages"
 import { brushListAtom } from "../../../atoms/materials/brush"
@@ -30,7 +31,7 @@ export default function EditProfile() {
     const updateProfile = useSetAtom(updateProfileAtom)
     const profile = profileList[profileIndex]
     const heads = ['Наименование', 'Код', 'Щетка']
-    const contents = profileList.map((i: Profile) => [i.name, i.code, brushMap.get(i.brushId)])
+    const contents = profileList.map((i: ProfileSchema) => [i.name, i.code, brushMap.get(i.brushId)])
     const editItems: EditDataItem[] = [
         { caption: "Наименование:", value: profile?.name, message: messages.ENTER_CAPTION, type: InputType.TEXT },
         { caption: "Код:", value: profile?.code, message: messages.ENTER_CODE, type: InputType.TEXT },

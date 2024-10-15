@@ -1,30 +1,28 @@
-import { SpecificationItem } from "../../../../types/specification";
+import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail } from "../../../../types/wardrobe";
-import { getDetails, getEdge2, getEdge05, getGlue, getConfirmat } from "../corpus";
+import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
+import { getKromkaPrimary, getKromkaSecondary, getGlue, getConfirmat, getDetails } from "../corpus";
 import { singleLengthThinEdge } from "../edges";
 import { getDSP } from "../functions";
 
 
 export async function getShelfSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = (await getDetails(data.wardType, data.wardKind, data.width, data.height, data.depth))
-    const shelf = details.find(d => d.name === DETAIL_NAME.SHELF)
+    const details = (await getDetails(data.wardTypeId, data.wardKindId, data.width, data.height, data.depth))
+    const shelf = details.find(d => d.id === DETAIL_NAME.SHELF)
     if (!shelf) return result
     const shelves: Detail[] = [
-        { name: DETAIL_NAME.SHELF, count: 1, length: shelf.length, width: shelf.width, edge: singleLengthThinEdge() },
+        { id: DETAIL_NAME.SHELF, count: 1, length: shelf.length, width: shelf.width, kromka: singleLengthThinEdge() },
     ]
-    const edge2 = await getEdge2(data, shelves)
-    const edge05 = await getEdge05(data, shelves)
+    const kromka = await getKromkaByDSP(data.dspId)
+    const kromkaPrimary = (await getKromkaPrimary(data, shelves, kromka.kromkaId))
+    const kromkaSecondary = await getKromkaSecondary(data, shelves, kromka.kromkaSpecId, kromka.kromkaId)
     const conf = await getConfirmat(data, shelves)
-    result.push([SpecificationItem.DSP, await getDSP(data, shelves)])
-    result.push([SpecificationItem.Kromka045, edge05])
-    result.push([SpecificationItem.Glue, await getGlue(data, edge2.data.amount, edge05.data.amount)])
-    result.push([SpecificationItem.Confirmat, conf])
-    result.push([SpecificationItem.ZagConfirmat, { data: { amount: conf.data.amount } }])
-    //const karton = 2
-    //result.push([SpecificationItem.Karton, { data: { amount: karton } }])
-    //result.push([SpecificationItem.Skotch, { data: { amount: karton * 20 } }])
-    //result.push([SpecificationItem.ConfKluch, { data: { amount: 1 } }])
+    result.push([SpecItem.DSP16, await getDSP(data, shelves)])
+    result.push([kromka.kromkaSpecId, kromkaSecondary])
+    result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])
+    result.push([SpecItem.Confirmat, conf])
+    result.push([SpecItem.ZagConfirmat, { data: { amount: conf.data.amount } }])
     return result
 }
 

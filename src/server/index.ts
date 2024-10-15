@@ -8,6 +8,7 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { router } from './routers.js'
 import { userRoleParser } from './options.js';
+import { API_ROUTE } from '../types/routes.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +24,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, '../../dist')))
 app.use(userRoleParser)
 
-app.use('/api', router)
+app.use(API_ROUTE, router)
 
 app.use(function (req, res) {
     res.sendFile(path.join(__dirname, '../../dist/index.html'))

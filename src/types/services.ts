@@ -1,12 +1,9 @@
-import { SpecificationItem } from "./specification"
-import { FasadMaterial, OmitId, Profile } from "./materials"
-import { SpecificationData, Result, Token, PriceData, ExtMaterialQuery } from "./server"
+import {  OmitId } from "./materials"
+import { Result, Token, PriceData } from "./server"
 import { PERMISSIONS_SCHEMA, Resource, User } from "./user"
 import { Template } from "./templates"
-import { DETAIL_NAME, WARDROBE_KIND, WardrobeDetailTable } from "./wardrobe"
-import { DVPTableSchema, MaterialTypesSchema, WardrobeDetailSchema, WardrobeFurnitureTableSchema, WardrobeTableSchema } from "./schemas"
-import { Permissions, RESOURCE, UserRole } from "./user"
-import { FASAD_TYPE } from "./enums"
+import { DATA_TABLE_NAMES, KeySet } from "./schemas"
+import { UserPermissions, RESOURCE, UserRole } from "./user"
 
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User[]>>
@@ -20,7 +17,7 @@ interface IUserAbstractService {
     registerUser: (userName: string, password: string, roleId: number) => Promise<Result<null>>
     updateUser: ({ userName, password, roleId }: { userName: string, password?: string, roleId?: number }) => Promise<Result<null>>
     deleteUser: (user: User) => Promise<Result<null>>
-    getPermissions: (roleId: number, resource: RESOURCE) => Promise<Permissions>
+    getPermissions: (roleId: number, resource: RESOURCE) => Promise<UserPermissions>
     getAllUserPermissions: (roleId: number) => Promise<PERMISSIONS_SCHEMA[]>
     getAllPermissions: () => Promise<PERMISSIONS_SCHEMA[]>
     getUserRoleId: (username: string) => Promise<number>
@@ -30,23 +27,12 @@ interface IUserAbstractService {
     getSuperUsers: () => Promise<Result<{ name: string }[]>>
     getSuperRoles: () => Promise<Result<{ roleId: number }[]>>
 }
-export interface IMaterialService {
-    getMaterialTypes: () => Promise<Result<MaterialTypesSchema[]>>
-    getExtMaterials: (matQuery: ExtMaterialQuery) => Promise<Result<FasadMaterial[]>>
-    addExtMaterial: ({ }: OmitId<FasadMaterial>) => Promise<Result<null>>
-    updateExtMaterial: ({ }: FasadMaterial) => Promise<Result<null>>
-    deleteExtMaterial: (id: number) => Promise<Result<null>>
-    getImage: (id: number) => Promise<Result<string>>
-    getProfiles: () => Promise<Result<Profile[]>>
-    addProfile: ({ }: OmitId<Profile>) => Promise<Result<null>>
-    deleteProfile: (id: number) => Promise<Result<null>>
-    updateProfile: ({ }: Profile) => Promise<Result<null>>
-}
-export interface IMaterialExtService<T> {
-    getExtData: () => Promise<Result<T[]>>
-    addExtData: ({ }: OmitId<T>) => Promise<Result<null>>
-    deleteExtData: (id: number) => Promise<Result<null>>
-    updateExtData: ({ }: T) => Promise<Result<null>>
+
+export interface IDataBaseService<T extends { id: number }> {
+    getData: (table: DATA_TABLE_NAMES, columns: KeySet<T>, values: Partial<T>) => Promise<Result<T[]>>
+    addData: (table: DATA_TABLE_NAMES, data: OmitId<T>) => Promise<Result<T[]>>
+    deleteData: (table: DATA_TABLE_NAMES, id: number ) => Promise<Result<null>>
+    updateData: (table: DATA_TABLE_NAMES, data: Partial<T>) => Promise<Result<null>>
 }
 interface ITemplateAbstractService {
     getFasadTemplates: () => Promise<Result<Template[]>>
@@ -58,31 +44,15 @@ interface IPriceAbstractService {
     getPriceList: () => Promise<Result<PriceData[]>>
     updatePriceList: (item: PriceData) => Promise<Result<null>>
 }
-export interface ISpecificationAbstractService {
-    getSpecList: () => Promise<Result<SpecificationData[]>>
-    updateSpecList: (item: SpecificationData) => Promise<Result<null>>
-    getDetailTable: ({ kind, detailName }: { kind: WARDROBE_KIND, detailName?: DETAIL_NAME }) => Promise<Result<WardrobeDetailTable[]>>
-    getDetails: (kind: WARDROBE_KIND, width: number, height: number) => Promise<WardrobeDetailTable[]>
-    getFurnitureTable: ({ kind, item }: { kind: WARDROBE_KIND, item?: SpecificationItem }) => Promise<Result<WardrobeFurnitureTableSchema[]>>
-    getFurniture: (kind: WARDROBE_KIND, name: SpecificationItem, width: number, height: number, depth: number) => Promise<WardrobeFurnitureTableSchema | null>
-    getDVPTemplates: () => Promise<Result<DVPTableSchema[]>>
-    getDetailNames: () => Promise<Result<WardrobeDetailSchema[]>>
-    getWardobeKinds: ()=> Promise<Result<WardrobeTableSchema[]>>
-    getWardobeTypes: ()=> Promise<Result<WardrobeTableSchema[]>>
-    getConsoleTypes: ()=> Promise<Result<WardrobeTableSchema[]>>
-}
 interface IPermissionAbstractService {
     getPermissions: (roleId: number) => Promise<Result<PERMISSIONS_SCHEMA[]>>
-    addPermissions: (roleId: number, resource: RESOURCE, permissions: Permissions) => Promise<Result<null>>
+    addPermissions: (roleId: number, resource: RESOURCE, permissions: UserPermissions) => Promise<Result<null>>
     deletePermissions: (roleId: number, resource: RESOURCE) => Promise<Result<null>>
-    updatePermissions: (roleId: number, resource: RESOURCE, permissions: Permissions) => Promise<Result<null>>
+    updatePermissions: (roleId: number, resource: RESOURCE, permissions: UserPermissions) => Promise<Result<null>>
     getResourceList: () => Promise<Result<Resource>>
 }
-export interface IMaterialServiceProvider extends IMaterialService {
-    dbFile: string
-}
-export interface IMaterialExtServiceProvider<T> {
-    service: IMaterialExtService<T>
+
+export interface IDataBaseServiceProvider<T extends { id: number }> extends IDataBaseService<T> {
     dbFile: string
 }
 export interface ITemplateServiceProvider extends ITemplateAbstractService {
@@ -103,13 +73,6 @@ export interface IPriceServiceProvider extends IPriceAbstractService {
 }
 export interface IPriceService extends IPriceAbstractService {
     provider: IPriceServiceProvider
-}
-
-export interface ISpecificationServiceProvider extends ISpecificationAbstractService {
-    dbFile: string
-}
-export interface ISpecificationService extends ISpecificationAbstractService {
-    provider: ISpecificationServiceProvider
 }
 
 export interface IPermissionServiceProvider extends IPermissionAbstractService {

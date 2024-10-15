@@ -16,7 +16,7 @@ export default function SpecificationDialog() {
     const activeRootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
     const [fasadIndex, setFasadIndex] = useState(0)
     const [, setSpecificationDialogRef] = useAtom(specificationDialogAtom)
-    const specification = specifications[fasadIndex]
+    const specification = specifications[fasadIndex] || []
     const active = "fw-bold"
     const fasades = useMemo(() => specifications.map((_, index) => <div key={index} role="button" className={index === fasadIndex ? active : ""} onClick={() => { setFasadIndex(index) }}>{`Фасад ${index + 1}`}</div>), [specifications, fasadIndex])
     useEffect(() => {

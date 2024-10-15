@@ -3,7 +3,7 @@ import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 import { useAtomValue, useSetAtom } from "jotai"
 import { profileListAtom } from "../atoms/materials/profiles"
-import { Profile } from "../types/materials"
+import { ProfileSchema } from "../types/materials"
 import ComboBox from "./inputs/ComboBox"
 import { appDataAtom, historyAppAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setOrderAtom, setProfileAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"
 import useConfirm from "../custom-hooks/useConfirm"
@@ -20,7 +20,7 @@ export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)
     const WardTypes = useAtomValue(wardrobeTypesAtom)
     const profileList = useAtomValue(profileListAtom)
-    const profileNames = useMemo(() => profileList.map((p: Profile) => p.name), [profileList])
+    const profileNames = useMemo(() => profileList.map((p: ProfileSchema) => p.name), [profileList])
     const { order, profile, fasadCount, type, wardHeight, wardWidth } = useAtomValue(appDataAtom)
     const setOrder = useSetAtom(setOrderAtom)
     const setProfile = useSetAtom(setProfileAtom)
@@ -83,7 +83,7 @@ export default function WardrobePropertiesBar() {
                 <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1800} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} submitOnLostFocus={true} />
             </PropertyRow>
             <ComboBox<number> title="Кол-во фасадов:" value={fasadCount} items={fasades} displayValue={value => `${value}`} onChange={(_, value) => { setFasadCount([+value, wardFasadCountConfirm]) }} />
-            <ComboBox<Profile> title="Профиль:" value={profile} items={profileList} displayValue={value => value?.name} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />
+            <ComboBox<ProfileSchema> title="Профиль:" value={profile} items={profileList} displayValue={value => value?.name} onChange={(index) => { setProfile([profileList[index], wardProfileConfirm]); }} />
         </PropertyGrid>
     </div>
 }

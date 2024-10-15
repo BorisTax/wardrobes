@@ -1,24 +1,18 @@
 import { atom, Setter, Getter } from "jotai"
 import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { PERMISSIONS_SCHEMA, Permissions, RESOURCE, UserData, UserLoginResult, UserRole } from "../types/user"
-import { loadMaterialListAtom } from "./materials/materials"
-import { loadProfileListAtom } from "./materials/profiles"
-import { loadKromkaListAtom, loadKromkaTypeListAtom } from "./materials/kromka"
-import { loadBrushListAtom } from "./materials/brush"
-import { loadTrempelListAtom } from "./materials/trempel"
-import { loadZaglushkaListAtom } from "./materials/zaglushka"
-import { loadUplotnitelListAtom } from "./materials/uplotnitel"
-import { loadSpecificationListAtom } from "./specification"
+import { PERMISSIONS_SCHEMA, UserPermissions, RESOURCE, UserData, UserLoginResult, UserRole } from "../types/user"
 import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
-import { loadDspKromkaZagListAtom } from "./materials/dsp_kromka_zagl"
+import { API_ROUTE } from "../types/routes"
+import { loadAllDataAtom } from "./storage"
+import { loadInitialStateAtom } from "./app"
 
 
 export type UserState = {
     name: string
     roleId: number
     token: string
-    permissions: Map<RESOURCE, Permissions>
+    permissions: Map<RESOURCE, UserPermissions>
 }
 export type ActiveUserState = UserState & {
     time: number
@@ -29,7 +23,7 @@ export const loadUserRolesAtom = atom(null, async (get,set)=>{
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     if (!perm?.Read) return
-    const result = await fetchGetData(`/api/users/roles?token=${token}`)
+    const result = await fetchGetData(`${API_ROUTE}/users/roles?token=${token}`)
     if(result.success){
         set(userRolesAtom, result.data as UserRole[])
     }
@@ -41,7 +35,7 @@ export const loadUsersAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     if (!perm?.Read) return
-    const result = await fetchGetData(`/api/users/users?token=${token}`)
+    const result = await fetchGetData(`${API_ROUTE}/users/users?token=${token}`)
     if (result.success) {
         set(allUsersAtom, result.data as UserData[])
     }
@@ -49,7 +43,7 @@ export const loadUsersAtom = atom(null, async (get, set) => {
 export const loadActiveUsersAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
     if (!permissions.get(RESOURCE.USERS)?.Read) return
-    const result = await fetchGetData(`/api/users/active?token=${token}`)
+    const result = await fetchGetData(`${API_ROUTE}/users/active?token=${token}`)
     if(result.success){
         set(activeUsersAtom, result.data as ActiveUserState[])
     }
@@ -75,14 +69,16 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         set(userAtomPrivate, getInitialUser())
         set(closeEventSourceAtom)
     }
-    set(loadAllDataAtom, storeUser.permissions)
+    set(loadAllDataAtom, token, storeUser.permissions)
+    set(loadInitialStateAtom)
+    if (storeUser.permissions.get(RESOURCE.USERS)?.Read) { set(loadUserRolesAtom) }
     set(setTimerAtom)
 }
 )
 
 export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const { token } = get(userAtom)
-    const result = await fetchGetData<{token: string, permissions: PERMISSIONS_SCHEMA[]}>(`/api/users/verify?token=${token}`)
+    const result = await fetchGetData<{token: string, permissions: PERMISSIONS_SCHEMA[]}>(`${API_ROUTE}/users/verify?token=${token}`)
     if (!result.success) {
         localStorage.removeItem("token")
         set(userAtom, { token: "", permissions: [] })
@@ -104,31 +100,31 @@ const setTimerAtom = atom(null, async (get, set) => {
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     localStorage.removeItem("token")
     const user = get(userAtom)
-    fetchData('/api/users/logout', "POST", JSON.stringify({ token: user.token }))
+    fetchData(`${API_ROUTE}/users/logout`, "POST", JSON.stringify({ token: user.token }))
     set(userAtom, { token: "", permissions: [] })
     set(closeEventSourceAtom)
 })
 export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, usertoken: string) => {
     const user = get(userAtom)
-    await fetchData('/api/users/logoutUser', "POST", JSON.stringify({ token: user.token, usertoken }))
+    await fetchData(`${API_ROUTE}/users/logoutUser`, "POST", JSON.stringify({ token: user.token, usertoken }))
     set(loadActiveUsersAtom)
 })
 
 export const createUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, roleId: number) => {
     const {token} = get(userAtom)
-    const result = await fetchData('/api/users/add', "POST", JSON.stringify({ name, password, roleId, token }))
+    const result = await fetchData(`${API_ROUTE}/users/add`, "POST", JSON.stringify({ name, password, roleId, token }))
     if (result.success) set(loadUsersAtom)
     return { success: result.success as boolean, message: result.message  as string }
 })
 export const updateUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, roleId: number) => {
     const {token} = get(userAtom)
-    const result = await fetchData('/api/users/update', "POST", JSON.stringify({ name, password, roleId, token }))
+    const result = await fetchData(`${API_ROUTE}/users/update`, "POST", JSON.stringify({ name, password, roleId, token }))
     if (result.success) set(loadUsersAtom)
     return { success: result.success as boolean, message: result.message  as string }
 })
 export const deleteUserAtom = atom(null, async (get: Getter, set: Setter, name: string) => {
     const {token} = get(userAtom)
-    const result = await fetchData('/api/users/delete', "DELETE", JSON.stringify({ name, token }))
+    const result = await fetchData(`${API_ROUTE}/users/delete`, "DELETE", JSON.stringify({ name, token }))
     if (result.success) {
         set(loadUsersAtom)
         set(loadActiveUsersAtom)
@@ -138,38 +134,20 @@ export const deleteUserAtom = atom(null, async (get: Getter, set: Setter, name: 
 
 export const createRoleAtom = atom(null, async (get: Getter, set: Setter, { name }: { name: string }) => {
     const {token} = get(userAtom)
-    const result = await fetchData('/api/users/addRole', "POST", JSON.stringify({ name, token }))
+    const result = await fetchData(`${API_ROUTE}/users/addRole`, "POST", JSON.stringify({ name, token }))
     if (result.success) set(loadUserRolesAtom)
     return {success: result.success, message: result.message}
 })
 
 export const deleteRoleAtom = atom(null, async (get: Getter, set: Setter, { id }: { id: number}) => {
     const {token} = get(userAtom)
-    const result = await fetchData('/api/users/deleteRole', "DELETE", JSON.stringify({ id, token }))
+    const result = await fetchData(`${API_ROUTE}/users/deleteRole`, "DELETE", JSON.stringify({ id, token }))
     if (result.success) {
         set(loadUserRolesAtom)
     }
     return {success: result.success, message: result.message}
 })
 
-
-export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESOURCE, Permissions>) => {
-    if (permissions.get(RESOURCE.MATERIALS)?.Read) {
-        set(loadMaterialListAtom)
-        set(loadProfileListAtom)
-        set(loadKromkaTypeListAtom)
-        set(loadKromkaListAtom)
-        set(loadBrushListAtom)
-        set(loadTrempelListAtom)
-        set(loadZaglushkaListAtom)
-        set(loadUplotnitelListAtom)
-        set(loadDspKromkaZagListAtom)
-    }
-    if (permissions.get(RESOURCE.SPECIFICATION)?.Read) {
-        set(loadSpecificationListAtom)
-    }
-    if (permissions.get(RESOURCE.USERS)?.Read) { set(loadUserRolesAtom) }
-})
 
 export function getInitialUser(): UserState {
     const token = localStorage.getItem("token") || ""
@@ -193,14 +171,14 @@ export function getInitialUser(): UserState {
     return user
 }
 
-export function getInitialPermissions(): Map<RESOURCE, Permissions> {
-    const m = new Map<RESOURCE, Permissions>()
+export function getInitialPermissions(): Map<RESOURCE, UserPermissions> {
+    const m = new Map<RESOURCE, UserPermissions>()
     Object.keys(RESOURCE).forEach(k => m.set(k as RESOURCE, { Create: false, Update: false, Read: false, Delete: false }))
     return m
 }
 
-export function permissionsToMap(permissions: PERMISSIONS_SCHEMA[]): Map<RESOURCE, Permissions> {
-    const m = new Map<RESOURCE, Permissions>()
+export function permissionsToMap(permissions: PERMISSIONS_SCHEMA[]): Map<RESOURCE, UserPermissions> {
+    const m = new Map<RESOURCE, UserPermissions>()
     permissions.forEach(p => {
         m.set(p.resource, { Create: !!p.create, Read: !!p.read, Update: !!p.update, Delete: !!p.delete })
     })

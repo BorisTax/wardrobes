@@ -32,7 +32,7 @@ const defaultDetail: Detail = {
     length: 0,
     width: 0,
     count: 0,
-    edge: {
+    kromka: {
         L1: KROMKA_TYPE.NONE,
         L2: KROMKA_TYPE.NONE,
         W1: KROMKA_TYPE.NONE,
@@ -54,10 +54,10 @@ export default function EditDetailDialog() {
         { caption: "Длина:", value: `${detail.length}`, message: messages.ENTER_LENGTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
         { caption: "Ширина:", value: `${detail.width}`, message: messages.ENTER_WIDTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
         { caption: "Кол-во:", value: `${detail.count}`,message: messages.ENTER_COUNT, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Кромка по длине 1:", value: `${detail.edge?.L1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по длине 2:", value: `${detail.edge?.L2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по ширине 1:", value: `${detail.edge?.W1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по ширине 2:", value: `${detail.edge?.W2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по длине 1:", value: `${detail.kromka?.L1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по длине 2:", value: `${detail.kromka?.L2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по ширине 1:", value: `${detail.kromka?.W1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по ширине 2:", value: `${detail.kromka?.W2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
         { caption: "Крепеж:", value: getDrillCaption(detail), list: [...drill.keys()], valueCaption: value => drill.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
     ]
     useEffect(() => {
@@ -73,10 +73,10 @@ export default function EditDetailDialog() {
                 if (checked[1]) newDetails[detIndex].length = +values[1]
                 if (checked[2]) newDetails[detIndex].width = +values[2]
                 if (checked[3]) newDetails[detIndex].count = +values[3]
-                if (checked[4] && newDetails[detIndex].edge) newDetails[detIndex].edge.L1 = values[4] as KROMKA_TYPE
-                if (checked[5] && newDetails[detIndex].edge) newDetails[detIndex].edge.L2 = values[5] as KROMKA_TYPE
-                if (checked[6] && newDetails[detIndex].edge) newDetails[detIndex].edge.W1 = values[6] as KROMKA_TYPE
-                if (checked[7] && newDetails[detIndex].edge) newDetails[detIndex].edge.W2 = values[7] as KROMKA_TYPE
+                if (checked[4] && newDetails[detIndex].kromka) newDetails[detIndex].kromka.L1 = values[4] as KROMKA_TYPE
+                if (checked[5] && newDetails[detIndex].kromka) newDetails[detIndex].kromka.L2 = values[5] as KROMKA_TYPE
+                if (checked[6] && newDetails[detIndex].kromka) newDetails[detIndex].kromka.W1 = values[6] as KROMKA_TYPE
+                if (checked[7] && newDetails[detIndex].kromka) newDetails[detIndex].kromka.W2 = values[7] as KROMKA_TYPE
                 if (checked[8]) newDetails[detIndex].drill = getDrillByCaption(values[8] as DRILL_CAPTIONS)
                 setData(prev => ({ ...prev, details: newDetails }))
                 return { success: true, message: "" }
@@ -94,7 +94,7 @@ export default function EditDetailDialog() {
                     length: +values[1],
                     width: +values[2],
                     count: +values[3],
-                    edge: {
+                    kromka: {
                         L1: values[4] as KROMKA_TYPE,
                         L2: values[5] as KROMKA_TYPE,
                         W1: values[6] as KROMKA_TYPE,

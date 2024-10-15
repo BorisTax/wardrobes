@@ -1,8 +1,8 @@
 import { FASAD_TYPE } from "../types/enums";
-import { SpecificationData } from "../types/server";
+import { SpecSchema } from "../types/server";
 import { CORPUS_SPECS } from "../types/specification";
-import { SpecificationItem } from "../types/specification";
-import { FullData, SpecificationMultiResult, SpecificationResultItem } from "../types/wardrobe";
+import { SpecItem } from "../types/specification";
+import { FullData, SpecificationMultiResult, SpecResultItem } from "../types/wardrobe";
 
 export function getInitSpecification(): SpecificationMultiResult {
     return [
@@ -45,13 +45,13 @@ SpecGroups.set(CORPUS_SPECS.EXT_TUBE, "Труба")
 SpecGroups.set(CORPUS_SPECS.EXT_TREMPEL, "Тремпель")
 SpecGroups.set(CORPUS_SPECS.EXT_LIGHT, "Точки света")
 
-export function getSpecification(data: [SpecificationItem, FullData[]][]): Map<SpecificationItem, FullData[]>{
+export function getSpecification(data: [SpecItem, FullData[]][]): Map<SpecItem, FullData[]>{
     const m = new Map()
     data.forEach(i => m.set(i[0], i[1]))
     return m
 } 
-export function specificationToArray(specData: SpecificationData[], spec: Map<SpecificationItem, FullData[]>): (SpecificationData & SpecificationResultItem)[] {
-    const result: (SpecificationData & SpecificationResultItem)[] = []
+export function specificationToArray(specData: SpecSchema[], spec: Map<SpecItem, FullData[]>): (SpecSchema & SpecResultItem)[] {
+    const result: (SpecSchema & SpecResultItem)[] = []
     if(!spec) return result
     specData.forEach(sd => {
         const found = spec.get(sd.name)

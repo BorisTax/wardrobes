@@ -1,19 +1,12 @@
-import { SpecificationItem } from "../../../../types/specification";
-import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData } from "../../../../types/wardrobe";
-import { getEdge2, getEdge05, getGlue, getDetailNames } from "../corpus";
-import { getDSP } from "../functions";
+import { SpecItem } from "../../../../types/specification";
+import { WardrobeData, SpecificationResult } from "../../../../types/wardrobe";
 
 
 export async function getLightSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
     const light  = data.extComplect.light
     const count = light ? 1 : 0
-
-    result.push([SpecificationItem.Lamp, { data: { amount: count } }])
-    //const karton = 2
-    //result.push([SpecificationItem.Karton, { data: { amount: karton } }])
-    //result.push([SpecificationItem.Skotch, { data: { amount: karton * 20 } }])
-    //result.push([SpecificationItem.ConfKluch, { data: { amount: 1 } }])
+    result.push([SpecItem.Lamp, { data: { amount: count } }])
     return result
 }
 

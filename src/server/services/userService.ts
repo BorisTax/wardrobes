@@ -4,7 +4,7 @@ import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
 import { SERVER_EVENTS } from "../../types/enums.js"
-import { Permissions, RESOURCE, UserRole } from '../../types/user.js'
+import { UserPermissions, RESOURCE, UserRole } from '../../types/user.js'
 import { StatusCodes } from 'http-status-codes'
 import { badRequestResponse, conflictResponse, forbidResponse } from '../functions/response.js'
 import { Response } from 'express'
@@ -130,7 +130,7 @@ export class UserService implements IUserService {
     if (user) return conflictResponse(messages.USER_NAME_EXIST)
     return { success: true, status: StatusCodes.OK, message: messages.USER_NAME_ALLOWED }
   }
-  async getPermissions(roleId: number, resource: RESOURCE): Promise<Permissions> {
+  async getPermissions(roleId: number, resource: RESOURCE): Promise<UserPermissions> {
     return this.provider.getPermissions(roleId, resource)
   }
   async getAllUserPermissions(roleId: number): Promise<PERMISSIONS_SCHEMA[]> {

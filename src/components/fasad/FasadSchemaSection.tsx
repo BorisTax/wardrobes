@@ -5,7 +5,7 @@ import { Division } from "../../types/enums";
 import { Materials } from "../../functions/materials";
 import useDoubleClick from "../../custom-hooks/useDoubleClick";
 import { useAtomValue } from "jotai";
-import { materialListAtom } from "../../atoms/materials/materials";
+import { materialListAtom } from "../../atoms/materials/chars";
 import { useMaterialMap } from "../../custom-hooks/useMaterialMap";
 type FasadSectionProps = {
     fasad: Fasad

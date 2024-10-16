@@ -8,7 +8,7 @@ import { getInitSpecification } from "../functions/specification";
 import { wardrobeDataAtom } from "./wardrobe";
 import { appAtom } from "./app";
 import { AppState } from "../types/app";
-import { API_ROUTE } from "../types/routes";
+import { API_ROUTE, COMBIDATA_ROUTE, DATA_ROUTE, SPECIFICATION_ROUTE } from "../types/routes";
 
 
 export const specificationCombiAtom = atom<SpecificationResult[][]>([[]])
@@ -32,7 +32,7 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, resetDeta
     }
     set(specificationInProgress, true)
     try {
-        const result: FetchResult<SpecificationMultiResult> = await fetchData(`${API_ROUTE}/specification/data`, "POST", JSON.stringify(formData))
+        const result: FetchResult<SpecificationMultiResult> = await fetchData(`${API_ROUTE}${SPECIFICATION_ROUTE}${DATA_ROUTE}`, "POST", JSON.stringify(formData))
         if (!result.success) set(specificationAtom, [...getInitSpecification()]); else
             set(specificationAtom, result.data as SpecificationMultiResult)
             set(specificationInProgress, false)
@@ -48,10 +48,9 @@ export const calculateCombiSpecificationsAtom = atom(null, async (get, set) => {
     }
     set(specificationInProgress, true)
     try {
-        const result: FetchResult<CombiSpecificationResult> = await fetchData(`${API_ROUTE}/specification/combidata`, "POST", JSON.stringify(formData))
+        const result: FetchResult<CombiSpecificationResult> = await fetchData(`${API_ROUTE}${SPECIFICATION_ROUTE}${COMBIDATA_ROUTE}`, "POST", JSON.stringify(formData))
         if (result.success && result.data) {
-            set(specificationCombiAtom, result.data.specifications as SpecificationResult[][])
-            set(totalPriceAtom, result.data.totalPrice)
+            set(specificationCombiAtom, result.data as SpecificationResult[][])
             set(specificationInProgress, false)
         }
     } catch (e) { console.error(e) }

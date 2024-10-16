@@ -10,6 +10,9 @@ import { settingsAtom } from './settings';
 import { WARDROBE_TYPE } from '../types/wardrobe';
 import { API_ROUTE, INITIAL_COMBISTATE_ROUTE, VERSION_ROUTE, WARDROBE_ROUTE } from '../types/routes';
 import { ProfileSchema } from '../types/schemas';
+import { profileAtom } from './storage';
+import { Profile } from '../types/materials';
+import { ProfileType } from '../types/enums';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
@@ -89,8 +92,10 @@ export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmC
     await setAppDataAtom(setWidth, newAppData, newRootFasades, set, confirmCallback, true)
 })
 
-export const setProfileAtom = atom(null, async (get, set, [newProfile, confirmCallback]: SetAtomComfirm<ProfileSchema>) => {
+export const setProfileIdAtom = atom(null, async (get, set, [profileId, confirmCallback]: SetAtomComfirm<number>) => {
     const appData = get(appDataAtom)
+    const profileList = get(profileAtom)
+    const newProfile: Profile = { id: profileId, type: profileList.get(profileId)?.type || ProfileType.STANDART }
     const { order, wardWidth, wardHeight, fasadCount, profile, type, rootFasades } = appData
     if (profile.type === newProfile.type) {
         appData.profile = newProfile

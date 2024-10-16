@@ -7,6 +7,7 @@ import { materialListAtom } from "./materials/chars"
 import { appDataAtom } from './app'
 import { AppData } from '../types/app'
 import { settingsAtom } from './settings'
+import { getFasadDefaultCharsAtom as getFasadDefaultChar } from './storage'
 
 export const copyFasadAtom = atom(null, (get, set, dest: number, source: number) => {
     const appData = get(appDataAtom)
@@ -102,6 +103,7 @@ export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {
             else activeFasad.Parent?.DistributePartsOnHeight(null, 0, false, minSize);
     set(appDataAtom, { ...appData }, true)
 })
+
 export const setFixedWidthAtom = atom(null, (get, set, fixed: boolean) => {
     const activeFasad = get(activeFasadAtom)
     const { minSize } = get(settingsAtom)
@@ -127,8 +129,7 @@ export const setFasadTypeAtom = atom(null, (get, set, type: FASAD_TYPE, useHisto
     if (!activeFasad) return
     const appData = get(appDataAtom)
     activeFasad.setFasadType(type)
-    const matList = get(materialListAtom)
-    const matId = matList.find(m => m.type === activeFasad.FasadType)?.id || -1
+    const matId = getFasadDefaultChar(get, type)
     activeFasad.setMaterialId(matId)
     set(appDataAtom, { ...appData }, useHistory as boolean)
 })

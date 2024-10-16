@@ -88,10 +88,10 @@ export const loadMaterialImageAtom = atom(null, async (get, set, id: number) => 
         [TableFields.TOKEN]: token
     }
     try {
-        const result: FetchResult<{image: string}> = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${IMAGE_ROUTE}`, "POST", JSON.stringify(data))
+        const result: FetchResult<string> = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${IMAGE_ROUTE}`, "POST", JSON.stringify(data))
         const images = [...get(materialImageAtom)]
         const existImage = images.find(i => i.id === id)
-        if (existImage) existImage.image = result.data?.image as string; else images.push({ id, image: result.data?.image as string })
+        if (existImage) existImage.image = result.data as string; else images.push({ id, image: result.data as string })
         set(materialImageAtom, [...images])
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {

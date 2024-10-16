@@ -1,10 +1,10 @@
 import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, DRILL_TYPE } from "../../../../types/wardrobe";
-import { getKromkaPrimary, getKromkaSecondary, getGlue, getConfirmat, getDetailNames, getDetails } from "../corpus";
+import { getKromkaPrimary, getKromkaSecondary, getGlue, getConfirmat, getDetails } from "../corpus";
 import { getDSP, getCoef, emptyFullData } from "../functions";
-import { allThinEdge, singleLengthThinEdge } from "../edges";
+import { allNoneKromka, allThinKromka, singleLengthThinKromka } from "../kromka";
 import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
-import { getDetailsFromTable } from "../../../routers/functions/details";
+import { getDetailNames } from "../../../routers/functions/details";
 
 
 export async function getDrawerSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
@@ -13,9 +13,9 @@ export async function getDrawerSpecification(data: WardrobeData): Promise<Specif
     const shelf = details.find(d => d.id === DETAIL_NAME.SHELF)
     if (!shelf) return result
     const telDetails: Detail[] = [
-        { id: DETAIL_NAME.DRAWER_FASAD, count: 1, length: shelf.length - 8, width: 140, kromka: allThinEdge(), drill: [DRILL_TYPE.NONE] },
-        { id: DETAIL_NAME.DRAWER_SIDE, count: 2, length: data.depth - 150, width: 120, kromka: singleLengthThinEdge(), drill: [DRILL_TYPE.NONE] },
-        { id: DETAIL_NAME.DRAWER_BRIDGE, count: 2, length: shelf.length - 57, width: 120, kromka:  singleLengthThinEdge(), drill: [DRILL_TYPE.CONFIRMAT1] }
+        { id: DETAIL_NAME.DRAWER_FASAD, count: 1, length: shelf.length - 8, width: 140, kromka: allThinKromka(), drill: [DRILL_TYPE.NONE] },
+        { id: DETAIL_NAME.DRAWER_SIDE, count: 2, length: data.depth - 150, width: 120, kromka: singleLengthThinKromka(), drill: [DRILL_TYPE.NONE] },
+        { id: DETAIL_NAME.DRAWER_BRIDGE, count: 2, length: shelf.length - 57, width: 120, kromka:  singleLengthThinKromka(), drill: [DRILL_TYPE.CONFIRMAT1] }
     ]
     const kromka = await getKromkaByDSP(data.dspId)
     const kromkaPrimary = (await getKromkaPrimary(data, telDetails, kromka.kromkaId))
@@ -38,8 +38,8 @@ export async function getDrawerSpecification(data: WardrobeData): Promise<Specif
 }
 
 export async function getTelDVP(shelfLength: number, depth: number): Promise<FullData> {
-    const detailNames = await getDetailNames()
-    const detail: Detail = { id: DETAIL_NAME.DRAWER_BOTTOM_DVP, count: 1, length: shelfLength - 29, width: depth - 154 }
+    const detailNames = (await getDetailNames()).data || []
+    const detail: Detail = { id: DETAIL_NAME.DRAWER_BOTTOM_DVP, count: 1, length: shelfLength - 29, width: depth - 154, kromka: allNoneKromka() }
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""]]
     let totalArea = 0
     const area = detail.length * detail.width * detail.count / 1000000

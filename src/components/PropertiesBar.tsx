@@ -9,7 +9,6 @@ import { FasadMaterial } from "../types/materials"
 import ImageButton from "./inputs/ImageButton"
 import { useAtomValue, useSetAtom } from "jotai"
 import { activeFasadAtom, divideFasadAtom, setActiveFasadAtom, setMaterialIdAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setFasadTypeAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
-import { materialTypesAtom } from "../atoms/storage"
 import { materialListAtom } from "../atoms/materials/chars"
 import { userAtom } from "../atoms/users"
 import { settingsAtom } from "../atoms/settings"
@@ -19,7 +18,7 @@ import { useMemo } from "react"
 import { RESOURCE } from "../types/user"
 import { useNavigate } from "react-router-dom"
 import { getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
-import { useMaterialMap } from "../custom-hooks/useMaterialMap"
+import { charAtom, fasadTypesAtom, fasadTypesToCharAtom } from "../atoms/storage"
 const sectionsTemplate = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const directions: Map<Division, string> = new Map()
 export default function PropertiesBar() {
@@ -29,16 +28,16 @@ export default function PropertiesBar() {
     const permTemp = permissions.get(RESOURCE.TEMPLATE)
     const fasad = useAtomValue(activeFasadAtom)
     const { minSize } = useAtomValue(settingsAtom)
-    const matTypes = useAtomValue(materialTypesAtom)
+    const fasadTypes = useAtomValue(fasadTypesAtom)
+    const fasadTypeToChar = useAtomValue(fasadTypesToCharAtom)
+    const chars = useAtomValue(charAtom)
     const { width, height, materialId, fasadType, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
+    const materials = useMemo(() => {
+        const filtered=fasadTypeToChar.filter(ft => ft.id === fasadType)
+        const sorted = (fasadType === FASAD_TYPE.DSP || fasadType === FASAD_TYPE.LACOBEL) ? filtered.toSorted((f1, f2) => (chars.get(f1.charId)?.name || "") > (chars.get(f2.charId)?.name || "") ? 1 : -1) : filtered;
+        return sorted.map(ft => ft.charId)
+    }, [fasadTypeToChar, fasadType])
     const sections = fasad ? sectionsTemplate : []
-    const matList = useAtomValue(materialListAtom)
-    const materialList = useMemo(() => {
-        const mList = matList.filter(m => m.type === fasadType && m.purpose !== MAT_PURPOSE.CORPUS)
-        return (fasadType !== FASAD_TYPE.DSP) ? mList : mList.toSorted((m1, m2) => m1.name > m2.name ? 1 : -1)
-    }, [matList, fasadType])
-    const matMap = useMaterialMap(materialList)
-    const material = matMap.get(materialId)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)
     const setFixedWidth = useSetAtom(setFixedWidthAtom)
@@ -86,8 +85,8 @@ export default function PropertiesBar() {
                 }
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" visible={!disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
-            <ComboBox<FASAD_TYPE> title="Тип:" value={fasadType} items={[...matTypes.keys()]} displayValue={value => matTypes.get(value)} disabled={!fasad} onChange={(_, value) => { setFasadType(value) }} />
-            <ComboBox<FasadMaterial> title="Цвет/Рисунок:" value={material} items={materialList} displayValue={value=>value?.name} disabled={!fasad} onChange={(_, value) => { setMaterialId(value.id) }} />
+            <ComboBox<FASAD_TYPE> title="Тип:" value={fasadType} items={[...fasadTypes.keys()]} displayValue={value => fasadTypes.get(value)} disabled={!fasad} onChange={(_, value) => { setFasadType(value) }} />
+            <ComboBox<number> title="Цвет/Рисунок:" value={materialId} items={materials} displayValue={value => chars.get(value)?.name} disabled={!fasad} onChange={(_, value) => { setMaterialId(value) }} />
             <ComboBox<Division> title="Направление профиля:" value={direction} items={[...directions.keys()]} displayValue={value => directions.get(value)} disabled={!fasad} onChange={(_, value) => { setProfileDirection(value) }} />
             <ComboBox<number> title="Кол-во секций:" value={sectionCount} items={sections} displayValue={value => `${value}`} disabled={!fasad} onChange={(_, value) => { divideFasad(value) }} />
         </PropertyGrid>
@@ -97,8 +96,8 @@ export default function PropertiesBar() {
 function getProperties(fasad: Fasad | null) {
     const width = fasad?.cutWidth || 0
     const height = fasad?.cutHeight || 0
-    const materialId = fasad?.MaterialId || -1
-    const fasadType = fasad?.FasadType
+    const materialId = fasad?.MaterialId || 0
+    const fasadType = fasad?.FasadType || 0
     directions.clear()
     if (fasad) {
         directions.set(Division.WIDTH, "Вертикально")

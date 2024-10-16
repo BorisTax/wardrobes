@@ -1,8 +1,9 @@
 import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData } from "../../../../types/wardrobe";
+import { getDetailNames } from "../../../routers/functions/details";
 import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
-import { getKromkaPrimary, getKromkaSecondary, getGlue, getDetailNames } from "../corpus";
-import { singleLengthThickDoubleWidthThinEdge } from "../edges";
+import { getKromkaPrimary, getKromkaSecondary, getGlue } from "../corpus";
+import { singleLengthThickDoubleWidthThinKromka } from "../kromka";
 import { getDSP } from "../functions";
 
 
@@ -10,7 +11,7 @@ export async function getBlinderSpecification(data: WardrobeData): Promise<Speci
     const result: SpecificationResult[] = []
     const count = data.width < 2750 ? 1 : 2
     const details: Detail[] = [
-        { id: DETAIL_NAME.BLINDER, count, length: Math.round(data.width / count), width: 284, kromka: singleLengthThickDoubleWidthThinEdge() },
+        { id: DETAIL_NAME.BLINDER, count, length: Math.round(data.width / count), width: 284, kromka: singleLengthThickDoubleWidthThinKromka() },
     ]
     const kromka = await getKromkaByDSP(data.dspId)
     const kromkaPrimary = (await getKromkaPrimary(data, details, kromka.kromkaId))
@@ -25,7 +26,7 @@ export async function getBlinderSpecification(data: WardrobeData): Promise<Speci
 }
 
 async function getStreich(width: number): Promise<FullData> {
-    const detailNames = await getDetailNames()
+    const detailNames = (await getDetailNames()).data || []
     const verbose = [["Ширина шкафа", "Стрейч"]]
     const count = width / 1000 * 1.5
     verbose.push([`${width}`, `/ 1000 x 1.5 = ${count.toFixed(3)}`])

@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { InitialAppState } from "../../../types/app";
 import { FASAD_TYPE, ProfileType } from "../../../types/enums";
-import { DefaultSchema, DATA_TABLE_NAMES } from "../../../types/schemas";
+import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema } from "../../../types/schemas";
 import { Result } from "../../../types/server";
 import { SpecItem } from "../../../types/specification";
 import { WARDROBE_KIND, WARDROBE_TYPE, FasadesData, WardrobeData, CONSOLE_TYPE } from "../../../types/wardrobe";
@@ -13,19 +13,19 @@ import { getAllCharOfSpec } from "./spec";
 
 
 export async function getWardobes() {
-  const service = new DataBaseService(getDataBaseProvider<DefaultSchema>());
+  const service = new DataBaseService(getDataBaseProvider<WardrobesSchema>());
   return await service.getData(DATA_TABLE_NAMES.WARDROBES, [], {});
 }
-export async function getWardobeTypes() {
-  const service = new DataBaseService(getDataBaseProvider<DefaultSchema>());
+export async function getWardrobeTypes() {
+  const service = new DataBaseService(getDataBaseProvider<WardrobeTypesSchema>());
   return await service.getData(DATA_TABLE_NAMES.WARDROBE_TYPES, [], {});
 }
 export async function getConsoleTypes() {
-  const service = new DataBaseService(getDataBaseProvider<DefaultSchema>());
+  const service = new DataBaseService(getDataBaseProvider<ConsoleTypesSchema>());
   return await service.getData(DATA_TABLE_NAMES.CONSOLE_TYPES, [], {});
 }
 export async function getFasadTypes() {
-    const service = new DataBaseService(getDataBaseProvider<DefaultSchema>());
+    const service = new DataBaseService(getDataBaseProvider<FasadTypesSchema>());
     return await service.getData(DATA_TABLE_NAMES.FASAD_TYPES_TABLE, [], {});
   }
 

@@ -27,7 +27,7 @@ export type SpecSchema = {
 }
 
 export type SpecToCharSchema = IdToCharIdSchema
-export type MatTypeToCharSchema = IdToCharIdSchema
+export type FasadTypeToCharSchema = IdToCharIdSchema
 
 export type CharsSchema = {
     id: number,
@@ -112,14 +112,16 @@ export type AllData = {
     fasadDefaultChars: FasadDefaultCharSchema[],
     charTypes: CharTypesSchema[],
     lacobels: LacobelSchema[],
-    console_types: ConsoleTypesSchema[],
-    fasad_types: FasadTypesSchema[],
-    wardrobe_types: WardrobeTypesSchema[],
+    consoleTypes: ConsoleTypesSchema[],
+    fasadTypes: FasadTypesSchema[],
+    fasadTypeToChar: FasadTypeToCharSchema[],
+    wardrobeTypes: WardrobeTypesSchema[],
     wardrobes: WardrobesSchema[],
     units: UnitsSchema[],
     profiles: ProfileSchema[],
     profileTypes: ProfileTypesSchema[],
     spec: SpecSchema[],
+    specToChar: SpecToCharSchema[],
 }
 
 export enum DATA_TABLE_NAMES {
@@ -136,9 +138,9 @@ export enum DATA_TABLE_NAMES {
     MAT_PURPOSE = 'mat_purpose',
     FASAD_TYPES_TABLE = 'fasad_types',
     FASAD_DEFAULT_CHAR = 'fasad_default_char',
-    MAT_TYPE_TO_CHAR = 'mat_type_to_char',
+    FASAD_TYPE_TO_CHAR = 'fasad_type_to_char',
     PROFILES = 'profiles',
-    PROFILE_TYPE = 'PROFILE_TYPE',
+    PROFILE_TYPE = 'profiletype',
     SPEC = 'spec',
     SPEC_TO_CHAR = 'spec_to_char',
     UNITS = 'units',

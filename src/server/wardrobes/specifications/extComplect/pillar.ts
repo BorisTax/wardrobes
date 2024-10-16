@@ -3,12 +3,13 @@ import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail } from "../../..
 import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
 import { getKromkaPrimary, getKromkaSecondary, getGlue, getConfirmat, getMinifix } from "../corpus";
 import { getDSP } from "../functions";
+import { pillarKromka } from "../kromka";
 
 
 export async function getPillarSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
     const details: Detail[] = [
-        { id: DETAIL_NAME.PILLAR, count: 1, length: 282, width: data.depth - 100 },
+        { id: DETAIL_NAME.PILLAR, count: 1, length: 282, width: data.depth - 100, kromka: pillarKromka() },
     ]
     const kromka = await getKromkaByDSP(data.dspId)
     const kromkaPrimary = (await getKromkaPrimary(data, details, kromka.kromkaId))
@@ -22,10 +23,6 @@ export async function getPillarSpecification(data: WardrobeData): Promise<Specif
     result.push([SpecItem.ZagConfirmat, { data: { amount: conf.data.amount } }])
     result.push([SpecItem.Minifix, minifix])
     result.push([SpecItem.ZagMinifix, { data: { amount: minifix.data.amount } }])
-    //const karton = 2
-    //result.push([SpecificationItem.Karton, { data: { amount: karton } }])
-    //result.push([SpecificationItem.Skotch, { data: { amount: karton * 20 } }])
-    //result.push([SpecificationItem.ConfKluch, { data: { amount: 1 } }])
     return result
 }
 

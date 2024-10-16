@@ -1,8 +1,9 @@
 import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData } from "../../../../types/wardrobe";
+import { getDetailNames } from "../../../routers/functions/details";
 import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
-import { getKromkaPrimary, getKromkaSecondary, getGlue, getDetailNames } from "../corpus";
-import { singleLengthThinEdge } from "../edges";
+import { getKromkaPrimary, getKromkaSecondary, getGlue } from "../corpus";
+import { singleLengthThinKromka } from "../kromka";
 import { getDSP } from "../functions";
 
 
@@ -11,7 +12,7 @@ export async function getStandSpecification(data: WardrobeData): Promise<Specifi
     const stand  = data.extComplect.stand
     if (stand.height === 0) return result
     const details: Detail[] = [
-        { id: DETAIL_NAME.INNER_STAND, count: 1, length: stand.height, width: data.depth - 100, kromka: singleLengthThinEdge() },
+        { id: DETAIL_NAME.INNER_STAND, count: 1, length: stand.height, width: data.depth - 100, kromka: singleLengthThinKromka() },
     ]
     const kromka = await getKromkaByDSP(data.dspId)
     const kromkaPrimary = (await getKromkaPrimary(data, details, kromka.kromkaId))
@@ -26,7 +27,7 @@ export async function getStandSpecification(data: WardrobeData): Promise<Specifi
 }
 
 async function getMinifix(): Promise<FullData> {
-    const detailNames = await getDetailNames()
+    const detailNames = (await getDetailNames()).data || []
     const verbose = [["Деталь", "Кол-во", "Минификсы"]]
     const caption = detailNames.find(n => n.id === DETAIL_NAME.INNER_STAND)?.name || ""
     const count = 4

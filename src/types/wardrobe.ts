@@ -76,7 +76,7 @@ export type SpecificationMultiResultFasades = [
     { type: FASAD_TYPE, spec: [SpecItem, SpecResultItem][] },
 ]
 
-export type CombiSpecificationResult = { specifications: SpecificationResult[][], totalPrice: number[] }
+export type CombiSpecificationResult = SpecificationResult[][]
 export type SpecificationResult = [SpecItem, FullData]
 
 export type SpecificationMultiResult = { 
@@ -122,7 +122,7 @@ export type Detail = {
     length: number
     width: number
     count: number
-    kromka?: KROMKA_SIDE
+    kromka: KROMKA_SIDE
     drill?: DRILL_TYPE[]
 }
 

@@ -18,13 +18,13 @@ export default router
 router.get(ALLDATA_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
   const result = await getAllData();
-  res.status(200).json(result);
+  res.status(200).json({ success: true, data: result });
 });
 
 router.get(PROFILE_TYPES_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
   const result = await getProfileTypes();
-  res.status(200).json(result);
+  res.status(200).json({ success: true, data: result });
 });
 
 router.get(PROFILES_ROUTE, async (req, res) => {
@@ -97,8 +97,7 @@ router.post(IMAGE_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
   const { id } = req.body
   const result = await getImage(id);
-  if (!result.success) return res.sendStatus(result.status)
-  res.status(result.status).json(result);
+  res.status(200).json({success: true, data: result});
 });
 
 router.get(DSP_KROMKA_ZAG_ROUTE, async (req, res) => {

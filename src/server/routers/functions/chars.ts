@@ -1,6 +1,6 @@
 import { OmitId } from '../../../types/materials.js';
 import { getDataBaseProvider } from '../../options.js';
-import { CharsSchema, DATA_TABLE_NAMES, DefaultSchema } from '../../../types/schemas.js';
+import { CharsSchema, DATA_TABLE_NAMES, DefaultSchema, FasadTypeToCharSchema } from '../../../types/schemas.js';
 import { DataBaseService } from '../../services/dataBaseService.js';
 
 export async function getMaterialTypes() {
@@ -34,7 +34,8 @@ export async function deleteChar(id: number) {
 
 export async function getImage(id: number) {
   const service = new DataBaseService(getDataBaseProvider<CharsSchema>())
-  return await service.getData(DATA_TABLE_NAMES.CHARS, ["image"], { id })
+  const result = (await service.getData(DATA_TABLE_NAMES.CHARS, ["image"], { id })).data || []
+  return result[0]?.image || ""
 }
 
 
@@ -44,3 +45,7 @@ export async function getChar(id: number) {
   return result[0]
 }
 
+export async function getFasadTypeToChar() {
+  const service = new DataBaseService(getDataBaseProvider<FasadTypeToCharSchema>())
+  return await service.getData(DATA_TABLE_NAMES.FASAD_TYPE_TO_CHAR, [], {})
+}

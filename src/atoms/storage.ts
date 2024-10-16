@@ -1,28 +1,37 @@
-import { atom } from "jotai";
+import { atom, Getter } from "jotai";
 import { OmitId } from "../types/materials";
 import { FetchResult, fetchGetData } from "../functions/fetch";
 import { UserPermissions, RESOURCE } from "../types/user";
-import { AllData, CharsSchema, DefaultSchema, FasadDefaultCharSchema, ProfileSchema, SpecSchema } from "../types/schemas";
+import { AllData, CharsSchema, DefaultSchema, FasadDefaultCharSchema, FasadTypeToCharSchema, ProfileSchema, SpecSchema, SpecToCharSchema } from "../types/schemas";
 import { API_ROUTE, MATERIALS_ROUTE, ALLDATA_ROUTE, WARDROBE_ROUTE, INITIAL_WARDROBEDATA_ROUTE } from "../types/routes";
 import { WardrobeData } from "../types/wardrobe";
 import { setWardrobeDataAtom } from "./wardrobe";
 import { appDataAtom } from "./app";
 import { setInitialMaterials } from "./materials/chars";
+import { FASAD_TYPE } from "../types/enums";
+import { setActiveFasadAtom } from "./fasades";
 
 export type DefaultMap = Map<number, string> 
 export type ExtMap<T> = Map<number, OmitId<T>>
 
 export const fasadTypesAtom = atom<DefaultMap>(new Map())
+export const fasadTypesToCharAtom = atom<FasadTypeToCharSchema[]>([])
 export const charAtom = atom<ExtMap<CharsSchema>>(new Map())
 export const charTypesAtom = atom<DefaultMap>(new Map())
 export const wardrobeTypesAtom = atom<DefaultMap>(new Map())
 export const wardrobeAtom = atom<DefaultMap>(new Map())
 export const consoleTypesAtom = atom<DefaultMap>(new Map())
 export const specAtom = atom<ExtMap<SpecSchema>>(new Map())
+export const specToCharAtom = atom<SpecToCharSchema[]>([])
 export const profileAtom = atom<ExtMap<ProfileSchema>>(new Map())
 export const profileTypeAtom = atom<DefaultMap>(new Map())
 export const unitsAtom = atom<DefaultMap>(new Map())
 export const fasadDefaultCharsAtom = atom<ExtMap<FasadDefaultCharSchema>>(new Map())
+
+export const getFasadDefaultCharsAtom = (get: Getter, fasadType: FASAD_TYPE) => {
+    const defaultChars = get(fasadDefaultCharsAtom)
+    return defaultChars.get(fasadType)?.charId || 0
+}
 
 export const loadedInitialWardrobeDataAtom = atom(false)
 
@@ -31,18 +40,20 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
     if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
         let fetchData: FetchResult<AllData> = await fetchGetData(`${API_ROUTE}${MATERIALS_ROUTE}${ALLDATA_ROUTE}?token=${token}`)
-        set(fasadTypesAtom, makeDefaultMap(fetchData.data?.fasad_types || []))
+        set(fasadTypesAtom, makeDefaultMap(fetchData.data?.fasadTypes || []))
+        set(fasadTypesToCharAtom, fetchData.data?.fasadTypeToChar || [])
         set(charAtom, makeExtMap(fetchData.data?.chars || []))
         set(charTypesAtom, makeDefaultMap(fetchData.data?.charTypes || []))
         set(specAtom, makeExtMap(fetchData.data?.spec || []))
+        set(specToCharAtom, fetchData.data?.specToChar || [])
         set(profileAtom, makeExtMap(fetchData.data?.profiles || []))
         set(profileTypeAtom, makeDefaultMap(fetchData.data?.profileTypes || []))
         set(unitsAtom, makeDefaultMap(fetchData.data?.units || []))
         set(fasadDefaultCharsAtom, makeExtMap(fetchData.data?.fasadDefaultChars || []))
 
-        set(wardrobeTypesAtom, makeDefaultMap(fetchData.data?.wardrobe_types || []))
+        set(wardrobeTypesAtom, makeDefaultMap(fetchData.data?.wardrobeTypes || []))
         set(wardrobeAtom, makeDefaultMap(fetchData.data?.wardrobes || []))
-        set(consoleTypesAtom, makeDefaultMap(fetchData.data?.console_types || []))
+        set(consoleTypesAtom, makeDefaultMap(fetchData.data?.consoleTypes || []))
         const result: FetchResult<WardrobeData> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_WARDROBEDATA_ROUTE}?token=${token}`)
         const data = result.data as WardrobeData
         if (result.success) {
@@ -51,6 +62,7 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
         }
         const rootFasades = get(appDataAtom).rootFasades
         setInitialMaterials(rootFasades, fetchData.data?.fasadDefaultChars[0]?.id || 0, fetchData.data?.fasadDefaultChars[0]?.charId || 0)
+        set(setActiveFasadAtom, rootFasades[0])
     } catch (e) { console.error(e) }
 })
 

@@ -4,9 +4,9 @@ import { WardrobeDetailTableSchema } from "../../../types/schemas"
 import { getDataBaseProvider } from "../../options"
 import { DataBaseService } from "../../services/dataBaseService"
 
-export async function getDetailTable({ id, detailId }: { id: number, detailId?: number }): Promise<Result<WardrobeDetailTableSchema[]>> {
+export async function getDetailTable({ id }: { id: number, detailId?: number }): Promise<Result<WardrobeDetailTableSchema[]>> {
     const service = new DataBaseService(getDataBaseProvider<WardrobeDetailTableSchema>())
-    return await service.getData(DATA_TABLE_NAMES.WARDROBE_DETAIL_TABLE, ["detailId", "count", "size"], { id, detailId })
+    return await service.getData(DATA_TABLE_NAMES.WARDROBE_DETAIL_TABLE, [], { id })
   }
 export async function getDetailsFromTable(id: number, width: number, height: number): Promise<WardrobeDetailTableSchema[]> {
     const allDetails = (await getDetailTable({id})).data || []

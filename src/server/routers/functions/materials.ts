@@ -1,10 +1,10 @@
 import { AllData, DATA_TABLE_NAMES, FasadDefaultCharSchema, LacobelSchema } from "../../../types/schemas"
 import { getDataBaseProvider } from "../../options"
 import { DataBaseService } from "../../services/dataBaseService"
-import { getConsoleTypes, getFasadTypes, getWardobes, getWardobeTypes } from "./wardrobe"
-import { getChars, getCharTypes } from "./chars"
+import { getConsoleTypes, getFasadTypes, getWardobes, getWardrobeTypes } from "./wardrobe"
+import { getChars, getCharTypes, getFasadTypeToChar } from "./chars"
 import { getProfiles, getProfileTypes } from "./profiles"
-import { getSpecList, getUnits } from "./spec"
+import { getSpecList, getSpecToCharList, getUnits } from "./spec"
 
 export async function getLacobels() {
     const service = new DataBaseService(getDataBaseProvider<LacobelSchema>())
@@ -19,26 +19,30 @@ export async function getAllData(): Promise<AllData> {
     const fasadDefaultChars = (await getFasadDefaultChar()).data || []
     const charTypes = (await getCharTypes()).data || []
     const lacobels = (await getLacobels()).data || []
-    const console_types = (await getConsoleTypes()).data || []
-    const fasad_types = (await getFasadTypes()).data || []
-    const wardrobe_types = (await getWardobeTypes()).data || []
+    const consoleTypes = (await getConsoleTypes()).data || []
+    const fasadTypes = (await getFasadTypes()).data || []
+    const fasadTypeToChar = (await getFasadTypeToChar()).data || []
+    const wardrobeTypes = (await getWardrobeTypes()).data || []
     const wardrobes = (await getWardobes()).data || []
     const units = (await getUnits()).data || []
     const profiles = await getProfiles()
     const profileTypes = await getProfileTypes()
     const spec = (await getSpecList()).data || []
+    const specToChar = (await getSpecToCharList()).data || []
     return {
         chars,
         fasadDefaultChars,
         charTypes,
         lacobels,
-        console_types,
-        fasad_types,
-        wardrobe_types,
+        consoleTypes,
+        fasadTypes,
+        fasadTypeToChar,
+        wardrobeTypes,
         wardrobes,
         units,
         profiles,
         profileTypes,
         spec,
+        specToChar
     }
   }

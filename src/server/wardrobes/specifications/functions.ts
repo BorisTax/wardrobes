@@ -4,9 +4,8 @@ import { DETAIL_NAME, DRILL_TYPE, Detail, KROMKA_SIDE, KROMKA_TYPE, FullData, Sp
 import { WardrobeDetailTableSchema } from "../../../types/schemas";
 import { getSpecList } from "../../routers/functions/spec";
 import { getWardobes } from "../../routers/functions/wardrobe";
-import StandartWardrobe from "../standart";
-import { getDetailNames } from "./corpus";
-import { singleLengthThickDoubleWidthThinEdge, singleLengthThickEdge, singleLengthThinEdge } from "./edges";
+import { allNoneKromka, singleLengthThickDoubleWidthThinKromka, singleLengthThickKromka, singleLengthThinKromka } from "./kromka";
+import { getDetailNames } from "../../routers/functions/details";
 
 
 export function emptyFullData(): FullData {
@@ -32,13 +31,6 @@ export function flattenSpecification(spec: Map<SpecItem, FullData[]>): Specifica
         });
     });
     return result;
-}
-export function getSpecificationPattern(): Map<SpecItem, FullData[]> {
-    const spec = new Map<SpecItem, FullData[]>();
-    Object.values(SpecItem).forEach(k => {
-        spec.set(k as SpecItem, [{ data: { amount: 0, charId: 0 } }]);
-    });
-    return spec;
 }
 
 export function filterEmptySpecification(spec: Map<SpecItem, FullData[]>): Map<SpecItem, FullData[]> {
@@ -72,7 +64,7 @@ export async function getWardrobeName(id: number): Promise<string> {
 
 export async function getDSP(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = await getDetailNames()
+    const detailNames = (await getDetailNames()).data || []
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""]]
     let totalArea = 0
     details.forEach(d => {
@@ -99,22 +91,22 @@ export function getMinifixByDetail(detail: Detail): number {
 }
 
 
-export function getEdgeLength(detail: Detail, edge: KROMKA_TYPE): number {
+export function getKromkaLength(detail: Detail, kromka: KROMKA_TYPE): number {
     let result = 0
-    if (detail.kromka?.L1 === edge) result += detail.length
-    if (detail.kromka?.L2 === edge) result += detail.length
-    if (detail.kromka?.W1 === edge) result += detail.width
-    if (detail.kromka?.W2 === edge) result += detail.width
+    if (detail.kromka?.L1 === kromka) result += detail.length
+    if (detail.kromka?.L2 === kromka) result += detail.length
+    if (detail.kromka?.W1 === kromka) result += detail.width
+    if (detail.kromka?.W2 === kromka) result += detail.width
     return result
 }
-export function getEdgeDescripton(detail: Detail, edge: KROMKA_TYPE): string {
+export function getKromkaDescripton(detail: Detail, kromka: KROMKA_TYPE): string {
     let length = 0
     let width = 0
     const result = []
-    if (detail.kromka?.L1 === edge) length = 1
-    if (detail.kromka?.L2 === edge) length += 1
-    if (detail.kromka?.W1 === edge) width = 1
-    if (detail.kromka?.W2 === edge) width += 1
+    if (detail.kromka?.L1 === kromka) length = 1
+    if (detail.kromka?.L2 === kromka) length += 1
+    if (detail.kromka?.W1 === kromka) width = 1
+    if (detail.kromka?.W2 === kromka) width += 1
     if (length > 0) result.push(`${length} по длине`)
     if (width > 0) result.push(`${width} по ширине`)
     return result.join(', ')
@@ -138,11 +130,11 @@ export function getDrill(detail: WardrobeDetailTableSchema): DRILL_TYPE[] {
     return []
 } 
 
-export function getEdge(detail: WardrobeDetailTableSchema): KROMKA_SIDE | undefined {
-    if ([DETAIL_NAME.ROOF].includes(detail.detailId)) return singleLengthThickDoubleWidthThinEdge()
-    if ([DETAIL_NAME.STAND].includes(detail.detailId)) return singleLengthThickEdge()
-    if ([DETAIL_NAME.INNER_STAND, DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT, DETAIL_NAME.PILLAR].includes(detail.detailId)) return singleLengthThinEdge()
-    return undefined
+export function getKromka(detail: WardrobeDetailTableSchema): KROMKA_SIDE {
+    if ([DETAIL_NAME.ROOF].includes(detail.detailId)) return singleLengthThickDoubleWidthThinKromka()
+    if ([DETAIL_NAME.STAND].includes(detail.detailId)) return singleLengthThickKromka()
+    if ([DETAIL_NAME.INNER_STAND, DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT, DETAIL_NAME.PILLAR].includes(detail.detailId)) return singleLengthThinKromka()
+    return allNoneKromka()
 }
 
 export function getArmirovkaTapes(width: number, tolerance: number): { tape400: number; tape200: number; } {

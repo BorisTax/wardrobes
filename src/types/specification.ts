@@ -1,4 +1,3 @@
-import { FASAD_TYPE } from "./enums";
 
 export enum SpecItem {
     DSP10 = 1,

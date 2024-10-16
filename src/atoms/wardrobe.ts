@@ -3,7 +3,7 @@ import { CONSOLE_TYPE, DETAIL_NAME, Detail, ExtComplectData, FasadesData, WARDRO
 import { FetchResult, fetchGetData } from "../functions/fetch"
 import { userAtom } from "./users"
 import { calculateSpecificationsAtom } from "./specification"
-import { API_ROUTE, DETAIL_ROUTE, DETAILS_ROUTE, INITIAL_WARDROBEDATA_ROUTE, WARDROBE_KINDS_ROUTE, WARDROBE_ROUTE, WARDROBE_TYPES_ROUTE } from "../types/routes"
+import { API_ROUTE, DETAIL_ROUTE, DETAILS_ROUTE, WARDROBE_ROUTE } from "../types/routes"
 import { loadedInitialWardrobeDataAtom } from "./storage"
 
 export const initFasades: FasadesData = {

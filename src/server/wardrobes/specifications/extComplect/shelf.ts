@@ -2,7 +2,7 @@ import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail } from "../../../../types/wardrobe";
 import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
 import { getKromkaPrimary, getKromkaSecondary, getGlue, getConfirmat, getDetails } from "../corpus";
-import { singleLengthThinEdge } from "../edges";
+import { singleLengthThinKromka } from "../kromka";
 import { getDSP } from "../functions";
 
 
@@ -12,7 +12,7 @@ export async function getShelfSpecification(data: WardrobeData): Promise<Specifi
     const shelf = details.find(d => d.id === DETAIL_NAME.SHELF)
     if (!shelf) return result
     const shelves: Detail[] = [
-        { id: DETAIL_NAME.SHELF, count: 1, length: shelf.length, width: shelf.width, kromka: singleLengthThinEdge() },
+        { id: DETAIL_NAME.SHELF, count: 1, length: shelf.length, width: shelf.width, kromka: singleLengthThinKromka() },
     ]
     const kromka = await getKromkaByDSP(data.dspId)
     const kromkaPrimary = (await getKromkaPrimary(data, shelves, kromka.kromkaId))

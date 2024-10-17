@@ -64,7 +64,7 @@ export async function getWardrobeName(id: number): Promise<string> {
 
 export async function getDSP(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""]]
     let totalArea = 0
     details.forEach(d => {

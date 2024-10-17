@@ -3,9 +3,8 @@ import ComboBox from "./inputs/ComboBox"
 import PropertyGrid from "./PropertyGrid"
 import { CONSOLE_TYPE, DETAIL_NAME, WARDROBE_TYPE } from "../types/wardrobe"
 import { PropertyType } from "../types/property"
-import { materialListAtom } from "../atoms/materials/chars"
 import { useAtomValue, useSetAtom } from "jotai"
-import { FASAD_TYPE, MAT_PURPOSE } from "../types/enums"
+import { FASAD_TYPE } from "../types/enums"
 import TextBox from "./inputs/TextBox"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import WardrobeSpecification from "./WardrobeSpecification"
@@ -17,9 +16,7 @@ import { useDetail } from "../custom-hooks/useDetail"
 import useConfirm from "../custom-hooks/useConfirm"
 import { showDetailDialogAtom } from "../atoms/dialogs"
 import EditDetailDialog from "./dialogs/EditDetailDialog"
-import { FasadMaterial } from "../types/materials"
-import { useMaterialMap } from "../custom-hooks/useMaterialMap"
-import { charAtom, consoleTypesAtom, DefaultMap, ExtMap, fasadTypesAtom, fasadTypesToCharAtom, profileAtom, specToCharAtom, wardrobeAtom, wardrobeTypesAtom } from "../atoms/storage"
+import { charAtom, consoleTypesAtom, ExtMap, fasadTypesToCharAtom, profileAtom, specToCharAtom, wardrobeAtom, wardrobeTypesAtom } from "../atoms/storage"
 import { CharsSchema } from "../types/schemas"
 import { SpecItem } from "../types/specification"
 
@@ -153,12 +150,12 @@ export default function WardrobeCalculator() {
 function useMaterials(chars: ExtMap<CharsSchema>){
     const fasadTypeToChar = useAtomValue(fasadTypesToCharAtom)
     const specToChar = useAtomValue(specToCharAtom)
-    const dsp16List = useMemo(() => specToChar.filter(s => s.id === SpecItem.DSP16).map(s => s.charId), [specToChar])
-    const dsp10List = useMemo(() => specToChar.filter(s => s.id === SpecItem.DSP10).map(s => s.charId), [specToChar])
-    const mirrorList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.MIRROR).map(f => f.charId), [fasadTypeToChar])
-    const fmpList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.FMP).map(f => f.charId), [fasadTypeToChar])
-    const sandList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.SAND).map(f => f.charId), [fasadTypeToChar])
-    const lacobelList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.LACOBEL).map(f => f.charId), [fasadTypeToChar])
+    const dsp16List = useMemo(() => specToChar.filter(s => s.id === SpecItem.DSP16).map(s => s.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [specToChar])
+    const dsp10List = useMemo(() => specToChar.filter(s => s.id === SpecItem.DSP10).map(s => s.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [specToChar])
+    const mirrorList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.MIRROR).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [fasadTypeToChar])
+    const fmpList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.FMP).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [fasadTypeToChar])
+    const sandList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.SAND).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [fasadTypeToChar])
+    const lacobelList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.LACOBEL).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [fasadTypeToChar])
     return {
         dsp16List,
         dsp10List,

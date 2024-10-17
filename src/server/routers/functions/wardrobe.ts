@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { InitialAppState } from "../../../types/app";
+import { InitialAppState as InitialCombiState } from "../../../types/app";
 import { FASAD_TYPE, ProfileType } from "../../../types/enums";
 import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema } from "../../../types/schemas";
 import { Result } from "../../../types/server";
@@ -10,6 +10,7 @@ import { DataBaseService } from "../../services/dataBaseService";
 import { getDetails } from "../../wardrobes/specifications/corpus";
 import { getProfiles } from "./profiles";
 import { getAllCharOfSpec } from "./spec";
+import { getFasadDefaultChar } from "./materials";
 
 
 export async function getWardobes() {
@@ -41,16 +42,18 @@ export async function getDetail(wardTypeId: number, wardrobeId: number, detailId
   };
 }
 
-export async function getInitialState(): Promise<Result<InitialAppState>> {
+export async function getInitialCombiState(): Promise<Result<InitialCombiState>> {
   const profiles = await getProfiles();
   const materialsId = await getAllCharOfSpec(SpecItem.DSP10);
-  const { type: fasadType, id: materialId } = { type: FASAD_TYPE.DSP, id: materialsId[0] };
+  const defMat = (await getFasadDefaultChar()).data
+  const fasadType = FASAD_TYPE.DSP
+  const materialId = defMat.find(d => d.id === FASAD_TYPE.DSP)?.charId || 0
   const profile = { id: profiles[0]?.id || 0, type: profiles[0]?.type || ProfileType.STANDART }
   const wardWidth = 1500;
   const wardHeight = 2400;
   const fasadCount = 2;
   const wardType: WARDROBE_TYPE = WARDROBE_TYPE.WARDROBE;
-  return { success: true, status: StatusCodes.OK, data: { wardType, wardWidth, wardHeight, fasadCount, profile, fasadType, materialId } };
+  return { success: true, status: StatusCodes.OK, data: [{ wardType, wardWidth, wardHeight, fasadCount, profile, fasadType, materialId }] };
 }
 const initFasades: FasadesData = {
   dsp: { count: 0, matId: [] },
@@ -66,7 +69,8 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
   const profileId = profiles[0].id;
   const details = await getDetails(WARDROBE_TYPE.WARDROBE, WARDROBE_KIND.STANDART, 2400, 2100, 600);
   return {
-    success: true, status: StatusCodes.OK, data: {
+    success: true, status: StatusCodes.OK,
+    data: [{
       wardKindId: WARDROBE_KIND.STANDART,
       wardTypeId: WARDROBE_TYPE.WARDROBE,
       schema: false,
@@ -89,6 +93,6 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
         trempel: 0,
         light: 0
       }
-    }
+    }]
   };
 }

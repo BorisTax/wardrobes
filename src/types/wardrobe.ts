@@ -82,7 +82,7 @@ export type SpecificationResult = [SpecItem, FullData]
 export type SpecificationMultiResult = { 
     type: SPEC_GROUP, 
     spec: SpecificationResult[] 
-}[]
+}
 
 export enum WARDROBE_TYPE {
     WARDROBE = 1,

@@ -5,11 +5,11 @@ import { DATA_TABLE_NAMES, DefaultSchema, ProfileSchema } from '../../../types/s
 
 export async function getProfiles() {
   const service = new DataBaseService<ProfileSchema>(getDataBaseProvider())
-  return (await service.getData(DATA_TABLE_NAMES.PROFILES, [], {})).data || []
+  return (await service.getData(DATA_TABLE_NAMES.PROFILES, [], {})).data
 }
 export async function getProfileTypes() {
   const service = new DataBaseService<DefaultSchema>(getDataBaseProvider())
-  return ((await service.getData(DATA_TABLE_NAMES.PROFILE_TYPE, [], {})).data || [])
+  return ((await service.getData(DATA_TABLE_NAMES.PROFILE_TYPE, [], {})).data)
 }
 export async function addProfile(profile: OmitId<ProfileSchema>) {
   const service = new DataBaseService<ProfileSchema>(getDataBaseProvider())
@@ -28,7 +28,7 @@ export async function deleteProfile(id: number) {
 
 export async function getCharIdAndBrushSpecIdByProfileId(id: number) {
   const service = new DataBaseService<ProfileSchema>(getDataBaseProvider())
-  const result = (await service.getData(DATA_TABLE_NAMES.PROFILES, ["brushSpecId", "charId"], { id })).data || []
+  const result = (await service.getData(DATA_TABLE_NAMES.PROFILES, ["brushSpecId", "charId"], { id })).data
   return {brushSpecId: result[0].brushSpecId || 0, profileCharId: result[0].charId || 0}
 }
 

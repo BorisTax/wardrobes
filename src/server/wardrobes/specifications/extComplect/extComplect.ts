@@ -12,8 +12,8 @@ import { getTrubaSpecification } from "./truba"
 import { getTrempelSpecification } from "./trempel"
 import { getLightSpecification } from "./light"
 
-export async function getExtComplectSpecification(data: WardrobeData, verbose = false): Promise<SpecificationMultiResult> {
-    const result: SpecificationMultiResult = []
+export async function getExtComplectSpecification(data: WardrobeData, verbose = false): Promise<SpecificationMultiResult[]> {
+    const result: SpecificationMultiResult[] = []
     if (data.extComplect.telescope > 0) result.push({ type: CORPUS_SPECS.EXT_TEL, spec: await getDrawerSpecification(data) })
     if (data.extComplect.console.count > 0) result.push({ type: CORPUS_SPECS.EXT_CONSOLE, spec: await getConsoleSpecification(data) })
     if (data.extComplect.stand.count > 0) result.push({ type: CORPUS_SPECS.EXT_STAND, spec: await getStandSpecification(data) })

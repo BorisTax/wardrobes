@@ -1,7 +1,7 @@
 import { CORPUS_SPECS, FASAD_SPECS } from "../types/specification";
 import {  SpecificationMultiResult } from "../types/wardrobe";
 
-export function getInitSpecification(): SpecificationMultiResult {
+export function getInitSpecification(): SpecificationMultiResult[] {
     return [
         { type: CORPUS_SPECS.CORPUS, spec: [] },
     ]

@@ -12,7 +12,7 @@ import { API_ROUTE, COMBIDATA_ROUTE, DATA_ROUTE, SPECIFICATION_ROUTE } from "../
 
 
 export const specificationCombiAtom = atom<SpecificationResult[][]>([[]])
-export const specificationAtom = atom<SpecificationMultiResult>(getInitSpecification())
+export const specificationAtom = atom<SpecificationMultiResult[]>(getInitSpecification())
 export const specificationInProgress = atom(false)
 
 
@@ -34,7 +34,7 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, resetDeta
     try {
         const result: FetchResult<SpecificationMultiResult> = await fetchData(`${API_ROUTE}${SPECIFICATION_ROUTE}${DATA_ROUTE}`, "POST", JSON.stringify(formData))
         if (!result.success) set(specificationAtom, [...getInitSpecification()]); else
-            set(specificationAtom, result.data as SpecificationMultiResult)
+            set(specificationAtom, result.data as SpecificationMultiResult[])
             set(specificationInProgress, false)
     } catch (e) { console.error(e) }
 })
@@ -48,7 +48,7 @@ export const calculateCombiSpecificationsAtom = atom(null, async (get, set) => {
     }
     set(specificationInProgress, true)
     try {
-        const result: FetchResult<CombiSpecificationResult> = await fetchData(`${API_ROUTE}${SPECIFICATION_ROUTE}${COMBIDATA_ROUTE}`, "POST", JSON.stringify(formData))
+        const result: FetchResult<SpecificationResult[]> = await fetchData(`${API_ROUTE}${SPECIFICATION_ROUTE}${COMBIDATA_ROUTE}`, "POST", JSON.stringify(formData))
         if (result.success && result.data) {
             set(specificationCombiAtom, result.data as SpecificationResult[][])
             set(specificationInProgress, false)

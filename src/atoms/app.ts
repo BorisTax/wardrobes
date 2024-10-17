@@ -16,21 +16,21 @@ import { ProfileType } from '../types/enums';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
-    const result: FetchResult<[] | string> = await fetchGetData(`${API_ROUTE}${VERSION_ROUTE}`)
-    if (result.success) set(versionAtom, result.data as string)
+    const result: FetchResult<string> = await fetchGetData(`${API_ROUTE}${VERSION_ROUTE}`)
+    if (result.success) set(versionAtom, result.data[0] as string)
 })
 
 
-export const loadedInitialStateAtom = atom(false)
-export const loadInitialStateAtom = atom(null, async (get, set) => {
-    set(loadedInitialStateAtom, false)
+export const loadedInitialCombiStateAtom = atom(false)
+export const loadInitialCombiStateAtom = atom(null, async (get, set) => {
+    set(loadedInitialCombiStateAtom, false)
     const result: FetchResult<InitialAppState> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_COMBISTATE_ROUTE}`) 
     if (result.success){
-        const { wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId } = result.data as InitialAppState
+        const { wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId } = result.data[0] as InitialAppState
         const state = createAppState("", wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId)
         set(appAtom, { state, next: null, previous: null })
         set(calculateCombiSpecificationsAtom)
-        set(loadedInitialStateAtom, true)
+        set(loadedInitialCombiStateAtom, true)
     }
 })
 export const appAtom = atom<HistoryState>({ state: getInitialAppState(), next: null, previous: null })
@@ -41,7 +41,7 @@ export const appDataAtom = atom((get) => getAppDataFromState(get(appAtom).state)
     localStorage.setItem('appState', JSON.stringify(state))
     if (useHistory) set(appAtom, { previous: app, state, next: null });
     else set(appAtom, { ...app, state })
-    if (get(loadedInitialStateAtom) && calculate) set(calculateCombiSpecificationsAtom)
+    if (get(loadedInitialCombiStateAtom) && calculate) set(calculateCombiSpecificationsAtom)
 })
 export const saveToStorageAtom = atom(null, (get) => {
     const app = get(appAtom)
@@ -69,7 +69,7 @@ export const openStateAtom = atom(null, async (get: Getter, set: Setter) => {
     }
 })
 export const resetAppDataAtom = atom(null, (get: Getter, set: Setter) => {
-    set(loadInitialStateAtom)
+    set(loadInitialCombiStateAtom)
     // set(appAtom, { state: getInitialAppState(), next: null, previous: null })
     // const mList = get(materialListAtom)
     // const fasadType = mList[0].type

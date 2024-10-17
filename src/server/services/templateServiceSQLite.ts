@@ -11,7 +11,7 @@ export default class TemplateServiceSQLite implements ITemplateServiceProvider {
         this.dbFile = dbFile
     }
 
-    async getFasadTemplates(): Promise<Result<Template[]>> {
+    async getFasadTemplates(): Promise<Result<Template>> {
         return dataBaseQuery(this.dbFile, `select * from fasad;`, [], {successStatusCode: StatusCodes.OK})
     }
     async addFasadTemplate({ name, data }: OmitId<Template>): Promise<Result<null>>  {

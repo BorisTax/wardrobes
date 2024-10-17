@@ -54,9 +54,9 @@ export type PriceData = {
 export type Result<T> = {
     success: boolean
     status: number
+    data: T[]
     token?: string
     message?: string
-    data?: T
     error?: Error
 }
 

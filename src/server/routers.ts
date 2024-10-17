@@ -18,5 +18,5 @@ router.use(SPECIFICATION_ROUTE, specificationRouter)
 router.use(DATABASE_ROUTE, databaseRouter)
 router.use(WARDROBE_ROUTE, wardrobeRouter)
 router.get(VERSION_ROUTE, (req, res) => {
-    res.status(StatusCodes.OK).json({ success: true, data: process.env.VERSION })
+    res.status(StatusCodes.OK).json({ success: true, data: [process.env.VERSION] })
 })

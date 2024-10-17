@@ -13,11 +13,11 @@ import { getProfiles } from "./profiles"
 import { AppState } from "../../../types/app"
 import { newFasadFromState } from "../../../functions/fasades"
 
-export async function getSpecList(): Promise<Result<SpecSchema[]>> {
+export async function getSpecList(): Promise<Result<SpecSchema>> {
   const service = new DataBaseService(getDataBaseProvider<SpecSchema>())
   return await service.getData(DATA_TABLE_NAMES.SPEC, [], {})
 }
-export async function getSpecToCharList(): Promise<Result<SpecToCharSchema[]>> {
+export async function getSpecToCharList(): Promise<Result<SpecToCharSchema>> {
   const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())
   return await service.getData(DATA_TABLE_NAMES.SPEC_TO_CHAR, [], {})
 }
@@ -29,12 +29,12 @@ export async function updateSpecData(data: SpecSchema): Promise<Result<null>> {
 export async function getAllCharOfSpec(specId: number) {
   const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())
   const result = await service.getData(DATA_TABLE_NAMES.SPEC_TO_CHAR, ["charId"], { id: specId })
-  const charId = (result.data || []).map(c => c.charId)
+  const charId = (result.data).map(c => c.charId)
   return charId
 }
 
 export async function getSpecData(data: WardrobeData, resetDetails: boolean, verbose = false): Promise<Result<SpecificationMultiResult>> {
-  const result: SpecificationMultiResult = []
+  const result: SpecificationMultiResult[] = []
   const profiles = await getProfiles()
   const profile: ProfileSchema | undefined = profiles?.find(p => p.id === data.profileId)
   const fasades = createFasades(data, profile?.type as ProfileType)
@@ -50,7 +50,7 @@ export async function getSpecData(data: WardrobeData, resetDetails: boolean, ver
   }
   return { success: true, status: StatusCodes.OK, data: result }
 }
-export async function getSpecCombiData(data: AppState, verbose = false): Promise<Result<(SpecificationResult[])[]>> {
+export async function getSpecCombiData(data: AppState, verbose = false): Promise<Result<SpecificationResult[]>> {
   const result: (SpecificationResult[])[] = []
   const profiles = await getProfiles()
   const profile: ProfileSchema | undefined = profiles?.find(p => p.id === data.profile.id)
@@ -65,7 +65,7 @@ export async function getSpecCombiData(data: AppState, verbose = false): Promise
 }
 
 
-export async function getUnits(): Promise<Result<UnitsSchema[]>> {
+export async function getUnits(): Promise<Result<UnitsSchema>> {
   const service = new DataBaseService(getDataBaseProvider<UnitsSchema>())
   return await service.getData(DATA_TABLE_NAMES.UNITS, [], {})
 }

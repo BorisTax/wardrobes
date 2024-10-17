@@ -12,21 +12,21 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
-    async getUsers(): Promise<Result<User[]>> {
-        const result = await dataBaseQuery<User[]>(this.dbFile, `select * from ${USERS};`, [], { successStatusCode: StatusCodes.OK })
-        return { ...result, data: result.data || [] }
+    async getUsers(): Promise<Result<User>> {
+        const result = await dataBaseQuery<User>(this.dbFile, `select * from ${USERS};`, [], { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data }
     }
-    async getUser(token: string): Promise<Result<User[]>> {
-        const result = await dataBaseQuery<User[]>(this.dbFile, `SELECT * FROM ${USERS} join ${TOKENS} on ${TOKENS}.token=? and ${USERS}.name=${TOKENS}.username;`, [token], { successStatusCode: StatusCodes.OK })
-        return { ...result, data: result.data || [] }
+    async getUser(token: string): Promise<Result<User>> {
+        const result = await dataBaseQuery<User>(this.dbFile, `SELECT * FROM ${USERS} join ${TOKENS} on ${TOKENS}.token=? and ${USERS}.name=${TOKENS}.username;`, [token], { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data }
     }
-    async getTokens(): Promise<Result<Token[]>> {
-        const result = await dataBaseQuery<Token[]>(this.dbFile, `select * from ${TOKENS};`, [], { successStatusCode: StatusCodes.OK })
-        return { ...result, data: result.data || [] }
+    async getTokens(): Promise<Result<Token>> {
+        const result = await dataBaseQuery<Token>(this.dbFile, `select * from ${TOKENS};`, [], { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data }
     }
-    async getToken(token: string): Promise<Result<Token[]>> {
-        const result = await dataBaseQuery<Token[]>(this.dbFile, `select * from ${TOKENS} where token=?;`, [token], { successStatusCode: StatusCodes.OK })
-        return { ...result, data: result.data || [] }
+    async getToken(token: string): Promise<Result<Token>> {
+        const result = await dataBaseQuery<Token>(this.dbFile, `select * from ${TOKENS} where token=?;`, [token], { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data }
     }
     async addToken({ token, username, time, lastActionTime }: Token): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `INSERT INTO ${TOKENS} (token, username, time, lastActionTime) VALUES(?, ?, ?, ?)`, [token, username, time, lastActionTime], { successStatusCode: StatusCodes.CREATED })
@@ -54,7 +54,7 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         const queries: Query[] = []
         if (passHash) queries.push({ query: `update ${USERS} set password=? where name=?;`, params: [passHash, userName] })
         if (roleId) queries.push({ query: `update ${USER_ROLES} set roleId=? where user=?;`, params: [roleId, userName] })
-        if (queries.length === 0) return { success: false, status: StatusCodes.NO_CONTENT, message: messages.QUERY_ERROR }
+        if (queries.length === 0) return { success: false, data: [], status: StatusCodes.NO_CONTENT, message: messages.QUERY_ERROR }
         return await dataBaseTransaction(this.dbFile, queries, { successStatusCode: StatusCodes.OK, successMessage: messages.USER_UPDATED })
     }
 
@@ -84,7 +84,7 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         const users = result?.data as USER_ROLE_SCHEMA[]
         return (users.length > 0 && users[0].roleId) || 0
     }
-    async getRoles(): Promise<Result<UserRole[]>> {
+    async getRoles(): Promise<Result<UserRole>> {
         return await dataBaseQuery(this.dbFile, `SELECT * FROM ${ROLES};`, [], { successStatusCode: StatusCodes.OK })
     }
     async addRole(name: string): Promise<Result<null>> {
@@ -97,10 +97,10 @@ export default class UserServiceSQLite implements IUserServiceProvider {
             { query: `DELETE FROM ${ROLES} where id=?;`, params: [id] }
         ], { successStatusCode: StatusCodes.OK, successMessage: messages.ROLE_DELETED })
     }
-    async getSuperUsers(): Promise<Result<{ name: string }[]>> {
+    async getSuperUsers(): Promise<Result<{ name: string }>> {
         return await dataBaseQuery(this.dbFile, `SELECT * FROM ${SUPERUSERS};`, [], { successStatusCode: StatusCodes.OK })
     }
-    async getSuperRoles(): Promise<Result<{ roleId: number }[]>> {
+    async getSuperRoles(): Promise<Result<{ roleId: number }>> {
         return await dataBaseQuery(this.dbFile, `SELECT * FROM ${SUPERROLES};`, [], { successStatusCode: StatusCodes.OK })
     }
 }

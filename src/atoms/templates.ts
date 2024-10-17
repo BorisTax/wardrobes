@@ -16,7 +16,7 @@ export const templateListAtom = atom<Template[]>([])
 export const loadTemplateListAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
     try {
-        const result: FetchResult<[] | string> = await fetchGetData(`${API_ROUTE}/templates?token=${token}`)
+        const result: FetchResult<Template> = await fetchGetData(`${API_ROUTE}/templates?token=${token}`)
         if (!result.success) return
         set(templateListAtom, result.data as Template[])
     } catch (e) { console.error(e) }

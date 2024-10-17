@@ -27,7 +27,7 @@ export async function getStandSpecification(data: WardrobeData): Promise<Specifi
 }
 
 async function getMinifix(): Promise<FullData> {
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Кол-во", "Минификсы"]]
     const caption = detailNames.find(n => n.id === DETAIL_NAME.INNER_STAND)?.name || ""
     const count = 4

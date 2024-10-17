@@ -23,7 +23,7 @@ import ConfirmDialog from './components/dialogs/ConfirmDialog'
 const EditPriceDialog = lazy(() => import('./components/dialogs/EditPriceDialog'))
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
-import { appDataAtom, loadInitialStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
+import { appDataAtom, loadInitialCombiStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import EditUsersDialog from './components/dialogs/editUserDialogs/EditUsersDialog'
 import SettingsDialog from './components/dialogs/SettingsDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
@@ -41,7 +41,7 @@ function App() {
   const user = useAtomValue(userAtom)
   const setAppData = useSetAtom(appDataAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
-  const loadInitialAppState = useSetAtom(loadInitialStateAtom)
+  const loadInitialAppState = useSetAtom(loadInitialCombiStateAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
     const storage = localStorage.getItem('appState')

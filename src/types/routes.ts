@@ -1,6 +1,7 @@
 
 export const API_ROUTE = '/api';
 export const USERS_ROUTE = '/users';
+export const VERIFY_ROUTE = '/verify';
 export const PERMISSIONS_ROUTE = USERS_ROUTE + '/permissions';
 export const RESOURCES_ROUTE = '/resources';
 export const ALLDATA_ROUTE = '/all_data';

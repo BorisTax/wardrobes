@@ -8,7 +8,7 @@ import { WardrobeData } from "../../../types/wardrobe";
 import { getArmirovkaTapes, getCoef } from "./functions";
 import { emptyFullData, flattenSpecification } from "./functions";
 import { getFasadCount, correctFasadCount } from "./functions";
-import { getAllCharOfSpec } from "../../routers/functions/spec";
+import { getAllCharOfSpec, getSpecToCharList } from "../../routers/functions/spec";
 import { getLacobels } from "../../routers/functions/materials";
 import { LacobelSchema, ProfileSchema } from "../../../types/schemas";
 
@@ -55,8 +55,12 @@ export async function getFasadSpecification(fasad: Fasad, profile: ProfileSchema
 
 async function calcSpecification(fasad: Fasad, profile: ProfileSchema): Promise<Map<SpecItem, FullData[]>> {
     const spec = new Map<SpecItem, FullData[]>();
-    const lacobels = await (await getLacobels()).data || []
-    spec.set(SpecItem.DSP10, await calcDSP10(fasad))
+    const lacobels = await (await getLacobels()).data
+    const specToChar = await (await getSpecToCharList()).data
+    const dsp10 = specToChar.filter(s => s.id === SpecItem.DSP10).map(s => s.charId)
+    const dsp16 = specToChar.filter(s => s.id === SpecItem.DSP16).map(s => s.charId)
+    spec.set(SpecItem.DSP10, await calcDSP10(fasad, dsp10))
+    spec.set(SpecItem.DSP16, await calcDSP16(fasad, dsp10, dsp16))
     spec.set(SpecItem.Mirror, await calcMirror(fasad));
     spec.set(SpecItem.Arakal, await calcArakal(fasad));
     spec.set(SpecItem.Hydro, await calcHydro(fasad));
@@ -116,9 +120,21 @@ function calcDimensions(fasad: Fasad, checkFasad: (f: Fasad) => boolean): { heig
         return result
 }
 
-async function calcDSP10(fasad: Fasad): Promise<FullData[]> {
-    const result = await calcArea(fasad, f=>f.FasadType===FASAD_TYPE.DSP)
+async function calcDSP10(fasad: Fasad, dsp10List: number[]): Promise<FullData[]> {
+    const result = await calcArea(fasad, f => f.FasadType === FASAD_TYPE.DSP && dsp10List.includes(fasad.MaterialId))
     const coef = await getCoef(SpecItem.DSP10)
+    const finalResult = result.map(r => {
+        const area = r.data.amount
+        r.data.amount = area * coef
+        const verbose = [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]]
+        return { ...r, verbose: area > 0 ? verbose : undefined  }
+    })
+    return finalResult
+}
+
+async function calcDSP16(fasad: Fasad, dsp10List: number[], dsp16List: number[]): Promise<FullData[]> {
+    const result = await calcArea(fasad, f => f.FasadType === FASAD_TYPE.DSP && dsp16List.includes(fasad.MaterialId) && !dsp10List.includes(fasad.MaterialId))
+    const coef = await getCoef(SpecItem.DSP16)
     const finalResult = result.map(r => {
         const area = r.data.amount
         r.data.amount = area * coef

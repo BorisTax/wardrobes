@@ -22,7 +22,7 @@ export async function getDrawerSpecification(data: WardrobeData): Promise<Specif
     const kromkaSecondary = await getKromkaSecondary(data, telDetails, kromka.kromkaSpecId, kromka.kromkaId)
     result.push([SpecItem.DSP16, await getDSP(data, telDetails)])
     result.push([SpecItem.DVP, await getTelDVP(shelf.length, data.depth)])
-    result.push([kromka.kromkaSpecId, kromkaPrimary])
+    result.push([kromka.kromkaSpecId, kromkaSecondary])
     result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])
     result.push([SpecItem.Confirmat, await getConfirmat(data, telDetails)])
     result.push([SpecItem.Nails, { data: { amount: 0.0125 } }])
@@ -38,7 +38,7 @@ export async function getDrawerSpecification(data: WardrobeData): Promise<Specif
 }
 
 export async function getTelDVP(shelfLength: number, depth: number): Promise<FullData> {
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const detail: Detail = { id: DETAIL_NAME.DRAWER_BOTTOM_DVP, count: 1, length: shelfLength - 29, width: depth - 154, kromka: allNoneKromka() }
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""]]
     let totalArea = 0

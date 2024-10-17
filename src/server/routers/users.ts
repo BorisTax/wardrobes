@@ -41,7 +41,7 @@ router.get("/verify", async (req, res) => {
   const permissions = await userService.getAllUserPermissions(userRoleId)
   const result = await userService.updateToken(token)
   notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
-  res.status(result.status).json({ ...result, data: { token, permissions }, success: true });
+  res.status(result.status).json({ ...result, data: [{ token, permissions }], success: true });
 });
 
 router.post("/login", async (req, res) => {
@@ -53,11 +53,11 @@ router.post("/login", async (req, res) => {
   const time = Date.now()
   const lastActionTime = time
   if (result.success) {
-    userService.addToken({ token: result.data?.token as string, username: user.name, time, lastActionTime })
+    userService.addToken({ token: result.data[0].token as string, username: user.name, time, lastActionTime })
     notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
     const userRoleId = await userService.getUserRoleId(user.name)
     const permissions = await userService.getAllUserPermissions(userRoleId)
-    if (result.data) result.data.permissions = permissions
+    if (result.data) result.data[0].permissions = permissions
   }
   res.status(result.status).json(result);
 });
@@ -81,15 +81,15 @@ router.post("/logoutuser", async (req, res) => {
 router.get("/active", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const result: Result<ActiveUser[]> = { success: true, status: StatusCodes.OK, data: [] }
+  const result: Result<ActiveUser> = { success: true, status: StatusCodes.OK, data: [] }
   const tokens = await getTokens();
   const users = await userService.getUsers();
   for (let t of tokens){
     const user = (users.data as User[]).find((u: User) => u.name === t.username)
     if (user) {
       const userRoleId = await userService.getUserRoleId(user.name)
-      const role = (await userService.getRoles()).data?.find(r => r.id === userRoleId) || { name: "", id: 0 }
-      result.data?.push({ token: t.token, name: user.name, roleId: role.id, time: t.time, lastActionTime: t.lastActionTime })
+      const role = (await userService.getRoles()).data.find(r => r.id === userRoleId) || { name: "", id: 0 }
+      result.data.push({ token: t.token, name: user.name, roleId: role.id, time: t.time, lastActionTime: t.lastActionTime })
     }
   }
   res.status(result.status).json(result);
@@ -132,8 +132,8 @@ router.delete("/delete", async (req, res) => {
 router.get("/users", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const users = (await userService.getUsers()).data || []
-  const roles = (await userService.getRoles()).data || []
+  const users = (await userService.getUsers()).data
+  const roles = (await userService.getRoles()).data
   const result: UserData[] = []
   for(let u of users){
     const userRoleId = await userService.getUserRoleId(u.name)
@@ -169,10 +169,10 @@ router.delete("/deleteRole", async (req, res) => {
   res.status(result.status).json(result);
 });
 
-async function loginUser(user: User): Promise<Result<UserLoginResult | null>> {
+async function loginUser(user: User): Promise<Result<UserLoginResult>> {
   const userService = new UserService(userServiceProvider)
   const result = await userService.getUsers()
-  if (!result.success) return { success: false, status: StatusCodes.NOT_FOUND, data: null };
+  if (!result.success) return { success: false, status: StatusCodes.NOT_FOUND, data: [] };
   const userList = result.data
   const foundUser = (userList as User[]).find(u => (user.name === u.name))
   if (!foundUser) return incorrectData(messages.INVALID_USER_DATA)
@@ -181,7 +181,7 @@ async function loginUser(user: User): Promise<Result<UserLoginResult | null>> {
   const permissions = await userService.getAllUserPermissions(userRoleId)
   const random = Math.random()
   const token = jwt.sign({ name: foundUser.name, roleId: userRoleId, random }, JWT_SECRET, { expiresIn: 1440 });
-  return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, data: { token, permissions } };
+  return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, data: [{ token, permissions }] };
 }
 
 export async function hasPermission(req: MyRequest, resource: RESOURCE, permissions: PERMISSION[]): Promise<boolean>{

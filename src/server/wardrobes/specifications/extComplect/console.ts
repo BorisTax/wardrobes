@@ -42,7 +42,7 @@ export async function getConsoleSpecification(data: WardrobeData): Promise<Speci
 }
 
 async function getConsoleMinifix(): Promise<FullData> {
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Кол-во", "Минификсы"]]
     const caption = detailNames.find(n => n.id === DETAIL_NAME.CONSOLE_ROOF)?.name || ""
     const count = 2 * 3
@@ -50,7 +50,7 @@ async function getConsoleMinifix(): Promise<FullData> {
     return { data: { amount: count }, verbose }
 }
 async function getConsoleConfirmat(details: Detail[]): Promise<FullData> {
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Кол-во", "Конфирматы"]]
     let total = 0
     for (let d of details) {

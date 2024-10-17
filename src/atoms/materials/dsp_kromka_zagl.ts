@@ -13,7 +13,7 @@ export const loadDspKromkaZagListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
-        const result: FetchResult<[] | string> = await fetchGetData(`${API_ROUTE}/materials/dsp_kromka_zagl?token=${token}`)
+        const result: FetchResult<DspKromkaZaglSchema> = await fetchGetData(`${API_ROUTE}/materials/dsp_kromka_zagl?token=${token}`)
         if(result.success) set(dspKromkaZaglListAtom, result.data as DspKromkaZaglSchema[]);
     } catch (e) { console.error(e) }
 })

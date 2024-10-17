@@ -26,8 +26,8 @@ function zipDirectory(sourceDir: string, outPath: string): Promise<Result<null>>
   const archive = archiver('zip', { zlib: { level: 9 }});
   const stream = fs.createWriteStream(outPath);
   return new Promise((resolve) => {
-    archive.directory(sourceDir, false).on('error', err => resolve({success: false, status: StatusCodes.INTERNAL_SERVER_ERROR})).pipe(stream)
-    stream.on('close', () => resolve({success: true, status: StatusCodes.OK}));
+    archive.directory(sourceDir, false).on('error', err => resolve({success: false, data: [], status: StatusCodes.INTERNAL_SERVER_ERROR})).pipe(stream)
+    stream.on('close', () => resolve({success: true, data: [], status: StatusCodes.OK}));
     archive.finalize();
   });
 }

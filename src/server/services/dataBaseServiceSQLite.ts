@@ -11,11 +11,11 @@ export default class DataBaseServiceSQLite<T extends { id: number }> implements 
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
-    async getData(table: DATA_TABLE_NAMES, columns: KeySet<T>, values: Partial<T>): Promise<Result<T[]>> {
+    async getData(table: DATA_TABLE_NAMES, columns: KeySet<T>, values: Partial<T>): Promise<Result<T>> {
         const query = getQuery(table, columns, values)
-        return dataBaseQuery(this.dbFile, query.query, query.params, {successStatusCode: StatusCodes.OK})
+        return dataBaseQuery<T>(this.dbFile, query.query, query.params, {successStatusCode: StatusCodes.OK})
     }
-    async addData(table: DATA_TABLE_NAMES, data: OmitId<T>): Promise<Result<T[]>> {
+    async addData(table: DATA_TABLE_NAMES, data: OmitId<T>): Promise<Result<T>> {
         const params = Object.keys(data)
         return dataBaseQuery(this.dbFile, `insert into ${table} (${params}) values(${[params.map(_ => '?')]});`, params, { successStatusCode: StatusCodes.CREATED, successMessage: messages.DATA_ADDED })
     }

@@ -34,14 +34,14 @@ export async function deleteChar(id: number) {
 
 export async function getImage(id: number) {
   const service = new DataBaseService(getDataBaseProvider<CharsSchema>())
-  const result = (await service.getData(DATA_TABLE_NAMES.CHARS, ["image"], { id })).data || []
+  const result = (await service.getData(DATA_TABLE_NAMES.CHARS, ["image"], { id })).data
   return result[0]?.image || ""
 }
 
 
 export async function getChar(id: number) {
   const service = new DataBaseService(getDataBaseProvider<CharsSchema>())
-  const result = (await service.getData(DATA_TABLE_NAMES.CHARS, ["id", "char_type_id", "code", "name"], { id })).data || []
+  const result = (await service.getData(DATA_TABLE_NAMES.CHARS, ["id", "char_type_id", "code", "name"], { id })).data
   return result[0]
 }
 

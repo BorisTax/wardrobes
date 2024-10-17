@@ -68,18 +68,18 @@ export class UserService implements IUserService {
   constructor(provider: IUserServiceProvider) {
     this.provider = provider
   }
-  async getUsers(): Promise<Result<User[]>> {
+  async getUsers(): Promise<Result<User>> {
     return await this.provider.getUsers()
   }
 
-  async getUser(token: string): Promise<Result<User[]>> {
+  async getUser(token: string): Promise<Result<User>> {
     return this.provider.getUser(token)
   }
 
   async getTokens() {
     return await this.provider.getTokens()
   }
-  async getToken(token: string): Promise<Result<Token[]>> {
+  async getToken(token: string): Promise<Result<Token>> {
     return this.provider.getToken(token)
   }
 
@@ -124,11 +124,11 @@ export class UserService implements IUserService {
   async isUserNameExist(name: string) {
     if (!name) return badRequestResponse(messages.INVALID_USER_DATA)
     const result = await this.getUsers()
-    if (!result.success) return { ...result, data: null }
+    if (!result.success) return { ...result, data: [] }
     const userList = result.data || []
     const user = (userList as User[]).find(u => u.name === name)
     if (user) return conflictResponse(messages.USER_NAME_EXIST)
-    return { success: true, status: StatusCodes.OK, message: messages.USER_NAME_ALLOWED }
+    return { success: true, data: [], status: StatusCodes.OK, message: messages.USER_NAME_ALLOWED }
   }
   async getPermissions(roleId: number, resource: RESOURCE): Promise<UserPermissions> {
     return this.provider.getPermissions(roleId, resource)
@@ -143,7 +143,7 @@ export class UserService implements IUserService {
     const result = await this.provider.getUserRoleId(username)
     return result
   }
-  async getRoles(): Promise<Result<UserRole[]>> {
+  async getRoles(): Promise<Result<UserRole>> {
     return await this.provider.getRoles()
   }
   async addRole(name: string): Promise<Result<null>> {
@@ -152,14 +152,14 @@ export class UserService implements IUserService {
     return this.provider.addRole(name)
   }
   async deleteRole(id: number): Promise<Result<null>> {
-    const superroles = (await this.getSuperRoles()).data?.map(m => m.roleId)
+    const superroles = (await this.getSuperRoles()).data.map(m => m.roleId)
     if (superroles?.find(s => s === id)) return forbidResponse(messages.ROLE_DELETE_DENIED)
     return this.provider.deleteRole(id)
   }
-  async getSuperUsers(): Promise<Result<{ name: string }[]>> {
+  async getSuperUsers(): Promise<Result<{ name: string }>> {
     return await this.provider.getSuperUsers()
   }
-  async getSuperRoles(): Promise<Result<{ roleId: number }[]>> {
+  async getSuperRoles(): Promise<Result<{ roleId: number }>> {
     return await this.provider.getSuperRoles()
   }
 }

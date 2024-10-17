@@ -15,20 +15,20 @@ export async function getFasadDefaultChar() {
   return await service.getData(DATA_TABLE_NAMES.FASAD_DEFAULT_CHAR, [], {})
 }
 export async function getAllData(): Promise<AllData> {
-    const chars = (await getChars()).data || []
-    const fasadDefaultChars = (await getFasadDefaultChar()).data || []
-    const charTypes = (await getCharTypes()).data || []
-    const lacobels = (await getLacobels()).data || []
-    const consoleTypes = (await getConsoleTypes()).data || []
-    const fasadTypes = (await getFasadTypes()).data || []
-    const fasadTypeToChar = (await getFasadTypeToChar()).data || []
-    const wardrobeTypes = (await getWardrobeTypes()).data || []
-    const wardrobes = (await getWardobes()).data || []
-    const units = (await getUnits()).data || []
+    const chars = (await getChars()).data
+    const fasadDefaultChars = (await getFasadDefaultChar()).data
+    const charTypes = (await getCharTypes()).data
+    const lacobels = (await getLacobels()).data
+    const consoleTypes = (await getConsoleTypes()).data
+    const fasadTypes = (await getFasadTypes()).data
+    const fasadTypeToChar = (await getFasadTypeToChar()).data
+    const wardrobeTypes = (await getWardrobeTypes()).data
+    const wardrobes = (await getWardobes()).data
+    const units = (await getUnits()).data
     const profiles = await getProfiles()
     const profileTypes = await getProfileTypes()
-    const spec = (await getSpecList()).data || []
-    const specToChar = (await getSpecToCharList()).data || []
+    const spec = (await getSpecList()).data
+    const specToChar = (await getSpecToCharList()).data
     return {
         chars,
         fasadDefaultChars,

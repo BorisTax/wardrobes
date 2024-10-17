@@ -68,7 +68,7 @@ export function useMinifix(detail: DETAIL_NAME): boolean {
 
 export async function getDetails(wardrobeTypeId: number, wardrobeId: number, width: number, height: number, depth: number): Promise<Detail[]> {
     const detailsData = await getDetailsFromTable(wardrobeId, width, height)
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const offset = wardrobeTypeId === WARDROBE_TYPE.GARDEROB ? 0 : 100;
     const details: Detail[] =  detailsData.map(dd => (
         {   
@@ -149,7 +149,7 @@ async function getLegs(data: WardrobeData): Promise<FullData> {
 
 export async function getConfirmat(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose: VerboseData = [["Деталь", "Кол-во", "Конфирматы \n на 1 деталь", "Итого"]];
     let total = 0;
     details.forEach(d => {
@@ -172,7 +172,7 @@ async function getZagConfirmat(data: WardrobeData, details: Detail[]): Promise<F
 
 export async function getMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose: VerboseData = [["Деталь", "Кол-во", `Минификсы \n на 1 деталь`, "Итого"]];
     let total = 0;
     details.forEach(d => {
@@ -222,7 +222,7 @@ async function getStyagka(data: WardrobeData): Promise<FullData> {
 
 export async function getKromkaPrimary(data: WardrobeData, details: Detail[], kromkaId: number): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let totalEdge = 0;
     details.forEach(d => {
@@ -240,7 +240,7 @@ export async function getKromkaPrimary(data: WardrobeData, details: Detail[], kr
 
 export async function getKromkaSecondary(data: WardrobeData, details: Detail[], kromkaSpecId: number, kromkaId: number): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let totalEdge = 0;
     details.forEach(d => {

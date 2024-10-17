@@ -26,7 +26,7 @@ export async function getBlinderSpecification(data: WardrobeData): Promise<Speci
 }
 
 async function getStreich(width: number): Promise<FullData> {
-    const detailNames = (await getDetailNames()).data || []
+    const detailNames = (await getDetailNames()).data
     const verbose = [["Ширина шкафа", "Стрейч"]]
     const count = width / 1000 * 1.5
     verbose.push([`${width}`, `/ 1000 x 1.5 = ${count.toFixed(3)}`])

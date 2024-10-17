@@ -39,29 +39,30 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
     set(loadedInitialWardrobeDataAtom, false)
     if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
-        let fetchData: FetchResult<AllData> = await fetchGetData(`${API_ROUTE}${MATERIALS_ROUTE}${ALLDATA_ROUTE}?token=${token}`)
-        set(fasadTypesAtom, makeDefaultMap(fetchData.data?.fasadTypes || []))
-        set(fasadTypesToCharAtom, fetchData.data?.fasadTypeToChar || [])
-        set(charAtom, makeExtMap(fetchData.data?.chars || []))
-        set(charTypesAtom, makeDefaultMap(fetchData.data?.charTypes || []))
-        set(specAtom, makeExtMap(fetchData.data?.spec || []))
-        set(specToCharAtom, fetchData.data?.specToChar || [])
-        set(profileAtom, makeExtMap(fetchData.data?.profiles || []))
-        set(profileTypeAtom, makeDefaultMap(fetchData.data?.profileTypes || []))
-        set(unitsAtom, makeDefaultMap(fetchData.data?.units || []))
-        set(fasadDefaultCharsAtom, makeExtMap(fetchData.data?.fasadDefaultChars || []))
+        let fetchData: FetchResult<AllData> = await (await fetchGetData(`${API_ROUTE}${MATERIALS_ROUTE}${ALLDATA_ROUTE}?token=${token}`))
+        const allData = fetchData.data[0]
+        set(fasadTypesAtom, makeDefaultMap(allData.fasadTypes || []))
+        set(fasadTypesToCharAtom, allData.fasadTypeToChar || [])
+        set(charAtom, makeExtMap(allData.chars || []))
+        set(charTypesAtom, makeDefaultMap(allData.charTypes || []))
+        set(specAtom, makeExtMap(allData.spec || []))
+        set(specToCharAtom, allData.specToChar || [])
+        set(profileAtom, makeExtMap(allData.profiles || []))
+        set(profileTypeAtom, makeDefaultMap(allData.profileTypes || []))
+        set(unitsAtom, makeDefaultMap(allData.units || []))
+        set(fasadDefaultCharsAtom, makeExtMap(allData.fasadDefaultChars || []))
 
-        set(wardrobeTypesAtom, makeDefaultMap(fetchData.data?.wardrobeTypes || []))
-        set(wardrobeAtom, makeDefaultMap(fetchData.data?.wardrobes || []))
-        set(consoleTypesAtom, makeDefaultMap(fetchData.data?.consoleTypes || []))
+        set(wardrobeTypesAtom, makeDefaultMap(allData.wardrobeTypes || []))
+        set(wardrobeAtom, makeDefaultMap(allData.wardrobes || []))
+        set(consoleTypesAtom, makeDefaultMap(allData.consoleTypes || []))
         const result: FetchResult<WardrobeData> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_WARDROBEDATA_ROUTE}?token=${token}`)
-        const data = result.data as WardrobeData
+        const wardData = result.data[0] as WardrobeData
         if (result.success) {
             set(loadedInitialWardrobeDataAtom, true)
-            set(setWardrobeDataAtom, () => data)
+            set(setWardrobeDataAtom, () => wardData)
         }
         const rootFasades = get(appDataAtom).rootFasades
-        setInitialMaterials(rootFasades, fetchData.data?.fasadDefaultChars[0]?.id || 0, fetchData.data?.fasadDefaultChars[0]?.charId || 0)
+        setInitialMaterials(rootFasades, allData.fasadDefaultChars[0]?.id || 0, allData.fasadDefaultChars[0]?.charId || 0)
         set(setActiveFasadAtom, rootFasades[0])
     } catch (e) { console.error(e) }
 })

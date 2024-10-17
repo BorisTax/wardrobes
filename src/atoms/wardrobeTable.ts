@@ -14,7 +14,7 @@ export const loadWardrobeTableAtom = atom(null, async (get, set, kind: WARDROBE_
     formData[TableFields.KIND] = kind
     formData[TableFields.TOKEN] = token
     try {
-        const result: FetchResult<WardrobeDetailTableSchema[]> = await fetchData(`${API_ROUTE}/wardrobeTable`, "POST", JSON.stringify(formData))
+        const result: FetchResult<WardrobeDetailTableSchema> = await fetchData(`${API_ROUTE}/wardrobeTable`, "POST", JSON.stringify(formData))
         set(wardrobeTableAtom, result.data as WardrobeDetailTableSchema[])
     } catch (e) { console.error(e) }
 })

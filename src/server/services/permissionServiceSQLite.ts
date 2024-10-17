@@ -12,7 +12,7 @@ export default class PermissionServiceSQLite implements IPermissionServiceProvid
         this.dbFile = dbFile
     }
 
-    async getPermissions(roleId: number): Promise<Result<PERMISSIONS_SCHEMA[]>> {
+    async getPermissions(roleId: number): Promise<Result<PERMISSIONS_SCHEMA>> {
         return dataBaseQuery(this.dbFile, `select * from ${PERMISSIONS} where roleId=?;`, [roleId], { successStatusCode: StatusCodes.OK })
     }
     async addPermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions): Promise<Result<null>>  {

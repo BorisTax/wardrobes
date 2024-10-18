@@ -1,5 +1,5 @@
 import { OmitId } from "../../types/materials"
-import { DATA_TABLE_NAMES, KeySet } from "../../types/schemas"
+import { KeySet, TABLE_NAMES } from "../../types/schemas"
 import { IDataBaseService, IDataBaseServiceProvider } from "../../types/services"
 
 export class DataBaseService<T extends { id: number }> implements IDataBaseService<T> {
@@ -7,17 +7,17 @@ export class DataBaseService<T extends { id: number }> implements IDataBaseServi
     constructor(provider: IDataBaseServiceProvider<T>) {
         this.provider = provider
     }
-    async getData(table: DATA_TABLE_NAMES, columns: KeySet<T>, values: Partial<T>) {
+    async getData(table: TABLE_NAMES, columns: KeySet<T>, values: Partial<T>) {
         return await this.provider.getData(table, columns, values)
     }
-    async addData(table: DATA_TABLE_NAMES, data: OmitId<T>) {
+    async addData(table: TABLE_NAMES, data: Partial<T>) {
         return await this.provider.addData(table, data)
     }
-    async deleteData(table: DATA_TABLE_NAMES, id: number ) {
-        return await this.provider.deleteData(table, id)
+    async deleteData(table: TABLE_NAMES, lookIn: Partial<T> ) {
+        return await this.provider.deleteData(table, lookIn)
     }
-    async updateData(table: DATA_TABLE_NAMES, data: Partial<T>) {
-        return await this.provider.updateData(table, data)
+    async updateData(table: TABLE_NAMES, lookIn: Partial<T>, update: Partial<T>) {
+        return await this.provider.updateData(table, lookIn, update)
     }
 }
 

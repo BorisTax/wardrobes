@@ -121,7 +121,7 @@ function calcDimensions(fasad: Fasad, checkFasad: (f: Fasad) => boolean): { heig
 }
 
 async function calcDSP10(fasad: Fasad, dsp10List: number[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, f => f.FasadType === FASAD_TYPE.DSP && dsp10List.includes(fasad.MaterialId))
+    const result = await calcArea(fasad, f => f.FasadType === FASAD_TYPE.DSP && dsp10List.includes(f.MaterialId))
     const coef = await getCoef(SpecItem.DSP10)
     const finalResult = result.map(r => {
         const area = r.data.amount
@@ -133,7 +133,7 @@ async function calcDSP10(fasad: Fasad, dsp10List: number[]): Promise<FullData[]>
 }
 
 async function calcDSP16(fasad: Fasad, dsp10List: number[], dsp16List: number[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, f => f.FasadType === FASAD_TYPE.DSP && dsp16List.includes(fasad.MaterialId) && !dsp10List.includes(fasad.MaterialId))
+    const result = await calcArea(fasad, f => f.FasadType === FASAD_TYPE.DSP && dsp16List.includes(f.MaterialId) && !dsp10List.includes(f.MaterialId))
     const coef = await getCoef(SpecItem.DSP16)
     const finalResult = result.map(r => {
         const area = r.data.amount

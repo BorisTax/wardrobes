@@ -79,6 +79,6 @@ export const rusMessages = {
 }
 
 
-export function boolToYesNo(value: boolean): string{
+export function boolToYesNo(value: number | boolean): string{
   return value ? "Да" : "Нет"
 }

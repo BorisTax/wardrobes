@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import useConfirm from "../../../custom-hooks/useConfirm"
 import ImageButton from "../../inputs/ImageButton"
@@ -19,7 +19,6 @@ export default function EditUsersDialog() {
     const perm = permissions.get(RESOURCE.USERS)
     const users = useAtomValue(allUsersAtom)
     const roles = useAtomValue(userRolesAtom)
-    const userRoles = useMemo(() => roles.map(r => r.name), [roles])
     const activeUsers = useAtomValue(activeUsersAtom)
     const loadActiveUsers = useSetAtom(loadActiveUsersAtom)
     const loadUsers = useSetAtom(loadUsersAtom)
@@ -32,14 +31,13 @@ export default function EditUsersDialog() {
     const activeUserListHeader = ["Имя", "Права", "Время с момента входа", "Время последней активности"]
     const [userIndex, setUserIndex] = useState(0)
     const user = users[userIndex] || { name: "", roleId: 0 }
-    const userRole = roles.find(r => r.id === user.roleId)?.name
     const userlist = users.map(u => {
-        const role = roles.find(r => r.id === u.roleId)?.name
+        const role = roles.get(u.roleId) || ""
         return [u.name, role]
     })
     const activeuserlist = activeUsers.map(u => {
         const you = u.token === token
-        const role = roles.find(r => r.id === u.roleId)?.name
+        const role = roles.get(u.roleId) || ""
         return [u.name,
             role,
         <TimeField key={u.token + "1"} time={u.time} />,
@@ -49,7 +47,7 @@ export default function EditUsersDialog() {
     )
     const userEditItems: EditDataItem[] = [
         { caption: "Имя:", type: InputType.TEXT, value: user.name, message: messages.ENTER_NAME },
-        { caption: "Роль:", type: InputType.LIST, value: userRole as string, list: userRoles, message: messages.ENTER_ROLE },
+        { caption: "Роль:", type: InputType.LIST, value: user.roleId, valueCaption: (value) => roles.get(value as number) || "", list: [...roles.keys()], message: messages.ENTER_ROLE },
         { caption: "Пароль:", type: InputType.TEXT, value: "", message: messages.ENTER_PASSWORD, checkValue: (value) => checkPassword(value as string) },
     ]
     useEffect(() => {
@@ -70,8 +68,7 @@ export default function EditUsersDialog() {
             <EditDataSection items={userEditItems} name={user.name}
                 onAdd={async (checked, values) => {
                     const name = values[0] as string
-                    const role = values[1] as string
-                    const roleId = roles.find(r => r.name === role)?.id || 0
+                    const roleId = values[1] as number
                     const password = values[2] as string
                     if (users.find(u => u.name === name)) { return { success: false, message: messages.USER_NAME_EXIST } }
                     const result = await createUser(name, password, roleId)
@@ -79,9 +76,9 @@ export default function EditUsersDialog() {
                 }}
                 onUpdate={async (checked, values) => {
                     const usedName = checked[0] ? values[0] : user.name
-                    const usedRole = checked[1] ? values[1] : ""
+                    const usedRoleId = checked[1] ? values[1] as number : 0
                     const usedPass = checked[2] ? values[2] : ""
-                    const roleId = roles.find(r => r.name === usedRole)?.id || 0
+                    const roleId = usedRoleId
                     if (!users.find(u => u.name === usedName)) { return { success: false, message: messages.USER_NAME_NO_EXIST } }
                     const result = await updateUser(usedName as string, usedPass as string, roleId)
                     return result

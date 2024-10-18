@@ -9,7 +9,7 @@ export default function User() {
     const navigate = useNavigate()
     const [user, setUser] = useAtom(userAtom)
     const roles = useAtomValue(userRolesAtom)
-    const role = roles.find(r => r.id === user.roleId)?.name || ""
+    const role = roles.get(user.roleId) || ""
     const logout = useSetAtom(logoutAtom)
     const showConfirm = useConfirm()
     const version = useAtomValue(versionAtom)

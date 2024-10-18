@@ -1,15 +1,17 @@
+import { DefaultSchema } from "./schemas"
+
 export enum RESOURCE {
-    USERS = 'users',
-    MATERIALS = 'materials',
-    MATERIALS_DB = 'materials_db',
-    PRICES = 'prices',
-    SPECIFICATION = 'specification',
-    TEMPLATE = 'template',
-    FILES = 'files',
-    DATABASE = 'database',
-    VERBOSE = 'verbose',
-    COMBIFASADES = 'combifasades',
-    WARDROBES = 'wardrobes',
+    USERS = 1,
+    MATERIALS = 2,
+    PRICES = 3 ,
+    SPECIFICATION = 4,
+    TEMPLATE = 5,
+    FILES = 6,
+    DATABASE = 7,
+    VERBOSE = 8,
+    COMBIFASADES = 9,
+    WARDROBES = 10,
+    MATERIALS_DB = 11,
 }
 export enum PERMISSION {
     READ = 'READ',
@@ -18,19 +20,14 @@ export enum PERMISSION {
     DELETE = 'DELETE',
 }
 export type UserPermissions = {
-    Read: boolean
-    Create: boolean
-    Update: boolean
-    Delete: boolean
+    Read: number
+    Create: number
+    Update: number
+    Delete: number
 }
-export type Resource = {
-    name: RESOURCE,
-    caption: string
-}
-export type UserRole = {
-    id: number
-    name: string
-}
+export type ResourceSchema = DefaultSchema
+export type UserRole = DefaultSchema
+
 export type User = {
     name: string
     password: string
@@ -38,7 +35,7 @@ export type User = {
 export type UserData = {
     name: string
     roleId: number
-    permissions: PERMISSIONS_SCHEMA[]
+    permissions: PermissionSchema[]
 }
 
 export type ActiveUser = {
@@ -53,13 +50,13 @@ export type USER_ROLE_SCHEMA = {
     user: string,
     roleId: number
 }
-export type PERMISSIONS_SCHEMA = {
-    roleId: number,
-    resource: RESOURCE,
-    create: boolean,
-    read: boolean,
-    update: boolean,
-    delete: boolean,
+export type PermissionSchema = {
+    id: number,
+    resourceId: RESOURCE,
+    create: number,
+    read: number,
+    update: number,
+    delete: number,
 }
 
-export type UserLoginResult = { token: string, permissions: PERMISSIONS_SCHEMA[] }
+export type UserLoginResult = { token: string, permissions: PermissionSchema[] }

@@ -1,6 +1,6 @@
 import { Result } from "../../types/server"
 import { IPermissionService, IPermissionServiceProvider } from "../../types/services"
-import { PERMISSIONS_SCHEMA, UserPermissions, RESOURCE, Resource } from "../../types/user"
+import { PermissionSchema, UserPermissions, RESOURCE, ResourceSchema } from "../../types/user"
 
 export class PermissionService implements IPermissionService {
     provider: IPermissionServiceProvider
@@ -8,7 +8,7 @@ export class PermissionService implements IPermissionService {
         this.provider = provider
     }
 
-    async getPermissions(roleId: number): Promise<Result<PERMISSIONS_SCHEMA>> {
+    async getPermissions(roleId: number): Promise<Result<PermissionSchema>> {
         return this.provider.getPermissions(roleId)
     }
     async addPermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions): Promise<Result<null>> {
@@ -20,7 +20,7 @@ export class PermissionService implements IPermissionService {
     async updatePermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions): Promise<Result<null>> {
         return this.provider.updatePermissions(roleId, resource, permissions)
     }
-    async getResourceList(): Promise<Result<Resource>>{
+    async getResourceList(): Promise<Result<ResourceSchema>>{
         return this.provider.getResourceList()
     }
 }

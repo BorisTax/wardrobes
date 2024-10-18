@@ -1,5 +1,5 @@
 import { Result, Token } from '../../types/server.js'
-import { PERMISSIONS_SCHEMA, User } from "../../types/user.js"
+import { PermissionSchema, User } from "../../types/user.js"
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
@@ -130,15 +130,7 @@ export class UserService implements IUserService {
     if (user) return conflictResponse(messages.USER_NAME_EXIST)
     return { success: true, data: [], status: StatusCodes.OK, message: messages.USER_NAME_ALLOWED }
   }
-  async getPermissions(roleId: number, resource: RESOURCE): Promise<UserPermissions> {
-    return this.provider.getPermissions(roleId, resource)
-  }
-  async getAllUserPermissions(roleId: number): Promise<PERMISSIONS_SCHEMA[]> {
-    return this.provider.getAllUserPermissions(roleId)
-  }
-  async getAllPermissions(): Promise<PERMISSIONS_SCHEMA[]> {
-    return this.provider.getAllPermissions()
-  }
+
   async getUserRoleId(username: string): Promise<number> {
     const result = await this.provider.getUserRoleId(username)
     return result

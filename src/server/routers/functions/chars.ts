@@ -24,12 +24,13 @@ export async function addChar(data: OmitId<CharsSchema>) {
 
 export async function updateChar(data: Partial<CharsSchema>) {
   const service = new DataBaseService(getDataBaseProvider<CharsSchema>())
-  return await service.updateData(DATA_TABLE_NAMES.CHARS, data)
+  const { id, ...dataWithoutId } = data
+  return await service.updateData(DATA_TABLE_NAMES.CHARS, {id: data.id}, dataWithoutId)
 }
 
 export async function deleteChar(id: number) {
   const service = new DataBaseService(getDataBaseProvider<CharsSchema>())
-  return await service.deleteData(DATA_TABLE_NAMES.CHARS, id)
+  return await service.deleteData(DATA_TABLE_NAMES.CHARS, { id })
 }
 
 export async function getImage(id: number) {

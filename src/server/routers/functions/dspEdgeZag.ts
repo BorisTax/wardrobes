@@ -15,12 +15,13 @@ export async function addDspKromkaZag(data: OmitId<DspKromkaZaglSchema>) {
 
 export async function updateDspKromkaZag(data: Partial<DspKromkaZaglSchema>) {
   const service = new DataBaseService<DspKromkaZaglSchema>(getDataBaseProvider())
-  return await service.updateData(DATA_TABLE_NAMES.DSP_KROMKA_ZAGL, data)
+  const { id, ...otherData } = data
+  return await service.updateData(DATA_TABLE_NAMES.DSP_KROMKA_ZAGL, { id }, otherData)
 }
 
 export async function deleteDspKromkaZag(id: number) {
   const service = new DataBaseService<DspKromkaZaglSchema>(getDataBaseProvider())
-  return await service.deleteData(DATA_TABLE_NAMES.DSP_KROMKA_ZAGL, id)
+  return await service.deleteData(DATA_TABLE_NAMES.DSP_KROMKA_ZAGL, { id })
 }
 
 export async function getKromkaByDSP(dspId: number) {

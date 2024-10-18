@@ -1,8 +1,8 @@
 import {  OmitId } from "./materials"
 import { Result, Token, PriceData } from "./server"
-import { PERMISSIONS_SCHEMA, Resource, User } from "./user"
+import { PermissionSchema, ResourceSchema, User } from "./user"
 import { Template } from "./templates"
-import { DATA_TABLE_NAMES, KeySet } from "./schemas"
+import { DATA_TABLE_NAMES, KeySet, TABLE_NAMES } from "./schemas"
 import { UserPermissions, RESOURCE, UserRole } from "./user"
 
 interface IUserAbstractService {
@@ -17,9 +17,6 @@ interface IUserAbstractService {
     registerUser: (userName: string, password: string, roleId: number) => Promise<Result<null>>
     updateUser: ({ userName, password, roleId }: { userName: string, password?: string, roleId?: number }) => Promise<Result<null>>
     deleteUser: (user: User) => Promise<Result<null>>
-    getPermissions: (roleId: number, resource: RESOURCE) => Promise<UserPermissions>
-    getAllUserPermissions: (roleId: number) => Promise<PERMISSIONS_SCHEMA[]>
-    getAllPermissions: () => Promise<PERMISSIONS_SCHEMA[]>
     getUserRoleId: (username: string) => Promise<number>
     getRoles: () => Promise<Result<UserRole>>
     addRole: (name: string) => Promise<Result<null>>
@@ -28,11 +25,11 @@ interface IUserAbstractService {
     getSuperRoles: () => Promise<Result<{ roleId: number }>>
 }
 
-export interface IDataBaseService<T extends { id: number }> {
-    getData: (table: DATA_TABLE_NAMES, columns: KeySet<T>, values: Partial<T>) => Promise<Result<T>>
-    addData: (table: DATA_TABLE_NAMES, data: OmitId<T>) => Promise<Result<T>>
-    deleteData: (table: DATA_TABLE_NAMES, id: number ) => Promise<Result<null>>
-    updateData: (table: DATA_TABLE_NAMES, data: Partial<T>) => Promise<Result<null>>
+export interface IDataBaseService<T extends { id?: number }> {
+    getData: (table: TABLE_NAMES, columns: KeySet<T>, conditions: Partial<T>) => Promise<Result<T>>
+    addData: (table: TABLE_NAMES, data: Partial<T>) => Promise<Result<T>>
+    deleteData: (table: TABLE_NAMES, lookIn: Partial<T> ) => Promise<Result<null>>
+    updateData: (table: TABLE_NAMES, lookIn: Partial<T>, update: Partial<T>) => Promise<Result<null>>
 }
 interface ITemplateAbstractService {
     getFasadTemplates: () => Promise<Result<Template>>
@@ -45,11 +42,11 @@ interface IPriceAbstractService {
     updatePriceList: (item: PriceData) => Promise<Result<null>>
 }
 interface IPermissionAbstractService {
-    getPermissions: (roleId: number) => Promise<Result<PERMISSIONS_SCHEMA>>
+    getPermissions: (roleId: number) => Promise<Result<PermissionSchema>>
     addPermissions: (roleId: number, resource: RESOURCE, permissions: UserPermissions) => Promise<Result<null>>
     deletePermissions: (roleId: number, resource: RESOURCE) => Promise<Result<null>>
     updatePermissions: (roleId: number, resource: RESOURCE, permissions: UserPermissions) => Promise<Result<null>>
-    getResourceList: () => Promise<Result<Resource>>
+    getResourceList: () => Promise<Result<ResourceSchema>>
 }
 
 export interface IDataBaseServiceProvider<T extends { id: number }> extends IDataBaseService<T> {

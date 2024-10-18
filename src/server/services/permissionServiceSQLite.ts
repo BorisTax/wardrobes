@@ -3,7 +3,7 @@ import { USER_TABLE_NAMES } from '../../types/schemas.js';
 import { IPermissionServiceProvider } from '../../types/services.js';
 import { Result } from '../../types/server.js';
 import messages from '../messages.js';
-import { PERMISSIONS_SCHEMA, UserPermissions, RESOURCE, Resource } from '../../types/user.js';
+import { PermissionSchema, UserPermissions, RESOURCE, ResourceSchema } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
 const { PERMISSIONS, RESOURCES } = USER_TABLE_NAMES
 export default class PermissionServiceSQLite implements IPermissionServiceProvider {
@@ -12,7 +12,7 @@ export default class PermissionServiceSQLite implements IPermissionServiceProvid
         this.dbFile = dbFile
     }
 
-    async getPermissions(roleId: number): Promise<Result<PERMISSIONS_SCHEMA>> {
+    async getPermissions(roleId: number): Promise<Result<PermissionSchema>> {
         return dataBaseQuery(this.dbFile, `select * from ${PERMISSIONS} where roleId=?;`, [roleId], { successStatusCode: StatusCodes.OK })
     }
     async addPermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions): Promise<Result<null>>  {
@@ -26,7 +26,7 @@ export default class PermissionServiceSQLite implements IPermissionServiceProvid
         const { Create, Read, Update, Delete } = permissions
         return dataBaseQuery(this.dbFile, `update ${PERMISSIONS} set 'create'=?, 'read'=?, 'update'=?, 'delete'=? where roleId=? and resource=?;`, [Create ? 1 : 0, Read ? 1 : 0, Update ? 1 : 0, Delete ? 1 : 0, roleId, resource], { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
     }
-    async getResourceList(): Promise<Result<Resource>>{
+    async getResourceList(): Promise<Result<ResourceSchema>>{
         return dataBaseQuery(this.dbFile, `select * from ${RESOURCES};`, [], { successStatusCode: StatusCodes.OK })
     }
 }

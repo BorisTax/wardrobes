@@ -2,21 +2,22 @@ import messages from '../messages.js'
 import express from "express";
 import { accessDenied } from '../functions/database.js';
 import { MyRequest } from '../../types/server.js';
-import { PERMISSION, PERMISSIONS_SCHEMA, UserPermissions, RESOURCE } from "../../types/user.js";
-import { permissionServiceProvider } from '../options.js';
+import { PERMISSION, PermissionSchema, UserPermissions, RESOURCE } from "../../types/user.js";
+import { getDataBaseProvider, getDataBaseUserProvider, permissionServiceProvider } from '../options.js';
 import { hasPermission } from './users.js';
 import { PermissionService } from '../services/permissionService.js';
 import { StatusCodes } from 'http-status-codes';
 import { RESOURCES_ROUTE } from '../../types/routes.js';
+import { DataBaseService } from '../services/dataBaseService.js';
+import { USER_TABLE_NAMES } from '../../types/schemas.js';
 
 const router = express.Router();
 export default router
 
 router.get("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const result = await getPermissions(+(req.query.roleId as string));
-  if (!result.success) return res.json(result)
-  res.status(result.status).json(result);
+  const result = await getAllUserPermissions(+(req.query.roleId as string));
+  res.status(200).json({success: true, data: result});
 });
 router.get(RESOURCES_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
@@ -49,37 +50,41 @@ router.put("/", async (req, res) => {
   res.status(result.status).json(result);
 });
 
-export async function getPermissions(roleId: number) {
-  const service = new PermissionService(permissionServiceProvider)
-  return await service.getPermissions(roleId)
+export async function getPermissions(roleId: number, resourceId: RESOURCE) {
+  const service = new DataBaseService<PermissionSchema>(getDataBaseUserProvider())
+  return await service.getData(USER_TABLE_NAMES.PERMISSIONS, [], {id: roleId, resourceId})
 }
+
+export async function getAllUserPermissions(roleId: number): Promise<PermissionSchema[]> {
+  const service = new DataBaseService<PermissionSchema>(getDataBaseUserProvider())
+  return (await service.getData(USER_TABLE_NAMES.PERMISSIONS, [], {id: roleId})).data
+}
+
+export async function getAllPermissions(): Promise<PermissionSchema[]> {
+  const service = new DataBaseService<PermissionSchema>(getDataBaseUserProvider())
+  return (await service.getData(USER_TABLE_NAMES.PERMISSIONS, [], {})).data
+}
+
 export async function getResourceList() {
-  const service = new PermissionService(permissionServiceProvider)
-  return await service.getResourceList()
+  const service = new DataBaseService(getDataBaseUserProvider())
+  return await service.getData(USER_TABLE_NAMES.RESOURCES, [], {})
 }
-export async function addPermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions) {
-  const service = new PermissionService(permissionServiceProvider)
-  const result = await service.getPermissions(roleId)
+export async function addPermissions(roleId: number, resourceId: RESOURCE, permissions: UserPermissions) {
+  const result = await getPermissions(roleId, resourceId)
   if (!result.success) return result
   const list = result.data
-  if ((list as PERMISSIONS_SCHEMA[]).find(m => m.roleId === roleId && m.resource === resource)) return { success: false, status: StatusCodes.CONFLICT, message: messages.PERMISSION_EXIST }
-  return await service.addPermissions(roleId, resource, permissions)
-}
-
-export async function updatePermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions) {
-  const service = new PermissionService(permissionServiceProvider)
-  const result = await service.getPermissions(roleId)
-  if (!result.success) return result
-  const list = result.data
-  if (!(list as PERMISSIONS_SCHEMA[]).find(m => m.roleId === roleId && m.resource === resource)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.PERMISSION_NO_EXIST }
-  return await service.updatePermissions(roleId, resource, permissions)
+  if ((list as PermissionSchema[]).find(m => m.id === roleId && m.resourceId === resourceId)) return { success: false, status: StatusCodes.CONFLICT, message: messages.PERMISSION_EXIST }
+  const service = new DataBaseService<PermissionSchema>(getDataBaseUserProvider())
+  return await service.addData(USER_TABLE_NAMES.PERMISSIONS, { id: roleId, resourceId, create: permissions.Create, read: permissions.Read, update: permissions.Delete, delete: permissions.Delete })
 }
 
-export async function deletePermissions(roleId: number, resource: RESOURCE) {
-  const service = new PermissionService(permissionServiceProvider)
-  const result = await service.getPermissions(roleId)
-  if (!result.success) return result
-  const list = result.data
-  if (!(list as PERMISSIONS_SCHEMA[]).find(m => m.roleId === roleId && m.resource === resource)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.PERMISSION_NO_EXIST }
-  return await service.deletePermissions(roleId, resource)
+export async function updatePermissions(roleId: number, resourceId: RESOURCE, permissions: UserPermissions) {
+  const service = new DataBaseService<PermissionSchema>(getDataBaseUserProvider())
+  return await service.updateData(USER_TABLE_NAMES.PERMISSIONS, { id: roleId, resourceId}, { create: permissions.Create, read: permissions.Read, update: permissions.Delete, delete: permissions.Delete })
+}
+
+export async function deletePermissions(roleId: number, resourceId: RESOURCE) {
+  const service = new DataBaseService<PermissionSchema>(getDataBaseUserProvider())
+  return await service.deleteData(USER_TABLE_NAMES.PERMISSIONS, { id: roleId, resourceId })
+
 }

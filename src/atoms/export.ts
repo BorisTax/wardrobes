@@ -21,11 +21,11 @@ export const saveToExcelAtom = atom(null, async (get, set, specification: Specif
             specList.push({ specCode, specName, charCode, charName,  amount: sp[1].data.amount || 0, units })
         })
     const schema: ColumnSchema<OutputSpecSchema, String | Number>[] = [
-        { column: "Наименование", type: String, value: (p: OutputSpecSchema) => p.specName, width: 40, borderStyle: "thin" },
         { column: "Код", type: String, value: (p: OutputSpecSchema) => p.specCode, width: 20, borderStyle: "thin" },
+        { column: "Наименование", type: String, value: (p: OutputSpecSchema) => p.specName, width: 40, borderStyle: "thin" },
         { column: "Характеристика", type: String, value: (p: OutputSpecSchema) => p.charName, width: 40, borderStyle: "thin" },
-        { column: "Код", type: String, value: (p: OutputSpecSchema) => p.charCode, width: 40, borderStyle: "thin" },
-        { column: "Кол-во", value: (p: OutputSpecSchema) => p.amount, width: 10, borderStyle: "thin" },
+        { column: "Код характеристики", type: String, value: (p: OutputSpecSchema) => p.charCode, width: 40, borderStyle: "thin" },
+        { column: "Кол-во", value: (p: OutputSpecSchema) => p.amount.toFixed(3), width: 10, borderStyle: "thin" },
         { column: "Ед", value: (p: OutputSpecSchema) => p.units, width: 5, borderStyle: "thin" },
         //{ column: "Идентификатор", value: (p: SpecificationData) => p.id, width: 30 },
     ]

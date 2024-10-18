@@ -67,13 +67,13 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
     } catch (e) { console.error(e) }
 })
 
-const makeDefaultMap = (data: DefaultSchema[]): DefaultMap => {
+export const makeDefaultMap = (data: DefaultSchema[]): DefaultMap => {
     const m = new Map()
     data.forEach(r => m.set(r.id, r.name))
     return m
 }
 
-const makeExtMap = <T extends { id: number }>(data: T[]): ExtMap<T> => {
+export const makeExtMap = <T extends { id: number }>(data: T[]): ExtMap<T> => {
     const m: Map<number, OmitId<T>> = new Map()
     data.forEach((r: T) => {
         const keys = Object.keys(r).filter(k => k !== "id")

@@ -23,7 +23,8 @@ export async function getSpecToCharList(): Promise<Result<SpecToCharSchema>> {
 }
 export async function updateSpecData(data: SpecSchema): Promise<Result<null>> {
   const service = new DataBaseService(getDataBaseProvider<SpecSchema>())
-  return await service.updateData(DATA_TABLE_NAMES.SPEC, data)
+  const { id, ...otherData } = data
+  return await service.updateData(DATA_TABLE_NAMES.SPEC, { id }, otherData)
 }
 
 export async function getAllCharOfSpec(specId: number) {

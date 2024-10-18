@@ -26,6 +26,9 @@ export const permissionServiceProvider = new PermissionServiceSQLite(usersPath)
 export function getDataBaseProvider<T extends { id: number }>() {
   return new DataBaseServiceSQLite<T>(dataPath)
 }
+export function getDataBaseUserProvider<T extends { id: number }>() {
+  return new DataBaseServiceSQLite<T>(usersPath)
+}
 
 export const userRoleParser = async (req: Request, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)

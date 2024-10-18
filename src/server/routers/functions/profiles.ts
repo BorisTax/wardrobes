@@ -18,12 +18,13 @@ export async function addProfile(profile: OmitId<ProfileSchema>) {
 
 export async function updateProfile(profile: ProfileSchema) {
   const service = new DataBaseService<ProfileSchema>(getDataBaseProvider())
-  return await service.updateData(DATA_TABLE_NAMES.PROFILES, profile)
+  const { id, ...otherData } = profile 
+  return await service.updateData(DATA_TABLE_NAMES.PROFILES, { id }, otherData)
 }
 
 export async function deleteProfile(id: number) {
   const service = new DataBaseService<ProfileSchema>(getDataBaseProvider())
-  return await service.deleteData(DATA_TABLE_NAMES.PROFILES, id)
+  return await service.deleteData(DATA_TABLE_NAMES.PROFILES, { id })
 }
 
 export async function getCharIdAndBrushSpecIdByProfileId(id: number) {

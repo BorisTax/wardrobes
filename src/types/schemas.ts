@@ -124,6 +124,9 @@ export type AllData = {
     specToChar: SpecToCharSchema[],
 }
 
+
+export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES;
+
 export enum DATA_TABLE_NAMES {
     CHARS = 'chars',
     CHAR_TYPES = 'char_types',
@@ -151,7 +154,6 @@ export enum DATA_TABLE_NAMES {
 
 export enum USER_TABLE_NAMES {
     USERS = 'users',
-    USERROLES = 'userroles',
     TOKENS = 'tokens',
     ROLES = 'roles',
     RESOURCES = 'resources',

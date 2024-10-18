@@ -10,6 +10,7 @@ import { JWT_SECRET, userServiceProvider } from '../options.js';
 import { SERVER_EVENTS } from "../../types/enums.js";
 import { RESOURCE } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
+import { getAllUserPermissions, getPermissions } from './permissions.js';
 
 const router = express.Router();
 export default router
@@ -38,7 +39,7 @@ router.get("/verify", async (req, res) => {
   const tokenData = (tokens.data as Token[]).find((t: Token) => t.token === token)
   if (!tokenData) return res.json({ success: false });
   const userRoleId = await userService.getUserRoleId(tokenData?.username)
-  const permissions = await userService.getAllUserPermissions(userRoleId)
+  const permissions = await getAllUserPermissions(userRoleId)
   const result = await userService.updateToken(token)
   notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   res.status(result.status).json({ ...result, data: [{ token, permissions }], success: true });
@@ -56,7 +57,7 @@ router.post("/login", async (req, res) => {
     userService.addToken({ token: result.data[0].token as string, username: user.name, time, lastActionTime })
     notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
     const userRoleId = await userService.getUserRoleId(user.name)
-    const permissions = await userService.getAllUserPermissions(userRoleId)
+    const permissions = await getAllUserPermissions(userRoleId)
     if (result.data) result.data[0].permissions = permissions
   }
   res.status(result.status).json(result);
@@ -138,7 +139,7 @@ router.get("/users", async (req, res) => {
   for(let u of users){
     const userRoleId = await userService.getUserRoleId(u.name)
     const role = roles.find(r => r.id === userRoleId) || { name: "", id: 0 }
-    const permissions = await userService.getAllUserPermissions(userRoleId)
+    const permissions = await getAllUserPermissions(userRoleId)
     result.push({ name: u.name, roleId: role.id, permissions })
   }
   res.status(StatusCodes.OK).json({ success: true, data: result })
@@ -178,7 +179,7 @@ async function loginUser(user: User): Promise<Result<UserLoginResult>> {
   if (!foundUser) return incorrectData(messages.INVALID_USER_DATA)
   if (!bcrypt.compareSync(user.password, foundUser.password)) return incorrectData(messages.INVALID_USER_DATA)
   const userRoleId = await userService.getUserRoleId(foundUser.name)
-  const permissions = await userService.getAllUserPermissions(userRoleId)
+  const permissions = await getAllUserPermissions(userRoleId)
   const random = Math.random()
   const token = jwt.sign({ name: foundUser.name, roleId: userRoleId, random }, JWT_SECRET, { expiresIn: 1440 });
   return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, data: [{ token, permissions }] };
@@ -186,8 +187,7 @@ async function loginUser(user: User): Promise<Result<UserLoginResult>> {
 
 export async function hasPermission(req: MyRequest, resource: RESOURCE, permissions: PERMISSION[]): Promise<boolean>{
   const userRoleId = req.userRoleId as number;
-  const userService = new UserService(userServiceProvider)
-  const { Read, Create, Update, Delete } = (await userService.getPermissions(userRoleId, resource))
+  const { read: Read, create: Create, update: Update, delete: Delete } = (await getPermissions(userRoleId, resource)).data[0] ||{ read: 0, create: 0, update: 0, delete: 0 }
   return permissions.every(p => {
     if (p === PERMISSION.CREATE) return Create
     if (p === PERMISSION.READ) return Read

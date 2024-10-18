@@ -1,7 +1,7 @@
 import { dataBaseQuery, dataBaseTransaction, hashData } from '../functions/database.js'
 import { IUserServiceProvider } from '../../types/services.js';
 import { Result, Token } from '../../types/server.js';
-import { PERMISSIONS_SCHEMA, USER_ROLE_SCHEMA, User } from "../../types/user.js";
+import { PermissionSchema, USER_ROLE_SCHEMA, User } from "../../types/user.js";
 import messages from '../messages.js';
 import { Query, USER_TABLE_NAMES } from '../../types/schemas.js';
 import { UserPermissions, RESOURCE, UserRole } from '../../types/user.js';
@@ -45,14 +45,14 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     async registerUser(userName: string, password: string, roleId: number): Promise<Result<null>> {
         const result = await hashData(password);
         return await dataBaseTransaction(this.dbFile, [
-           {query: `INSERT INTO ${USERS} (name, password) VALUES(?, ?)`, params: [userName, result.data]},
+           {query: `INSERT INTO ${USERS} (name, password) VALUES(?, ?)`, params: [userName, result.data[0]]},
             {query: `INSERT INTO ${USER_ROLES} (user, roleId) VALUES(?, ?)`, params: [userName, roleId]},
         ], { successStatusCode: StatusCodes.CREATED, successMessage: messages.USER_ADDED })
     }
     async updateUser({ userName, password, roleId }: { userName: string, password?: string, roleId?: number }): Promise<Result<null>> {
-        const passHash = password && await hashData(password);
+        const passHash = (await hashData(password || "")).data[0]
         const queries: Query[] = []
-        if (passHash) queries.push({ query: `update ${USERS} set password=? where name=?;`, params: [passHash, userName] })
+        if (password) queries.push({ query: `update ${USERS} set password=? where name=?;`, params: [passHash, userName] })
         if (roleId) queries.push({ query: `update ${USER_ROLES} set roleId=? where user=?;`, params: [roleId, userName] })
         if (queries.length === 0) return { success: false, data: [], status: StatusCodes.NO_CONTENT, message: messages.QUERY_ERROR }
         return await dataBaseTransaction(this.dbFile, queries, { successStatusCode: StatusCodes.OK, successMessage: messages.USER_UPDATED })
@@ -64,20 +64,6 @@ export default class UserServiceSQLite implements IUserServiceProvider {
             { query: `DELETE FROM ${USER_ROLES} where user=?;`, params: [user.name] },
             { query: `DELETE FROM ${USERS} where name=?;`, params: [user.name] },
         ], { successStatusCode: StatusCodes.OK, successMessage: messages.USER_DELETED })
-    }
-
-    async getPermissions(roleId: number, resource: RESOURCE): Promise<UserPermissions> {
-        const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS} where roleId=? and resource=?;`, [roleId, resource], { successStatusCode: StatusCodes.OK })
-        const perm = result.data as PERMISSIONS_SCHEMA[]
-        return (perm.length > 0 && { Create: perm[0].create, Read: perm[0].read, Update: perm[0].update, Delete: perm[0].delete }) || { Create: false, Delete: false, Read: false, Update: false }
-    }
-    async getAllUserPermissions(roleId: number): Promise<PERMISSIONS_SCHEMA[]> {
-        const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS} where roleId=?;`, [roleId], { successStatusCode: StatusCodes.OK })
-        return result.data as PERMISSIONS_SCHEMA[] || []
-    }
-    async getAllPermissions(): Promise<PERMISSIONS_SCHEMA[]> {
-        const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${PERMISSIONS};`, [], { successStatusCode: StatusCodes.OK })
-        return result.data as PERMISSIONS_SCHEMA[] || []
     }
     async getUserRoleId(username: string): Promise<number> {
         const result = await dataBaseQuery(this.dbFile, `SELECT * FROM ${USER_ROLES} where user=?;`, [username], { successStatusCode: StatusCodes.OK })
@@ -92,8 +78,7 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     }
     async deleteRole(id: number): Promise<Result<null>> {
         return dataBaseTransaction(this.dbFile, [
-            { query: `DELETE FROM ${PERMISSIONS} where roleId=?;`, params: [id] },
-            { query: `DELETE FROM ${USER_ROLES} where roleId=?;`, params: [id] },
+            { query: `DELETE FROM ${PERMISSIONS} where id=?;`, params: [id] },
             { query: `DELETE FROM ${ROLES} where id=?;`, params: [id] }
         ], { successStatusCode: StatusCodes.OK, successMessage: messages.ROLE_DELETED })
     }

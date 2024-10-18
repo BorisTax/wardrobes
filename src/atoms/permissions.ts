@@ -1,42 +1,38 @@
 import { atom } from "jotai"
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { PERMISSIONS_SCHEMA, UserPermissions, RESOURCE, Resource } from "../types/user"
+import { PermissionSchema, UserPermissions, RESOURCE, ResourceSchema } from "../types/user"
 import { userAtom } from "./users"
 import messages from "../server/messages"
 import { TableFields } from "../types/server"
-import { API_ROUTE } from "../types/routes"
+import { API_ROUTE, PERMISSIONS_ROUTE, RESOURCES_ROUTE, USERS_ROUTE } from "../types/routes"
+import { DefaultMap, makeDefaultMap } from "./storage"
 
 
-export const permissionsAtom = atom<PERMISSIONS_SCHEMA[]>([])
+export const permissionsAtom = atom<PermissionSchema[]>([])
 export const loadPermissionsAtom = atom(null, async (get, set, roleId: number)=>{
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     if (!perm?.Read) return
-    const result = await fetchGetData(`${API_ROUTE}/users/permissions?token=${token}&roleId=${roleId}`)
+    const result = await fetchGetData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}?token=${token}&roleId=${roleId}`)
     if(result.success){
-        set(permissionsAtom, result.data as PERMISSIONS_SCHEMA[])
+        set(permissionsAtom, result.data as PermissionSchema[])
     }
 })
-export const resourceListAtom = atom<Resource[]>([])
+export const resourceListAtom = atom<DefaultMap>(new Map())
 export const loadResourceListAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     if (!perm?.Read) return
-    const result = await fetchGetData(`${API_ROUTE}/users/permissions/resources?token=${token}`)
+    const result = await fetchGetData<ResourceSchema>(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}${RESOURCES_ROUTE}?token=${token}`)
     if (result.success) {
-        set(resourceListAtom, result.data as Resource[])
+        set(resourceListAtom, makeDefaultMap(result.data))
     }
 })
-export const resourceAsMap = atom((get) => {
-    const resources = get(resourceListAtom)
-    const m = new Map()
-    resources.forEach(r => m.set(r.name, r.caption))
-    return m
-})
+
 export const deletePermissionsAtom = atom(null, async (get, set, roleId: number, resource: RESOURCE) => {
     const user = get(userAtom)
     try{
-        const result = await fetchData(`${API_ROUTE}/users/permissions`, "DELETE", JSON.stringify({ roleId, resource, token: user.token }))
+        const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "DELETE", JSON.stringify({ roleId, resource, token: user.token }))
         await set(loadPermissionsAtom, roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
@@ -54,7 +50,7 @@ export const addPermissionsAtom = atom(null, async (get, set, roleId: number, re
         [TableFields.TOKEN]: user.token
     }
     try {
-        const result = await fetchData(`${API_ROUTE}/users/permissions`, "POST", JSON.stringify(data))
+        const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "POST", JSON.stringify(data))
         await set(loadPermissionsAtom, roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
@@ -72,7 +68,7 @@ export const updatePermissionsAtom = atom(null, async (get, set, roleId: number,
         [TableFields.TOKEN]: user.token
     }
     try {
-        const result = await fetchData(`${API_ROUTE}/users/permissions`, "PUT", JSON.stringify(data))
+        const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "PUT", JSON.stringify(data))
         await set(loadPermissionsAtom, roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 

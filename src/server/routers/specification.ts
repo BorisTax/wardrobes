@@ -1,10 +1,8 @@
 import express from "express";
 import { MyRequest } from '../../types/server.js';
 import { PERMISSION, RESOURCE } from "../../types/user.js";
-import { SpecificationResult } from "../../types/wardrobe.js";
 import { accessDenied, incorrectData, noExistData } from "../functions/database.js";
 import messages from "../messages.js";
-import { AppState } from "../../types/app.js";
 import { hasPermission } from "./users.js";
 import { SpecSchema } from "../../types/schemas.js";
 import { COMBIDATA_ROUTE, DATA_ROUTE } from "../../types/routes.js";
@@ -33,6 +31,7 @@ router.post(DATA_ROUTE, async (req, res) => {
   const result = await getSpecData(data, resetDetails, verbose);
   res.status(result.status).json(result);
 });
+
 
 router.post(COMBIDATA_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)

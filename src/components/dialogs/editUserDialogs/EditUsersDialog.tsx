@@ -33,16 +33,18 @@ export default function EditUsersDialog() {
     const user = users[userIndex] || { name: "", roleId: 0 }
     const userlist = users.map(u => {
         const role = roles.get(u.roleId) || ""
-        return [u.name, role]
+        return { key: u.name, data: [u.name, role] }
     })
     const activeuserlist = activeUsers.map(u => {
         const you = u.token === token
         const role = roles.get(u.roleId) || ""
-        return [u.name,
-            role,
-        <TimeField key={u.token + "1"} time={u.time} />,
-        <TimeField key={u.token + "2"} time={u.lastActionTime} />,
+        return {
+            key: u.name, data: [u.name,
+                role,
+            <TimeField key={u.token + "1"} time={u.time} />,
+            <TimeField key={u.token + "2"} time={u.lastActionTime} />,
             <div key={u.token + "3"} className={you ? "text-center" : " text-center user-logout-button"} onClick={async () => { if (!you && await showConfirm(`Отключить пользователя ${u.name}?`)) logoutUser(u.token) }}>{you ? "Это вы" : "Отсоединить"}</div>]
+        }
     }
     )
     const userEditItems: EditDataItem[] = [

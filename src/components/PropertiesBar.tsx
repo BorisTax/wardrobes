@@ -18,7 +18,8 @@ import { useMemo } from "react"
 import { RESOURCE } from "../types/user"
 import { useNavigate } from "react-router-dom"
 import { getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
-import { charAtom, fasadTypesAtom, fasadTypesToCharAtom } from "../atoms/storage"
+import { fasadTypesAtom, fasadTypesToCharAtom } from "../atoms/storage"
+import { charAtom } from "../atoms/materials/chars"
 const sectionsTemplate = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const directions: Map<Division, string> = new Map()
 export default function PropertiesBar() {

@@ -10,6 +10,7 @@ export const MATERIAL_ROUTE = '/material';
 export const PROFILES_ROUTE = '/profile';
 export const PROFILE_TYPES_ROUTE = '/profile_types';
 export const CHARS_ROUTE = '/chars';
+export const SPEC_TO_CHAR_ROUTE = '/spec_to_char';
 export const IMAGE_ROUTE = '/image';
 export const FASAD_TYPES_ROUTE = '/fasad_types';
 export const SPECIFICATION_ROUTE = '/specification';
@@ -29,3 +30,5 @@ export const CONSOLE_TYPES_ROUTE = '/console_types';
 export const DETAIL_ROUTE = '/detail';
 export const DETAILS_ROUTE = '/details';
 
+export const WARDROBE_ID_PARAM = 'wardrobeId';
+export const WARDTYPE_ID_PARAM = 'wardTypeId';

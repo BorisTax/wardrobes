@@ -11,7 +11,8 @@ import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { WARDROBE_TYPE } from "../types/wardrobe"
 import { RESOURCE } from "../types/user"
-import { charAtom, profileAtom, wardrobeTypesAtom } from "../atoms/storage"
+import { profileAtom, wardrobeTypesAtom } from "../atoms/storage"
+import { charAtom } from "../atoms/materials/chars"
 const fasades = [ 2, 3, 4, 5, 6]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)

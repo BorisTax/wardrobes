@@ -37,6 +37,7 @@ export enum TEMPLATE_TABLES {
 }
 
 export enum CHAR_TYPE {
+    NONE = 0,
     COLOR = 1,
     MIRROR = 2,
     LACOBEL = 3,

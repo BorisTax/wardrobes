@@ -33,6 +33,15 @@ export async function getAllCharOfSpec(specId: number) {
   const charId = (result.data).map(c => c.charId)
   return charId
 }
+export async function addSpecToChar(data: SpecToCharSchema): Promise<Result<SpecToCharSchema>> {
+  const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())
+  return await service.addData(DATA_TABLE_NAMES.SPEC_TO_CHAR, data)
+}
+export async function deleteSpecToChar(data: SpecToCharSchema): Promise<Result<null>> {
+  const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())
+  return await service.deleteData(DATA_TABLE_NAMES.SPEC_TO_CHAR, data)
+}
+
 
 export async function getSpecData(data: WardrobeData, resetDetails: boolean, verbose = false): Promise<Result<SpecificationMultiResult>> {
   const result: SpecificationMultiResult[] = []
@@ -51,6 +60,8 @@ export async function getSpecData(data: WardrobeData, resetDetails: boolean, ver
   }
   return { success: true, status: StatusCodes.OK, data: result }
 }
+
+
 export async function getSpecCombiData(data: AppState, verbose = false): Promise<Result<SpecificationResult[]>> {
   const result: (SpecificationResult[])[] = []
   const profiles = await getProfiles()

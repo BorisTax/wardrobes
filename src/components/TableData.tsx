@@ -1,19 +1,32 @@
 import { ReactNode, useState } from "react"
 
+export type TableDataRow = {
+    key: number | string,
+    data: ReactNode[]
+}
+
 export type TableDataProps = {
     heads: (string | number)[]
-    content: (string | number | boolean | ReactNode)[][]
+    content: TableDataRow[]
     styles?: object[][]
     rowNumbers?: boolean
     onSelectRow?: (index: number) => void
+    onSelectKey?: (key: number | string) => void
 }
-export default function TableData({ heads, content, styles = [[{}]], rowNumbers = true, onSelectRow = () => { } }: TableDataProps) {
+export default function TableData({ heads, content, styles = [[{}]], rowNumbers = true, onSelectRow = () => { }, onSelectKey = () => { } }: TableDataProps) {
     const [selectedRow, setSelectedRow] = useState(-1)
-    const defStyles = content.map((i, r) => i.map((i, c) => { if (styles[r]) return styles[r][c]; else return {} }))
-    const contents = content.map((r, rowIndex) => <tr className={"table-data-row " + (rowIndex === selectedRow ? "table-data-row-selected" : "")} key={'row' + rowIndex} onClick={() => { if (onSelectRow) { onSelectRow(rowIndex); setSelectedRow(rowIndex) } }}>
-        {rowNumbers && <td className="table-data-cell">{rowIndex + 1}</td>}
-        {r.map((i, colIndex) => <td key={'item' + colIndex} className="table-data-cell" style={{ ...defStyles[rowIndex][colIndex] }}>{i}</td>)}
-    </tr>)
+    const defStyles = content.map((i, r) => i.data.map((i, c) => { if (styles[r]) return styles[r][c]; else return {} }))
+    const contents = content.map((r, rowIndex) => 
+        <tr className={"table-data-row " + (rowIndex === selectedRow ? "table-data-row-selected" : "")}
+            key={'row' + rowIndex}
+            onClick={() => {
+                if (onSelectRow) { onSelectRow(rowIndex); }
+                if (onSelectKey) { onSelectKey(r.key) }
+                setSelectedRow(rowIndex)
+            }}>
+            {rowNumbers && <td className="table-data-cell">{rowIndex + 1}</td>}
+            {r.data.map((i, colIndex) => <td key={'item' + colIndex} className="table-data-cell" style={{ ...defStyles[rowIndex][colIndex] }}>{i}</td>)}
+        </tr>)
     return <div className="table-data">
         <table>
             <thead>

@@ -1,6 +1,5 @@
 import { atom } from "jotai";
-import { SpecItem } from "../types/specification";
-import { CombiSpecificationResult, SpecificationMultiResult, SpecificationResult, WardrobeData } from "../types/wardrobe";
+import { SpecificationMultiResult, SpecificationResult, WardrobeData } from "../types/wardrobe";
 import { userAtom } from "./users";
 import { FetchResult, fetchData } from "../functions/fetch";
 import { TableFields } from "../types/server";
@@ -9,17 +8,19 @@ import { wardrobeDataAtom } from "./wardrobe";
 import { appAtom } from "./app";
 import { AppState } from "../types/app";
 import { API_ROUTE, COMBIDATA_ROUTE, DATA_ROUTE, SPECIFICATION_ROUTE } from "../types/routes";
+import { SpecSchema, SpecToCharSchema } from "../types/schemas";
+import { ExtMap } from "./storage";
 
 
 export const specificationCombiAtom = atom<SpecificationResult[][]>([[]])
 export const specificationAtom = atom<SpecificationMultiResult[]>(getInitSpecification())
 export const specificationInProgress = atom(false)
 
+export const specListAtom = atom<ExtMap<SpecSchema>>(new Map());
+export const specToCharAtom = atom<SpecToCharSchema[]>([]);
 
-export const coefListAtom = atom<Map<SpecItem, number>>((get) => {
-    const coef = new Map()
-    get(specificationAtom).forEach(p => { coef.set(p.spec[0], p.spec[1]) })
-    return coef
+export const updateSpecListAtom = atom(null, async (get, set, data: SpecSchema) => {
+    return { success: true, message: "" }
 })
 
 export const calculateSpecificationsAtom = atom(null, async (get, set, resetDetails: boolean = false) => {
@@ -59,3 +60,5 @@ export const calculateCombiSpecificationsAtom = atom(null, async (get, set) => {
 
 export const totalPriceAtom = atom<number[]>([])
 export type OutputSpecSchema = { specCode: string; specName: string; charCode: string; charName: string; amount: number; units: string };
+
+

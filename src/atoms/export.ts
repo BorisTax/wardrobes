@@ -2,11 +2,13 @@ import { atom } from "jotai";
 import writeToExcel, { ColumnSchema } from 'write-excel-file';
 import { appDataAtom } from "./app";
 import { SpecificationResult } from "../types/wardrobe";
-import { charAtom, specAtom, unitsAtom } from "./storage";
+import { unitsAtom } from "./storage";
+import { charAtom } from "./materials/chars";
+import { specListAtom } from "./specification";
 import { OutputSpecSchema } from "./specification";
 
 export const saveToExcelAtom = atom(null, async (get, set, specification: SpecificationResult[], fileName: string) => {
-    const spec = get(specAtom)
+    const spec = get(specListAtom)
     const chars = get(charAtom)
     const unitsData = get(unitsAtom)
     const { order } = get(appDataAtom)

@@ -16,13 +16,14 @@ dialog {
   overflow: hidden;
   padding: 0.5rem;
 }
-
+html, body {
+  height: 100% !important;
+}
 body {
   -background-image: url('../images/background/back1.png');
   background-size: cover;
   background-repeat: repeat;
   background-attachment: fixed;
-  min-height: 100svh;
   background-color: $defaultBackColor;
 }
 

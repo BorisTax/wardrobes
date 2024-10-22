@@ -8,7 +8,9 @@ import { showVerboseDialogAtom } from "../atoms/dialogs"
 import { SpecificationResult, TotalData, VerboseData } from "../types/wardrobe"
 import { RESOURCE } from "../types/user"
 import CheckBox from "./inputs/CheckBox"
-import { charAtom, specAtom, unitsAtom } from "../atoms/storage"
+import { unitsAtom } from "../atoms/storage"
+import { charAtom } from "../atoms/materials/chars"
+import { specListAtom } from "../atoms/specification"
 
 type SpecificationTableProps = {
     purposes: MAT_PURPOSE[],
@@ -22,7 +24,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     const unitsData = useAtomValue(unitsAtom)
     const loading = useAtomValue(specificationInProgress)
     const permSpec =  permissions.get(RESOURCE.SPECIFICATION)
-    const specData = useAtomValue(specAtom)
+    const specData = useAtomValue(specListAtom)
     const charData = useAtomValue(charAtom)
     const showVerbose = useSetAtom(showVerboseDialogAtom)
     const setVerboseData = useSetAtom(setVerboseDataAtom)

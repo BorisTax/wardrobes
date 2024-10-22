@@ -20,7 +20,6 @@ const EditMaterialDialog = lazy(() => import('./components/dialogs/EditMaterialD
 import {  userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
-const EditPriceDialog = lazy(() => import('./components/dialogs/EditPriceDialog'))
 import { AppState } from './types/app'
 import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
 import { appDataAtom, loadInitialCombiStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
@@ -78,7 +77,6 @@ function App() {
               <Route path="/schema" element={<SchemaDialog />} />
               <Route path="/specification" element={<EditSpecificationDialog />} />
               <Route path="/materials" element={<EditMaterialDialog />} />
-              <Route path="/pricelist" element={<EditPriceDialog />} />
               <Route path="/users" element={<EditUsersDialog />} />
             </Routes>
           </Suspense>

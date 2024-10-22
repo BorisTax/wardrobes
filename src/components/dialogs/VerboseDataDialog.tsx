@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { useAtom, useAtomValue } from "jotai"
 import { verboseDialogAtom } from "../../atoms/dialogs"
 import DialogWindow from "./DialogWindow"
-import TableData from "../TableData"
+import TableData, { TableDataRow } from "../TableData"
 import { verboseDataAtom } from "../../atoms/verbose"
 
 export default function VerboseDataDialog() {
@@ -11,7 +11,7 @@ export default function VerboseDataDialog() {
     const [, setVerboseDialogAtomRef] = useAtom(verboseDialogAtom)
     const heads = verboseData[0]
     const verboseContent = verboseData.filter((r, index) => index > 0)
-    const contents = verboseContent.map(v => [...v])
+    const contents: TableDataRow[] = verboseContent.map((v, index) => ({ key: index, data: [...v] }))
     useEffect(() => {
         setVerboseDialogAtomRef(dialogRef)
     }, [setVerboseDialogAtomRef, dialogRef])

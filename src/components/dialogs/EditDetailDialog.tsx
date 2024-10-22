@@ -11,6 +11,7 @@ import EditDataSection, { EditDataItem } from "./EditDataSection"
 import { InputType, PropertyType } from "../../types/property"
 import messages from "../../server/messages"
 import { calculateSpecificationsAtom } from "../../atoms/specification"
+import { detailNamesAtom } from "../../atoms/storage"
 const edges = new Map<string, string>()
 edges.set(KROMKA_TYPE.NONE, "нет")
 edges.set(KROMKA_TYPE.THIN, "0,45мм")
@@ -27,8 +28,7 @@ drill.set(DRILL_CAPTIONS.MINIF, "Минификс")
 drill.set(DRILL_CAPTIONS.BOTH, "Конф. и миниф.")
 drill.set(DRILL_CAPTIONS.NONE, "нет")
 const defaultDetail: Detail = {
-    name: DETAIL_NAME.SHELF,
-    caption: ``,
+    id: DETAIL_NAME.SHELF,
     length: 0,
     width: 0,
     count: 0,
@@ -41,24 +41,25 @@ const defaultDetail: Detail = {
 }
 export default function EditDetailDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
-    const details = useAtomValue(wardrobeDataAtom).details
+    const details = useAtomValue(wardrobeDataAtom).details || []
     const calculate = useSetAtom(calculateSpecificationsAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
+    const detailNames = useAtomValue(detailNamesAtom)
     const [detIndex, setDetIndex] = useState(0)
     const detail = details[detIndex] || defaultDetail
     const [, setEditDetailDialogAtomRef] = useAtom(editDetailDialogAtom)
     const heads = ["Деталь", "Длина", "Ширина", "Кол-во", "Кромка 2", "Кромка 0.45", "Крепеж"]
-    const contents = details.map(d => [d.caption, d.length, d.width, d.count, getEdgeDescripton(d, KROMKA_TYPE.THICK), getEdgeDescripton(d, KROMKA_TYPE.THIN), drill.get(getDrillCaption(d)) || ""])
+    const contents = details.map((d, index) => ({ key: index, data: [detailNames.get(d.id) || "", d.length, d.width, d.count, getEdgeDescripton(d, KROMKA_TYPE.THICK), getEdgeDescripton(d, KROMKA_TYPE.THIN), drill.get(getDrillCaption(d)) || ""] }))
     const editItems: EditDataItem[] = [
-        { caption: "Деталь:", value: detail.caption || "", message: messages.ENTER_CAPTION, type: InputType.TEXT, optional: true },
+        { caption: "Деталь:", value: detail.id || 0, valueCaption: value => detailNames.get(value as number) || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: [...detailNames.keys()], optional: true },
         { caption: "Длина:", value: `${detail.length}`, message: messages.ENTER_LENGTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
         { caption: "Ширина:", value: `${detail.width}`, message: messages.ENTER_WIDTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
         { caption: "Кол-во:", value: `${detail.count}`,message: messages.ENTER_COUNT, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Кромка по длине 1:", value: `${detail.kromka?.L1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по длине 2:", value: `${detail.kromka?.L2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по ширине 1:", value: `${detail.kromka?.W1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Кромка по ширине 2:", value: `${detail.kromka?.W2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
-        { caption: "Крепеж:", value: getDrillCaption(detail), list: [...drill.keys()], valueCaption: value => drill.get(value as string) || "", message: "", type: InputType.LIST, listWithoutEmptyRow: true },
+        { caption: "Кромка по длине 1:", value: `${detail.kromka?.L1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST },
+        { caption: "Кромка по длине 2:", value: `${detail.kromka?.L2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST },
+        { caption: "Кромка по ширине 1:", value: `${detail.kromka?.W1}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST},
+        { caption: "Кромка по ширине 2:", value: `${detail.kromka?.W2}`, list: [...edges.keys()], valueCaption: value => edges.get(value as string) || "", message: "", type: InputType.LIST },
+        { caption: "Крепеж:", value: getDrillCaption(detail), list: [...drill.keys()], valueCaption: value => drill.get(value as string) || "", message: "", type: InputType.LIST },
     ]
     useEffect(() => {
         setEditDetailDialogAtomRef(dialogRef)
@@ -69,7 +70,7 @@ export default function EditDetailDialog() {
             <EditDataSection name={""} items={editItems} dontAsk={true}
             onUpdate={async (checked, values) => {
                 const newDetails = [...details]
-                if (checked[0]) newDetails[detIndex].caption = `${values[0]}`
+                if (checked[0]) newDetails[detIndex].id = values[0] as number
                 if (checked[1]) newDetails[detIndex].length = +values[1]
                 if (checked[2]) newDetails[detIndex].width = +values[2]
                 if (checked[3]) newDetails[detIndex].count = +values[3]
@@ -89,8 +90,7 @@ export default function EditDetailDialog() {
             onAdd={async (_, values) => {
                 const newDetails = [...details]
                 const detail: Detail = {
-                    name: DETAIL_NAME.SHELF,
-                    caption: `${values[0]}`,
+                    id: DETAIL_NAME.SHELF,
                     length: +values[1],
                     width: +values[2],
                     count: +values[3],

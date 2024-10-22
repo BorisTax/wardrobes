@@ -33,7 +33,7 @@ export default function EditPermissionsDialog() {
     const addPermissions = useSetAtom(addPermissionsAtom)
     const updatePermissions = useSetAtom(updatePermissionsAtom)
     const heads = ['Права', 'Чтение', 'Создание', 'Обновление', 'Удаление']
-    const contents = permData.map((p: PermissionSchema) => [resources.get(p.resourceId), boolToYesNo(p.read), boolToYesNo(p.create), boolToYesNo(p.update), boolToYesNo(p.delete)])
+    const contents = permData.map((p: PermissionSchema, index) => ({ key: index, data: [resources.get(p.resourceId), boolToYesNo(p.read), boolToYesNo(p.create), boolToYesNo(p.update), boolToYesNo(p.delete)] }))
     const editItems: EditDataItem[] = [
         { caption: "Роль:", value: roles.get(roleId) || "", message: messages.ENTER_ROLE, type: InputType.TEXT, readonly: true },
         { caption: "Права:", value: resourceId, valueCaption: (value) => { return resources.get(value as number) || ""}, message: messages.ENTER_RESOURCE, type: InputType.LIST, list: [...resources.keys()] },

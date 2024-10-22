@@ -8,8 +8,9 @@ import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { hasPermission } from './users.js';
 import { StatusCodes } from 'http-status-codes';
 import { addDspKromkaZag, deleteDspKromkaZag, getDspKromkaZag, updateDspKromkaZag } from './functions/dspEdgeZag.js';
-import { CHARS_ROUTE, DSP_KROMKA_ZAG_ROUTE, IMAGE_ROUTE, FASAD_TYPES_ROUTE, PROFILE_TYPES_ROUTE, PROFILES_ROUTE, ALLDATA_ROUTE } from '../../types/routes.js';
+import { CHARS_ROUTE, DSP_KROMKA_ZAG_ROUTE, IMAGE_ROUTE, FASAD_TYPES_ROUTE, PROFILE_TYPES_ROUTE, PROFILES_ROUTE, ALLDATA_ROUTE, SPEC_TO_CHAR_ROUTE } from '../../types/routes.js';
 import { getAllData } from './functions/materials.js';
+import { addSpecToChar, deleteSpecToChar } from './functions/spec.js';
 
 const router = express.Router();
 export default router
@@ -98,6 +99,21 @@ router.post(IMAGE_ROUTE, async (req, res) => {
   const { id } = req.body
   const result = await getImage(id);
   res.status(200).json({success: true, data: [result]});
+});
+
+
+router.delete(SPEC_TO_CHAR_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
+  const data = req.body
+  const result = await deleteSpecToChar(data);
+  res.status(result.status).json(result)
+});
+
+router.post(SPEC_TO_CHAR_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
+  const data = req.body
+  const result = await addSpecToChar(data);
+  res.status(result.status).json(result)
 });
 
 router.get(DSP_KROMKA_ZAG_ROUTE, async (req, res) => {

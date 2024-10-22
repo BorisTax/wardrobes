@@ -25,9 +25,7 @@ table {
 
 .table-data {
   font-size: 0.8rem;
-  overflow: scroll;
-  -border: 1px solid;
-  max-height: 60svh;
+  max-height: 85svh;
   background-color: $defaultBackColor;
   overflow: auto;
 }

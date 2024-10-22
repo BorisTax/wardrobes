@@ -1,4 +1,4 @@
-import { MAT_PURPOSE } from "./enums"
+import { CHAR_TYPE, MAT_PURPOSE } from "./enums"
 
 export type KeySet<T> = (keyof T)[]
 
@@ -23,7 +23,7 @@ export type SpecSchema = {
     units: number,
     coef: number,
     code: string,
-    purpose: MAT_PURPOSE
+    charType: CHAR_TYPE
 }
 
 export type SpecToCharSchema = IdToCharIdSchema
@@ -122,6 +122,7 @@ export type AllData = {
     profileTypes: ProfileTypesSchema[],
     spec: SpecSchema[],
     specToChar: SpecToCharSchema[],
+    detailNames: DetailSchema[],
 }
 
 

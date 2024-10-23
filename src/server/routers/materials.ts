@@ -134,7 +134,7 @@ router.delete(DSP_KROMKA_ZAG_ROUTE, async (req, res) => {
 
 router.post(DSP_KROMKA_ZAG_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
-  const data = req.body
+  const {token, data} = req.body
   const result = await addDspKromkaZag(data);
   const status = result.success ? StatusCodes.CREATED : StatusCodes.CONFLICT
   res.status(status).json(result);
@@ -142,7 +142,7 @@ router.post(DSP_KROMKA_ZAG_ROUTE, async (req, res) => {
 
 router.put(DSP_KROMKA_ZAG_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const data = req.body
+  const {token, data} = req.body
   const result = await updateDspKromkaZag(data);
   res.status(result.status).json(result);
 });

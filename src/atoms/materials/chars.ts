@@ -12,6 +12,10 @@ import { CharsSchema, SpecToCharSchema } from "../../types/schemas"
 import { ExtMap, DefaultMap } from "../storage"
 
 export const charAtom = atom<ExtMap<CharsSchema>>(new Map());
+export const charArrayAtom = atom((get) => {
+    const chars = get(charAtom)
+    return [...chars.entries()].map(value => ({ id: value[0], ...value[1] }))
+});
 export const charTypesAtom = atom<DefaultMap>(new Map());
 export const materialListAtom = atom<FasadMaterial[]>([]);
 

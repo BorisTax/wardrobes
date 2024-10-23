@@ -6,16 +6,18 @@ import EditSpecificationDialog from "./EditSpecificationDialog"
 import { useNavigate } from "react-router-dom"
 import EditChars from "./editMaterialDialogs/EditChars"
 import EditSpecToChars from "./editMaterialDialogs/EditSpecToChars"
+import EditDSPEdge from "./editMaterialDialogs/EditDSPEdge"
 enum MaterialGroup{
     SPECIFICATION = 1,
     CHARS = 2,
     SPEC_TO_CHAR = 3,
+    DSP_EDGE = 4,
 }
 const matGroup=new Map()
 matGroup.set(MaterialGroup.SPECIFICATION, "Номенклатура")
 matGroup.set(MaterialGroup.CHARS, "Характеристики")
 matGroup.set(MaterialGroup.SPEC_TO_CHAR, "Характеристики номенклатур")
-
+matGroup.set(MaterialGroup.DSP_EDGE, "ДСП - Кромка - Заглушка")
 export default function EditMaterialDialog() {
     const navigate = useNavigate()
     const { permissions } = useAtomValue(userAtom)
@@ -38,5 +40,6 @@ function getGroup(group: MaterialGroup) {
     groups.set(MaterialGroup.SPECIFICATION, <EditSpecificationDialog />)
     groups.set(MaterialGroup.CHARS, <EditChars />)
     groups.set(MaterialGroup.SPEC_TO_CHAR, <EditSpecToChars />)
+    groups.set(MaterialGroup.DSP_EDGE, <EditDSPEdge />)
     return groups.get(group) || <></>
 }

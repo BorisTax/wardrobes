@@ -6,7 +6,7 @@ import EditSpecificationDialog from "./EditSpecificationDialog"
 import { useNavigate } from "react-router-dom"
 import EditChars from "./editMaterialDialogs/EditChars"
 import EditSpecToChars from "./editMaterialDialogs/EditSpecToChars"
-import EditDSPEdge from "./editMaterialDialogs/EditDSPEdge"
+import EditDSPKromkaZagl from "./editMaterialDialogs/EditDSPKromkaZagl"
 enum MaterialGroup{
     SPECIFICATION = 1,
     CHARS = 2,
@@ -40,6 +40,6 @@ function getGroup(group: MaterialGroup) {
     groups.set(MaterialGroup.SPECIFICATION, <EditSpecificationDialog />)
     groups.set(MaterialGroup.CHARS, <EditChars />)
     groups.set(MaterialGroup.SPEC_TO_CHAR, <EditSpecToChars />)
-    groups.set(MaterialGroup.DSP_EDGE, <EditDSPEdge />)
+    groups.set(MaterialGroup.DSP_EDGE, <EditDSPKromkaZagl />)
     return groups.get(group) || <></>
 }

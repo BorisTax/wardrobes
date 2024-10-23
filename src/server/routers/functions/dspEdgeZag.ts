@@ -2,6 +2,9 @@ import { getDataBaseProvider } from '../../options.js';
 import { DataBaseService } from '../../services/dataBaseService.js';
 import { DATA_TABLE_NAMES, DspKromkaZaglSchema } from '../../../types/schemas.js';
 import { OmitId } from '../../../types/materials.js';
+import { getChars } from './chars.js';
+import { getAllCharOfSpec } from './spec.js';
+import { SpecItem } from '../../../types/specification.js';
 
 export async function getDspKromkaZag() {
   const service = new DataBaseService<DspKromkaZaglSchema>(getDataBaseProvider())
@@ -24,12 +27,19 @@ export async function deleteDspKromkaZag(id: number) {
   return await service.deleteData(DATA_TABLE_NAMES.DSP_KROMKA_ZAGL, { id })
 }
 
-export async function getKromkaByDSP(dspId: number) {
+export async function getKromkaAndZaglByDSP(dspId: number) {
   const service = new DataBaseService<DspKromkaZaglSchema>(getDataBaseProvider())
-  const result = (await service.getData(DATA_TABLE_NAMES.DSP_KROMKA_ZAGL, ["kromkaSpecId", "kromkaId"], { id: dspId })).data || [{ kromkaId: 0, kromkaSpecId: 0 }]
+  const result = (await service.getData(DATA_TABLE_NAMES.DSP_KROMKA_ZAGL, ["kromkaId", 'zaglushkaId'], { id: dspId })).data || [{ kromkaId: 0, zaglushkaId: 0 }]
   return result[0]
 }
-
+export async function getKromkaTypeByChar(charId: number) {
+  const types = [SpecItem.Kromka045, SpecItem.Kromka06, SpecItem.Kromka08]
+  for (let t of types) {
+    let chars = await getAllCharOfSpec(t)
+    if (chars.includes(charId)) return t
+  }
+  return 0
+}
 export async function getZagByDSP(dspId: number) {
   const service = new DataBaseService<DspKromkaZaglSchema>(getDataBaseProvider())
   const result = (await service.getData(DATA_TABLE_NAMES.DSP_KROMKA_ZAGL, ["zaglushkaId"], { id: dspId })).data || [{ zaglushkaId: 0 }]

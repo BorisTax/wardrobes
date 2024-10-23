@@ -1,7 +1,7 @@
 import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData } from "../../../../types/wardrobe";
 import { getDetailNames } from "../../../routers/functions/details";
-import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
+import { getKromkaAndZaglByDSP, getKromkaTypeByChar } from "../../../routers/functions/dspEdgeZag";
 import { getKromkaPrimary, getKromkaSecondary, getGlue } from "../corpus";
 import { singleLengthThinKromka } from "../kromka";
 import { getDSP } from "../functions";
@@ -14,12 +14,13 @@ export async function getStandSpecification(data: WardrobeData): Promise<Specifi
     const details: Detail[] = [
         { id: DETAIL_NAME.INNER_STAND, count: 1, length: stand.height, width: data.depth - 100, kromka: singleLengthThinKromka() },
     ]
-    const kromka = await getKromkaByDSP(data.dspId)
-    const kromkaPrimary = (await getKromkaPrimary(data, details, kromka.kromkaId))
-    const kromkaSecondary = await getKromkaSecondary(data, details, kromka.kromkaSpecId, kromka.kromkaId)
+    const kromkaAndZagl = await getKromkaAndZaglByDSP(data.dspId)
+    const kromkaSpecId = await getKromkaTypeByChar(kromkaAndZagl.kromkaId)
+    const kromkaPrimary = (await getKromkaPrimary(data, details, kromkaAndZagl.kromkaId))
+    const kromkaSecondary = await getKromkaSecondary(data, details, kromkaSpecId, kromkaAndZagl.kromkaId)
     const minifix = await getMinifix()
     result.push([SpecItem.DSP16, await getDSP(data, details)])
-    result.push([kromka.kromkaSpecId, kromkaSecondary])
+    result.push([kromkaSpecId, kromkaSecondary])
     result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])
     result.push([SpecItem.Minifix, minifix])
     result.push([SpecItem.ZagMinifix, { data: { amount: minifix.data.amount } }])

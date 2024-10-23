@@ -70,7 +70,7 @@ router.get(CHARS_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS, [PERMISSION.READ]))) return accessDenied(res)
   const result = await getChars();
   if (!result.success) return res.sendStatus(result.status)
-  res.status(result.status).json(result);
+  res.status(result.status).json(result.data);
 });
 
 router.delete(CHARS_ROUTE, async (req, res) => {
@@ -82,14 +82,14 @@ router.delete(CHARS_ROUTE, async (req, res) => {
 
 router.post(CHARS_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
-  const data = req.body
+  const {token, data} = req.body
   const result = await addChar(data);
   res.status(result.status).json(result)
 });
 
 router.put(CHARS_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const data = req.body
+  const {token, data} = req.body
   const result = await updateChar(data);
   res.status(result.status).json(result);
 });
@@ -104,14 +104,14 @@ router.post(IMAGE_ROUTE, async (req, res) => {
 
 router.delete(SPEC_TO_CHAR_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.DELETE]))) return accessDenied(res)
-  const data = req.body
+  const {token, data} = req.body
   const result = await deleteSpecToChar(data);
   res.status(result.status).json(result)
 });
 
 router.post(SPEC_TO_CHAR_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.MATERIALS_DB, [PERMISSION.CREATE]))) return accessDenied(res)
-  const data = req.body
+  const {token, data} = req.body
   const result = await addSpecToChar(data);
   res.status(result.status).json(result)
 });

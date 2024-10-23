@@ -71,7 +71,6 @@ export type FurnitureTableSchema = {
 
 export type DspKromkaZaglSchema = {
     id: number,
-    kromkaSpecId: number,
     kromkaId: number,
     zaglushkaId: number
 }

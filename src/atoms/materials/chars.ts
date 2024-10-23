@@ -1,7 +1,7 @@
 import { atom } from "jotai"
 import { userAtom } from "../users"
 import { RESOURCE } from "../../types/user"
-import { fetchData, FetchResult } from "../../functions/fetch"
+import { fetchData, fetchGetData, FetchResult } from "../../functions/fetch"
 import { API_ROUTE, CHARS_ROUTE, IMAGE_ROUTE, MATERIALS_ROUTE, SPEC_TO_CHAR_ROUTE } from "../../types/routes"
 import messages from "../../server/messages"
 import { FasadMaterial, OmitId } from "../../types/materials"
@@ -9,7 +9,7 @@ import { TableFields } from "../../types/server"
 import Fasad from "../../classes/Fasad"
 import { FASAD_TYPE } from "../../types/enums"
 import { CharsSchema, SpecToCharSchema } from "../../types/schemas"
-import { ExtMap, DefaultMap } from "../storage"
+import { ExtMap, DefaultMap, makeExtMap } from "../storage"
 
 export const charAtom = atom<ExtMap<CharsSchema>>(new Map());
 export const charArrayAtom = atom((get) => {
@@ -19,11 +19,25 @@ export const charArrayAtom = atom((get) => {
 export const charTypesAtom = atom<DefaultMap>(new Map());
 export const materialListAtom = atom<FasadMaterial[]>([]);
 
+export const loadCharAtom = atom(null, async (get, set) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
+    try{
+        const result = await fetchGetData<CharsSchema>(`${API_ROUTE}${MATERIALS_ROUTE}${CHARS_ROUTE}?token=${token}`)
+        set(charAtom, makeExtMap(result.data))
+        return { success: result.success as boolean, message: result.message as string }
+    }catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+     }
+})
+
 export const deleteCharAtom = atom(null, async (get, set, id: number) => {
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
         const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${CHARS_ROUTE}`, "DELETE", JSON.stringify({ id, token }))
+        set(loadCharAtom)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 
         console.error(e)
@@ -36,6 +50,7 @@ export const addCharAtom = atom(null, async (get, set, data: OmitId<CharsSchema>
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     try {
         const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${CHARS_ROUTE}`, "POST", JSON.stringify({ data, token }))
+        set(loadCharAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
          console.error(e) 
@@ -48,6 +63,7 @@ export const updateCharAtom = atom(null, async (get, set, data: CharsSchema) => 
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     try {
         const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${CHARS_ROUTE}`, "PUT", JSON.stringify({ data, token }))
+        set(loadCharAtom)
         await set(resetCharImageAtom, data.id)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 

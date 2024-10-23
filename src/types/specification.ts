@@ -1,5 +1,6 @@
 
 export enum SpecItem {
+    NONE = 0,
     DSP10 = 1,
     Mirror = 2,
     Arakal = 3,

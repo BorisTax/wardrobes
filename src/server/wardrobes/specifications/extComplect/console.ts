@@ -3,7 +3,7 @@ import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, CONSO
 import { getKromkaPrimary, getKromkaSecondary, getGlue } from "../corpus";
 import { getDSP } from "../functions";
 import { consoleRoofKromka, consoleShelfKromka, consoleStandKromka, consoleStandSideKromka } from "../kromka";
-import { getKromkaByDSP } from "../../../routers/functions/dspEdgeZag";
+import { getKromkaAndZaglByDSP, getKromkaTypeByChar } from "../../../routers/functions/dspEdgeZag";
 import { getDetailNames } from "../../../routers/functions/details";
 
 
@@ -24,9 +24,10 @@ export async function getConsoleSpecification(data: WardrobeData): Promise<Speci
         details.push({ id: DETAIL_NAME.CONSOLE_SHELF, count: 2, length: console.depth - 20, width: console.width - 89, kromka: consoleShelfKromka() });
         if (console.height >= 2300) details.push({ id: DETAIL_NAME.CONSOLE_SHELF, count: 1, length: console.depth - 20, width: console.width - 96, kromka: consoleShelfKromka() });
     }
-    const kromka = await getKromkaByDSP(data.dspId)
-    const kromkaPrimary = (await getKromkaPrimary(data, details, kromka.kromkaId))
-    const kromkaSecondary = await getKromkaSecondary(data, details, kromka.kromkaSpecId, kromka.kromkaId)
+    const kromkaAndZagl = await getKromkaAndZaglByDSP(data.dspId)
+    const kromkaSpecId = await getKromkaTypeByChar(kromkaAndZagl.kromkaId)
+    const kromkaPrimary = (await getKromkaPrimary(data, details, kromkaAndZagl.kromkaId))
+    const kromkaSecondary = await getKromkaSecondary(data, details, kromkaSpecId, kromkaAndZagl.kromkaId)
     result.push([SpecItem.DSP16, await getDSP(data, details)])
     result.push([SpecItem.Kromka2, kromkaPrimary])
     result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])

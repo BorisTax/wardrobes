@@ -3,12 +3,11 @@ import { emptyFullData } from "./functions"
 import { SpecItem } from "../../../types/specification"
 import { DETAIL_NAME, DVPData, Detail, KROMKA_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe"
 import { WardrobeData } from "../../../types/wardrobe"
-import { WardrobeDetailSchema } from "../../../types/schemas"
 import { getFineRange } from "./functions"
 import { getDSP } from "./functions"
 import { getCoef } from "./functions"
 import { calcFunction } from "./functions"
-import { getKromkaByDSP, getZagByDSP as getZagByDSP } from "../../routers/functions/dspEdgeZag"
+import { getKromkaAndZaglByDSP, getKromkaTypeByChar } from "../../routers/functions/dspEdgeZag"
 import { getFurniture, getTrempelByDepth } from "../../routers/functions/furniture"
 import { getDetailNames, getDetailsFromTable, getDVPTemplates } from "../../routers/functions/details"
 import {  getCharIdAndBrushSpecIdByProfileId } from "../../routers/functions/profiles"
@@ -20,18 +19,19 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     const karton = await getKarton(data)
     const skotch = data.wardTypeId === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
     const truba = await getTruba(data, details)
-    const kromka = await getKromkaByDSP(data.dspId)
-    const kromkaPrimary = (await getKromkaPrimary(data, details, kromka.kromkaId))
-    const kromkaSecondary = await getKromkaSecondary(data, details, kromka.kromkaSpecId, kromka.kromkaId)
+    const kromkaAndZagl = await getKromkaAndZaglByDSP(data.dspId)
+    const kromkaSpecId = await getKromkaTypeByChar(kromkaAndZagl.kromkaId)
+    const kromkaPrimary = (await getKromkaPrimary(data, details, kromkaAndZagl.kromkaId))
+    const kromkaSecondary = await getKromkaSecondary(data, details, kromkaSpecId, kromkaAndZagl.kromkaId)
     const {brushSpecId, profileCharId} = await getCharIdAndBrushSpecIdByProfileId(data.profileId)
     result.push([SpecItem.DSP16, await getDSP(data, details)])
     result.push([SpecItem.DVP, await getDVP(data)])
     result.push([SpecItem.Kromka2, kromkaPrimary])
-    result.push([kromka.kromkaSpecId, kromkaSecondary])
+    result.push([kromkaSpecId, kromkaSecondary])
     result.push([SpecItem.Confirmat, await getConfirmat(data, details)])
-    result.push([SpecItem.ZagConfirmat, await getZagConfirmat(data, details)])
+    result.push([SpecItem.ZagConfirmat, await getZagConfirmat(data, details, kromkaAndZagl.zaglushkaId)])
     result.push([SpecItem.Minifix, await getMinifix(data, details)])
-    result.push([SpecItem.ZagMinifix, await getZagMinifix(data, details)])
+    result.push([SpecItem.ZagMinifix, await getZagMinifix(data, details, kromkaAndZagl.zaglushkaId)])
     result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])
     result.push([SpecItem.PlankaDVP, await getDVPPlanka(data)])
     result.push([SpecItem.Leg, await getLegs(data)])
@@ -163,9 +163,8 @@ export async function getConfirmat(data: WardrobeData, details: Detail[]): Promi
     return { data: { amount: total, charId: 0 }, verbose: total ? verbose : undefined };
 }
 
-async function getZagConfirmat(data: WardrobeData, details: Detail[]): Promise<FullData> {
+async function getZagConfirmat(data: WardrobeData, details: Detail[], zaglushkaId: number): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullData()
-    const zaglushkaId = await getZagByDSP(data.dspId)
     const conf = await getConfirmat(data, details);
     return { data: { amount: conf.data.amount, charId: zaglushkaId } };
 }
@@ -185,9 +184,8 @@ export async function getMinifix(data: WardrobeData, details: Detail[]): Promise
     verbose.push(["", "", "Итого:", total]);
     return { data: { amount: total, charId: 0 }, verbose };
 }
-async function getZagMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
+async function getZagMinifix(data: WardrobeData, details: Detail[], zaglushkaId: number): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullData()
-    const zaglushkaId = await getZagByDSP(data.dspId)
     const conf = await getMinifix(data, details);
     return { data: { amount: conf.data.amount, charId: zaglushkaId } };
 }

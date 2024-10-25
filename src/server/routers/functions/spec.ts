@@ -11,7 +11,7 @@ import { getExtComplectSpecification } from "../../wardrobes/specifications/extC
 import { createFasades, getFasadSpecification } from "../../wardrobes/specifications/fasades"
 import { getProfiles } from "./profiles"
 import { AppState } from "../../../types/app"
-import { newFasadFromState } from "../../../functions/fasades"
+import { getFasadState } from "../../../functions/fasades"
 
 export async function getSpecList(): Promise<Result<SpecSchema>> {
   const service = new DataBaseService(getDataBaseProvider<SpecSchema>())
@@ -52,7 +52,7 @@ export async function getSpecData(data: WardrobeData, resetDetails: boolean, ver
   result.push({ type: CORPUS_SPECS.CORPUS, spec: corpus })
   for (let f of fasades) {
     const fasadSpec = await getFasadSpecification(f, profile as ProfileSchema, verbose)
-    result.push({ type: FasadSpecById[f.FasadType - 1], spec: fasadSpec })
+    result.push({ type: FasadSpecById[f.fasadType - 1], spec: fasadSpec })
   }
   const extSpec = await getExtComplectSpecification(data, verbose)
   for (let ext of extSpec) {
@@ -67,8 +67,7 @@ export async function getSpecCombiData(data: AppState, verbose = false): Promise
   const profiles = await getProfiles()
   const profile: ProfileSchema | undefined = profiles?.find(p => p.id === data.profile.id)
   if (!profile) return { success: false, status: StatusCodes.BAD_REQUEST, data: result }
-  const fasades = data.rootFasadesState.map(r => newFasadFromState(r))
-  for (let f of fasades) {
+  for (let f of data.rootFasades) {
     const fasadSpec = await getFasadSpecification(f, profile as ProfileSchema, verbose)
     //const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
     result.push(fasadSpec)

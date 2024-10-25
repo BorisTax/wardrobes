@@ -3,7 +3,7 @@ import React from "react";
 import { loadActiveUsersAtom, loadUsersAtom } from "./users";
 import { loadTemplateListAtom } from "./templates";
 import { activeRootFasadIndexAtom, setActiveFasadAtom } from "./fasades";
-import { appDataAtom } from "./app";
+import { combiStateAtom } from "./app";
 
 type MessageAtom = {
     dialogRef: React.RefObject<HTMLDialogElement> | null
@@ -48,7 +48,7 @@ export const specificationDialogAtom = atom<React.RefObject<HTMLDialogElement> |
 export const showSpecificationDialogAtom = atom(null, (get, set) => {
     const dialogRef = get(specificationDialogAtom)
     const index = get(activeRootFasadIndexAtom)
-    const appData = get(appDataAtom)
+    const appData = get(combiStateAtom)
     if (index < 0) set(setActiveFasadAtom, appData.rootFasades[0]) 
     dialogRef?.current?.showModal()
 })

@@ -1,22 +1,22 @@
-import Fasad from "../classes/Fasad";
+import FasadState from "../classes/FasadState";
 import { FASAD_TYPE } from "../types/enums";
 
-function combineFasadColors(fasad: Fasad, fasadType: FASAD_TYPE): Set<number> {
+function combineFasadColors(fasad: FasadState, fasadType: FASAD_TYPE): Set<number> {
     let colors = new Set<number>()
-    if (fasad.Children.length === 0) {
-        if (fasad.FasadType === fasadType) colors.add(fasad.MaterialId)
+    if (fasad.children.length === 0) {
+        if (fasad.fasadType === fasadType) colors.add(fasad.materialId)
         return colors
     }
-    fasad.Children.forEach((c: Fasad) => {
+    fasad.children.forEach((c: FasadState) => {
         const col = combineFasadColors(c, fasadType)
         colors = new Set([...colors, ...col])
     })
     return colors
 }
 
-export function combineColors(rootFasades: Fasad[], fasadType: FASAD_TYPE): Set<number> {
+export function combineColors(rootFasades: FasadState[], fasadType: FASAD_TYPE): Set<number> {
     let colors = new Set<number>()
-    rootFasades.forEach((r: Fasad) => {
+    rootFasades.forEach((r: FasadState) => {
         const col = combineFasadColors(r, fasadType)
         colors = new Set([...colors, ...col])
     })

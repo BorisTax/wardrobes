@@ -1,9 +1,7 @@
-import { AppData, AppState } from "../types/app"
+import { AppState } from "../types/app"
 import { ProfileType } from "../types/enums"
-import FasadState from "../classes/FasadState"
-import { getFasadState, newFasadFromState } from "./fasades"
+import { cloneFasad, getFasadState } from "./fasades"
 import { Division, FASAD_TYPE } from "../types/enums"
-import Fasad from "../classes/Fasad"
 import {  Detail, KROMKA_TYPE, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { Profile } from "../types/materials"
 
@@ -24,56 +22,38 @@ export function getFasadHeight(wardHeight: number, wardType: WARDROBE_TYPE, prof
     return wardHeight - offset
 }
 
-export function getAppDataFromState(state: AppState, keepOriginalMaterial = false): AppData {
-    const data: AppData = {
-        order: state.order,
-        wardHeight: state.wardHeight,
-        wardWidth: state.wardWidth,
-        fasadCount: state.fasadCount,
-        profile: state.profile,
-        type: state.type,
-        rootFasades: state.rootFasadesState.map((s: FasadState) => newFasadFromState(s, keepOriginalMaterial))
-    }
-    return data
-}
-
 export function getInitialAppState(): AppState {
     const wardWidth = 2400
     const wardHeight = 2400
     const fasadCount = 3
     const profile = {id: 0, type: ProfileType.STANDART}
     const wardTypeId = WARDROBE_TYPE.WARDROBE
-    return createAppState("", wardWidth, wardHeight, fasadCount, profile, wardTypeId, FASAD_TYPE.EMPTY, 0)
+    return createAppState(wardWidth, wardHeight, fasadCount, profile, wardTypeId, FASAD_TYPE.EMPTY, 0)
 }
 
-export function createAppState(order: string, wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardTypeId: WARDROBE_TYPE, fasadType = FASAD_TYPE.EMPTY, materialId = 0): AppState {
+export function createAppState(wardWidth: number, wardHeight: number, fasadCount: number, profile: Profile, wardTypeId: WARDROBE_TYPE, fasadType = FASAD_TYPE.EMPTY, materialId = 0): AppState {
     const fasadHeight = getFasadHeight(wardHeight, wardTypeId, profile.type)
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, wardTypeId, profile.type)
     const state: AppState = {
-        order,
         wardWidth,
         wardHeight,
         fasadCount,
         profile,
         type: wardTypeId,
-        rootFasadesState: new Array(fasadCount).fill(null).map(() => getFasadState(fasadWidth, fasadHeight, Division.HEIGHT, fasadType, materialId))
+        rootFasades: new Array(fasadCount).fill(null).map(() => getFasadState(fasadWidth, fasadHeight, Division.HEIGHT, fasadType, materialId))
     }
     return state
 }
 
-export function getAppState(data: AppData): AppState {
-    const state: AppState = {
-        order: data.order,
-        wardHeight: data.wardHeight,
-        wardWidth: data.wardWidth,
-        fasadCount: data.fasadCount,
-        profile: data.profile,
-        type: data.type,
-        rootFasadesState: data.rootFasades.map((f: Fasad) => f.getState())
+export function cloneAppState(state: AppState): AppState {
+    return JSON.parse(JSON.stringify(state))
+    const appState: AppState = {
+        ...state,
+        profile: { ...state.profile },
+        rootFasades: state.rootFasades.map(f => cloneFasad(f))
     }
-    return state
+    return appState
 }
-
 
 export function getFasadCount(data: WardrobeData): number {
     return Object.values(data.fasades).reduce((a, f) => f.count + a, 0);

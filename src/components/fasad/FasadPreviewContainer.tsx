@@ -1,17 +1,17 @@
 import { ReactElement, useLayoutEffect } from "react";
-import Fasad from "../../classes/Fasad";
+import FasadState from "../../classes/FasadState";
 import FasadSectionPreview from "./FasadSectionPreview";
 
 type FasadContainerProps = {
-    fasad: Fasad
+    fasad: FasadState
     refObject: React.RefObject<HTMLDivElement>
 }
 
 export default function FasadPreviewContainer(props: FasadContainerProps): ReactElement {
     const innerWidth = window.innerWidth
     const rootFasad = props.fasad
-    const ratio = rootFasad.Width / rootFasad.Height
-    const aspectRatio = `${rootFasad.Width}/${rootFasad.Height}`
+    const ratio = rootFasad.width / rootFasad.height
+    const aspectRatio = `${rootFasad.width}/${rootFasad.height}`
     const resize = (ratio: number) => {
         if (props.refObject.current) {
             props.refObject.current.style.width = props.refObject.current.offsetHeight * ratio + "px"

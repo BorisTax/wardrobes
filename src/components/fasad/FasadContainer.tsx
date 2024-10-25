@@ -1,7 +1,7 @@
 import { ReactElement, useLayoutEffect, useRef } from "react";
 import FasadSection from "./FasadSection";
 import { useAtomValue } from "jotai";
-import { appDataAtom } from "../../atoms/app";
+import { combiStateAtom } from "../../atoms/app";
 import { activeFasadAtom, activeRootFasadIndexAtom } from "../../atoms/fasades";
 
 type FasadContainerProps = {
@@ -9,12 +9,12 @@ type FasadContainerProps = {
 }
 
 export default function FasadContainer({ index }: FasadContainerProps): ReactElement {
-    const { rootFasades } = useAtomValue(appDataAtom)
+    const { rootFasades } = useAtomValue(combiStateAtom)
     const activeRootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
     const innerWidth = window.innerWidth
     const rootFasad = rootFasades[index]
-    const ratio = rootFasad.Width / rootFasad.Height
-    const aspectRatio = `${rootFasad.Width}/${rootFasad.Height}`
+    const ratio = rootFasad.width / rootFasad.height
+    const aspectRatio = `${rootFasad.width}/${rootFasad.height}`
     const activeFasad = useAtomValue(activeFasadAtom)
     const sectionRef = useRef<HTMLDivElement>(null)
     const activeClass = activeRootFasadIndex === index ? "fw-bold" : ""

@@ -1,14 +1,14 @@
 import { ReactElement, useEffect, useRef, useState } from "react";
 import Hammer from "hammerjs"
-import Fasad from "../../classes/Fasad";
+import FasadState from "../../classes/FasadState";
 import { Division } from "../../types/enums";
-import { Materials } from "../../functions/materials";
 import useDoubleClick from "../../custom-hooks/useDoubleClick";
 import { useAtomValue } from "jotai";
 import { materialListAtom } from "../../atoms/materials/chars";
 import { useMaterialMap } from "../../custom-hooks/useMaterialMap";
+import { getFasadCutHeight, getFasadCutWidth } from "../../functions/fasades";
 type FasadSectionProps = {
-    fasad: Fasad
+    fasad: FasadState
 }
 export default function FasadSchemaSection(props: FasadSectionProps): ReactElement {
     const [{ vertical, fontSize }, setState] = useState({ vertical: false, fontSize: "1rem" })
@@ -18,18 +18,18 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
     const materialList = useAtomValue(materialListAtom)
     const matMap = useMaterialMap(materialList)
     const fasad = props.fasad
-    const lastFasad = fasad.Children.length === 0
+    const lastFasad = fasad.children.length === 0
     let gridTemplate: {
         gridTemplateColumns: string;
         gridTemplateRows: string;
     } = { gridTemplateRows: "1fr", gridTemplateColumns: "1fr" };
     if (!lastFasad) {
-        const divHeight = fasad.Division === Division.HEIGHT
-        const total = divHeight ? fasad.Height : fasad.Width
-        const template = fasad.Children.map((f: Fasad) => `${(divHeight ? (f.Height + 1) / total : (f.Width + 1) / total).toFixed(3)}fr`).join(" ")
+        const divHeight = fasad.division === Division.HEIGHT
+        const total = divHeight ? fasad.height : fasad.width
+        const template = fasad.children.map((f: FasadState) => `${(divHeight ? (f.height + 1) / total : (f.width + 1) / total).toFixed(3)}fr`).join(" ")
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
-    let styles: object = fasad.Parent === null ? { height: "100%" } : {}
+    let styles: object = fasad.level === 0 ? { height: "100%" } : {}
     let events = {}
     let classes = ""
     const onZoom = (zoom: number, scale = 0.1) => {
@@ -65,9 +65,9 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
         padding: "0px",
     }
     const caption = <div ref={captionRef} style={captionStyle}>
-        {`${matMap.get(fasad.MaterialId)?.type} ${matMap.get(fasad.MaterialId)?.name} (${Math.floor(fasad.cutHeight)}x${Math.floor(fasad.cutWidth)})`}
+        {`${matMap.get(fasad.materialId)?.type} ${matMap.get(fasad.materialId)?.name} (${Math.floor(getFasadCutHeight(fasad))}x${Math.floor(getFasadCutWidth(fasad))})`}
     </div>
-    const contents = !lastFasad ? fasad.Children.map((f: Fasad, i: number) => <FasadSchemaSection key={i} fasad={f} />) : caption
+    const contents = !lastFasad ? fasad.children.map((f: FasadState, i: number) => <FasadSchemaSection key={i} fasad={f} />) : caption
     const [, setHammer] = useState<HammerManager | null>(null)
     
     useEffect(() => {

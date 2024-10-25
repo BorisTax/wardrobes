@@ -6,10 +6,11 @@ import { API_ROUTE, CHARS_ROUTE, IMAGE_ROUTE, MATERIALS_ROUTE, SPEC_TO_CHAR_ROUT
 import messages from "../../server/messages"
 import { FasadMaterial, OmitId } from "../../types/materials"
 import { TableFields } from "../../types/server"
-import Fasad from "../../classes/Fasad"
+import FasadState from "../../classes/FasadState"
 import { FASAD_TYPE } from "../../types/enums"
 import { CharsSchema, SpecToCharSchema } from "../../types/schemas"
 import { ExtMap, DefaultMap, makeExtMap } from "../storage"
+import { setFasadMaterialId, setFasadType } from "../../functions/fasades"
 
 export const charAtom = atom<ExtMap<CharsSchema>>(new Map());
 export const charArrayAtom = atom((get) => {
@@ -101,10 +102,10 @@ export const imageUrlAtom = atom((get) => {
     get(materialListAtom)
 })
 
-export function setInitialMaterials(rootFasades: Fasad[], fasadType: FASAD_TYPE, materialId: number) {
-    rootFasades.forEach((f: Fasad) => {
-        f.setMaterialId(materialId)
-        f.setFasadType(fasadType)
+export function setInitialMaterials(rootFasades: FasadState[], fasadType: FASAD_TYPE, materialId: number) {
+    rootFasades.forEach((f: FasadState) => {
+        setFasadMaterialId(f, materialId)
+        setFasadType(f, fasadType)
     })
 }
 

@@ -3,7 +3,7 @@ import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 import { useAtomValue, useSetAtom } from "jotai"
 import ComboBox from "./inputs/ComboBox"
-import { appDataAtom, historyAppAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setProfileIdAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"
+import { combiStateAtom, historyCombiAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setProfileIdAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"
 import useConfirm from "../custom-hooks/useConfirm"
 import ImageButton from "./inputs/ImageButton"
 import { userAtom } from "../atoms/users"
@@ -11,7 +11,8 @@ import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { WARDROBE_TYPE } from "../types/wardrobe"
 import { RESOURCE } from "../types/user"
-import { profileAtom, wardrobeTypesAtom } from "../atoms/storage"
+import { wardrobeTypesAtom } from "../atoms/storage"
+import { profileAtom } from "../atoms/materials/profiles"
 import { charAtom } from "../atoms/materials/chars"
 const fasades = [ 2, 3, 4, 5, 6]
 export default function WardrobePropertiesBar() {
@@ -19,7 +20,7 @@ export default function WardrobePropertiesBar() {
     const allWardTypes = useAtomValue(wardrobeTypesAtom)
     const profileList = useAtomValue(profileAtom)
     const chars = useAtomValue(charAtom)
-    const { profile, fasadCount, type, wardHeight, wardWidth } = useAtomValue(appDataAtom)
+    const { profile, fasadCount, type, wardHeight, wardWidth } = useAtomValue(combiStateAtom)
     const setProfileId = useSetAtom(setProfileIdAtom)
     const setFasadCount = useSetAtom(setFasadCountAtom)
     const setWardWidth = useSetAtom(setWardWidthAtom)
@@ -29,7 +30,7 @@ export default function WardrobePropertiesBar() {
     const resetAppData = useSetAtom(resetAppDataAtom)
     const saveState = useSetAtom(saveStateAtom)
     const openState = useSetAtom(openStateAtom)
-    const { next, previous } = useAtomValue(historyAppAtom)
+    const { next, previous } = useAtomValue(historyCombiAtom)
     const undo = useSetAtom(undoAtom)
     const redo = useSetAtom(redoAtom)
     const perm = user.permissions.get(RESOURCE.COMBIFASADES)

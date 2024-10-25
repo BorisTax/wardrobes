@@ -1,17 +1,17 @@
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
-import Fasad from "../../classes/Fasad";
+import FasadState from "../../classes/FasadState";
 import { Division, FASAD_TYPE } from "../../types/enums";
 import { useImageUrl } from "../../custom-hooks/useImage";
 import { FasadBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";
 type FasadSectionProps = {
-    fasad: Fasad
+    fasad: FasadState
 }
 export default function FasadSectionPreview(props: FasadSectionProps): ReactElement {
     const fasad = props.fasad
     const adjustImage = hasFasadImage(fasad)
-    const onlyFasad = fasad.Children.length === 0
-    const backImageProps = fasad.BackImageProps
+    const onlyFasad = fasad.children.length === 0
+    const backImageProps = fasad.backImageProps
     if (!adjustImage) {
         backImageProps.top = 0
         backImageProps.left = 0
@@ -19,7 +19,7 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
     }
     const [{ top, left, size, repeat }, setBackImagePosition] = useState({...backImageProps })
     useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [backImageProps])
-    const imageUrl = useImageUrl(fasad.MaterialId)
+    const imageUrl = useImageUrl(fasad.materialId)
     const fasadRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
     let gridTemplate: {
@@ -27,12 +27,12 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
         gridTemplateRows: string;
     } = { gridTemplateRows: "1fr", gridTemplateColumns: "1fr" };
     if (!onlyFasad) {
-        const divHeight = fasad.Division === Division.HEIGHT
-        const total = divHeight ? fasad.Height : fasad.Width
-        const template = fasad.Children.map((f: Fasad) => `${(divHeight ? (f.Height + 1) / total : (f.Width + 1) / total).toFixed(3)}fr`).join(" ")
+        const divHeight = fasad.division === Division.HEIGHT
+        const total = divHeight ? fasad.height : fasad.width
+        const template = fasad.children.map((f: FasadState) => `${(divHeight ? (f.height + 1) / total : (f.width + 1) / total).toFixed(3)}fr`).join(" ")
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
-    let styles: object = fasad.Parent === null ? { height: "100%" } : {}
+    let styles: object = fasad.level === 0 ? { height: "100%" } : {}
     let classes = ""
     if (onlyFasad) {
         styles = {
@@ -55,7 +55,7 @@ export default function FasadSectionPreview(props: FasadSectionProps): ReactElem
             backgroundImage: ""
         }
     }
-    const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSectionPreview key={i} fasad={f} />) : ""
+    const contents = fasad.children.length > 1 ? fasad.children.map((f: FasadState, i: number) => <FasadSectionPreview key={i} fasad={f} />) : ""
     useEffect(() => {
         const image = new Image()
         const imageSrc = imageUrl

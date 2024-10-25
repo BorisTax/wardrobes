@@ -6,12 +6,14 @@ import * as  html2image from 'html-to-image'
 import download from 'downloadjs'
 import jsPDF from 'jspdf'
 import { rerenderDialogAtom } from "../../atoms/dialogs"
-import { appDataAtom } from "../../atoms/app"
+import { combiStateAtom } from "../../atoms/app"
 import { combineColors } from "../../functions/schema"
 import { FASAD_TYPE } from "../../types/enums"
-import Fasad from '../../classes/Fasad'
+import FasadState from '../../classes/FasadState'
 import FasadSchemaSection from '../fasad/FasadSchemaSection'
 import ImageButton from '../inputs/ImageButton'
+import { profileAtom } from '../../atoms/materials/profiles'
+import { charAtom } from '../../atoms/materials/chars'
 
 export default function SchemaDialog() {
     const rerender = useAtomValue(rerenderDialogAtom)
@@ -20,16 +22,19 @@ export default function SchemaDialog() {
     const sheetRef = useRef<HTMLDivElement>(null)
     const containerRef = useRef<HTMLDivElement>(null)
     const orderRef = useRef<HTMLDivElement>(null)
-    const { rootFasades, fasadCount, order, profile, wardHeight, wardWidth } = useAtomValue(appDataAtom)
-    const totalWidth = rootFasades.reduce((prev, r: Fasad) => r.Width + prev, 0) + 5
-    const ratio = totalWidth / rootFasades[0].Height
+    const { rootFasades, fasadCount, profile, wardHeight, wardWidth } = useAtomValue(combiStateAtom)
+    const profiles = useAtomValue(profileAtom)
+    const chars = useAtomValue(charAtom)
+    const totalWidth = rootFasades.reduce((prev, r: FasadState) => r.width + prev, 0) + 5
+    const ratio = totalWidth / rootFasades[0].height
     const DSPColors = [...combineColors(rootFasades, FASAD_TYPE.DSP)].join(", ")
     const mirrorColors = [...combineColors(rootFasades, FASAD_TYPE.MIRROR)].join(", ")
-    const lacobelColors = [...combineColors(rootFasades, FASAD_TYPE.LACOBEL), ...combineColors(rootFasades, FASAD_TYPE.LACOBELGLASS)].join(", ")
+    const lacobelColors = [...combineColors(rootFasades, FASAD_TYPE.LACOBEL)].join(", ")
     const sandColors = [...combineColors(rootFasades, FASAD_TYPE.SAND)].join(", ")
     const FMPColors = [...combineColors(rootFasades, FASAD_TYPE.FMP)].join(", ")
     const viewStyle = { display: "grid", gridTemplateColumns: new Array(fasadCount).fill("1fr").join(' '), gap: "10px" }
     const fasades = rootFasades.map((r, index) => <FasadSchemaSection key={index} fasad={r} />)
+    const profileName = chars.get(profiles.get(profile.id)?.charId || 0)?.name
     useLayoutEffect(() => {
         if (tableRef.current && orderRef.current && containerRef.current) {
             const height = tableRef.current.offsetHeight - orderRef.current.offsetHeight
@@ -61,7 +66,7 @@ export default function SchemaDialog() {
                     <div className="schema-container">
                         <div className='schema-left'>
                             <div ref={orderRef} className='schema-order'>
-                                {order || " "}
+                                {" "}
                             </div>
                             <div ref={containerRef} className={`schema-view-container`}>
                                 <div ref={viewRef} className='schema-view' style={viewStyle}>
@@ -92,7 +97,7 @@ export default function SchemaDialog() {
                             <div className='schema-table-row'>{`9. Тремпеледержатель:`}</div>
                             <div className='schema-table-row'>{`10. Стойка:`}</div>
                             <div>{`5. Фасад (кол-во):`}<span className='schema-table-data'>{fasadCount}</span></div>
-                            <div className='schema-table-row'>{`1. Цвет профиля:`}<span className='schema-table-data'>{profile.name}</span></div>
+                            <div className='schema-table-row'>{`1. Цвет профиля:`}<span className='schema-table-data'>{profileName}</span></div>
                             <div className='schema-table-row'>{`2. Цвет зеркала:`}<span className='schema-table-data'>{mirrorColors}</span></div>
                             <div className='schema-table-row'>{`3. Основа:`}<span className='schema-table-data'>{""}</span></div>
                             <div className='schema-table-row'>{`4. Рисунок:`}<span className='schema-table-data'>{sandColors}</span></div>

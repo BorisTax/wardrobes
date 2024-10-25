@@ -11,8 +11,6 @@ import { TEMPLATE_TABLES } from "../../types/enums"
 import FasadState from "../../classes/FasadState"
 import { Template } from "../../types/templates"
 import FasadPreviewContainer from "../fasad/FasadPreviewContainer"
-import Fasad from "../../classes/Fasad"
-import { newFasadFromState } from "../../functions/fasades"
 import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
 
@@ -25,7 +23,7 @@ export default function FasadTemplatesDialog() {
     const templates = useAtomValue(templateListAtom)
     const [curTemplate, setTemplate] = useState(templates[0])
     const data: FasadState = curTemplate ? JSON.parse(curTemplate.data) : null
-    const fasad: Fasad | null = data ? newFasadFromState(data) : null
+    const fasad: FasadState | null = data 
     const [newName, setNewName] = useState((curTemplate && curTemplate.name) || "")
     const addTemplate = useSetAtom(addFasadTemplateAtom)
     const deleteTemplate = useSetAtom(deleteTemplateAtom)

@@ -4,7 +4,7 @@ import { fetchData, fetchGetData } from "../functions/fetch"
 import { PermissionSchema, UserPermissions, RESOURCE, UserData, UserLoginResult, UserRole } from "../types/user"
 import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
 import { API_ROUTE, USERS_ROUTE, VERIFY_ROUTE } from "../types/routes"
-import { DefaultMap, loadAllDataAtom, makeDefaultMap } from "./storage"
+import { DefaultMap, loadAllDataAtom, loadedInitialWardrobeDataAtom, makeDefaultMap } from "./storage"
 import { loadInitialCombiStateAtom } from "./app"
 import { loadResourceListAtom } from "./permissions"
 
@@ -70,10 +70,12 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         set(userAtomPrivate, getInitialUser())
         set(closeEventSourceAtom)
     }
-    set(loadAllDataAtom, token, storeUser.permissions)
-    set(loadInitialCombiStateAtom)
-    if (storeUser.permissions.get(RESOURCE.USERS)?.Read) { 
-        set(loadUserRolesAtom) 
+    if (prevToken !== token) {
+        set(loadInitialCombiStateAtom)
+    }
+    if (!get(loadedInitialWardrobeDataAtom)) set(loadAllDataAtom, token, storeUser.permissions)
+    if (storeUser.permissions.get(RESOURCE.USERS)?.Read) {
+        set(loadUserRolesAtom)
         set(loadResourceListAtom)
     }
     set(setTimerAtom)

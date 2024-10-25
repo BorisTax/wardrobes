@@ -1,14 +1,14 @@
 import { ReactElement, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
-import { appDataAtom } from "../../atoms/app";
+import { combiStateAtom } from "../../atoms/app";
 import FasadContainer from "./FasadContainer";
-import Fasad from "../../classes/Fasad";
+import FasadState from "../../classes/FasadState";
 import { isLandscape } from "../../functions/functions";
 
 export default function RootFasadesContainer(): ReactElement {
     const [, rerender] = useState(0)
-    const [{ rootFasades }] = useAtom(appDataAtom)
-    const ratio = rootFasades[0].Width / rootFasades[0].Height
+    const [{ rootFasades }] = useAtom(combiStateAtom)
+    const ratio = rootFasades[0].width / rootFasades[0].height
     const rootFasadesContainerRef = useRef<HTMLDivElement>(null)
     const fasadContainers = rootFasades.map((_, i: number) => <FasadContainer key={i} index={i} />)
     const innerWidth = window.innerWidth
@@ -29,7 +29,7 @@ export default function RootFasadesContainer(): ReactElement {
 
 
 
-const resize = (ratio: number, rootFasades: Fasad[], rootFasadesContainerRef: React.RefObject<HTMLDivElement>) => {
+const resize = (ratio: number, rootFasades: FasadState[], rootFasadesContainerRef: React.RefObject<HTMLDivElement>) => {
     if (!rootFasadesContainerRef.current) return
     const propertiesContainer = document.querySelector('.properties-container') as HTMLDivElement
     const mainContainer = document.querySelector('.combifasades-container') as HTMLDivElement

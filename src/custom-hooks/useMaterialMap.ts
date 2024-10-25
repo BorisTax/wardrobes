@@ -1,5 +1,6 @@
 import { useMemo } from "react"
-import { KromkaType, FasadMaterial, ProfileSchema } from "../types/materials"
+import { FasadMaterial } from "../types/materials"
+import { ProfileSchema } from "../types/schemas"
 
 export function useMaterialMap(materialList: FasadMaterial[]): Map<number, FasadMaterial> {
     return useMemo(() => {
@@ -9,21 +10,21 @@ export function useMaterialMap(materialList: FasadMaterial[]): Map<number, Fasad
     }, [materialList])
 }
 
-export function useProfileNamesMap(profileList: ProfileSchema[]) {
-    return useMemo(() => {
-        const m = new Map()
-        profileList.forEach(mat => m.set(mat.id, mat.name))
-        return m 
-    }, [profileList])
-}
+// export function useProfileNamesMap(profileList: ProfileSchema[]) {
+//     return useMemo(() => {
+//         const m = new Map()
+//         profileList.forEach(mat => m.set(mat.id, mat.name))
+//         return m 
+//     }, [profileList])
+// }
 
-export function useEdgeTypeMap(edgeTypeList: KromkaType[]) {
-    return useMemo(() => {
-        const m = new Map()
-        edgeTypeList.forEach(mat => m.set(mat.id, mat.caption))
-        return m 
-    }, [edgeTypeList])
-}
+// export function useEdgeTypeMap(edgeTypeList: KromkaType[]) {
+//     return useMemo(() => {
+//         const m = new Map()
+//         edgeTypeList.forEach(mat => m.set(mat.id, mat.caption))
+//         return m 
+//     }, [edgeTypeList])
+// }
 
 export function useMapValue<T extends { id: number }>(list: T[], getValue: (value: T) => string) {
     return useMemo(() => {

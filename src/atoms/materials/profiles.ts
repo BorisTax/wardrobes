@@ -8,7 +8,12 @@ import messages from "../../server/messages";
 import { RESOURCE } from "../../types/user";
 import { API_ROUTE } from "../../types/routes";
 import { ProfileSchema } from "../../types/schemas";
+import { ExtMap, DefaultMap } from "../storage";
 const initProfile: ProfileSchema = { id: -1, charId: 0, type: ProfileType.STANDART, brushSpecId: 0 }
+
+export const profileAtom = atom<ExtMap<ProfileSchema>>(new Map());
+export const profileTypeAtom = atom<DefaultMap>(new Map());
+
 export const profileListAtom = atom<ProfileSchema[]>([initProfile])
 export const activeProfileIndexAtom = atom(0)
 
@@ -71,4 +76,5 @@ export const updateProfileAtom = atom(null, async (get, set, { id, name, type, c
         console.error(e) 
         return { success: false, message: messages.QUERY_ERROR }
     }
-})
+});
+

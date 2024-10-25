@@ -1,15 +1,13 @@
-import Fasad from "../classes/Fasad"
+import FasadState from "../classes/FasadState"
 import ComboBox from "./inputs/ComboBox"
-import { MAT_PURPOSE, Division, FASAD_TYPE } from "../types/enums"
+import { Division, FASAD_TYPE } from "../types/enums"
 import { PropertyType } from "../types/property"
 import PropertyGrid from "./PropertyGrid"
 import PropertyRow from "./PropertyRow"
 import ToggleButton from "./inputs/ToggleButton"
-import { FasadMaterial } from "../types/materials"
 import ImageButton from "./inputs/ImageButton"
 import { useAtomValue, useSetAtom } from "jotai"
 import { activeFasadAtom, divideFasadAtom, setActiveFasadAtom, setMaterialIdAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setFasadTypeAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
-import { materialListAtom } from "../atoms/materials/chars"
 import { userAtom } from "../atoms/users"
 import { settingsAtom } from "../atoms/settings"
 import { copyFasadDialogAtom, showSpecificationDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
@@ -17,22 +15,24 @@ import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { RESOURCE } from "../types/user"
 import { useNavigate } from "react-router-dom"
-import { getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
+import { getFasadCutHeight, getFasadCutWidth, getFasadParent, getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
 import { fasadTypesAtom, fasadTypesToCharAtom } from "../atoms/storage"
 import { charAtom } from "../atoms/materials/chars"
+import { combiStateAtom } from "../atoms/app"
 const sectionsTemplate = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const directions: Map<Division, string> = new Map()
 export default function PropertiesBar() {
-    const navigate = useNavigate()
     const { permissions } = useAtomValue(userAtom)
     const permSpec = permissions.get(RESOURCE.SPECIFICATION)
     const permTemp = permissions.get(RESOURCE.TEMPLATE)
     const fasad = useAtomValue(activeFasadAtom)
+    const { rootFasades } = useAtomValue(combiStateAtom)
+    const fasadParent = getFasadParent(rootFasades, fasad?.parentId)
     const { minSize } = useAtomValue(settingsAtom)
     const fasadTypes = useAtomValue(fasadTypesAtom)
     const fasadTypeToChar = useAtomValue(fasadTypesToCharAtom)
     const chars = useAtomValue(charAtom)
-    const { width, height, materialId, fasadType, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad)
+    const { width, height, materialId, fasadType, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth } = getProperties(fasad, rootFasades)
     const materials = useMemo(() => {
         const filtered=fasadTypeToChar.filter(ft => ft.id === fasadType)
         const sorted = (fasadType === FASAD_TYPE.DSP || fasadType === FASAD_TYPE.LACOBEL) ? filtered.toSorted((f1, f2) => (chars.get(f1.charId)?.name || "") > (chars.get(f2.charId)?.name || "") ? 1 : -1) : filtered;
@@ -51,8 +51,8 @@ export default function PropertiesBar() {
     const copyFasadDialogRef =  useAtomValue(copyFasadDialogAtom)
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
     const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
-    const totalWidthRatio = getTotalFasadWidthRatio(fasad)
-    const totalHeightRatio = getTotalFasadHeightRatio(fasad)
+    const totalWidthRatio = getTotalFasadWidthRatio(fasadParent)
+    const totalHeightRatio = getTotalFasadHeightRatio(fasadParent)
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}> 
         <div className="property-bar-header">
             Параметры фасада
@@ -65,7 +65,7 @@ export default function PropertiesBar() {
                 {permTemp?.Create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(true) }} />}
                 {permTemp?.Read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(false) }} />}
                 {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />}
-                <ImageButton title="Перейти на уровень вверх" icon="selectParent" onClick={() => { setActiveFasad(fasad ? fasad.Parent : null) }} disabled={((fasad === null) || (fasad.Parent === null))} />
+                <ImageButton title="Перейти на уровень вверх" icon="selectParent" onClick={() => { setActiveFasad(fasadParent) }} disabled={((fasad === null) || (fasad?.level === 0))} />
             </div>
         </div>
         <hr />
@@ -74,7 +74,7 @@ export default function PropertiesBar() {
             <PropertyRow>
                 <TextBox value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} />
                 {totalHeightRatio > 0 && !fixHeight &&
-                    <span>{`${fasad?.HeightRatio}/${totalHeightRatio}`}</span>
+                    <span>{`${fasad?.heightRatio}/${totalHeightRatio}`}</span>
                 }
                 <ToggleButton pressed={fixHeight} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать высоту" visible={!disabledFixHeight} onClick={() => { setFixedHeight(!fixHeight) }} />
             </PropertyRow>
@@ -82,7 +82,7 @@ export default function PropertiesBar() {
             <PropertyRow>
                 <TextBox value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth} />
                 {totalWidthRatio > 0 && !fixWidth &&
-                    <span>{`${fasad?.WidthRatio}/${totalWidthRatio}`}</span>
+                    <span>{`${fasad?.widthRatio}/${totalWidthRatio}`}</span>
                 }
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" visible={!disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
             </PropertyRow>
@@ -94,25 +94,26 @@ export default function PropertiesBar() {
     </div>
 }
 
-function getProperties(fasad: Fasad | null) {
-    const width = fasad?.cutWidth || 0
-    const height = fasad?.cutHeight || 0
-    const materialId = fasad?.MaterialId || 0
-    const fasadType = fasad?.FasadType || 0
+function getProperties(fasad: FasadState | undefined, rootFasades: FasadState[]) {
+    const width = getFasadCutWidth(fasad)
+    const height = getFasadCutHeight(fasad)
+    const materialId = fasad?.materialId || 0
+    const fasadType = fasad?.fasadType || 0
     directions.clear()
     if (fasad) {
         directions.set(Division.WIDTH, "Вертикально")
         directions.set(Division.HEIGHT, "Горизонтально")
     }
-    const direction = fasad?.Division 
-    const sectionCount = (fasad && (fasad.Children.length > 1)) ? fasad.Children.length : 1
-    const fixWidth = fasad?.FixedWidth() || false
-    const fixHeight = fasad?.FixedHeight() || false
-    let disabledWidth = !fasad || !fasad.Parent || fasad.FixedWidth()
-    let disabledHeight = !fasad || !fasad.Parent || fasad.FixedHeight()
-    const disabledFixWidth = !fasad || !fasad.Parent || (fasad.Level === 1 && fasad.Parent.Division === Division.HEIGHT)
-    const disabledFixHeight = !fasad || !fasad.Parent || (fasad.Level === 1 && fasad.Parent.Division === Division.WIDTH)
-    disabledWidth = disabledWidth || !!(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.HEIGHT)
-    disabledHeight = disabledHeight || !!(fasad?.Parent && fasad.Level <= 1 && fasad.Parent.Division === Division.WIDTH)
+    const direction = fasad?.division 
+    const sectionCount = (fasad && (fasad.children.length > 1)) ? fasad.children.length : 1
+    const fixWidth = fasad?.fixedWidth || false
+    const fixHeight = fasad?.fixedHeight || false
+    let disabledWidth = !fasad || fasad.level === 0 || fasad.fixedWidth
+    let disabledHeight = !fasad || fasad.level === 0 || fasad.fixedHeight
+    const parent = getFasadParent(rootFasades, fasad?.parentId)
+    const disabledFixWidth = !fasad || fasad.level === 0 || (fasad.level === 1 && parent?.division === Division.HEIGHT)
+    const disabledFixHeight = !fasad || fasad.level === 0 || (fasad.level === 1 && parent?.division === Division.WIDTH)
+    disabledWidth = disabledWidth || !!(fasad && fasad.level <= 1 && parent?.division === Division.HEIGHT)
+    disabledHeight = disabledHeight || !!(fasad && fasad.level <= 1 && parent?.division === Division.WIDTH)
     return { width, height, materialId, fasadType, direction, directions, sectionCount, fixHeight, fixWidth, disabledWidth, disabledHeight, disabledFixHeight, disabledFixWidth }
 }

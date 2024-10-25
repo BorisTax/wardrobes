@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import writeToExcel, { ColumnSchema } from 'write-excel-file';
-import { appDataAtom } from "./app";
+import { combiStateAtom } from "./app";
 import { SpecificationResult } from "../types/wardrobe";
 import { unitsAtom } from "./storage";
 import { charAtom } from "./materials/chars";
@@ -11,8 +11,6 @@ export const saveToExcelAtom = atom(null, async (get, set, specification: Specif
     const spec = get(specListAtom)
     const chars = get(charAtom)
     const unitsData = get(unitsAtom)
-    const { order } = get(appDataAtom)
-    const orderCaption = order.trim() ? order.trim() + " " : ""
     const specList: OutputSpecSchema[] = []
     specification.filter(s => s[1].data.amount > 0).forEach(sp => {
             const specCode = spec.get(sp[0])?.code || ""
@@ -38,6 +36,6 @@ export const saveToExcelAtom = atom(null, async (get, set, specification: Specif
             fontWeight: 'bold',
             align: 'center',
             borderStyle: "thin",
-        }, fileName: `${orderCaption}${fileName}.xlsx`
+        }, fileName: `${fileName}.xlsx`
     })
 })

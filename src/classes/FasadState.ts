@@ -1,5 +1,5 @@
+import { getId } from "../functions/fasades"
 import { Division, FASAD_TYPE } from "../types/enums"
-import { FasadEmptyMaterial, FasadMaterial } from "../types/materials"
 
 export type FasadBackImageProps = {
     top: number
@@ -12,6 +12,7 @@ export function getInitialBackImageProps(): FasadBackImageProps {
     return { top: 0, left: 0, size: 100, repeat: true }
 }
 export default class FasadState {
+    public id: string
     public active = false
     public level = 0
     public width = 0
@@ -23,8 +24,11 @@ export default class FasadState {
     public outerEdges: {left: boolean, right: boolean, top: boolean, bottom: boolean} = {left: true, right: true, top: true, bottom: true}
     public materialId: number = -1
     public fasadType: FASAD_TYPE = FASAD_TYPE.DSP
-    public extMaterial = ''
     public division: Division = Division.HEIGHT
     public children: FasadState[] = []
+    public parentId: string | undefined
     public backImageProps: FasadBackImageProps = getInitialBackImageProps()
+    constructor() {
+        this.id = getId()
+    }
 }

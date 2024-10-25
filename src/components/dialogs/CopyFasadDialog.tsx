@@ -3,13 +3,13 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { copyFasadDialogAtom } from "../../atoms/dialogs"
 import DialogWindow from "./DialogWindow"
 import { activeRootFasadIndexAtom, copyFasadAtom } from "../../atoms/fasades"
-import { appDataAtom } from "../../atoms/app"
+import { combiStateAtom } from "../../atoms/app"
 
 export default function CopyFasadDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const setCopyFasadDialogRef = useSetAtom(copyFasadDialogAtom)
     const activeRootFasadIndex = useAtomValue(activeRootFasadIndexAtom)
-    const { fasadCount } = useAtomValue(appDataAtom)
+    const { fasadCount } = useAtomValue(combiStateAtom)
     const copyFasad = useSetAtom(copyFasadAtom)
     const contents = (new Array(fasadCount)).fill(0)
         .map((_, index) => index + 1)

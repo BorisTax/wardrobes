@@ -12,7 +12,7 @@ export default function CombiFasades() {
         <div className="main-container">
         {!isMobile() ? <StatusBar /> : <></>}
             <div className="combifasades-container" onClick={() => {
-                setActiveFasad(null);
+                setActiveFasad();
                 }}>
                 <div className='properties-container'>
                     <WardrobePropertiesBar />

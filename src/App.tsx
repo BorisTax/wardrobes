@@ -21,8 +21,8 @@ import {  userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
 import { AppState } from './types/app'
-import { getAppDataFromState, getInitialAppState } from './functions/wardrobe'
-import { appDataAtom, loadInitialCombiStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
+import { getInitialAppState } from './functions/wardrobe'
+import { combiStateAtom, loadInitialCombiStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import EditUsersDialog from './components/dialogs/editUserDialogs/EditUsersDialog'
 import SettingsDialog from './components/dialogs/SettingsDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
@@ -38,17 +38,17 @@ import LoadIndicator from './components/LoadIndicator'
 
 function App() {
   const user = useAtomValue(userAtom)
-  const setAppData = useSetAtom(appDataAtom)
+  const setAppData = useSetAtom(combiStateAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
   const loadInitialAppState = useSetAtom(loadInitialCombiStateAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
-    const storage = localStorage.getItem('appState')
+    const storage = localStorage.getItem('combiState')
     const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
-    setAppData(getAppDataFromState(appState), false)
+    setAppData(appState, false)
     loadInitialAppState()
     loadVersion()
-  }, [user.name, setAppData, loadInitialAppState, loadVersion])
+  }, [user.name])
   useEffect(() => {
     const onContextMenu = (e: Event) => { e.preventDefault() }
     const onBeforeUnload = () => { saveToStorage() }

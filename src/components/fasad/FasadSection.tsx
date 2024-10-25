@@ -1,5 +1,5 @@
 import { MouseEvent, ReactElement, WheelEvent, useEffect, useMemo, useRef, useState } from "react";
-import Fasad from "../../classes/Fasad";
+import FasadState from "../../classes/FasadState";
 import { Division, FASAD_TYPE } from "../../types/enums";
 import FixedHeight from "./FixedHeight";
 import FixedWidth from "./FixedWidth";
@@ -11,16 +11,16 @@ import { settingsAtom } from "../../atoms/settings";
 import { FasadBackImageProps, getInitialBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";
 type FasadSectionProps = {
-    fasad: Fasad
-    rootFasad: Fasad
-    activeFasad: Fasad | null
+    fasad: FasadState
+    rootFasad: FasadState
+    activeFasad?: FasadState
 }
 export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fasad = props.fasad
     const adjustImage = hasFasadImage(fasad)
-    const onlyFasad = fasad.Children.length === 0
+    const onlyFasad = fasad.children.length === 0
     const activeFasad = props.activeFasad
-    const backImageProps = fasad.BackImageProps
+    const backImageProps = fasad.backImageProps
     if (!adjustImage) {
         backImageProps.top = 0
         backImageProps.left = 0
@@ -30,7 +30,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [fasad, backImageProps.top, backImageProps.left, backImageProps.size, backImageProps.repeat])
     const { showFixIcons } = useAtomValue(settingsAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
-    const imageUrl = useImageUrl(fasad.MaterialId)
+    const imageUrl = useImageUrl(fasad.materialId)
     const fasadRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
     let gridTemplate: {
@@ -38,12 +38,12 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         gridTemplateRows: string;
     } = { gridTemplateRows: "1fr", gridTemplateColumns: "1fr" };
     if (!onlyFasad) {
-        const divHeight = fasad.Division === Division.HEIGHT
-        const total = divHeight ? fasad.Height : fasad.Width
-        const template = fasad.Children.map((f: Fasad) => `${(divHeight ? (f.Height + 1) / total : (f.Width + 1) / total).toFixed(3)}fr`).join(" ")
+        const divHeight = fasad.division === Division.HEIGHT
+        const total = divHeight ? fasad.height : fasad.width
+        const template = fasad.children.map((f: FasadState) => `${(divHeight ? (f.height + 1) / total : (f.width + 1) / total).toFixed(3)}fr`).join(" ")
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
-    let styles: object = fasad.Parent === null ? { height: "100%" } : {}
+    let styles: object = fasad.level === 0 ? { height: "100%" } : {}
     styles = { ...styles, boxShadow: (fasad === activeFasad) ? "inset 0px 0px 10px red" : "" }
     let events = {}
     let classes = ""
@@ -72,7 +72,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
                 if (e.button === 1) {
                     const initProps = getInitialBackImageProps()
                     setBackImagePosition(prev => ({ ...prev, ...initProps }))
-                    fasad.BackImageProps = {...initProps}
+                    fasad.backImageProps = {...initProps}
                     return
                 }
                 if (e.button !== 0) return
@@ -91,12 +91,12 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
                 if(!adjustImage) return
                 if (e.button !== 0) return true; 
                 setBackImagePosition(prev => ({ ...prev, drag: false })) 
-                fasad.BackImageProps = {top, left, size, repeat}
+                fasad.backImageProps = {top, left, size, repeat}
             },
             onMouseLeave: () => { 
                 if(!adjustImage) return
                 setBackImagePosition(prev => ({ ...prev, drag: false }))
-                fasad.BackImageProps = {top, left, size, repeat}
+                fasad.backImageProps = {top, left, size, repeat}
             },
 
         }
@@ -109,11 +109,11 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             backgroundImage: ""
         }
     }
-    const fixedHeight = fasad.Children.length === 0 && fasad.FixedHeight() && showFixIcons
-    const fixedWidth = fasad.Children.length === 0 && fasad.FixedWidth() && showFixIcons
+    const fixedHeight = fasad.children.length === 0 && fasad.fixedHeight && showFixIcons
+    const fixedWidth = fasad.children.length === 0 && fasad.fixedWidth && showFixIcons
     const fixedBoth = fixedHeight && fixedWidth
     const fixed = fixedBoth ? <FixedBoth /> : fixedHeight ? <FixedHeight /> : fixedWidth ? <FixedWidth /> : <></>
-    const contents = fasad.Children.length > 1 ? fasad.Children.map((f: Fasad, i: number) => <FasadSection key={i} fasad={f} activeFasad={props.activeFasad} rootFasad={props.rootFasad}/>) : ""
+    const contents = fasad.children.length > 1 ? fasad.children.map((f: FasadState, i: number) => <FasadSection key={i} fasad={f} activeFasad={props.activeFasad} rootFasad={props.rootFasad}/>) : ""
 
     useEffect(() => {
         const image = new Image()
@@ -144,7 +144,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
                 const pSize = typeof prev.size === "string" ? 100 : prev.size;
                 return ({ ...prev, size: pSize * scale, top: top + dy * (1 - scale), left: left + dx * (1 - scale) })
             })
-            fasad.BackImageProps = { top, left, size, repeat }
+            fasad.backImageProps = { top, left, size, repeat }
         }
         // @ts-ignore
         fasadRef.current?.addEventListener("wheel", onWheel, { passive: false })

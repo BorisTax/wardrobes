@@ -1,4 +1,5 @@
 import { AppState } from "../types/app";
+import { excludeFasadParent } from "./fasades";
 export async function openFile() {
     return new Promise<{ result: boolean, filename?: string, file?: Blob }>((resolve) => {
         const input: HTMLInputElement = document.createElement('input');
@@ -33,7 +34,8 @@ export async function readFile(file: Blob) {
 }
 
 export function saveState(state: AppState) {
-    const project = { version: 1.0, state }
+    const rootFasades = state.rootFasades.map(r => excludeFasadParent(r))
+    const project = { version: 1.0, state: { ...state, rootFasades } }
     const contents = JSON.stringify(project);
     saveFile(contents, "project.json")
 }

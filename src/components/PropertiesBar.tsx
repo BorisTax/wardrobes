@@ -15,7 +15,7 @@ import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { RESOURCE } from "../types/user"
 import { useNavigate } from "react-router-dom"
-import { getFasadCutHeight, getFasadCutWidth, getFasadParent, getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
+import { getFasadCutHeight, getFasadCutWidth, getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
 import { fasadTypesAtom, fasadTypesToCharAtom } from "../atoms/storage"
 import { charAtom } from "../atoms/materials/chars"
 import { combiStateAtom } from "../atoms/app"
@@ -27,7 +27,7 @@ export default function PropertiesBar() {
     const permTemp = permissions.get(RESOURCE.TEMPLATE)
     const fasad = useAtomValue(activeFasadAtom)
     const { rootFasades } = useAtomValue(combiStateAtom)
-    const fasadParent = getFasadParent(rootFasades, fasad?.parentId)
+    const fasadParent = fasad?.parent
     const { minSize } = useAtomValue(settingsAtom)
     const fasadTypes = useAtomValue(fasadTypesAtom)
     const fasadTypeToChar = useAtomValue(fasadTypesToCharAtom)
@@ -110,7 +110,7 @@ function getProperties(fasad: FasadState | undefined, rootFasades: FasadState[])
     const fixHeight = fasad?.fixedHeight || false
     let disabledWidth = !fasad || fasad.level === 0 || fasad.fixedWidth
     let disabledHeight = !fasad || fasad.level === 0 || fasad.fixedHeight
-    const parent = getFasadParent(rootFasades, fasad?.parentId)
+    const parent = fasad?.parent
     const disabledFixWidth = !fasad || fasad.level === 0 || (fasad.level === 1 && parent?.division === Division.HEIGHT)
     const disabledFixHeight = !fasad || fasad.level === 0 || (fasad.level === 1 && parent?.division === Division.WIDTH)
     disabledWidth = disabledWidth || !!(fasad && fasad.level <= 1 && parent?.division === Division.HEIGHT)

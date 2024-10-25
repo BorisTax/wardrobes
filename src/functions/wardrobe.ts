@@ -1,6 +1,6 @@
 import { AppState } from "../types/app"
 import { ProfileType } from "../types/enums"
-import { cloneFasad, getFasadState } from "./fasades"
+import { cloneFasad, excludeFasadParent, getFasadState } from "./fasades"
 import { Division, FASAD_TYPE } from "../types/enums"
 import {  Detail, KROMKA_TYPE, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { Profile } from "../types/materials"
@@ -46,13 +46,20 @@ export function createAppState(wardWidth: number, wardHeight: number, fasadCount
 }
 
 export function cloneAppState(state: AppState): AppState {
-    return JSON.parse(JSON.stringify(state))
     const appState: AppState = {
         ...state,
         profile: { ...state.profile },
         rootFasades: state.rootFasades.map(f => cloneFasad(f))
     }
     return appState
+}
+export function stringifyAppState(state: AppState): string {
+    const appState: AppState = {
+        ...state,
+        profile: { ...state.profile },
+        rootFasades: state.rootFasades.map(f => excludeFasadParent(f))
+    }
+    return JSON.stringify(appState)
 }
 
 export function getFasadCount(data: WardrobeData): number {

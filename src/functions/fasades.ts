@@ -1,24 +1,11 @@
 import FasadState from "../classes/FasadState"
 import { Division, FASAD_TYPE } from "../types/enums"
 
-export function getId() {
-    return Math.random().toString(16).slice(2)
-}
-
-export function getFasadParent(fasades: FasadState[], parentId: string | undefined): FasadState | undefined{
-    for(let f of fasades){
-        let parent
-        if (f.id === parentId) return f
-        if (f.children.length > 0) parent = getFasadParent(f.children, parentId)
-        if(parent) return parent
-    }
-}
-
 export function trySetWidth(fasad: FasadState | null, rootFasades: FasadState[], width: number, minSize: number): boolean {
     if (!fasad) return false
     if (getFasadFixedWidth(fasad)) return false
     if (width < minSize) return false
-    const parent = getFasadParent(rootFasades, fasad.parentId)
+    const parent = fasad.parent
     if (!parent) {
         fasad.width = width;
         return fasad.division === Division.HEIGHT
@@ -36,7 +23,7 @@ export function trySetHeight(fasad: FasadState | null, rootFasades: FasadState[]
     if (!fasad) return false
     if (getFasadFixedHeight(fasad)) return false
     if (height < minSize) return false
-    const parent = getFasadParent(rootFasades, fasad.parentId)
+    const parent = fasad.parent
     if (!parent) {
         fasad.height = height;
         return fasad.division === Division.HEIGHT
@@ -61,7 +48,7 @@ export function getFasadState(width: number, height: number, division: Division,
 }
 
 export function getRootFasad(fasad: FasadState, rootFasades: FasadState[]): FasadState {
-    const parent = getFasadParent(rootFasades, fasad.parentId)
+    const parent = fasad.parent
     if (parent) return getRootFasad(parent, rootFasades)
     return fasad
 }
@@ -135,28 +122,48 @@ export function setFasadType(fasad: FasadState, value: FASAD_TYPE, toChildren = 
     }
 }
 
+export function updateFasadParents(fasad: FasadState) {
+    fasad.children.forEach(c => {
+        c.parent = fasad
+        updateFasadParents(c)
+    })
+}   
+
 export function cloneFasad(fasad: FasadState): FasadState {
-    const f = new FasadState()
-    f.id = fasad.id
-    f.children = fasad.children.map((c: FasadState) => cloneFasad(c))
-    f.active = fasad.active
-    f.level = fasad.level
-    f.division = fasad.division
-    setFasadMaterialId(f, fasad.materialId, false)
-    setFasadType(f, fasad.fasadType, false)
-    f.height = fasad.height
-    f.width = fasad.width
-    f.widthRatio = fasad.widthRatio
-    f.heightRatio = fasad.heightRatio
-    fixFasadHeight(f, fasad.fixedHeight, false)
-    fixFasadWidth(f, fasad.fixedWidth, false)
-    f.outerEdges = { ...fasad.outerEdges }
-    f.parentId = fasad.parentId
-    return f
+    function clone(fasad: FasadState): FasadState {
+        const f = new FasadState()
+        f.children = fasad.children.map((c: FasadState) => cloneFasad(c))
+        f.active = fasad.active
+        f.level = fasad.level
+        f.division = fasad.division
+        setFasadMaterialId(f, fasad.materialId, false)
+        setFasadType(f, fasad.fasadType, false)
+        f.height = fasad.height
+        f.width = fasad.width
+        f.widthRatio = fasad.widthRatio
+        f.heightRatio = fasad.heightRatio
+        fixFasadHeight(f, fasad.fixedHeight, false)
+        fixFasadWidth(f, fasad.fixedWidth, false)
+        f.outerEdges = { ...fasad.outerEdges }
+        return f
+    }
+    const newFasad = clone(fasad)
+    updateFasadParents(newFasad)
+    return newFasad
 }
 
 
-
+export function excludeFasadParent(fasad: FasadState): Omit<FasadState, 'parent'> {
+    const { parent, children, ...other } = fasad
+    const newFasad = {
+        ...other,
+        children: children.map(c => excludeFasadParent(c))
+    }
+    return newFasad
+}
+export function stringifyFasad(fasad: FasadState) {
+    return JSON.stringify(excludeFasadParent(fasad))
+}
 
 export function DistributePartsOnWidth(fasad: FasadState, initiator: FasadState | null, newWidth: number, useSameWidth: boolean, minSize: number): boolean {
     if (fasad.children.length === 0) return true
@@ -298,7 +305,7 @@ function divideOnHeight(fasad: FasadState, count: number, minSize: number): bool
         const topEdge = i === 1 ? fasad.outerEdges.top : false
         const bottomEdge = i === count ? fasad.outerEdges.bottom : false
         newFasad.outerEdges = { left: fasad.outerEdges.left, right: fasad.outerEdges.right, top: topEdge, bottom: bottomEdge }
-        newFasad.parentId = fasad.id
+        newFasad.parent = fasad
         newFasad.level = fasad.level + 1
         newFasad.division = Division.WIDTH
         fasad.children.push(newFasad)
@@ -319,7 +326,7 @@ function divideOnWidth(fasad: FasadState, count: number, minSize: number): boole
         const leftEdge = i === 1 ? fasad.outerEdges.left : false
         const rightEdge = i === count ? fasad.outerEdges.right : false
         newFasad.outerEdges = { left: leftEdge, right: rightEdge, top: fasad.outerEdges.top, bottom: fasad.outerEdges.bottom }
-        newFasad.parentId = fasad.id
+        newFasad.parent = fasad
         newFasad.level = fasad.level + 1
         newFasad.division = Division.HEIGHT
         fasad.children.push(newFasad)
@@ -327,10 +334,3 @@ function divideOnWidth(fasad: FasadState, count: number, minSize: number): boole
     return true
 }
 
-export function setNewFasadesId(fasad: FasadState) {
-    fasad.id = getId()
-    fasad.children.forEach(c => {
-        c.parentId = fasad.id
-        setNewFasadesId(c)
-    })
-}

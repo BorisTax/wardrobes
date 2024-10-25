@@ -6,7 +6,7 @@ import { TableFields } from "../types/server";
 import { Template } from "../types/templates";
 import { activeRootFasadIndexAtom } from "./fasades";
 import FasadState from "../classes/FasadState";
-import { setNewFasadesId, trySetHeight, trySetWidth } from "../functions/fasades";
+import { stringifyFasad, trySetHeight, trySetWidth, updateFasadParents } from "../functions/fasades";
 import { settingsAtom } from "./settings";
 import messages from "../server/messages";
 import { API_ROUTE, TEMPLATES_ROUTE } from "../types/routes";
@@ -34,7 +34,7 @@ export const addFasadTemplateAtom = atom(null, async (get, set, name: string) =>
     const user = get(userAtom)
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(combiStateAtom)
-    const data = JSON.stringify(rootFasades[index])
+    const data = stringifyFasad(rootFasades[index])
     const formData = JSON.stringify({[TableFields.NAME]: name, [TableFields.DATA]: data, [TableFields.TOKEN]: user.token})
     try {
         const result = await fetchData(`${API_ROUTE}${TEMPLATES_ROUTE}`, "POST", formData)
@@ -50,7 +50,7 @@ export const updateFasadTemplateAtom = atom(null, async (get, set, { name, id, r
     const user = get(userAtom)
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(combiStateAtom)
-    const data = JSON.stringify(rootFasades[index])
+    const data = stringifyFasad(rootFasades[index])
     const formData = {[TableFields.NAME]: name, [TableFields.ID]: id, [TableFields.DATA]: data, [TableFields.TOKEN]: user.token}
     if(!rename) formData[TableFields.DATA] = data
     try {
@@ -70,7 +70,7 @@ export const applyTemplateAtom = atom(null, (get, set, state: FasadState) => {
     const width = appData.rootFasades[index].width
     const height = appData.rootFasades[index].height
     const newFasad = state
-    setNewFasadesId(newFasad)
+    updateFasadParents(newFasad)
     let res = trySetWidth(newFasad, appData.rootFasades, width, minSize)
     res = res && trySetHeight(newFasad, appData.rootFasades,height, minSize)
     if(res){

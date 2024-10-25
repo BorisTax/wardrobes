@@ -5,7 +5,7 @@ import { FetchResult, fetchData } from "../functions/fetch";
 import { TableFields } from "../types/server";
 import { getInitSpecification } from "../functions/specification";
 import { wardrobeDataAtom } from "./wardrobe";
-import { combiAtom } from "./app";
+import { combiStateJSONAtom } from "./app";
 import { AppState } from "../types/app";
 import { API_ROUTE, COMBIDATA_ROUTE, DATA_ROUTE, SPECIFICATION_ROUTE } from "../types/routes";
 import { SpecSchema, SpecToCharSchema } from "../types/schemas";
@@ -42,7 +42,7 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, resetDeta
 
 export const calculateCombiSpecificationsAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
-    const data = get(combiAtom).state
+    const data = get(combiStateJSONAtom)
     const formData: { data: AppState, token: string } = {
         [TableFields.DATA]: data,
         [TableFields.TOKEN]: token

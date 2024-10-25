@@ -2,7 +2,6 @@ import { newFasadFromState } from "../functions/fasades"
 import { FasadOuterEdges } from "../types/edges"
 import { Division, FASAD_TYPE } from "../types/enums"
 import { FasadProps } from "../types/fasadProps"
-import { FasadEmptyMaterial, FasadMaterial } from "../types/materials"
 import FasadState, { FasadBackImageProps, getInitialBackImageProps } from "./FasadState"
 
 export default class Fasad {
@@ -195,7 +194,7 @@ export default class Fasad {
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
             const part = i < count ? partHeight : partLast
-            const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize, materialId: this.materialId}) 
+            const fasad: Fasad = new Fasad({ width: this.width, height: part, minSize, fasadType: this.FasadType, materialId: this.materialId}) 
             const topEdge = i === 1 ? this.outerTopEdge : false
             const bottomEdge = i === count ? this.outerBottomEdge : false
             fasad.OuterEdges = { left: this.outerLeftEdge, right: this.outerRightEdge, top: topEdge, bottom: bottomEdge }
@@ -214,7 +213,7 @@ export default class Fasad {
         this.Children = []
         if (count === 1) return true
         for (let i = 1; i <= count; i++) {
-            const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize, materialId: this.materialId }) 
+            const fasad: Fasad = new Fasad({ width: partWidth, height: this.height, minSize, fasadType: this.FasadType, materialId: this.materialId }) 
             const leftEdge = i === 1 ? this.outerLeftEdge : false
             const rightEdge = i === count ? this.outerRightEdge : false
             fasad.OuterEdges = { left: leftEdge, right: rightEdge, top: this.outerTopEdge, bottom: this.outerBottomEdge }

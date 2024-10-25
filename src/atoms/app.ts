@@ -9,7 +9,6 @@ import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
 import { WARDROBE_TYPE } from '../types/wardrobe';
 import { API_ROUTE, INITIAL_COMBISTATE_ROUTE, VERSION_ROUTE, WARDROBE_ROUTE } from '../types/routes';
-import { ProfileSchema } from '../types/schemas';
 import { profileAtom } from './storage';
 import { Profile } from '../types/materials';
 import { ProfileType } from '../types/enums';

@@ -28,7 +28,7 @@ export default function FasadContainer({ index }: FasadContainerProps): ReactEle
     }, [ratio, innerWidth])
     return <div className="fasad-container">
         <div className={`text-center ${activeClass}`}>{`Фасад ${index + 1}`}</div>
-        <div ref={sectionRef} className='fasad-section-container' style={{ aspectRatio, height: "100%", width: "auto" }}>
+        <div ref={sectionRef} className='fasad-section-container' style={{ height: "100%", width: "auto" }}>
             <FasadSection fasad={rootFasad} activeFasad={activeFasad} rootFasad={rootFasad} />
         </div>
     </div>

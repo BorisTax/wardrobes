@@ -97,24 +97,21 @@ export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmC
 })
 
 export const setProfileIdAtom = atom(null, async (get, set, [profileId, confirmCallback]: SetAtomComfirm<number>) => {
-    const appData = get(combiStateAtom)
+    const newAppData = cloneAppState(get(combiStateAtom))
     const profileList = get(profileAtom)
     const newProfile: Profile = { id: profileId, type: profileList.get(profileId)?.type || ProfileType.STANDART }
-    const { wardWidth, wardHeight, fasadCount, profile, type, rootFasades } = appData
+    const { wardWidth, wardHeight, fasadCount, profile, type, rootFasades } = newAppData
     if (profile.type === newProfile.type) {
-        appData.profile = newProfile
-        set(combiStateAtom, { ...appData }, true)
+        newAppData.profile = newProfile
+        set(combiStateAtom, newAppData, true)
         return
     }
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, type, newProfile.type)
     const fasadHeight = getFasadHeight(wardHeight, type, newProfile.type)
-    const newAppData = cloneAppState(appData)
     newAppData.profile = newProfile
-    const newRootFasades = rootFasades.map((f: FasadState) => cloneFasad(f))
     const { minSize } = get(settingsAtom)
-    newAppData.rootFasades = newRootFasades.map((f: FasadState) => { const r = cloneFasad(f); r.children = []; return r })
-    const setWidth = newRootFasades.every((f: FasadState) => trySetWidth(f, rootFasades, fasadWidth, minSize))
-    const setHeight = newRootFasades.every((f: FasadState) => trySetHeight(f, rootFasades, fasadHeight, minSize))
+    const setWidth = rootFasades.every((f: FasadState) => trySetWidth(f, rootFasades, fasadWidth, minSize))
+    const setHeight = rootFasades.every((f: FasadState) => trySetHeight(f, rootFasades, fasadHeight, minSize))
     await setAppDataAtom(setWidth && setHeight, newAppData, set, confirmCallback, true)
 })
 

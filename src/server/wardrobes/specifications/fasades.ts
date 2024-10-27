@@ -381,20 +381,22 @@ async function calcUplotnitelSoed(fasad: FasadState, profileType: ProfileType): 
 }
 
 async function calcProfileSoed(fasad: FasadState, profileCharId: number): Promise<FullData[]> {
-    function getProfiles(fasad: FasadState): number[] {
-        let result: number[] = []
+
+    function getProfiles(fasad: FasadState): {type: "vert" | "hor", length: number}[] {
+        let result: {type: "vert" | "hor", length: number}[] = []
         if (fasad.children.length === 0) return result;
-        result = new Array(fasad.children.length - 1).fill(fasad.division === Division.HEIGHT ? fasad.width : fasad.height);
+        result = new Array(fasad.children.length - 1).fill(fasad.division === Division.HEIGHT ? {type: "hor", length: fasad.width} : {type: "vert", length: fasad.height});
         fasad.children.forEach((f: FasadState) => result = [...result, ...getProfiles(f)])
         return result;
     }
     const coef = await getCoef(SpecItem.ProfileSoed)
     const prof = getProfiles(fasad)
-    const sum = prof.reduce((a, i) => a + i, 0) / 1000
+    const sum = prof.reduce((a, i) => a + i.length, 0) / 1000
     const result = sum * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
-    const verbose = [["Профили", "Итого", ""]]
-    verbose.push([prof.join("+"), `${sum.toFixed(3)}`, coefString])
+    const verbose = [["Профили", "Длина"]]
+    prof.forEach(p => verbose.push([p.type === "hor" ? "Горизонтальный" : "Вертикальный", `${p.length}`]))
+    verbose.push(["Итого", `${sum.toFixed(3)}` + coefString])
     return [{ data: { amount: result, charId: profileCharId }, verbose: result > 0 ? verbose : undefined }]
 }
 async function calcProfileHor(fasad: FasadState, profileCharId: number, top: boolean): Promise<FullData[]> {

@@ -44,6 +44,9 @@ export default function FasadTemplatesDialog() {
     useEffect(() => {
         setTemplateDialogRef(dialogRef)
     }, [setTemplateDialogRef, dialogRef])
+    useEffect(() => {
+        setTemplate(templates[0])
+    }, [templates])
     return <DialogWindow dialogRef={dialogRef}>
         <div className="d-flex gap-1">
             <div className="d-flex flex-column align-self-stretch">

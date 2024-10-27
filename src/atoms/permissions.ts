@@ -42,17 +42,15 @@ export const deletePermissionsAtom = atom(null, async (get, set, roleId: number,
      }
 })
 
-export const addPermissionsAtom = atom(null, async (get, set, roleId: number, resource: RESOURCE, permissions: UserPermissions) => {
+export const addPermissionsAtom = atom(null, async (get, set, permissions: PermissionSchema) => {
     const user = get(userAtom)
     const data = {
-        [TableFields.ROLEID]: roleId,
-        [TableFields.RESOURCE]: resource,
         [TableFields.PERMISSIONS]: permissions,
         [TableFields.TOKEN]: user.token
     }
     try {
         const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "POST", JSON.stringify(data))
-        await set(loadPermissionsAtom, roleId)
+        await set(loadPermissionsAtom, permissions.roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
         console.error(e)
@@ -60,17 +58,15 @@ export const addPermissionsAtom = atom(null, async (get, set, roleId: number, re
      }
 })
 
-export const updatePermissionsAtom = atom(null, async (get, set, roleId: number, resource: RESOURCE, permissions: UserPermissions) => {
+export const updatePermissionsAtom = atom(null, async (get, set, permissions: PermissionSchema) => {
     const user = get(userAtom)
     const data = {
-        [TableFields.ROLEID]: roleId,
-        [TableFields.RESOURCE]: resource,
         [TableFields.PERMISSIONS]: permissions,
         [TableFields.TOKEN]: user.token
     }
     try {
         const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "PUT", JSON.stringify(data))
-        await set(loadPermissionsAtom, roleId)
+        await set(loadPermissionsAtom, permissions.roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
         console.error(e) 

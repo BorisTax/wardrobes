@@ -20,10 +20,10 @@ export enum PERMISSION {
     DELETE = 'DELETE',
 }
 export type UserPermissions = {
-    Read: number
-    Create: number
-    Update: number
-    Delete: number
+    Read: boolean
+    Create: boolean
+    Update: boolean
+    Delete: boolean
 }
 export type ResourceSchema = DefaultSchema
 export type UserRole = DefaultSchema
@@ -51,7 +51,7 @@ export type USER_ROLE_SCHEMA = {
     roleId: number
 }
 export type PermissionSchema = {
-    id: number,
+    roleId: number,
     resourceId: RESOURCE,
     create: number,
     read: number,

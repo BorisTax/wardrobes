@@ -2,7 +2,7 @@ import { OmitId } from "../../types/materials"
 import { KeySet, TABLE_NAMES } from "../../types/schemas"
 import { IDataBaseService, IDataBaseServiceProvider } from "../../types/services"
 
-export class DataBaseService<T extends { id: number }> implements IDataBaseService<T> {
+export class DataBaseService<T> implements IDataBaseService<T> {
     provider: IDataBaseServiceProvider<T>
     constructor(provider: IDataBaseServiceProvider<T>) {
         this.provider = provider

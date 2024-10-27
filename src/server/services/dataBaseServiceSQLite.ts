@@ -6,7 +6,7 @@ import messages from '../messages.js';
 import { KeySet, TABLE_NAMES } from '../../types/schemas.js';
 import { StatusCodes } from 'http-status-codes';
 
-export default class DataBaseServiceSQLite<T extends { id: number }> implements IDataBaseService<T> {
+export default class DataBaseServiceSQLite<T> implements IDataBaseService<T> {
     dbFile: string;
     constructor(dbFile: string) {
         this.dbFile = dbFile

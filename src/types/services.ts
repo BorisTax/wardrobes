@@ -2,7 +2,7 @@ import {  OmitId } from "./materials"
 import { Result, Token, PriceData } from "./server"
 import { PermissionSchema, ResourceSchema, User } from "./user"
 import { Template } from "./templates"
-import { DATA_TABLE_NAMES, KeySet, TABLE_NAMES } from "./schemas"
+import { KeySet, TABLE_NAMES } from "./schemas"
 import { UserPermissions, RESOURCE, UserRole } from "./user"
 
 interface IUserAbstractService {
@@ -25,7 +25,7 @@ interface IUserAbstractService {
     getSuperRoles: () => Promise<Result<{ roleId: number }>>
 }
 
-export interface IDataBaseService<T extends { id?: number }> {
+export interface IDataBaseService<T> {
     getData: (table: TABLE_NAMES, columns: KeySet<T>, conditions: Partial<T>) => Promise<Result<T>>
     addData: (table: TABLE_NAMES, data: Partial<T>) => Promise<Result<T>>
     deleteData: (table: TABLE_NAMES, lookIn: Partial<T> ) => Promise<Result<null>>
@@ -49,7 +49,7 @@ interface IPermissionAbstractService {
     getResourceList: () => Promise<Result<ResourceSchema>>
 }
 
-export interface IDataBaseServiceProvider<T extends { id: number }> extends IDataBaseService<T> {
+export interface IDataBaseServiceProvider<T> extends IDataBaseService<T> {
     dbFile: string
 }
 export interface ITemplateServiceProvider extends ITemplateAbstractService {

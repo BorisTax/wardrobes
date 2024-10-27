@@ -186,7 +186,7 @@ export function getInitialUser(): UserState {
 export function permissionsToMap(permissions: PermissionSchema[]): Map<RESOURCE, UserPermissions> {
     const m = new Map<RESOURCE, UserPermissions>()
     permissions.forEach(p => {
-        m.set(p.resourceId, { Create: p.create, Read: p.read, Update: p.update, Delete: p.delete })
+        m.set(p.resourceId, { Create: !!p.create, Read: !!p.read, Update: !!p.update, Delete: !!p.delete })
     })
     return m
 }

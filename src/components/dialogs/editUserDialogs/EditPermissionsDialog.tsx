@@ -77,7 +77,7 @@ export default function EditPermissionsDialog() {
                 const newCreate = checked[3] ? values[3] as boolean : Create
                 const newUpdate = checked[4] ? values[4] as boolean : Update
                 const newRemove = checked[5] ? values[5] as boolean : Delete
-                const result = await updatePermissions(roleId, newResource as RESOURCE, { Read: newRead ? 1 : 0, Create: newCreate ? 1 : 0, Update: newUpdate ? 1 : 0, Delete: newRemove ? 1 : 0 })
+                const result = await updatePermissions({ roleId, resourceId: newResource as RESOURCE, read: newRead ? 1 : 0, create: newCreate ? 1 : 0, update: newUpdate ? 1 : 0, delete: newRemove ? 1 : 0 })
                 return result
             } : undefined}
             onDelete={perm?.Delete ? async () => {
@@ -91,8 +91,8 @@ export default function EditPermissionsDialog() {
                 const newCreate = checked[3] ? values[3] as boolean : Create
                 const newUpdate = checked[4] ? values[4] as boolean : Update
                 const newRemove = checked[5] ? values[5] as boolean : Delete
-                if (permData.find(p => p.id === roleId && p.resourceId === newResource)) { return { success: false, message: messages.PERMISSION_EXIST } }
-                const result = await addPermissions(roleId, newResource as RESOURCE, { Read: newRead ? 1 : 0, Create: newCreate ? 1 : 0, Update: newUpdate ? 1 : 0, Delete: newRemove ? 1 : 0 })
+                if (permData.find(p => p.roleId === roleId && p.resourceId === newResource)) { return { success: false, message: messages.PERMISSION_EXIST } }
+                const result = await addPermissions({roleId, resourceId: newResource as RESOURCE,  read: newRead ? 1 : 0, create: newCreate ? 1 : 0, update: newUpdate ? 1 : 0, delete: newRemove ? 1 : 0 })
                 return result
             } : undefined} />
     </EditContainer>

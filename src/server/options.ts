@@ -23,10 +23,10 @@ export const userServiceProvider = new UserServiceSQLite(usersPath)
 export const templateServiceProvider = new TemplateServiceSQLite(templatePath)
 export const permissionServiceProvider = new PermissionServiceSQLite(usersPath)
 
-export function getDataBaseProvider<T extends { id: number }>() {
+export function getDataBaseProvider<T>() {
   return new DataBaseServiceSQLite<T>(dataPath)
 }
-export function getDataBaseUserProvider<T extends { id: number }>() {
+export function getDataBaseUserProvider<T>() {
   return new DataBaseServiceSQLite<T>(usersPath)
 }
 

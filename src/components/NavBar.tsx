@@ -8,8 +8,6 @@ import { RESOURCE } from "../types/user"
 export default function NavBar() {
   const {permissions} = useAtomValue(userAtom)
   const permMat = permissions.get(RESOURCE.MATERIALS_DB)
-  const permPrice = permissions.get(RESOURCE.PRICES)
-  const permSpec = permissions.get(RESOURCE.SPECIFICATION)
   const permUsers = permissions.get(RESOURCE.USERS)
   const permCombi = permissions.get(RESOURCE.COMBIFASADES)
   const permWard = permissions.get(RESOURCE.WARDROBES)
@@ -20,8 +18,6 @@ export default function NavBar() {
     <>
       <MenuSeparator />
       {permMat?.Read && <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />}
-      {permPrice?.Read && <ImageLink link={"pricelist"} caption="База цен" icon="editPrice" />}
-      {permSpec?.Read && <ImageLink link={"specification"} caption="База спецификации" icon="editSpecification" />}
     </>
 
     {permUsers?.Read &&

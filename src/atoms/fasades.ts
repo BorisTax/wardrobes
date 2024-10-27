@@ -43,14 +43,14 @@ export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const state = cloneAppState(get(combiStateAtom))
     const activeFasad = getActiveFasad(state.rootFasades)
     if(!activeFasad) return
-    const height = activeFasad.fasadType === FASAD_TYPE.DSP ? newHeight : newHeight + 3
     if (activeFasad && newHeight < 20) {
         activeFasad.heightRatio = newHeight
         const parent = activeFasad.parent
         if(parent) DistributePartsOnHeight(parent, null, 0, false, minSize)
-        set(combiStateAtom, state, true)
+            set(combiStateAtom, state, true)
         return
     }
+    const height = activeFasad.fasadType === FASAD_TYPE.DSP ? newHeight : newHeight + 3
     if (trySetHeight(activeFasad, state.rootFasades, height, minSize)) {
         if(activeFasad) fixFasadHeight(activeFasad, true)
         set(combiStateAtom, state, true)
@@ -61,19 +61,18 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
     const state = cloneAppState(get(combiStateAtom))
     const activeFasad = getActiveFasad(state.rootFasades)
     if (!activeFasad) return
-    const appData = get(combiStateAtom)
     const { minSize } = get(settingsAtom)
-    const width = activeFasad.fasadType === FASAD_TYPE.DSP ? newWidth : newWidth + 3
     if (activeFasad && newWidth < 20) {
         activeFasad.widthRatio = newWidth
         const parent = activeFasad.parent
         if(parent) DistributePartsOnWidth(parent, null, 0, false, minSize)
-        set(combiStateAtom, { ...appData }, true)
+            set(combiStateAtom, state, true)
         return
     }
-    if (trySetWidth(activeFasad, appData.rootFasades, width, minSize)) {
+    const width = activeFasad.fasadType === FASAD_TYPE.DSP ? newWidth : newWidth + 3
+    if (trySetWidth(activeFasad, state.rootFasades, width, minSize)) {
         if(activeFasad) fixFasadWidth(activeFasad, true)
-        set(combiStateAtom, { ...appData }, true)
+        set(combiStateAtom, state, true)
     }
 })
 export const divideFasadAtom = atom(null, (get, set, count: number) => {

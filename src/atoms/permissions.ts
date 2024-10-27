@@ -9,6 +9,7 @@ import { DefaultMap, makeDefaultMap } from "./storage"
 
 
 export const permissionsAtom = atom<PermissionSchema[]>([])
+
 export const loadPermissionsAtom = atom(null, async (get, set, roleId: number)=>{
     const { token, permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)

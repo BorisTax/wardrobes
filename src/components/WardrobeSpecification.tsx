@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { specificationAtom } from "../atoms/specification"
-import { FASAD_TYPE, MAT_PURPOSE } from "../types/enums"
+import { FASAD_TYPE, CHAR_PURPOSE } from "../types/enums"
 import ImageButton from "./inputs/ImageButton"
 import { saveToExcelAtom } from "../atoms/export"
 import SpecificationTable from "./SpecificationTable"
@@ -25,9 +25,8 @@ export default function WardrobeSpecification() {
         return `${cap}(${captionsMap.get(cap)})`
     }))
     const heads = useMemo(() => specifications.map((spec, index) => <div key={index} role="button" className={index === specIndex ? "tab-button-active" : "tab-button-inactive"} onClick={() => { setSpecIndex(index) }}>{`${captions[index]}`}</div>), [specifications, specIndex, captions])
-    const purpose = Object.keys(FASAD_TYPE).find(k => k === specification.type) ? MAT_PURPOSE.FASAD : MAT_PURPOSE.CORPUS
-    const hint = ((wardData.wardTypeId !== WARDROBE_TYPE.GARDEROB) && (getFasadCount(wardData) < 2) && (specification.type === CORPUS_SPECS.CORPUS)) ? "При кол-ве фасадов меньше 2 спецификация может быть не полной!" : ""
-    
+    const purpose = Object.keys(FASAD_TYPE).find(k => k === specification.type) ? CHAR_PURPOSE.FASAD : CHAR_PURPOSE.CORPUS
+    const hint = ((wardData.wardTypeId !== WARDROBE_TYPE.GARDEROB) && (getFasadCount(wardData) < 2) && (specification.type === CORPUS_SPECS.CORPUS)) ? "Выберите необходимое кол-во фасодов" : ""
     useEffect(() => {
         if (specIndex >= specifications.length) setSpecIndex(0)
     }, [specifications, specIndex])
@@ -37,6 +36,6 @@ export default function WardrobeSpecification() {
             {heads}
         </div>
         <hr/>
-        <SpecificationTable purposes={[purpose, MAT_PURPOSE.BOTH]} specification={specification.spec} hint={hint} />
+        <SpecificationTable purposes={[purpose, CHAR_PURPOSE.BOTH]} specification={specification.spec} hint={hint} />
     </div>
 }

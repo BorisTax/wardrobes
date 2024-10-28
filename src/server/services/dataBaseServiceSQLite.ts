@@ -3,7 +3,7 @@ import { Result } from '../../types/server.js';
 import { IDataBaseService } from '../../types/services.js';
 import { dataBaseQuery } from '../functions/database.js';
 import messages from '../messages.js';
-import { KeySet, TABLE_NAMES } from '../../types/schemas.js';
+import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from '../../types/schemas.js';
 import { StatusCodes } from 'http-status-codes';
 
 export default class DataBaseServiceSQLite<T> implements IDataBaseService<T> {
@@ -11,8 +11,8 @@ export default class DataBaseServiceSQLite<T> implements IDataBaseService<T> {
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
-    async getData(table: TABLE_NAMES, columns: KeySet<T>, values: Partial<T>): Promise<Result<T>> {
-        const query = getQuery(table, columns, values)
+    async getData(table: TABLE_NAMES, columns: KeySet<T>, values: Partial<T>, options?: DataBaseSelectOptions<T>): Promise<Result<T>> {
+        const query = getQuery(table, columns, values, options)
         return dataBaseQuery<T>(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK })
     }
     async addData(table: TABLE_NAMES, data: Partial<T>): Promise<Result<T>> {
@@ -30,7 +30,7 @@ export default class DataBaseServiceSQLite<T> implements IDataBaseService<T> {
     }
 }
 
-function getQuery<T>(table: TABLE_NAMES, columns: KeySet<T>, values: Partial<T>) {
+function getQuery<T>(table: TABLE_NAMES, columns: KeySet<T>, values: Partial<T>, options?: DataBaseSelectOptions<T>) {
     const params: any[] = []
     const entries = Object.entries(values).map(e => {
         params.push(e[1]);
@@ -38,7 +38,8 @@ function getQuery<T>(table: TABLE_NAMES, columns: KeySet<T>, values: Partial<T>)
     })
     const what = columns.length === 0 ? "*" : columns.join(", ")
     const condition = entries.length === 0 ? "" : " where " + entries.join(" and ")
-    const query = `select ${what} from ${table}${condition};`
+    const order = options ? `order by ${String(options.order)} ${options.orderDesc?"DESC":"ASC"}` : ""
+    const query = `select ${what} from ${table}${condition} ${order};`
     return { query, params }
 }
 

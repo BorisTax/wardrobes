@@ -6,13 +6,14 @@ export type ComboBoxProps<T> = {
     value?: T
     displayValue: (value: T) => string | undefined
     withEmpty?: boolean
+    emptyValue?: any
     title?: string
     disabled?: boolean
     size?: number
     styles?: object
 }
 
-export default function ComboBox<T>(props: ComboBoxProps<T> = { items: [], disabled: false, title: "", size: 1, styles: {}, displayValue: () => "" }) {
+export default function ComboBox<T>(props: ComboBoxProps<T> = { items: [], disabled: false, title: "", size: 1, styles: {}, displayValue: () => "", emptyValue: "" }) {
     const items: T[] = props.items instanceof Map ? [...props.items.values()] : props.items
     let value: T = items.find(i => i === props.value) as T
     const options: ReactNode[] = []

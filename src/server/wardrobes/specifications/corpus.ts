@@ -12,6 +12,7 @@ import { getFurniture, getTrempelByDepth } from "../../routers/functions/furnitu
 import { getDetailNames, getDetailsFromTable, getDVPTemplates } from "../../routers/functions/details"
 import {  getCharIdAndBrushSpecIdByProfileId } from "../../routers/functions/profiles"
 import { getChar } from "../../routers/functions/chars"
+import { getSpecList } from "../../routers/functions/spec"
 
 export async function getCorpusSpecification(data: WardrobeData, resetDetails: boolean, verbose = false): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
@@ -19,20 +20,9 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     const karton = await getKarton(data)
     const skotch = data.wardTypeId === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
     const truba = await getTruba(data, details)
-    const kromkaAndZagl = await getKromkaAndZaglByDSP(data.dspId)
-    const kromkaSpecId = await getKromkaTypeByChar(kromkaAndZagl.kromkaId)
-    const kromkaPrimary = (await getKromkaPrimary(data, details, kromkaAndZagl.kromkaId))
-    const kromkaSecondary = await getKromkaSecondary(data, details, kromkaSpecId, kromkaAndZagl.kromkaId)
+    await getCommonData(data, details, result)
     const {brushSpecId, profileCharId} = await getCharIdAndBrushSpecIdByProfileId(data.profileId)
-    result.push([SpecItem.DSP16, await getDSP(data, details)])
     result.push([SpecItem.DVP, await getDVP(data)])
-    result.push([SpecItem.Kromka2, kromkaPrimary])
-    result.push([kromkaSpecId, kromkaSecondary])
-    result.push([SpecItem.Confirmat, await getConfirmat(data, details)])
-    result.push([SpecItem.ZagConfirmat, await getZagConfirmat(data, details, kromkaAndZagl.zaglushkaId)])
-    result.push([SpecItem.Minifix, await getMinifix(data, details)])
-    result.push([SpecItem.ZagMinifix, await getZagMinifix(data, details, kromkaAndZagl.zaglushkaId)])
-    result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])
     result.push([SpecItem.PlankaDVP, await getDVPPlanka(data)])
     result.push([SpecItem.Leg, await getLegs(data)])
     result.push([SpecItem.Karton, karton])
@@ -58,6 +48,24 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     return result
 }
 
+export async function getCommonData(data: WardrobeData, details: Detail[], result: SpecificationResult[]){
+    const kromkaAndZagl = await getKromkaAndZaglByDSP(data.dspId)
+    const kromkaSpecId = await getKromkaTypeByChar(kromkaAndZagl.kromkaId)
+    const kromkaPrimary = (await getKromkaPrimary(data, details, kromkaAndZagl.kromkaId))
+    const kromkaSecondary = await getKromkaSecondary(data, details, kromkaSpecId, kromkaAndZagl.kromkaId)
+    const spec = (await getSpecList()).data
+    const kromkaPrimaryCaption = spec.find(s => s.id === SpecItem.Kromka2)?.name || ""
+    const kromkaSecondaryCaption = spec.find(s => s.id === kromkaSpecId)?.name || ""
+    result.push([SpecItem.DSP16, await getDSP(data, details)])
+    result.push([SpecItem.Kromka2, kromkaPrimary])
+    result.push([kromkaSpecId, kromkaSecondary])
+    result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount, kromkaPrimaryCaption, kromkaSecondaryCaption)])
+    result.push([SpecItem.Confirmat, await getConfirmat(data, details)])
+    result.push([SpecItem.ZagConfirmat, await getZagConfirmat(data, details, kromkaAndZagl.zaglushkaId)])
+    result.push([SpecItem.Minifix, await getMinifix(data, details)])
+    result.push([SpecItem.ZagMinifix, await getZagMinifix(data, details, kromkaAndZagl.zaglushkaId)])
+}
+
 export function useMinifix(detail: DETAIL_NAME): boolean {
     return detail === DETAIL_NAME.STAND ||
         detail === DETAIL_NAME.INNER_STAND ||
@@ -78,7 +86,7 @@ export async function getDetails(wardrobeTypeId: number, wardrobeId: number, wid
             width: dd.detailId === DETAIL_NAME.ROOF || dd.detailId === DETAIL_NAME.STAND ? depth : depth - offset,
             count: dd.count,
             drill: getDrill(dd),
-            kromka: getKromka(dd)
+            kromka: getKromka(wardrobeTypeId, dd)
         }))
     return details;
 }
@@ -105,7 +113,7 @@ async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
     const total = dvpData.dvpPlanka * dvpData.dvpPlankaCount / 1000;
     const dvpLength = dvpData.dvpRealLength + 3
     const totalCoef = total * coef;
-    verbose.push([`${dvpData.dvpPlanka} = (${dvpLength}-32)`, dvpData.dvpPlankaCount, `${(dvpData.dvpPlanka / 1000).toFixed(3)} x ${dvpData.dvpPlankaCount} = ${total.toFixed(3)}`]);
+    verbose.push([`(${dvpLength}-32) = ${dvpData.dvpPlanka}`, dvpData.dvpPlankaCount, `${(dvpData.dvpPlanka / 1000).toFixed(3)} x ${dvpData.dvpPlankaCount} = ${total.toFixed(3)}`]);
     if (coef !== 1) verbose.push(["", "", `${total.toFixed(3)} x ${coef} = ${totalCoef.toFixed(3)}`]);
     return { data: { amount: totalCoef, charId: 0 }, verbose };
 }
@@ -222,44 +230,46 @@ export async function getKromkaPrimary(data: WardrobeData, details: Detail[], kr
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
-    let totalEdge = 0;
+    let total = 0;
     details.forEach(d => {
-        const edge = getKromkaLength(d, KROMKA_TYPE.THICK) * d.count / 1000;
+        const types = [KROMKA_TYPE.THICK]
+        const edge = getKromkaLength(d, types) * d.count / 1000;
         if (edge === 0) return
         const caption = detailNames.find(n => n.id === d.id)?.name || "";
-        const desc = getKromkaDescripton(d, KROMKA_TYPE.THICK)
+        const desc = getKromkaDescripton(d, types)
         verbose.push([caption, `${d.length}`, `${d.width}`, `${d.count}`, desc, edge.toFixed(3), ""]);
-        totalEdge += edge;
+        total += edge;
     });
     const coef = await getCoef(SpecItem.Kromka2);
-    verbose.push(["", "", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`]);
-    return { data: { amount: totalEdge * coef, charId: kromkaId }, verbose };
+    verbose.push(["", "", "", "", "Итого", total.toFixed(3), `x ${coef} = ${(total * coef).toFixed(3)}`]);
+    return { data: { amount: total * coef, charId: kromkaId }, verbose };
 }
 
 export async function getKromkaSecondary(data: WardrobeData, details: Detail[], kromkaSpecId: number, kromkaId: number): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
-    let totalEdge = 0;
+    let total = 0;
     details.forEach(d => {
-        const edge = getKromkaLength(d, KROMKA_TYPE.THIN) * d.count / 1000;
+        const types = [KROMKA_TYPE.THIN]
+        const edge = getKromkaLength(d, types) * d.count / 1000;
         if (edge === 0) return
         const caption = detailNames.find(n => n.id === d.id)?.name || "";
-        const desc = getKromkaDescripton(d, KROMKA_TYPE.THIN)
+        const desc = getKromkaDescripton(d, types)
         verbose.push([caption, `${d.length}`, `${d.width}`, `${d.count}`, desc, edge.toFixed(3), ""]);
-        totalEdge += edge;
+        total += edge;
     });
     const coef = await getCoef(kromkaSpecId);
-    verbose.push(["", "", "", "", "", totalEdge.toFixed(3), `x ${coef} = ${(totalEdge * coef).toFixed(3)}`]);
-    return { data: { amount: totalEdge * coef, charId: kromkaId }, verbose };
+    verbose.push(["", "", "", "", "Итого", total.toFixed(3), `x ${coef} = ${(total * coef).toFixed(3)}`]);
+    return { data: { amount: total * coef, charId: kromkaId }, verbose };
 }
 
-export async function getGlue(data: WardrobeData, edge2: number, edge05: number): Promise<FullData> {
+export async function getGlue(data: WardrobeData, kromkaPrimary: number, kromkaSecondary: number, kromkaPrimaryCaption: string, kromkaSecondaryCaption: string): Promise<FullData> {
     if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const coefGlue = await getCoef(SpecItem.Glue);
-    const glue = (edge2 + edge05) * coefGlue * 0.008;
-    const verbose = [["Кромка 2мм", "Кромка 0.45мм", "Итого", "Клей"]];
-    verbose.push([edge2.toFixed(3), edge05.toFixed(3), (edge2 + edge05).toFixed(3), `x 0.008 = ${glue.toFixed(3)}`]);
+    const glue = (kromkaPrimary + kromkaSecondary) * coefGlue * 0.008;
+    const verbose = [[kromkaPrimaryCaption, kromkaSecondaryCaption, "Итого", "Клей"]];
+    verbose.push([kromkaPrimary.toFixed(3), kromkaSecondary.toFixed(3), (kromkaPrimary + kromkaSecondary).toFixed(3), `x 0.008 = ${glue.toFixed(3)}`]);
     return { data: { amount: glue, charId: 0 }, verbose };
 }
 

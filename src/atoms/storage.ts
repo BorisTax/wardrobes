@@ -2,12 +2,12 @@ import { atom, Getter } from "jotai";
 import { OmitId } from "../types/materials";
 import { FetchResult, fetchGetData } from "../functions/fetch";
 import { UserPermissions, RESOURCE } from "../types/user";
-import { AllData, DefaultSchema, DetailSchema, FasadDefaultCharSchema, FasadTypeToCharSchema } from "../types/schemas";
+import { AllData, DefaultSchema, DetailSchema, FasadTypeToCharSchema } from "../types/schemas";
 import { API_ROUTE, MATERIALS_ROUTE, ALLDATA_ROUTE, WARDROBE_ROUTE, INITIAL_WARDROBEDATA_ROUTE } from "../types/routes";
 import { WardrobeData } from "../types/wardrobe";
 import { setWardrobeDataAtom } from "./wardrobe";
 import { combiStateAtom } from "./app";
-import { charAtom, charTypesAtom, setInitialMaterials } from "./materials/chars";
+import { charAtom, charPurposeAtom, charTypesAtom, fasadDefaultCharsAtom, setInitialMaterials } from "./materials/chars";
 import { FASAD_TYPE } from "../types/enums";
 import { setActiveFasadAtom } from "./fasades";
 import { specListAtom, specToCharAtom } from "./specification";
@@ -22,7 +22,6 @@ export const wardrobeTypesAtom = atom<DefaultMap>(new Map())
 export const wardrobeAtom = atom<DefaultMap>(new Map())
 export const consoleTypesAtom = atom<DefaultMap>(new Map())
 export const unitsAtom = atom<DefaultMap>(new Map())
-export const fasadDefaultCharsAtom = atom<ExtMap<FasadDefaultCharSchema>>(new Map())
 export const detailNamesAtom = atom<DefaultMap>(new Map())
 
 
@@ -42,6 +41,7 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
         set(fasadTypesAtom, makeDefaultMap(allData.fasadTypes || []))
         set(fasadTypesToCharAtom, allData.fasadTypeToChar || [])
         set(charAtom, makeExtMap(allData.chars || []))
+        set(charPurposeAtom, allData.charPurpose || [])
         set(charTypesAtom, makeDefaultMap(allData.charTypes || []))
         set(specListAtom, makeExtMap(allData.spec || []))
         set(specToCharAtom, allData.specToChar || [])

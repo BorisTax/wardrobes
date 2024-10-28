@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { specificationDialogAtom } from "../../atoms/dialogs"
 import { specificationCombiAtom } from "../../atoms/specification"
-import { MAT_PURPOSE } from "../../types/enums"
+import { CHAR_PURPOSE } from "../../types/enums"
 import ImageButton from "../inputs/ImageButton"
 import { saveToExcelAtom } from "../../atoms/export"
 import DialogWindow from "./DialogWindow"
@@ -31,6 +31,6 @@ export default function SpecificationDialog() {
         <div className="d-flex flex-row flex-nowrap justify-content-center align-items-center gap-1">
             {fasades}
         </div>
-        <SpecificationTable purposes={[MAT_PURPOSE.FASAD, MAT_PURPOSE.BOTH]} specification={specification} />
+        <SpecificationTable purposes={[CHAR_PURPOSE.FASAD, CHAR_PURPOSE.BOTH]} specification={specification} />
     </DialogWindow>
 }

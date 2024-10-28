@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
-import { MAT_PURPOSE } from "../types/enums"
+import { CHAR_PURPOSE } from "../types/enums"
 import { userAtom } from "../atoms/users"
 import { OutputSpecSchema, specificationInProgress } from "../atoms/specification"
 import { setVerboseDataAtom } from "../atoms/verbose"
@@ -13,7 +13,7 @@ import { charAtom } from "../atoms/materials/chars"
 import { specListAtom } from "../atoms/specification"
 
 type SpecificationTableProps = {
-    purposes: MAT_PURPOSE[],
+    purposes: CHAR_PURPOSE[],
     specification: SpecificationResult[],
     hint?: string
 }
@@ -43,7 +43,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     }, [specData, props.specification]) 
     const [showAll, setShowAll] = useState(false)
     const [showCodes, setShowCodes] = useState(false)
-    const contents = list.filter(i => props.purposes.some(p => i.amount !== 0 || showAll)).map((item: ExtOutputSpecSchema, index: number) => {
+    const contents = list.filter(i => props.purposes.some(p => i.amount !== 0 || showAll)).toSorted((s1, s2) => s1.specName > s2.specName ? 1 : -1).map((item: ExtOutputSpecSchema, index: number) => {
         const amount = item.amount || 0
         const charCode = (item?.charCode && showCodes) ? `(${item.charCode})` : ""
         const char = `${item.charName} ${charCode}`

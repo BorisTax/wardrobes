@@ -4,11 +4,11 @@ import { RESOURCE } from "../../types/user"
 import { fetchData, fetchGetData, FetchResult } from "../../functions/fetch"
 import { API_ROUTE, CHARS_ROUTE, IMAGE_ROUTE, MATERIALS_ROUTE, SPEC_TO_CHAR_ROUTE } from "../../types/routes"
 import messages from "../../server/messages"
-import { FasadMaterial, OmitId } from "../../types/materials"
+import { OmitId } from "../../types/materials"
 import { TableFields } from "../../types/server"
 import FasadState from "../../classes/FasadState"
 import { FASAD_TYPE } from "../../types/enums"
-import { CharsSchema, SpecToCharSchema } from "../../types/schemas"
+import { CharPurposeSchema, CharsSchema, FasadDefaultCharSchema, SpecToCharSchema } from "../../types/schemas"
 import { ExtMap, DefaultMap, makeExtMap } from "../storage"
 import { setFasadMaterialId, setFasadType } from "../../functions/fasades"
 
@@ -18,7 +18,8 @@ export const charArrayAtom = atom((get) => {
     return [...chars.entries()].map(value => ({ id: value[0], ...value[1] }))
 });
 export const charTypesAtom = atom<DefaultMap>(new Map());
-export const materialListAtom = atom<FasadMaterial[]>([]);
+export const charPurposeAtom = atom<CharPurposeSchema[]>([]);
+export const fasadDefaultCharsAtom = atom<ExtMap<FasadDefaultCharSchema>>(new Map());
 
 export const loadCharAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
@@ -98,9 +99,6 @@ export const addSpecToCharAtom = atom(null, async (get, set, data: SpecToCharSch
         }
 })
 
-export const imageUrlAtom = atom((get) => {
-    get(materialListAtom)
-})
 
 export function setInitialMaterials(rootFasades: FasadState[], fasadType: FASAD_TYPE, materialId: number) {
     rootFasades.forEach((f: FasadState) => {
@@ -108,6 +106,7 @@ export function setInitialMaterials(rootFasades: FasadState[], fasadType: FASAD_
         setFasadType(f, fasadType)
     })
 }
+
 
 export const charImageAtom = atom<{id: number, image: string}[]>([])
 const resetCharImageAtom = atom(null, async (get, set, id)=>{

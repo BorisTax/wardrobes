@@ -1,13 +1,13 @@
-import { MAT_PURPOSE, Division } from "../types/enums";
+import { CHAR_PURPOSE, Division } from "../types/enums";
 
 
 
 
 
-export function getPurpose(fasad: boolean, corpus: boolean): MAT_PURPOSE {
-    if (fasad && corpus) return MAT_PURPOSE.BOTH
-    if (corpus) return MAT_PURPOSE.CORPUS
-    return MAT_PURPOSE.FASAD
+export function getPurpose(fasad: boolean, corpus: boolean): CHAR_PURPOSE {
+    if (fasad && corpus) return CHAR_PURPOSE.BOTH
+    if (corpus) return CHAR_PURPOSE.CORPUS
+    return CHAR_PURPOSE.FASAD
 }
 
 // export function getMaterialList(materials: FasadMaterial[]): MaterialList {

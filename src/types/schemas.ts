@@ -1,10 +1,15 @@
-import { CHAR_TYPE, MAT_PURPOSE } from "./enums"
+import { CHAR_PURPOSE, CHAR_TYPE } from "./enums"
 
 export type KeySet<T> = (keyof T)[]
 
 export type Query = {
     query: string,
     params: any[]
+}
+
+export type DataBaseSelectOptions<T> = {
+    order: keyof T,
+    orderDesc?: boolean
 }
 
 export type DefaultSchema = {
@@ -35,6 +40,10 @@ export type CharsSchema = {
     char_type_id: number,
     code: string,
     image: string
+}
+export type CharPurposeSchema ={
+    charId: number,
+    purposeId: CHAR_PURPOSE
 }
 
 export type CharTypesSchema = DefaultSchema
@@ -110,6 +119,7 @@ export type AllData = {
     chars: CharsSchema[],
     fasadDefaultChars: FasadDefaultCharSchema[],
     charTypes: CharTypesSchema[],
+    charPurpose: CharPurposeSchema[],
     lacobels: LacobelSchema[],
     consoleTypes: ConsoleTypesSchema[],
     fasadTypes: FasadTypesSchema[],
@@ -130,6 +140,7 @@ export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES;
 export enum DATA_TABLE_NAMES {
     CHARS = 'chars',
     CHAR_TYPES = 'char_types',
+    CHAR_PURPOSE = 'char_purpose',
     CONSOLE_TYPES = 'console_types',
     WARDROBE_DETAIL_TABLE = 'wardrobe_detail_table',
     DETAILS = 'details',

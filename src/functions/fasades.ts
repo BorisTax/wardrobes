@@ -282,15 +282,18 @@ export function getActiveFasad(fasades: FasadState[]): FasadState | undefined {
     }
 }
 
-export function setActiveFasad(fasad: FasadState, activeFasad?: FasadState) {
-    fasad.children.forEach((c: FasadState) => { setActiveFasad(c, activeFasad) })
-    fasad.active = (activeFasad === fasad)
+export function setActiveFasad(fasades: FasadState[], activeFasad?: FasadState) {
+    fasades.forEach(f => {
+        if (f.children.length > 0) setActiveFasad(f.children, activeFasad)
+        f.active = (activeFasad === f)
+    })
 }
 
 
 export function divideFasad(fasad: FasadState, count: number, minSize: number) {
     if (fasad.division === Division.HEIGHT) return divideOnHeight(fasad, count, minSize); else return divideOnWidth(fasad, count, minSize)
 }
+
 function divideOnHeight(fasad: FasadState, count: number, minSize: number): boolean {
     const profileTotal = (count - 1)
     if (fasad.children.length > 1) setFasadMaterialId(fasad, fasad.children[0].materialId)
@@ -322,7 +325,7 @@ function divideOnWidth(fasad: FasadState, count: number, minSize: number): boole
     if (count === 1) return true
     for (let i = 1; i <= count; i++) {
         const part = i < count ? partWidth : partLast
-        const newFasad: FasadState = getFasadState(fasad.width, part, fasad.division === Division.HEIGHT ? Division.WIDTH : Division.HEIGHT, fasad.fasadType, fasad.materialId) 
+        const newFasad: FasadState = getFasadState(part, fasad.height, fasad.division === Division.HEIGHT ? Division.WIDTH : Division.HEIGHT, fasad.fasadType, fasad.materialId) 
         const leftEdge = i === 1 ? fasad.outerEdges.left : false
         const rightEdge = i === count ? fasad.outerEdges.right : false
         newFasad.outerEdges = { left: leftEdge, right: rightEdge, top: fasad.outerEdges.top, bottom: fasad.outerEdges.bottom }

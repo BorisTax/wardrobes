@@ -122,7 +122,7 @@ function calcDimensions(fasad: FasadState, checkFasad: (f: FasadState) => boolea
 }
 
 async function calcDSP10(fasad: FasadState, dsp10List: number[]): Promise<FullData[]> {
-    const result = await calcArea(fasad, f => f.fasadType === FASAD_TYPE.DSP && dsp10List.includes(f.materialId))
+    const result = await calcArea(fasad, f => f.fasadType === FASAD_TYPE.DSP && (dsp10List.includes(f.materialId) || !f.materialId))
     const coef = await getCoef(SpecItem.DSP10)
     const finalResult = result.map(r => {
         const area = r.data.amount
@@ -178,12 +178,13 @@ async function calcHydro(fasad: FasadState): Promise<FullData[]> {
         total += area 
         verbose.push([d.height, d.width, area.toFixed(3), ""])
     }
-    const totalCoef = total * 0.035 * coef
+    const totalCoef = total * mult * coef
     const data = `x ${mult} ${coef !== 1 ? "x " + coef : ""} = ${totalCoef.toFixed(3)}`
     
-    verbose?.push(["", "Итого",total.toFixed(3), data])
-    return [{ data: { amount: total }, verbose }]
+    verbose?.push(["", "Итого", total.toFixed(3), data])
+    return [{ data: { amount: totalCoef }, verbose }]
 }
+
 async function calcLacobel(fasad: FasadState, lacobel: LacobelSchema[]): Promise<FullData[]> {
     const result = await calcArea(fasad, f => !!lacobel.find(l => l.id === f.materialId && l.lacobelTypeId === LACOBEL_TYPE.LACOBELGLASS))
     const coef = await getCoef(SpecItem.Lacobel)

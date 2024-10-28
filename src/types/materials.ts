@@ -1,4 +1,4 @@
-import { FASAD_TYPE, MAT_PURPOSE } from "./enums"
+import { FASAD_TYPE, CHAR_PURPOSE } from "./enums"
 import { ProfileSchema } from "./schemas"
 
 export type Profile = Omit<Omit<ProfileSchema, "charId">, "brushSpecId">
@@ -11,7 +11,7 @@ export type FasadMaterial = {
     type: FASAD_TYPE
     image: string
     code: string
-    purpose: MAT_PURPOSE
+    purpose: CHAR_PURPOSE
 }
 
 export const FasadEmptyMaterial: FasadMaterial = {
@@ -20,7 +20,7 @@ export const FasadEmptyMaterial: FasadMaterial = {
     type: FASAD_TYPE.DSP,
     image: "",
     code: "",
-    purpose: MAT_PURPOSE.BOTH,
+    purpose: CHAR_PURPOSE.BOTH,
 }
 
 

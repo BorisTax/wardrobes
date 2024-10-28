@@ -2,7 +2,7 @@ import {  OmitId } from "./materials"
 import { Result, Token, PriceData } from "./server"
 import { PermissionSchema, ResourceSchema, User } from "./user"
 import { Template } from "./templates"
-import { KeySet, TABLE_NAMES } from "./schemas"
+import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from "./schemas"
 import { UserPermissions, RESOURCE, UserRole } from "./user"
 
 interface IUserAbstractService {
@@ -26,7 +26,7 @@ interface IUserAbstractService {
 }
 
 export interface IDataBaseService<T> {
-    getData: (table: TABLE_NAMES, columns: KeySet<T>, conditions: Partial<T>) => Promise<Result<T>>
+    getData: (table: TABLE_NAMES, columns: KeySet<T>, conditions: Partial<T>, options?: DataBaseSelectOptions<T>) => Promise<Result<T>>
     addData: (table: TABLE_NAMES, data: Partial<T>) => Promise<Result<T>>
     deleteData: (table: TABLE_NAMES, lookIn: Partial<T> ) => Promise<Result<null>>
     updateData: (table: TABLE_NAMES, lookIn: Partial<T>, update: Partial<T>) => Promise<Result<null>>

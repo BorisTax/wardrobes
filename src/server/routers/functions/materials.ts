@@ -2,7 +2,7 @@ import { AllData, DATA_TABLE_NAMES, FasadDefaultCharSchema, LacobelSchema } from
 import { getDataBaseProvider } from "../../options"
 import { DataBaseService } from "../../services/dataBaseService"
 import { getConsoleTypes, getFasadTypes, getWardobes, getWardrobeTypes } from "./wardrobe"
-import { getChars, getCharTypes, getFasadTypeToChar } from "./chars"
+import { getCharPurpose, getChars, getCharTypes, getFasadTypeToChar } from "./chars"
 import { getProfiles, getProfileTypes } from "./profiles"
 import { getSpecList, getSpecToCharList, getUnits } from "./spec"
 import { getDetailNames } from "./details"
@@ -31,10 +31,12 @@ export async function getAllData(): Promise<AllData> {
     const spec = (await getSpecList()).data
     const specToChar = (await getSpecToCharList()).data
     const detailNames = (await getDetailNames()).data
+    const charPurpose = (await getCharPurpose()).data
     return {
         chars,
         fasadDefaultChars,
         charTypes,
+        charPurpose,
         lacobels,
         consoleTypes,
         fasadTypes,

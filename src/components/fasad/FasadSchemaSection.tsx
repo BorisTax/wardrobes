@@ -3,20 +3,18 @@ import Hammer from "hammerjs"
 import FasadState from "../../classes/FasadState";
 import { Division } from "../../types/enums";
 import useDoubleClick from "../../custom-hooks/useDoubleClick";
-import { useAtomValue } from "jotai";
-import { materialListAtom } from "../../atoms/materials/chars";
-import { useMaterialMap } from "../../custom-hooks/useMaterialMap";
 import { getFasadCutHeight, getFasadCutWidth } from "../../functions/fasades";
+import { useAtomValue } from "jotai";
+import { charAtom } from "../../atoms/materials/chars";
 type FasadSectionProps = {
     fasad: FasadState
 }
 export default function FasadSchemaSection(props: FasadSectionProps): ReactElement {
     const [{ vertical, fontSize }, setState] = useState({ vertical: false, fontSize: "1rem" })
+    const chars = useAtomValue(charAtom)
     const sectionRef = useRef<HTMLDivElement>(null)
     const captionRef = useRef<HTMLDivElement>(null)
     const nullRef = useRef<HTMLDivElement>(null)
-    const materialList = useAtomValue(materialListAtom)
-    const matMap = useMaterialMap(materialList)
     const fasad = props.fasad
     const lastFasad = fasad.children.length === 0
     let gridTemplate: {
@@ -65,7 +63,7 @@ export default function FasadSchemaSection(props: FasadSectionProps): ReactEleme
         padding: "0px",
     }
     const caption = <div ref={captionRef} style={captionStyle}>
-        {`${matMap.get(fasad.materialId)?.type} ${matMap.get(fasad.materialId)?.name} (${Math.floor(getFasadCutHeight(fasad))}x${Math.floor(getFasadCutWidth(fasad))})`}
+        {`${fasad.fasadType} ${chars.get(fasad.materialId)?.name} (${Math.floor(getFasadCutHeight(fasad))}x${Math.floor(getFasadCutWidth(fasad))})`}
     </div>
     const contents = !lastFasad ? fasad.children.map((f: FasadState, i: number) => <FasadSchemaSection key={i} fasad={f} />) : caption
     const [, setHammer] = useState<HammerManager | null>(null)

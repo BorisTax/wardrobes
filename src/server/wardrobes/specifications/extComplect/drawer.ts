@@ -1,31 +1,22 @@
 import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, DRILL_TYPE } from "../../../../types/wardrobe";
-import { getKromkaPrimary, getKromkaSecondary, getGlue, getConfirmat, getDetails } from "../corpus";
-import { getDSP, getCoef, emptyFullData } from "../functions";
+import { getDetails, getCommonData } from "../corpus";
+import { getCoef, emptyFullData } from "../functions";
 import { allNoneKromka, allThinKromka, singleLengthThinKromka } from "../kromka";
-import { getKromkaAndZaglByDSP, getKromkaTypeByChar } from "../../../routers/functions/dspEdgeZag";
 import { getDetailNames } from "../../../routers/functions/details";
 
 
 export async function getDrawerSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = (await getDetails(data.wardTypeId, data.wardKindId, data.width, data.height, data.depth))
-    const shelf = details.find(d => d.id === DETAIL_NAME.SHELF)
+    const alldetails = (await getDetails(data.wardTypeId, data.wardKindId, data.width, data.height, data.depth))
+    const shelf = alldetails.find(d => d.id === DETAIL_NAME.SHELF)
     if (!shelf) return result
-    const telDetails: Detail[] = [
+    const details: Detail[] = [
         { id: DETAIL_NAME.DRAWER_FASAD, count: 1, length: shelf.length - 8, width: 140, kromka: allThinKromka(), drill: [DRILL_TYPE.NONE] },
         { id: DETAIL_NAME.DRAWER_SIDE, count: 2, length: data.depth - 150, width: 120, kromka: singleLengthThinKromka(), drill: [DRILL_TYPE.NONE] },
         { id: DETAIL_NAME.DRAWER_BRIDGE, count: 2, length: shelf.length - 57, width: 120, kromka:  singleLengthThinKromka(), drill: [DRILL_TYPE.CONFIRMAT1] }
     ]
-    const kromkaAndZagl = await getKromkaAndZaglByDSP(data.dspId)
-    const kromkaSpecId = await getKromkaTypeByChar(kromkaAndZagl.kromkaId)
-    const kromkaPrimary = (await getKromkaPrimary(data, telDetails, kromkaAndZagl.kromkaId))
-    const kromkaSecondary = await getKromkaSecondary(data, telDetails, kromkaSpecId, kromkaAndZagl.kromkaId)
-    result.push([SpecItem.DSP16, await getDSP(data, telDetails)])
-    result.push([SpecItem.DVP, await getTelDVP(shelf.length, data.depth)])
-    result.push([kromkaSpecId, kromkaSecondary])
-    result.push([SpecItem.Glue, await getGlue(data, kromkaPrimary.data.amount, kromkaSecondary.data.amount)])
-    result.push([SpecItem.Confirmat, await getConfirmat(data, telDetails)])
+    await getCommonData(data, details, result)
     result.push([SpecItem.Nails, { data: { amount: 0.0125 } }])
     result.push([SpecItem.Samorez16, { data: { amount: 8 } }])
     result.push([SpecItem.Samorez30, { data: { amount: 2 } }])

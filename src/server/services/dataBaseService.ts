@@ -1,5 +1,5 @@
 import { OmitId } from "../../types/materials"
-import { KeySet, TABLE_NAMES } from "../../types/schemas"
+import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from "../../types/schemas"
 import { IDataBaseService, IDataBaseServiceProvider } from "../../types/services"
 
 export class DataBaseService<T> implements IDataBaseService<T> {
@@ -7,8 +7,8 @@ export class DataBaseService<T> implements IDataBaseService<T> {
     constructor(provider: IDataBaseServiceProvider<T>) {
         this.provider = provider
     }
-    async getData(table: TABLE_NAMES, columns: KeySet<T>, values: Partial<T>) {
-        return await this.provider.getData(table, columns, values)
+    async getData(table: TABLE_NAMES, columns: KeySet<T>, values: Partial<T>, options?: DataBaseSelectOptions<T>) {
+        return await this.provider.getData(table, columns, values, options)
     }
     async addData(table: TABLE_NAMES, data: Partial<T>) {
         return await this.provider.addData(table, data)

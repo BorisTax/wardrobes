@@ -21,7 +21,7 @@ export enum LACOBEL_TYPE {
     LACOBELGLASS = 2,
 }
 
-export enum MAT_PURPOSE {
+export enum CHAR_PURPOSE {
     CORPUS = 1,
     FASAD = 2,
     BOTH = 3

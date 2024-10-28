@@ -1,6 +1,6 @@
 import { DefaultSchema, FurnitureTableSchema } from "../../../types/schemas";
 import { SpecItem } from "../../../types/specification";
-import { DETAIL_NAME, DRILL_TYPE, Detail, KROMKA_SIDE, KROMKA_TYPE, FullData, SpecificationResult, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../../../types/wardrobe";
+import { DETAIL_NAME, DRILL_TYPE, Detail, KROMKA_SIDE, KROMKA_TYPE, FullData, SpecificationResult, WARDROBE_TYPE, WardrobeData } from "../../../types/wardrobe";
 import { WardrobeDetailTableSchema } from "../../../types/schemas";
 import { getSpecList } from "../../routers/functions/spec";
 import { getWardobes } from "../../routers/functions/wardrobe";
@@ -91,22 +91,22 @@ export function getMinifixByDetail(detail: Detail): number {
 }
 
 
-export function getKromkaLength(detail: Detail, kromka: KROMKA_TYPE): number {
+export function getKromkaLength(detail: Detail, kromka: KROMKA_TYPE[]): number {
     let result = 0
-    if (detail.kromka?.L1 === kromka) result += detail.length
-    if (detail.kromka?.L2 === kromka) result += detail.length
-    if (detail.kromka?.W1 === kromka) result += detail.width
-    if (detail.kromka?.W2 === kromka) result += detail.width
+    if (kromka.includes(detail.kromka?.L1)) result += detail.length
+    if (kromka.includes(detail.kromka?.L2)) result += detail.length
+    if (kromka.includes(detail.kromka?.W1)) result += detail.width
+    if (kromka.includes(detail.kromka?.W2)) result += detail.width
     return result
 }
-export function getKromkaDescripton(detail: Detail, kromka: KROMKA_TYPE): string {
+export function getKromkaDescripton(detail: Detail, kromka: KROMKA_TYPE[]): string {
     let length = 0
     let width = 0
     const result = []
-    if (detail.kromka?.L1 === kromka) length = 1
-    if (detail.kromka?.L2 === kromka) length += 1
-    if (detail.kromka?.W1 === kromka) width = 1
-    if (detail.kromka?.W2 === kromka) width += 1
+    if (kromka.includes(detail.kromka?.L1)) length = 1
+    if (kromka.includes(detail.kromka?.L2)) length += 1
+    if (kromka.includes(detail.kromka?.W1)) width = 1
+    if (kromka.includes(detail.kromka?.W2)) width += 1
     if (length > 0) result.push(`${length} по длине`)
     if (width > 0) result.push(`${width} по ширине`)
     return result.join(', ')
@@ -130,10 +130,10 @@ export function getDrill(detail: WardrobeDetailTableSchema): DRILL_TYPE[] {
     return []
 } 
 
-export function getKromka(detail: WardrobeDetailTableSchema): KROMKA_SIDE {
+export function getKromka(wardTypeId: WARDROBE_TYPE, detail: WardrobeDetailTableSchema): KROMKA_SIDE {
     if ([DETAIL_NAME.ROOF].includes(detail.detailId)) return singleLengthThickDoubleWidthThinKromka()
     if ([DETAIL_NAME.STAND].includes(detail.detailId)) return singleLengthThickKromka()
-    if ([DETAIL_NAME.INNER_STAND, DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT, DETAIL_NAME.PILLAR].includes(detail.detailId)) return singleLengthThinKromka()
+    if ([DETAIL_NAME.INNER_STAND, DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT, DETAIL_NAME.PILLAR].includes(detail.detailId)) return wardTypeId === WARDROBE_TYPE.GARDEROB ? singleLengthThickKromka() : singleLengthThinKromka()
     return allNoneKromka()
 }
 

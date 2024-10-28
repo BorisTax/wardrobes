@@ -11,11 +11,10 @@ import { getExtComplectSpecification } from "../../wardrobes/specifications/extC
 import { createFasades, getFasadSpecification } from "../../wardrobes/specifications/fasades"
 import { getProfiles } from "./profiles"
 import { AppState } from "../../../types/app"
-import { getFasadState } from "../../../functions/fasades"
 
 export async function getSpecList(): Promise<Result<SpecSchema>> {
   const service = new DataBaseService(getDataBaseProvider<SpecSchema>())
-  return await service.getData(DATA_TABLE_NAMES.SPEC, [], {})
+  return await service.getData(DATA_TABLE_NAMES.SPEC, [], {}, { order: "name" })
 }
 export async function getSpecToCharList(): Promise<Result<SpecToCharSchema>> {
   const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())

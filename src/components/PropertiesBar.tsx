@@ -108,9 +108,9 @@ function getProperties(fasad: FasadState | undefined, rootFasades: FasadState[])
     const sectionCount = (fasad && (fasad.children.length > 1)) ? fasad.children.length : 1
     const fixWidth = fasad?.fixedWidth || false
     const fixHeight = fasad?.fixedHeight || false
-    let disabledWidth = !fasad || fasad.level === 0 || fasad.fixedWidth
-    let disabledHeight = !fasad || fasad.level === 0 || fasad.fixedHeight
     const parent = fasad?.parent
+    let disabledWidth = !fasad || fasad.level === 0 || (fasad.level === 1 && parent?.division === Division.HEIGHT) || fasad.fixedWidth
+    let disabledHeight = !fasad || fasad.level === 0|| (fasad.level === 1 && parent?.division === Division.WIDTH) || fasad.fixedHeight
     const disabledFixWidth = !fasad || fasad.level === 0 || (fasad.level === 1 && parent?.division === Division.HEIGHT)
     const disabledFixHeight = !fasad || fasad.level === 0 || (fasad.level === 1 && parent?.division === Division.WIDTH)
     disabledWidth = disabledWidth || !!(fasad && fasad.level <= 1 && parent?.division === Division.HEIGHT)

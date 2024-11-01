@@ -14,6 +14,7 @@ import { RESOURCE } from "../types/user"
 import { wardrobeTypesAtom } from "../atoms/storage"
 import { profileAtom } from "../atoms/materials/profiles"
 import { charAtom } from "../atoms/materials/chars"
+import useMessage from "../custom-hooks/useMessage"
 const fasades = [ 2, 3, 4, 5, 6]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)
@@ -27,6 +28,7 @@ export default function WardrobePropertiesBar() {
     const setWardHeight = useSetAtom(setWardHeightAtom)
     const setWardType = useSetAtom(setWardTypeAtom)
     const showConfirm = useConfirm()
+    const showMessage = useMessage()
     const resetAppData = useSetAtom(resetAppDataAtom)
     const saveState = useSetAtom(saveStateAtom)
     const openState = useSetAtom(openStateAtom)
@@ -38,25 +40,30 @@ export default function WardrobePropertiesBar() {
     const readFileDisabled = !perm?.Read
     const wardTypes = useMemo(() => [...allWardTypes.keys()].filter(k=> k !== WARDROBE_TYPE.GARDEROB), [allWardTypes])
     const wardTypeChangeConfirm = async () => {
-        return await showConfirm("При данном типе шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+        await showMessage("Текущая конфигурация фасадов невозможна при данном типе шкафа")
+        return false
     }
     const wardHeightConfirm = async () => {
-        return await showConfirm("При данной высоте шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+        await showMessage("Текущая конфигурация фасадов невозможна при данной высоте")
+        return false
     }
     const wardWidthConfirm = async () => {
-        return await showConfirm("При данной ширине шкафа не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+        await showMessage("Текущая конфигурация фасадов невозможна при данной ширине")
+        return false
     }
     const wardProfileConfirm = async () => {
-        return await showConfirm("При данном типе профиля не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+        await showMessage("Текущая конфигурация фасадов невозможна при данном типе профиля")
+        return false
     }
     const wardFasadCountConfirm = async () => {
-        return await showConfirm("При данном кол-ве фасадов не получится сохранить все настройки фасадов и они будут сброшены. Продолжить?")
+        await showMessage("Текущая конфигурация фасадов невозможна при данном кол-ве фасадов")
+        return false
     }
     return <div className="properties-bar">
         <div className="d-flex flex-nowrap justify-content-between">
             <div>Параметры шкафа</div>
             <div className="d-flex flex-nowrap  align-self-center gap-2 h-100">
-                <ImageButton title="Настройки по умолчанию" icon="new" onClick={async () => { if (await showConfirm("Сбросить в первоначальное состояние?")) resetAppData() }} />
+                <ImageButton title="Настройки по умолчанию" icon="new" onClick={async () => { if (await showConfirm("Сбросить в начальное состояние?")) resetAppData() }} />
                 <ImageButton title="Открыть" icon="open" disabled={readFileDisabled} onClick={() => { openState() }} />
                 <ImageButton title="Сохранить" icon="save" disabled={saveFileDisabled} onClick={() => { saveState() }} />
                 <ImageButton title="Отменить" icon="undo" disabled={!previous} onClick={() => { undo() }} />

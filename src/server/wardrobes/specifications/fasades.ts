@@ -60,13 +60,14 @@ async function calcSpecification(fasad: FasadState, profile: ProfileSchema): Pro
     const specToChar = await (await getSpecToCharList()).data
     const dsp10 = specToChar.filter(s => s.id === SpecItem.DSP10).map(s => s.charId)
     const dsp16 = specToChar.filter(s => s.id === SpecItem.DSP16).map(s => s.charId)
+    const ritramaCharId = specToChar.find(s => s.id === SpecItem.Ritrama)?.charId || 0
     spec.set(SpecItem.DSP10, await calcDSP10(fasad, dsp10))
     spec.set(SpecItem.DSP16, await calcDSP16(fasad, dsp10, dsp16))
     spec.set(SpecItem.Mirror, await calcMirror(fasad));
     spec.set(SpecItem.Arakal, await calcArakal(fasad));
     spec.set(SpecItem.Hydro, await calcHydro(fasad));
     spec.set(SpecItem.Lacobel, await calcLacobel(fasad, lacobels))
-    spec.set(SpecItem.Ritrama, await calcRitrama(fasad, lacobels));
+    spec.set(SpecItem.Ritrama, await calcRitrama(fasad, lacobels, ritramaCharId));
     spec.set(SpecItem.Armirovka, await calcArmirovka(fasad, lacobels));
     spec.set(SpecItem.FMPPaper, await calcFMPPaper(fasad));
     spec.set(SpecItem.FMPGlass, await calcFMPGlass(fasad, lacobels));
@@ -197,7 +198,7 @@ async function calcLacobel(fasad: FasadState, lacobel: LacobelSchema[]): Promise
     return finalResult
 }
 
-async function calcRitrama(fasad: FasadState, lacobel: LacobelSchema[]): Promise<FullData[]> {
+async function calcRitrama(fasad: FasadState, lacobel: LacobelSchema[], ritramaCharId: number): Promise<FullData[]> {
     const dims = await calcDimensions(fasad, f => !!lacobel.find(l => l.id === f.materialId && l.lacobelTypeId === LACOBEL_TYPE.LACOBEL))
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Ритрама", "Площадь"]]
     let total = 0
@@ -207,7 +208,7 @@ async function calcRitrama(fasad: FasadState, lacobel: LacobelSchema[]): Promise
         verbose.push([d.height, d.width, `(${d.height}+100)x1200`, ritrama.toFixed(3)])
     }
     verbose.push(["", "", `Итого:`, total.toFixed(3)])
-    return [{ data: { amount: total, charId: 0 }, verbose: total > 0 ? verbose : undefined }]
+    return [{ data: { amount: total, charId: ritramaCharId }, verbose: total > 0 ? verbose : undefined }]
 }
 
 async function calcArmirovka(fasad: FasadState, lacobel: LacobelSchema[], tolerance = 5): Promise<FullData[]> {

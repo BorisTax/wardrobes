@@ -65,7 +65,7 @@ export type DVPTableSchema = {
 }
 
 export type FurnitureTableSchema = {
-    id: number,
+    wardrobeId: number,
     specId: number,
     minWidth: number,
     maxWidth: number,
@@ -104,7 +104,7 @@ export type FasadDefaultCharSchema = {
     charId: number,
 }
 export type WardrobeDetailTableSchema = {
-    id: number
+    wardrobeId: number
     detailId: number
     minWidth: number
     maxWidth: number

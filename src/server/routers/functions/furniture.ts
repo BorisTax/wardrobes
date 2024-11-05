@@ -4,20 +4,20 @@ import { SpecItem } from "../../../types/specification";
 import { getDataBaseProvider } from "../../options";
 import { DataBaseService } from "../../services/dataBaseService";
 
-export async function getFurniture(id: number, specId: number, width: number, height: number, depth: number) {
+export async function getFurniture(wardrobeId: number, specId: number, width: number, height: number, depth: number) {
     const service = new DataBaseService(getDataBaseProvider<FurnitureTableSchema>())
-    const allFurniture = (await service.getData(DATA_TABLE_NAMES.FURNITURE, [], { id, specId })).data
+    const allFurniture = (await service.getData(DATA_TABLE_NAMES.FURNITURE, [], { wardrobeId, specId })).data
     const furniture = allFurniture.filter(d => width >= d.minWidth && width <= d.maxWidth && height >= d.minHeight && height <= d.maxHeight && depth >= d.minDepth && depth <= d.maxDepth)
     return furniture[0]
 }
 
-export async function getFurnitureTable({ id, specId }: { id: number, specId?: SpecItem }): Promise<Result<FurnitureTableSchema>>{
+export async function getFurnitureTable({ wardrobeId, specId }: Partial<FurnitureTableSchema>): Promise<Result<FurnitureTableSchema>>{
     const service = new DataBaseService(getDataBaseProvider<FurnitureTableSchema>())
-    return await service.getData(DATA_TABLE_NAMES.FURNITURE, [], { id, specId })
+    return await service.getData(DATA_TABLE_NAMES.FURNITURE, [], { wardrobeId, specId })
   }
 
 export async function getTrempels(): Promise<Result<TrempelSchema>>{
-    const service = new DataBaseService(getDataBaseProvider<FurnitureTableSchema>())
+    const service = new DataBaseService(getDataBaseProvider<TrempelSchema>())
     return await service.getData(DATA_TABLE_NAMES.TREMPEL, [], {})
   }
 export async function getTrempelByDepth(depth: number): Promise<TrempelSchema> {

@@ -81,7 +81,7 @@ export async function getDetails(wardrobeTypeId: number, wardrobeId: number, wid
     const details: Detail[] =  detailsData.map(dd => (
         {   
             id: dd.detailId,
-            name: detailNames.find(n => n.id === dd.id)?.name || "",
+            name: detailNames.find(n => n.id === dd.wardrobeId)?.name || "",
             length: calcFunction(dd.size, { width, height }),
             width: dd.detailId === DETAIL_NAME.ROOF || dd.detailId === DETAIL_NAME.STAND ? depth : depth - offset,
             count: dd.count,
@@ -218,7 +218,7 @@ export async function getSamorez16(data: WardrobeData): Promise<FullData> {
 
 async function getStyagka(data: WardrobeData): Promise<FullData> {
     const details = await getDetailsFromTable(data.wardKindId, data.width, data.height)
-    const roof = details.find(d => d.id === DETAIL_NAME.ROOF)
+    const roof = details.find(d => d.detailId === DETAIL_NAME.ROOF)
     const ward = roof?.count === 2 ? "Одинарный" : "Двойной"
     const count = roof?.count === 2 ? 0 : 3
     const verbose = [["Шкаф", "Стяжка М6"]];

@@ -14,7 +14,7 @@ export type EditDataItem = {
     valueCaption?: (value: ValueType) => string
     list?: ValueType[]
     listWithEmptyRow?: boolean
-    message: string
+    message?: string
     readonly?: boolean
     type: InputType
     optional?: boolean
@@ -49,7 +49,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     {i.readonly || (!props.onUpdate && !props.onAdd) ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
                     {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value; return [...p] }) }} submitOnLostFocus={true} />}
                     {i.type === InputType.CHECKBOX && <CheckBox caption={i.valueCaption && i.valueCaption(newValues[index])} checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; return [...p] }) }} />}
-                    {(i.list && i.type === InputType.LIST) && <ComboBox<ValueType> value={newValues[index] as ValueType} items={i.list as ValueType[]} displayValue={value => i.valueCaption ? i.valueCaption(value) : ""} disabled={!checked[index] || i.readonly} withEmpty={i.listWithEmptyRow} onChange={(_, value) => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
+                    {(i.list && i.type === InputType.LIST) && <ComboBox<ValueType> value={newValues[index] as ValueType} items={i.list as ValueType[]} displayValue={value => i.valueCaption ? i.valueCaption(value) : ""} disabled={!checked[index] || i.readonly} withEmpty={i.listWithEmptyRow} onChange={value => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }) }} />}
                     {i.type === InputType.FILE && <div>
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]
@@ -133,7 +133,7 @@ function checkFields({ checked, items, newValues }: { checked: boolean[], items:
             }
         }
         if (typeof newValue === 'string' && newValue.trim() === "" && !item.optional) {
-            message = item.message
+            message = item.message || ""
             return false
         }
         return true

@@ -1,7 +1,7 @@
 import { ReactNode, ReactNodeArray } from "react"
 
 export type ComboBoxProps<T> = {
-    onChange?: (index: number, value: T) => void
+    onChange?: (value: T, index: number) => void
     items: T[]
     value?: T
     displayValue: (value: T) => string | undefined
@@ -33,7 +33,7 @@ export default function ComboBox<T>(props: ComboBoxProps<T> = { items: [], disab
                 onClick={(e) => { e.stopPropagation() }}
                 onChange={(e) => {
                     const index = props.withEmpty ? e.target.selectedIndex - 1 : e.target.selectedIndex 
-                    if (props.onChange) props.onChange(index, items[index])
+                    if (props.onChange) props.onChange(items[index], index)
                 }}>
                 {options}
             </select >

@@ -3,7 +3,7 @@ import { SpecItem } from "../../../types/specification";
 import { DETAIL_NAME, DRILL_TYPE, Detail, KROMKA_SIDE, KROMKA_TYPE, FullData, SpecificationResult, WARDROBE_TYPE, WardrobeData } from "../../../types/wardrobe";
 import { WardrobeDetailTableSchema } from "../../../types/schemas";
 import { getSpecList } from "../../routers/functions/spec";
-import { getWardobes } from "../../routers/functions/wardrobe";
+import { getWardrobes } from "../../routers/functions/wardrobe";
 import { allNoneKromka, singleLengthThickDoubleWidthThinKromka, singleLengthThickKromka, singleLengthThinKromka } from "./kromka";
 import { getDetailNames } from "../../routers/functions/details";
 import { off } from "process";
@@ -59,7 +59,7 @@ export function isDataFit(width: number, height: number, depth: number, item: Fu
 }
 
 export async function getWardrobeName(id: number): Promise<string> {
-    const wardkinds = (await getWardobes()).data as DefaultSchema[]
+    const wardkinds = (await getWardrobes()).data as DefaultSchema[]
     return wardkinds.find(w => w.id === id)?.name || ""
 }
 

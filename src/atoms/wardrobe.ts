@@ -63,6 +63,7 @@ export const getDetailsAtom = atom(null, async (get, set) => {
         set(setWardrobeDataAtom, (prev) => ({ ...prev, details: data }))
     }
 })
+
 export const detailAtom = atom<Detail | null>(null) 
 export const loadDetailAtom = atom(null, async (get, set, detailName: DETAIL_NAME, wardType:WARDROBE_TYPE,  kind: WARDROBE_KIND, width: number, height: number) => {
     const { token } = get(userAtom)

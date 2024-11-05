@@ -29,6 +29,8 @@ export const WARDROBE_TYPES_ROUTE = '/wardrobe_types';
 export const CONSOLE_TYPES_ROUTE = '/console_types';
 export const DETAIL_ROUTE = '/detail';
 export const DETAILS_ROUTE = '/details';
+export const WARDROBE_DETAIL_TABLE_ROUTE = '/wardrobeDetailTable';
+export const FURNITURE_TABLE_ROUTE = '/furnitureTable';
 
 export const WARDROBE_ID_PARAM = 'wardrobeId';
 export const WARDTYPE_ID_PARAM = 'wardTypeId';

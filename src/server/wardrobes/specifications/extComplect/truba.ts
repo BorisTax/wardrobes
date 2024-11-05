@@ -9,7 +9,7 @@ export async function getTrubaSpecification(data: WardrobeData): Promise<Specifi
     const details = (await getDetails(data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth))
     const shelf = details.find(d => d.id === DETAIL_NAME.SHELF_PLAT)
     if (!shelf) return result
-    const truba = await getTrubaExt(shelf.length, await getTruba(data, details))
+    const truba = await getTrubaExt(shelf.length, await getTruba(data))
     if (truba.data.amount === 0) return result
     result.push([SpecItem.Truba, truba])
     result.push([SpecItem.Flanec, { data: { amount: 2 } }])

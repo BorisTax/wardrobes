@@ -76,7 +76,7 @@ export default function WardrobePropertiesBar() {
             <PropertyRow>
                 <TextBox name="order" value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
             </PropertyRow> */}
-            <ComboBox<WARDROBE_TYPE> title="Тип:" value={type} items={wardTypes} displayValue={value => allWardTypes.get(value) || ""} onChange={(_, value) => { setWardType([value as WARDROBE_TYPE, wardTypeChangeConfirm]) }} />
+            <ComboBox<WARDROBE_TYPE> title="Тип:" value={type} items={wardTypes} displayValue={value => allWardTypes.get(value) || ""} onChange={value => { setWardType([value as WARDROBE_TYPE, wardTypeChangeConfirm]) }} />
             <div className="text-end">Ширина: </div>
             <PropertyRow>
                 <TextBox name="width" value={wardWidth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={900} max={4000} setValue={(value) => { setWardWidth([+value, wardWidthConfirm]) }} submitOnLostFocus={true} />
@@ -85,7 +85,7 @@ export default function WardrobePropertiesBar() {
             <PropertyRow>
                 <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1800} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} submitOnLostFocus={true} />
             </PropertyRow>
-            <ComboBox<number> title="Кол-во фасадов:" value={fasadCount} items={fasades} displayValue={value => `${value}`} onChange={(_, value) => { setFasadCount([+value, wardFasadCountConfirm]) }} />
+            <ComboBox<number> title="Кол-во фасадов:" value={fasadCount} items={fasades} displayValue={value => `${value}`} onChange={value => { setFasadCount([+value, wardFasadCountConfirm]) }} />
             <ComboBox<number> title="Профиль:" value={profile.id} items={[...profileList.keys()]} displayValue={value => chars.get(profileList.get(value)?.charId || 0)?.name || ""} onChange={(index, value) => { setProfileId([value, wardProfileConfirm]); }} />
         </PropertyGrid>
     </div>

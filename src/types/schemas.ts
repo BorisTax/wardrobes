@@ -65,6 +65,7 @@ export type DVPTableSchema = {
 }
 
 export type FurnitureTableSchema = {
+    id: number
     wardrobeId: number,
     specId: number,
     minWidth: number,
@@ -75,7 +76,6 @@ export type FurnitureTableSchema = {
     maxDepth: number,
     count: number,
     size: string,
-    enable: number
 }
 
 export type DspKromkaZaglSchema = {
@@ -104,6 +104,7 @@ export type FasadDefaultCharSchema = {
     charId: number,
 }
 export type WardrobeDetailTableSchema = {
+    id: number
     wardrobeId: number
     detailId: number
     minWidth: number
@@ -113,7 +114,6 @@ export type WardrobeDetailTableSchema = {
     count: number
     length: string
     width: string
-    enabled: boolean
 }
 
 export type AllData = {

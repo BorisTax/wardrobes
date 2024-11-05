@@ -9,7 +9,7 @@ import { getCoef } from "./functions"
 import { calcFunction } from "./functions"
 import { getKromkaAndZaglByDSP, getKromkaTypeByChar } from "../../routers/functions/dspEdgeZag"
 import { getFurniture, getTrempelByDepth } from "../../routers/functions/furniture"
-import { getDetailNames, getDetailsFromTable, getDVPTemplates } from "../../routers/functions/details"
+import { getDetailNames, getDetailsByWardrobe, getDVPTemplates } from "../../routers/functions/details"
 import {  getCharIdAndBrushSpecIdByProfileId } from "../../routers/functions/profiles"
 import { getChar } from "../../routers/functions/chars"
 import { getSpecList } from "../../routers/functions/spec"
@@ -19,7 +19,7 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     const details = !resetDetails ? data.details : await getDetails(data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth);
     const karton = await getKarton(data)
     const skotch = data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
-    const truba = await getTruba(data, details)
+    const truba = await getTruba(data)
     await getCommonData(data, details, result)
     const {brushSpecId, profileCharId} = await getCharIdAndBrushSpecIdByProfileId(data.profileId)
     result.push([SpecItem.DVP, await getDVP(data)])
@@ -75,7 +75,7 @@ export function useMinifix(detail: DETAIL_NAME): boolean {
 
 
 export async function getDetails(wardrobeTypeId: number, wardrobeId: number, width: number, height: number, depth: number): Promise<Detail[]> {
-    const detailsData = await getDetailsFromTable(wardrobeId, width, height)
+    const detailsData = await getDetailsByWardrobe(wardrobeId, width, height)
     const detailNames = (await getDetailNames()).data
     const offset = wardrobeTypeId === WARDROBE_TYPE.GARDEROB ? 0 : 100;
     const details: Detail[] =  detailsData.map(dd => (
@@ -138,7 +138,7 @@ async function getDVPData(width: number, height: number, depth: number): Promise
 }
 
 async function getKarton(data: WardrobeData): Promise<FullData> {
-    const item = await getFurniture(data.wardrobeId, SpecItem.Karton, data.width, data.height, data.depth)
+    const item = (await getFurniture(data.wardrobeId, SpecItem.Karton, data.width, data.height, data.depth))[0]
     const coef = await getCoef(SpecItem.Karton) || 1;
     const verbose = [["Ширина шкафа", "Высота шкафа", "Глубина шкафа", "Кол-во"]];
     const result = item?.count || 0
@@ -148,7 +148,7 @@ async function getKarton(data: WardrobeData): Promise<FullData> {
 
 async function getLegs(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const item = await getFurniture(data.wardrobeId, SpecItem.Leg, data.width, data.height, data.depth)
+    const item = (await getFurniture(data.wardrobeId, SpecItem.Leg, data.width, data.height, data.depth))[0]
     const result = item?.count || 0
     const verbose = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), `${result}`]);
@@ -199,7 +199,7 @@ async function getZagMinifix(data: WardrobeData, details: Detail[], zaglushkaId:
 }
 export async function getNails(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const item = await getFurniture(data.wardrobeId, SpecItem.Nails, data.width, data.height, data.depth)
+    const item = (await getFurniture(data.wardrobeId, SpecItem.Nails, data.width, data.height, data.depth))[0]
     const result = item?.count || 0
     const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), `${result}`]);
@@ -209,7 +209,7 @@ export async function getNails(data: WardrobeData): Promise<FullData> {
 export async function getSamorez16(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const { wardrobeId: wardKind, width, height, depth } = data;
-    const item = await getFurniture(wardKind, SpecItem.Samorez16, width, height, depth);
+    const item = (await getFurniture(wardKind, SpecItem.Samorez16, width, height, depth))[0];
     const current = item?.count || 0
     const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), `${current}`]);
@@ -217,7 +217,7 @@ export async function getSamorez16(data: WardrobeData): Promise<FullData> {
 }
 
 async function getStyagka(data: WardrobeData): Promise<FullData> {
-    const details = await getDetailsFromTable(data.wardrobeId, data.width, data.height)
+    const details = await getDetailsByWardrobe(data.wardrobeId, data.width, data.height)
     const roof = details.find(d => d.detailId === DETAIL_NAME.ROOF)
     const ward = roof?.count === 2 ? "Одинарный" : "Двойной"
     const count = roof?.count === 2 ? 0 : 3
@@ -296,20 +296,21 @@ async function getNaprav(data: WardrobeData, profileId: number, top: boolean): P
     return { data: { amount: result, charId: profileId }, verbose }
 }
 
-export async function getTruba(data: WardrobeData, details: Detail[]): Promise<FullData & { count: number }> {
+export async function getTruba(data: WardrobeData): Promise<FullData & { count: number }> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return { ...emptyFullDataIfSystem(), count: 0 }
     const coef = await getCoef(SpecItem.Truba)
-    const item = await getFurniture(data.wardrobeId, SpecItem.Truba, data.width, data.height, data.depth );
-    const shelfPlat = details.find(d => d.id === DETAIL_NAME.SHELF_PLAT)
-    const size = shelfPlat?.length || 0
-    //const caption = await getWardrobeKind(wardKind);
-    const count = item?.count || 0
-    const result = size * count / 1000 * coef
-    const coefString = coef !== 1 ? ` x ${coef} =  ${result.toFixed(3)}` : ""
+    const items = await getFurniture(data.wardrobeId, SpecItem.Truba, data.width, data.height, data.depth );
     const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа", "Кол-во", "Длина", "Итого"]];
-    if (count > 0) verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), getFineRange(item?.minDepth || 0, item?.maxDepth || 0), `${count}`, `${size}`, `${(size * count / 1000).toFixed(3) + coefString}`]);
-    else verbose.push(["", `${data.depth}`, `нет`, ``, ``]);
-    return { data: { amount: result, charId: 0 }, verbose, count };
+    let result = 0
+    for(let item of items){
+        const count = item.count
+        const size = calcFunction(item.size, { width: data.width, depth: data.depth, height: data.height, offset: 0 })
+        result += size * count / 1000 * coef
+        const coefString = coef !== 1 ? ` x ${coef} =  ${result.toFixed(3)}` : ""
+        if (count > 0) verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), getFineRange(item?.minDepth || 0, item?.maxDepth || 0), `${count}`, `${size}`, `${(size * count / 1000).toFixed(3) + coefString}`]);
+        else verbose.push(["", `${data.depth}`, `нет`, ``, ``]);
+    }
+    return { data: { amount: result, charId: 0 }, verbose, count: items.length };
 }
 async function  getFlanec(truba: FullData & { count: number }): Promise<FullData> {
     const count = truba.count
@@ -320,13 +321,16 @@ async function  getFlanec(truba: FullData & { count: number }): Promise<FullData
 
 export async function getTrempel(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const item = await getFurniture(data.wardrobeId, SpecItem.Trempel, data.width, data.height, data.depth );
-    const count = item?.count || 0
+    const items = await getFurniture(data.wardrobeId, SpecItem.Trempel, data.width, data.height, data.depth );
     const {id, maxDepth, minDepth} = await getTrempelByDepth(data.depth)
-    const charName = (await getChar(id))?.name || ""
     const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа", "Тремпель", "Кол-во"]];
-    if (count > 0) verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), getFineRange(minDepth, maxDepth), charName, `${count}`]);
-    else verbose.push(["", `${data.depth}`, "", "нет"]);
+    let count = 0
+    for (let item of items) {
+        count += item?.count || 0
+        const charName = (await getChar(id))?.name || ""
+        if (count > 0) verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), getFineRange(minDepth, maxDepth), charName, `${count}`]);
+        else verbose.push(["", `${data.depth}`, "", "нет"]);
+    }
     return { data: { amount: count, charId: id }, verbose };
 }
 

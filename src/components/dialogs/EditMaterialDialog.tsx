@@ -7,17 +7,24 @@ import { useNavigate } from "react-router-dom"
 import EditChars from "./editMaterialDialogs/EditChars"
 import EditSpecToChars from "./editMaterialDialogs/EditSpecToChars"
 import EditDSPKromkaZagl from "./editMaterialDialogs/EditDSPKromkaZagl"
+import EditDetailsTable from "./editMaterialDialogs/EditDetailsTable"
+import EditFurnitureTable from "./editMaterialDialogs/EditFurnitureTable"
 enum MaterialGroup{
     SPECIFICATION = 1,
     CHARS = 2,
     SPEC_TO_CHAR = 3,
     DSP_EDGE = 4,
+    DETAIL_TABLE = 5,
+    FURNITURE_TABLE = 6,
 }
 const matGroup=new Map()
 matGroup.set(MaterialGroup.SPECIFICATION, "Номенклатура")
 matGroup.set(MaterialGroup.CHARS, "Характеристики")
 matGroup.set(MaterialGroup.SPEC_TO_CHAR, "Характеристики номенклатур")
 matGroup.set(MaterialGroup.DSP_EDGE, "ДСП - Кромка - Заглушка")
+matGroup.set(MaterialGroup.DETAIL_TABLE, "Деталировки")
+matGroup.set(MaterialGroup.FURNITURE_TABLE, "Фурнитура")
+
 export default function EditMaterialDialog() {
     const navigate = useNavigate()
     const { permissions } = useAtomValue(userAtom)
@@ -41,5 +48,7 @@ function getGroup(group: MaterialGroup) {
     groups.set(MaterialGroup.CHARS, <EditChars />)
     groups.set(MaterialGroup.SPEC_TO_CHAR, <EditSpecToChars />)
     groups.set(MaterialGroup.DSP_EDGE, <EditDSPKromkaZagl />)
+    groups.set(MaterialGroup.DETAIL_TABLE, <EditDetailsTable />)
+    groups.set(MaterialGroup.FURNITURE_TABLE, <EditFurnitureTable />)
     return groups.get(group) || <></>
 }

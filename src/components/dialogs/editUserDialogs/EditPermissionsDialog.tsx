@@ -54,7 +54,7 @@ export default function EditPermissionsDialog() {
     return <EditContainer>
         <div>
             <div className="d-flex flex-nowrap gap-2 align-items-start position-relative">
-                <ComboBox<number> title="Роль: " value={roleId} items={[...roles.keys()]} displayValue={value => roles.get(value)} onChange={(_, value) => { setRoleId(value); }} />
+                <ComboBox<number> title="Роль: " value={roleId} items={[...roles.keys()]} displayValue={value => roles.get(value)} onChange={value => { setRoleId(value); }} />
                 {perm?.Create && <ImageButton title="Добавить" icon='add' onClick={() => { addUserRoleDialogRef.current?.showModal() }} />}
                 {perm?.Delete && <ImageButton title="Удалить" icon='delete' onClick={async () => {
                     if (await showConfirm("Удалить роль " + roles.get(roleId))) {

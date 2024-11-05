@@ -11,7 +11,7 @@ import { getProfiles } from "./profiles";
 import { getFasadDefaultChar } from "./materials";
 
 
-export async function getWardobes() {
+export async function getWardrobes() {
   const service = new DataBaseService(getDataBaseProvider<WardrobesSchema>());
   return await service.getData(DATA_TABLE_NAMES.WARDROBES, [], {});
 }

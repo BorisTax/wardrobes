@@ -39,7 +39,7 @@ export default function EditSpecToChars() {
         <div>
             <div className="d-flex flex-nowrap gap-2 align-items-start">
                 <ComboBox<number> title="Номенклатура: " value={selectedSpecId} items={[...specList.keys()]} displayValue={(value => specList.get(value)?.name || "")} 
-                    onChange={(_, value) => { setSelectedSpecId(value) }} />
+                    onChange={value => { setSelectedSpecId(value) }} />
             </div>
             <hr />
             {contents.length > 0 && <TableData heads={heads} content={contents} onSelectKey={key => { setSelectedCharId(key as number) }} />}

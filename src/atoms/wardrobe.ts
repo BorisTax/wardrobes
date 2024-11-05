@@ -27,8 +27,8 @@ export const getInitExtComplect = (height: number, depth: number) => ({
     light: 0
 })
 const initState: WardrobeData = {
-    wardKindId: WARDROBE_KIND.STANDART,
-    wardTypeId: WARDROBE_TYPE.WARDROBE,
+    wardrobeId: WARDROBE_KIND.STANDART,
+    wardrobeTypeId: WARDROBE_TYPE.WARDROBE,
     schema: false,
     details: [],
     width: 2000,
@@ -56,7 +56,7 @@ export const setWardrobeDataAtom = atom(null, (get, set, setter: (prev: Wardrobe
 
 export const getDetailsAtom = atom(null, async (get, set) => {
     const { token } = get(userAtom)
-    const {wardTypeId: wardType, wardKindId: wardKind, width, height, depth } = get(wardrobeDataAtom)
+    const {wardrobeTypeId: wardType, wardrobeId: wardKind, width, height, depth } = get(wardrobeDataAtom)
     const result: FetchResult<Detail> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${DETAILS_ROUTE}?token=${token}&${WARDTYPE_ID_PARAM}=${wardType}&${WARDROBE_ID_PARAM}=${wardKind}&width=${width}&height=${height}&depth=${depth}`)
     const data = result.data as Detail[]
     if (result.success) {
@@ -77,8 +77,8 @@ const isDataDiffers = (prev: WardrobeData, current: WardrobeData): boolean => {
 }
 
 const isDimensionsDiffers = (prev: WardrobeData, current: WardrobeData): boolean => {
-    return prev.depth !== current.depth || prev.height !== current.height || prev.width !== current.width || prev.wardTypeId !== current.wardTypeId ||
-        prev.wardKindId !== current.wardKindId
+    return prev.depth !== current.depth || prev.height !== current.height || prev.width !== current.width || prev.wardrobeTypeId !== current.wardrobeTypeId ||
+        prev.wardrobeId !== current.wardrobeId
 }
 const fasadesDiffers = (prev: FasadesData, current: FasadesData): boolean => {
     return prev.dsp.count !== current.dsp.count || prev.dsp.matId.find((n, index) => n !== current.dsp.matId[index]) !== undefined

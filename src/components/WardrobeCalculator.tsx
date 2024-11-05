@@ -44,10 +44,10 @@ export default function WardrobeCalculator() {
     const [showExt, setShowExt] = useState(false)
     const { dsp16List, dsp10List, mirrorList, fmpList, sandList, lacobelList } = useMaterials(chars)
     const profiles = useAtomValue(profileAtom)
-    const { wardKindId: wardKind, wardTypeId: wardType, width, depth, height, dspId, fasades, profileId, extComplect } = data
+    const { wardrobeId: wardKind, wardrobeTypeId: wardType, width, depth, height, dspId, fasades, profileId, extComplect } = data
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
-    const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardTypeId, data.wardKindId, data.width, data.height) || { length: 0 }
+    const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardrobeTypeId, data.wardrobeId, data.width, data.height) || { length: 0 }
     const confirm = useConfirm()
     const showEditDetails = useSetAtom(showDetailDialogAtom)
     useEffect(() => {
@@ -65,9 +65,9 @@ export default function WardrobeCalculator() {
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
                         <div className="text-center">Основные параметры</div>
                         <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
-                            <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={(_, value) => { setData(prev => ({ ...prev, wardKindId: value, fasades: initFasades })) }} />
-                            <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={(_, value) => { setData(prev => ({ ...prev, wardTypeId: value, fasades: initFasades })) }} />
-                            <CheckBox caption="схемный" checked={data.schema} disabled={data.wardTypeId === WARDROBE_TYPE.SYSTEM} onChange={async () => {
+                            <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={(_, value) => { setData(prev => ({ ...prev, wardrobeId: value, fasades: initFasades })) }} />
+                            <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={(_, value) => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: initFasades })) }} />
+                            <CheckBox caption="схемный" checked={data.schema} disabled={data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM} onChange={async () => {
                                 if (data.schema) {
                                     if (await confirm("Все изменения в деталировке будут сброшены. Продолжить?")) setData(prev => ({ ...prev, schema: !data.schema }))
                                 } else setData(prev => ({ ...prev, schema: !data.schema }));

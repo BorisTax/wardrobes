@@ -111,7 +111,8 @@ export type WardrobeDetailTableSchema = {
     minHeight: number
     maxHeight: number
     count: number
-    size: string
+    length: string
+    width: string
     enabled: boolean
 }
 

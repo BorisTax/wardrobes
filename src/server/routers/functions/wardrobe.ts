@@ -3,13 +3,11 @@ import { InitialAppState as InitialCombiState } from "../../../types/app";
 import { FASAD_TYPE, ProfileType } from "../../../types/enums";
 import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema } from "../../../types/schemas";
 import { Result } from "../../../types/server";
-import { SpecItem } from "../../../types/specification";
 import { WARDROBE_KIND, WARDROBE_TYPE, FasadesData, WardrobeData, CONSOLE_TYPE } from "../../../types/wardrobe";
 import { getDataBaseProvider } from "../../options";
 import { DataBaseService } from "../../services/dataBaseService";
 import { getDetails } from "../../wardrobes/specifications/corpus";
 import { getProfiles } from "./profiles";
-import { getAllCharOfSpec } from "./spec";
 import { getFasadDefaultChar } from "./materials";
 
 
@@ -44,7 +42,6 @@ export async function getDetail(wardTypeId: number, wardrobeId: number, detailId
 
 export async function getInitialCombiState(): Promise<Result<InitialCombiState>> {
   const profiles = await getProfiles();
-  const materialsId = await getAllCharOfSpec(SpecItem.DSP10);
   const defMat = (await getFasadDefaultChar()).data
   const fasadType = FASAD_TYPE.DSP
   const materialId = defMat.find(d => d.id === FASAD_TYPE.DSP)?.charId || 0
@@ -55,6 +52,7 @@ export async function getInitialCombiState(): Promise<Result<InitialCombiState>>
   const wardType: WARDROBE_TYPE = WARDROBE_TYPE.WARDROBE;
   return { success: true, status: StatusCodes.OK, data: [{ wardType, wardWidth, wardHeight, fasadCount, profile, fasadType, materialId }] };
 }
+
 const initFasades: FasadesData = {
   dsp: { count: 0, matId: [] },
   mirror: { count: 0, matId: [] },
@@ -65,20 +63,21 @@ const initFasades: FasadesData = {
 
 export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
   const profiles = await getProfiles();
-  const materialsId = await getAllCharOfSpec(SpecItem.DSP16);
+  const defaultChars = (await getFasadDefaultChar()).data
+  const dspDefault = defaultChars.find(d => d.id === FASAD_TYPE.DSP)?.charId || 0
   const profileId = profiles[0].id;
   const details = await getDetails(WARDROBE_TYPE.WARDROBE, WARDROBE_KIND.STANDART, 2400, 2100, 600);
   return {
     success: true, status: StatusCodes.OK,
     data: [{
-      wardKindId: WARDROBE_KIND.STANDART,
-      wardTypeId: WARDROBE_TYPE.WARDROBE,
+      wardrobeId: WARDROBE_KIND.STANDART,
+      wardrobeTypeId: WARDROBE_TYPE.WARDROBE,
       schema: false,
       details,
       width: 2400,
       depth: 600,
       height: 2400,
-      dspId: materialsId[0],
+      dspId: dspDefault,
       profileId,
       fasades: initFasades,
       extComplect: {

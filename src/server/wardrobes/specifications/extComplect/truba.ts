@@ -6,7 +6,7 @@ import { getCoef } from "../functions";
 
 export async function getTrubaSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = (await getDetails(data.wardTypeId, data.wardKindId, data.width, data.height, data.depth))
+    const details = (await getDetails(data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth))
     const shelf = details.find(d => d.id === DETAIL_NAME.SHELF_PLAT)
     if (!shelf) return result
     const truba = await getTrubaExt(shelf.length, await getTruba(data, details))

@@ -35,8 +35,8 @@ export type ExtComplectData = {
 
 
 export type WardrobeData = {
-    wardKindId: WARDROBE_KIND
-    wardTypeId: WARDROBE_TYPE
+    wardrobeTypeId: WARDROBE_TYPE
+    wardrobeId: WARDROBE_KIND
     schema: boolean
     width: number
     depth: number

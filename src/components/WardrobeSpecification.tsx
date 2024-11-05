@@ -26,7 +26,7 @@ export default function WardrobeSpecification() {
     }))
     const heads = useMemo(() => specifications.map((spec, index) => <div key={index} role="button" className={index === specIndex ? "tab-button-active" : "tab-button-inactive"} onClick={() => { setSpecIndex(index) }}>{`${captions[index]}`}</div>), [specifications, specIndex, captions])
     const purpose = Object.keys(FASAD_TYPE).find(k => k === specification.type) ? CHAR_PURPOSE.FASAD : CHAR_PURPOSE.CORPUS
-    const hint = ((wardData.wardTypeId !== WARDROBE_TYPE.GARDEROB) && (getFasadCount(wardData) < 2) && (specification.type === CORPUS_SPECS.CORPUS)) ? "Выберите необходимое кол-во фасодов" : ""
+    const hint = ((wardData.wardrobeTypeId !== WARDROBE_TYPE.GARDEROB) && (getFasadCount(wardData) < 2) && (specification.type === CORPUS_SPECS.CORPUS)) ? "Выберите необходимое кол-во фасодов" : ""
     useEffect(() => {
         if (specIndex >= specifications.length) setSpecIndex(0)
     }, [specifications, specIndex])

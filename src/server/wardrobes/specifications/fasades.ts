@@ -17,9 +17,9 @@ export function createFasades(data: WardrobeData, profileType: ProfileType): Fas
     const fasades: FasadState[] = []
     const count = getFasadCount(data)
     if (!correctFasadCount(count)) return fasades
-    if (data.wardTypeId === WARDROBE_TYPE.GARDEROB) return fasades
-    const width = getFasadWidth(data.width, count, data.wardTypeId, profileType)
-    const height = getFasadHeight(data.height, data.wardTypeId, profileType)
+    if (data.wardrobeTypeId === WARDROBE_TYPE.GARDEROB) return fasades
+    const width = getFasadWidth(data.width, count, data.wardrobeTypeId, profileType)
+    const height = getFasadHeight(data.height, data.wardrobeTypeId, profileType)
     data.fasades.dsp.matId.forEach(id => {
         const fasad = getFasadState(width, height, Division.HEIGHT, FASAD_TYPE.DSP, id)
         fasades.push(fasad)

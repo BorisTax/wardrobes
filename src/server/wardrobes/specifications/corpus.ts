@@ -16,9 +16,9 @@ import { getSpecList } from "../../routers/functions/spec"
 
 export async function getCorpusSpecification(data: WardrobeData, resetDetails: boolean, verbose = false): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const details = !resetDetails ? data.details : await getDetails(data.wardTypeId, data.wardKindId, data.width, data.height, data.depth);
+    const details = !resetDetails ? data.details : await getDetails(data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth);
     const karton = await getKarton(data)
-    const skotch = data.wardTypeId === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
+    const skotch = data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
     const truba = await getTruba(data, details)
     await getCommonData(data, details, result)
     const {brushSpecId, profileCharId} = await getCharIdAndBrushSpecIdByProfileId(data.profileId)
@@ -82,8 +82,8 @@ export async function getDetails(wardrobeTypeId: number, wardrobeId: number, wid
         {   
             id: dd.detailId,
             name: detailNames.find(n => n.id === dd.wardrobeId)?.name || "",
-            length: calcFunction(dd.size, { width, height }),
-            width: dd.detailId === DETAIL_NAME.ROOF || dd.detailId === DETAIL_NAME.STAND ? depth : depth - offset,
+            length: calcFunction(dd.length, { width, height, depth, offset }),
+            width: calcFunction(dd.width, { width, height, depth, offset }),
             count: dd.count,
             drill: getDrill(dd),
             kromka: getKromka(wardrobeTypeId, dd)
@@ -92,7 +92,7 @@ export async function getDetails(wardrobeTypeId: number, wardrobeId: number, wid
 }
 
 async function getDVP(data: WardrobeData): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const dvp = await getDVPData(data.width, data.height, data.depth);
     const coef = await getCoef(SpecItem.DVP);
     const area = dvp.dvpLength * dvp.dvpWidth * dvp.dvpCount / 1000000;
@@ -105,7 +105,7 @@ async function getDVP(data: WardrobeData): Promise<FullData> {
 }
 
 async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const { width, height, depth } = data;
     const dvpData = await getDVPData(width, height, depth);
     const coef = await getCoef(SpecItem.PlankaDVP);
@@ -138,7 +138,7 @@ async function getDVPData(width: number, height: number, depth: number): Promise
 }
 
 async function getKarton(data: WardrobeData): Promise<FullData> {
-    const item = await getFurniture(data.wardKindId, SpecItem.Karton, data.width, data.height, data.depth)
+    const item = await getFurniture(data.wardrobeId, SpecItem.Karton, data.width, data.height, data.depth)
     const coef = await getCoef(SpecItem.Karton) || 1;
     const verbose = [["Ширина шкафа", "Высота шкафа", "Глубина шкафа", "Кол-во"]];
     const result = item?.count || 0
@@ -147,8 +147,8 @@ async function getKarton(data: WardrobeData): Promise<FullData> {
 }
 
 async function getLegs(data: WardrobeData): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const item = await getFurniture(data.wardKindId, SpecItem.Leg, data.width, data.height, data.depth)
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    const item = await getFurniture(data.wardrobeId, SpecItem.Leg, data.width, data.height, data.depth)
     const result = item?.count || 0
     const verbose = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), `${result}`]);
@@ -156,7 +156,7 @@ async function getLegs(data: WardrobeData): Promise<FullData> {
 }
 
 export async function getConfirmat(data: WardrobeData, details: Detail[]): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = (await getDetailNames()).data
     const verbose: VerboseData = [["Деталь", "Кол-во", "Конфирматы \n на 1 деталь", "Итого"]];
     let total = 0;
@@ -172,13 +172,13 @@ export async function getConfirmat(data: WardrobeData, details: Detail[]): Promi
 }
 
 async function getZagConfirmat(data: WardrobeData, details: Detail[], zaglushkaId: number): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullData()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullData()
     const conf = await getConfirmat(data, details);
     return { data: { amount: conf.data.amount, charId: zaglushkaId } };
 }
 
 export async function getMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = (await getDetailNames()).data
     const verbose: VerboseData = [["Деталь", "Кол-во", `Минификсы \n на 1 деталь`, "Итого"]];
     let total = 0;
@@ -193,13 +193,13 @@ export async function getMinifix(data: WardrobeData, details: Detail[]): Promise
     return { data: { amount: total, charId: 0 }, verbose };
 }
 async function getZagMinifix(data: WardrobeData, details: Detail[], zaglushkaId: number): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullData()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullData()
     const conf = await getMinifix(data, details);
     return { data: { amount: conf.data.amount, charId: zaglushkaId } };
 }
 export async function getNails(data: WardrobeData): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const item = await getFurniture(data.wardKindId, SpecItem.Nails, data.width, data.height, data.depth)
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    const item = await getFurniture(data.wardrobeId, SpecItem.Nails, data.width, data.height, data.depth)
     const result = item?.count || 0
     const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), `${result}`]);
@@ -207,8 +207,8 @@ export async function getNails(data: WardrobeData): Promise<FullData> {
 }
 
 export async function getSamorez16(data: WardrobeData): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const { wardKindId: wardKind, width, height, depth } = data;
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    const { wardrobeId: wardKind, width, height, depth } = data;
     const item = await getFurniture(wardKind, SpecItem.Samorez16, width, height, depth);
     const current = item?.count || 0
     const verbose: VerboseData = [["Ширина шкафа", "Кол-во"]];
@@ -217,7 +217,7 @@ export async function getSamorez16(data: WardrobeData): Promise<FullData> {
 }
 
 async function getStyagka(data: WardrobeData): Promise<FullData> {
-    const details = await getDetailsFromTable(data.wardKindId, data.width, data.height)
+    const details = await getDetailsFromTable(data.wardrobeId, data.width, data.height)
     const roof = details.find(d => d.detailId === DETAIL_NAME.ROOF)
     const ward = roof?.count === 2 ? "Одинарный" : "Двойной"
     const count = roof?.count === 2 ? 0 : 3
@@ -227,7 +227,7 @@ async function getStyagka(data: WardrobeData): Promise<FullData> {
 }
 
 export async function getKromkaPrimary(data: WardrobeData, details: Detail[], kromkaId: number): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let total = 0;
@@ -246,7 +246,7 @@ export async function getKromkaPrimary(data: WardrobeData, details: Detail[], kr
 }
 
 export async function getKromkaSecondary(data: WardrobeData, details: Detail[], kromkaSpecId: number, kromkaId: number): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let total = 0;
@@ -265,7 +265,7 @@ export async function getKromkaSecondary(data: WardrobeData, details: Detail[], 
 }
 
 export async function getGlue(data: WardrobeData, kromkaPrimary: number, kromkaSecondary: number, kromkaPrimaryCaption: string, kromkaSecondaryCaption: string): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const coefGlue = await getCoef(SpecItem.Glue);
     const glue = (kromkaPrimary + kromkaSecondary) * coefGlue * 0.008;
     const verbose = [[kromkaPrimaryCaption, kromkaSecondaryCaption, "Итого", "Клей"]];
@@ -285,7 +285,7 @@ async function getBrush(data: WardrobeData, brushSpecId:number): Promise<FullDat
 }
 
 async function getNaprav(data: WardrobeData, profileId: number, top: boolean): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.GARDEROB) return emptyFullDataIfCorpus()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.GARDEROB) return emptyFullDataIfCorpus()
     const item = top ? SpecItem.NapravTop : SpecItem.NapravBottom
     const coef = await getCoef(item)
     const width = data.width - 32
@@ -297,9 +297,9 @@ async function getNaprav(data: WardrobeData, profileId: number, top: boolean): P
 }
 
 export async function getTruba(data: WardrobeData, details: Detail[]): Promise<FullData & { count: number }> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return { ...emptyFullDataIfSystem(), count: 0 }
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return { ...emptyFullDataIfSystem(), count: 0 }
     const coef = await getCoef(SpecItem.Truba)
-    const item = await getFurniture(data.wardKindId, SpecItem.Truba, data.width, data.height, data.depth );
+    const item = await getFurniture(data.wardrobeId, SpecItem.Truba, data.width, data.height, data.depth );
     const shelfPlat = details.find(d => d.id === DETAIL_NAME.SHELF_PLAT)
     const size = shelfPlat?.length || 0
     //const caption = await getWardrobeKind(wardKind);
@@ -319,8 +319,8 @@ async function  getFlanec(truba: FullData & { count: number }): Promise<FullData
 }
 
 export async function getTrempel(data: WardrobeData): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const item = await getFurniture(data.wardKindId, SpecItem.Trempel, data.width, data.height, data.depth );
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    const item = await getFurniture(data.wardrobeId, SpecItem.Trempel, data.width, data.height, data.depth );
     const count = item?.count || 0
     const {id, maxDepth, minDepth} = await getTrempelByDepth(data.depth)
     const charName = (await getChar(id))?.name || ""
@@ -337,11 +337,11 @@ async function getStopor(data: WardrobeData): Promise<FullData> {
     return { data: { amount: fasadCount, charId: 0 }, verbose };
 }
 async function getKluch(data: WardrobeData): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     return { data: { amount: 1, charId: 0 } };
 }
 async function getBox(data: WardrobeData): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     return { data: { amount: 1, charId: 0 } };
 }
 

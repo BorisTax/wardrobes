@@ -6,6 +6,7 @@ import { getSpecList } from "../../routers/functions/spec";
 import { getWardobes } from "../../routers/functions/wardrobe";
 import { allNoneKromka, singleLengthThickDoubleWidthThinKromka, singleLengthThickKromka, singleLengthThinKromka } from "./kromka";
 import { getDetailNames } from "../../routers/functions/details";
+import { off } from "process";
 
 
 export function emptyFullData(): FullData {
@@ -63,7 +64,7 @@ export async function getWardrobeName(id: number): Promise<string> {
 }
 
 export async function getDSP(data: WardrobeData, details: Detail[]): Promise<FullData> {
-    if (data.wardTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = (await getDetailNames()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""]]
     let totalArea = 0
@@ -113,10 +114,10 @@ export function getKromkaDescripton(detail: Detail, kromka: KROMKA_TYPE[]): stri
 }
 
 
-export function calcFunction(func: string, { width, height }: { width: number; height: number} ): number {
+export function calcFunction(func: string, { width, height, depth, offset }: { width: number; height: number, depth: number, offset: number} ): number {
     try {
-        const f = new Function('W', 'H', 'return ' + func)
-        const result = f(width, height)
+        const f = new Function('W', 'H', 'D', 'OFFSET', 'return ' + func)
+        const result = f(width, height, depth, offset)
         return result
     } catch (e) {
         return 0

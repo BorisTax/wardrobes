@@ -8,7 +8,7 @@ import { getDetailNames } from "../../../routers/functions/details";
 
 export async function getDrawerSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
-    const alldetails = (await getDetails(data.wardTypeId, data.wardKindId, data.width, data.height, data.depth))
+    const alldetails = (await getDetails(data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth))
     const shelf = alldetails.find(d => d.id === DETAIL_NAME.SHELF)
     if (!shelf) return result
     const details: Detail[] = [

@@ -25,7 +25,7 @@ export default function EditFurnitureTable() {
     const furniruteTable = useAtomValue(furnitureTableAtom)
     const items = useMemo(() => furniruteTable.filter(d => d.wardrobeId === wardrobeId), [furniruteTable, wardrobeId])
     const [itemIndex, setItemIndex] = useState(0)
-    const item = furniruteTable[itemIndex]
+    const item = items[itemIndex]
     const heads = ['Фурнитура', 'Ширина от', 'Ширина до', 'Глубина от', 'Глубина до', 'Высота от', 'Высота до', 'Кол-во', 'Размер']
     const contents: TableDataRow[] = items.map((d, index) => ({ key: index, data: [spec.get(d.specId)?.name || "", d.minWidth, d.maxWidth,d.minDepth, d.maxDepth, d.minHeight, d.maxHeight, d.count, d.size] }))
     
@@ -37,12 +37,18 @@ export default function EditFurnitureTable() {
         { caption: "Глубина до:", value: item?.maxDepth || 0,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
         { caption: "Высота от:", value: item?.minHeight || 0,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
         { caption: "Высота до:", value: item?.maxHeight || 0,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Кол-во:", value: item?.count || 0,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Размер:", value: item?.size || "",  type: InputType.TEXT },
+        { caption: "Кол-во:", value: item?.count || 0,  type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
+        { caption: "Размер:", value: item?.size || "", type: InputType.TEXT, optional: true },
     ]
     useEffect(() => {
         loadData()
     }, [])
+    useEffect(() => {
+        setItemIndex(items.length && (items.length - 1))
+    }, [furniruteTable])
+    useEffect(() => {
+        setItemIndex(0)
+    }, [wardrobeId])
     return <EditContainer>
         <div>
             <ComboBox<number> value={wardrobeId} displayValue={value => wardrobes.get(value)} items={[...wardrobes.keys()]} onChange={value => setWardrobeId(value)} />

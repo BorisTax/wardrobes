@@ -11,6 +11,7 @@ import { FASAD_TYPE } from "../../types/enums"
 import { CharPurposeSchema, CharsSchema, FasadDefaultCharSchema, SpecToCharSchema } from "../../types/schemas"
 import { ExtMap, DefaultMap, makeExtMap } from "../storage"
 import { setFasadMaterialId, setFasadType } from "../../functions/fasades"
+import { specToCharAtom } from "../specification"
 
 export const charAtom = atom<ExtMap<CharsSchema>>(new Map());
 export const charArrayAtom = atom((get) => {
@@ -79,7 +80,8 @@ export const deleteSpecToCharAtom = atom(null, async (get, set, data: SpecToChar
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
-        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${SPEC_TO_CHAR_ROUTE}`, "DELETE", JSON.stringify({ data, token }))
+        const result = await fetchData<SpecToCharSchema>(`${API_ROUTE}${MATERIALS_ROUTE}${SPEC_TO_CHAR_ROUTE}`, "DELETE", JSON.stringify({ data, token }))
+        set(specToCharAtom, result.data)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 
         console.error(e)
@@ -91,7 +93,8 @@ export const addSpecToCharAtom = atom(null, async (get, set, data: SpecToCharSch
     const { token, permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     try {
-        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${SPEC_TO_CHAR_ROUTE}`, "POST", JSON.stringify({ data, token }))
+        const result = await fetchData<SpecToCharSchema>(`${API_ROUTE}${MATERIALS_ROUTE}${SPEC_TO_CHAR_ROUTE}`, "POST", JSON.stringify({ data, token }))
+        set(specToCharAtom, result.data)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
          console.error(e) 

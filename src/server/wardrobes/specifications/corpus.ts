@@ -302,15 +302,17 @@ export async function getTruba(data: WardrobeData): Promise<FullData & { count: 
     const items = await getFurniture(data.wardrobeId, SpecItem.Truba, data.width, data.height, data.depth );
     const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа", "Кол-во", "Длина", "Итого"]];
     let result = 0
+    let totalCount=0
     for(let item of items){
         const count = item.count
+        totalCount += count
         const size = calcFunction(item.size, { width: data.width, depth: data.depth, height: data.height, offset: 0 })
         result += size * count / 1000 * coef
         const coefString = coef !== 1 ? ` x ${coef} =  ${result.toFixed(3)}` : ""
         if (count > 0) verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), getFineRange(item?.minDepth || 0, item?.maxDepth || 0), `${count}`, `${size}`, `${(size * count / 1000).toFixed(3) + coefString}`]);
         else verbose.push(["", `${data.depth}`, `нет`, ``, ``]);
     }
-    return { data: { amount: result, charId: 0 }, verbose, count: items.length };
+    return { data: { amount: result, charId: 0 }, verbose, count: totalCount };
 }
 async function  getFlanec(truba: FullData & { count: number }): Promise<FullData> {
     const count = truba.count

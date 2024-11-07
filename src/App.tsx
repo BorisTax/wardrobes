@@ -32,7 +32,6 @@ const WardrobeCalculator = lazy(() => import('./components/WardrobeCalculator'))
 const EditSpecificationDialog = lazy(()=>import('./components/dialogs/EditSpecificationDialog'))
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
-import SpecificationDialog from './components/dialogs/SpecificationDialog'
 import NavBar from './components/NavBar'
 import LoadIndicator from './components/LoadIndicator'
 
@@ -81,7 +80,6 @@ function App() {
             </Routes>
           </Suspense>
         </div>
-      <SpecificationDialog />
       <CopyFasadDialog />
       <FasadTemplatesDialog />
       <SettingsDialog />

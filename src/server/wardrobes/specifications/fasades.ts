@@ -71,7 +71,6 @@ async function calcSpecification(fasad: FasadState, profile: ProfileSchema): Pro
     spec.set(SpecItem.Armirovka, await calcArmirovka(fasad, lacobels));
     spec.set(SpecItem.FMPPaper, await calcFMPPaper(fasad));
     spec.set(SpecItem.FMPGlass, await calcFMPGlass(fasad, lacobels));
-    spec.set(SpecItem.Paint, await calcPaint(fasad));
     spec.set(SpecItem.EVA, await calcEva(fasad)); 
     spec.set(SpecItem.Uplot, await calcUplotnitel(fasad, profile.type));
     spec.set(SpecItem.UplotSoedBavaria, await calcUplotnitelSoed(fasad, profile.type));
@@ -245,7 +244,10 @@ async function calcFMPPaper(fasad: FasadState, widthLimit = 700): Promise<FullDa
 }
 
 async function calcFMPGlass(fasad: FasadState, lacobel: LacobelSchema[]): Promise<FullData[]> {
-    const dims = await calcDimensions(fasad, f => [FASAD_TYPE.FMP, FASAD_TYPE.LACOBEL].includes(f.fasadType) && !!lacobel.find(l => l.id === f.materialId && l.lacobelTypeId === LACOBEL_TYPE.LACOBEL))
+    const dims = await calcDimensions(fasad, f => {
+        if(f.fasadType === FASAD_TYPE.FMP) return true
+        return f.fasadType === FASAD_TYPE.LACOBEL && !!lacobel.find(l => l.id === f.materialId && l.lacobelTypeId === LACOBEL_TYPE.LACOBEL)
+    })
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Площадь",""]]
     let total = 0
     const coef = await getCoef(SpecItem.FMPGlass)

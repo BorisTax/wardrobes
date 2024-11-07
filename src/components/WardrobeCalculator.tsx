@@ -63,8 +63,8 @@ export default function WardrobeCalculator() {
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
                         <div className="text-center">Основные параметры</div>
                         <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
-                            <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeId: value, fasades: initFasades })) }} />
-                            <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: initFasades })) }} />
+                            <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
+                            <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
                             <CheckBox caption="схемный" checked={data.schema} disabled={data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM} onChange={async () => {
                                 if (data.schema) {
                                     if (await confirm("Все изменения в деталировке будут сброшены. Продолжить?")) setData(prev => ({ ...prev, schema: !data.schema }))
@@ -95,8 +95,8 @@ export default function WardrobeCalculator() {
                             {fasades.lacobel.count > 0 && fasades.lacobel.matId.map((m, i) => <ComboBox<number> styles={styles} key={"lacobel" + i} title={`${i + 1}`} items={lacobelList} value={fasades.lacobel.matId[i]} displayValue={value => chars.get(value)?.name}  onChange={value => { const matId = [...fasades.lacobel.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, lacobel: { ...prev.fasades.lacobel, matId } } })) }} />)}
                         </PropertyGrid>}
                     </div>
-                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
-                        <div className={`text-center ${showExt ? "toggle-section-button-show" : "toggle-section-button-hidden"}`} role="button" onClick={() => setShowExt(!showExt)}>Доп. комплектация</div>
+                    {wardType !== WARDROBE_TYPE.SYSTEM && <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
+                    <div className={`text-center ${showExt ? "toggle-section-button-show" : "toggle-section-button-hidden"}`} role="button" onClick={() => setShowExt(!showExt)}>Доп. комплектация</div>
                         <PropertyGrid hidden={!showExt} style={{ padding: "0.5em", border: "1px solid" }}>
                             <div></div><div className="d-flex align-items-center justify-content-between"><div></div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, extComplect: getInitExtComplect(prev.height, prev.depth) })); setConsoles({ consoleSameDepth: true, consoleSameHeight: true, standSameHeight: true }) }}>Сбросить</div></div>
                             <div className="text-end">Телескоп: </div>
@@ -141,7 +141,7 @@ export default function WardrobeCalculator() {
                             <div className="text-end">Точки света: </div>
                             <TextBox value={extComplect.light} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, light: +value } })) }} />
                         </PropertyGrid>
-                    </div>
+                    </div>}
                 </div>
             </div>
             {perm?.Read && <div className="col-xs-12 col-sm-12 col-md-6 col-lg-8">

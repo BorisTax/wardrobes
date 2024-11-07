@@ -24,13 +24,28 @@ export const setActiveFasadAtom = atom(null, (get, set, activeFasad?: FasadState
     setActiveFasad( appData.rootFasades, activeFasad)
     set(combiStateAtom, { ...appData }, false, false)
 })
-
+export const setActiveRootFasadAtom = atom(null, (get, set, index: number) => {
+    const appData = get(combiStateAtom)
+    setActiveFasad( appData.rootFasades, appData.rootFasades[index])
+    set(combiStateAtom, { ...appData }, false, false)
+})
 export const activeRootFasadIndexAtom = atom((get) => {
     const { rootFasades } = get(combiStateAtom)
     const active = getActiveFasad(rootFasades)
     if(!active) return -1
     const root = getRootFasad(active, rootFasades)
     return rootFasades.findIndex(r => r === root)
+})
+
+export const resetRootFasadAtom = atom(null, (get, set) => {
+    const appData = get(combiStateAtom)
+    const newAppState = cloneAppState(appData)
+    const activeFasad = getActiveFasad(newAppState.rootFasades)
+    if(!activeFasad) return
+    const rootFasad = getRootFasad(activeFasad, newAppState.rootFasades)
+    rootFasad.children = []
+    setActiveFasad(newAppState.rootFasades, rootFasad)
+    set(combiStateAtom, newAppState, true, true)
 })
 export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const { minSize } = get(settingsAtom)

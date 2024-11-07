@@ -2,7 +2,7 @@ import { Getter, Setter, atom } from 'jotai';
 import { AppState, HistoryState, InitialAppState, SetAtomComfirm } from "../types/app";
 import { cloneAppState, createAppState, getFasadHeight, getFasadWidth, getInitialAppState, stringifyAppState } from "../functions/wardrobe";
 import FasadState from "../classes/FasadState";
-import { cloneFasad, excludeFasadParent, getFasadState, trySetHeight, trySetWidth } from "../functions/fasades";
+import { excludeFasadParent, getFasadState, trySetHeight, trySetWidth } from "../functions/fasades";
 import { openFile, readFile, saveState } from '../functions/file';
 import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
@@ -12,6 +12,7 @@ import { API_ROUTE, INITIAL_COMBISTATE_ROUTE, VERSION_ROUTE, WARDROBE_ROUTE } fr
 import { profileAtom } from "./materials/profiles";
 import { Profile } from '../types/materials';
 import { ProfileType } from '../types/enums';
+import { setActiveRootFasadAtom } from './fasades';
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {
@@ -27,6 +28,7 @@ export const loadInitialCombiStateAtom = atom(null, async (get, set) => {
         const { wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId } = result.data[0] as InitialAppState
         const state = createAppState(wardWidth, wardHeight, fasadCount, profile, wardType, fasadType, materialId)
         set(combiAtom, { state, next: null, previous: null })
+        set(setActiveRootFasadAtom, 0)
         set(calculateCombiSpecificationsAtom)
         set(loadedInitialCombiStateAtom, true)
     }
@@ -74,12 +76,6 @@ export const openStateAtom = atom(null, async (get: Getter, set: Setter) => {
 })
 export const resetAppDataAtom = atom(null, (get: Getter, set: Setter) => {
     set(loadInitialCombiStateAtom)
-    // set(appAtom, { state: getInitialAppState(), next: null, previous: null })
-    // const mList = get(materialListAtom)
-    // const fasadType = mList[0].type
-    // const materialId = mList[0].id
-    // const { rootFasades } = get(appDataAtom)
-    // setInitialMaterials(rootFasades, fasadType, materialId)
 })
 export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmCallback]: SetAtomComfirm<number>) => {
     const state = get(combiStateAtom)

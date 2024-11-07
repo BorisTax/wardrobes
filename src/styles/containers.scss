@@ -2,7 +2,7 @@
 
 .main-container {
   flex: 1;
-  min-height: 100svh;
+  -min-height: 100svh;
 }
 
 .header {
@@ -61,8 +61,8 @@
   gap: 0.5rem;
   flex-wrap: nowrap;
   justify-content: flex-start;
-  margin-left: auto;
-  margin-right: auto;
+  -margin-left: auto;
+  -margin-right: auto;
   margin-bottom: 1rem;
   width: auto;
   height: auto;
@@ -129,12 +129,12 @@
 @media (orientation: landscape) {
   .combifasades-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 
   @media (min-width: 1240px) {
     .combifasades-container {
-      grid-template-columns: 1fr 2fr;
+      grid-template-columns: 1fr 1fr 1fr;
     }
   }
 

@@ -7,18 +7,18 @@ import PropertyRow from "./PropertyRow"
 import ToggleButton from "./inputs/ToggleButton"
 import ImageButton from "./inputs/ImageButton"
 import { useAtomValue, useSetAtom } from "jotai"
-import { activeFasadAtom, divideFasadAtom, setActiveFasadAtom, setMaterialIdAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setFasadTypeAtom, setProfileDirectionAtom, setWidthAtom } from "../atoms/fasades"
+import { activeFasadAtom, divideFasadAtom, setActiveFasadAtom, setMaterialIdAtom, setFixedHeightAtom, setFixedWidthAtom, setHeightAtom, setFasadTypeAtom, setProfileDirectionAtom, setWidthAtom, resetRootFasadAtom } from "../atoms/fasades"
 import { userAtom } from "../atoms/users"
 import { settingsAtom } from "../atoms/settings"
-import { copyFasadDialogAtom, showSpecificationDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
+import { copyFasadDialogAtom, showTemplatesDialogAtom } from "../atoms/dialogs"
 import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { RESOURCE } from "../types/user"
-import { useNavigate } from "react-router-dom"
 import { getFasadCutHeight, getFasadCutWidth, getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
 import { fasadTypesAtom, fasadTypesToCharAtom } from "../atoms/storage"
 import { charAtom } from "../atoms/materials/chars"
 import { combiStateAtom } from "../atoms/app"
+import useConfirm from "../custom-hooks/useConfirm"
 const sectionsTemplate = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const directions: Map<Division, string> = new Map()
 export default function PropertiesBar() {
@@ -39,6 +39,7 @@ export default function PropertiesBar() {
         return sorted.map(ft => ft.charId)
     }, [fasadTypeToChar, fasadType])
     const sections = fasad ? sectionsTemplate : []
+    const resetRootFasad = useSetAtom(resetRootFasadAtom)
     const setHeight = useSetAtom(setHeightAtom)
     const setWidth = useSetAtom(setWidthAtom)
     const setFixedWidth = useSetAtom(setFixedWidthAtom)
@@ -50,21 +51,17 @@ export default function PropertiesBar() {
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const copyFasadDialogRef =  useAtomValue(copyFasadDialogAtom)
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
-    const showSpecificationDialog = useSetAtom(showSpecificationDialogAtom)
     const totalWidthRatio = getTotalFasadWidthRatio(fasadParent)
     const totalHeightRatio = getTotalFasadHeightRatio(fasadParent)
+    const confirm = useConfirm()
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}> 
         <div className="property-bar-header">
             Параметры фасада
             <div className="d-flex gap-1">
-                {permSpec?.Read &&
-                    <>
-                        <ImageButton title="Cпецификация" icon="specButton" onClick={() => { showSpecificationDialog() }} />
-                        {/* <ImageButton title="Cхема" icon="schemaButton" onClick={() => { navigate("/schema") }} /> */}
-                    </>}
-                {permTemp?.Create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(true) }} />}
+                <ImageButton title="Сбросить деление фасада" icon="new" disabled={(fasad?.level === 0) && !fasad.children.length} onClick={async () => { if (await confirm("Сбросить деление фасада?")) resetRootFasad() }} />
                 {permTemp?.Read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(false) }} />}
-                {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />}
+                {permTemp?.Create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(true) }} />}
+                {/* {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />} */}
                 <ImageButton title="Перейти на уровень вверх" icon="selectParent" onClick={() => { setActiveFasad(fasadParent) }} disabled={((fasad === null) || (fasad?.level === 0))} />
             </div>
         </div>

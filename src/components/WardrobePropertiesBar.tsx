@@ -72,10 +72,6 @@ export default function WardrobePropertiesBar() {
         </div>
         <hr />
         <PropertyGrid>
-            {/* <div className="text-end">Заказ: </div>
-            <PropertyRow>
-                <TextBox name="order" value={order} type={PropertyType.STRING} setValue={(value) => { setOrder(value as string) }} />
-            </PropertyRow> */}
             <ComboBox<WARDROBE_TYPE> title="Тип:" value={type} items={wardTypes} displayValue={value => allWardTypes.get(value) || ""} onChange={value => { setWardType([value as WARDROBE_TYPE, wardTypeChangeConfirm]) }} />
             <div className="text-end">Ширина: </div>
             <PropertyRow>
@@ -86,7 +82,7 @@ export default function WardrobePropertiesBar() {
                 <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1800} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} submitOnLostFocus={true} />
             </PropertyRow>
             <ComboBox<number> title="Кол-во фасадов:" value={fasadCount} items={fasades} displayValue={value => `${value}`} onChange={value => { setFasadCount([+value, wardFasadCountConfirm]) }} />
-            <ComboBox<number> title="Профиль:" value={profile.id} items={[...profileList.keys()]} displayValue={value => chars.get(profileList.get(value)?.charId || 0)?.name || ""} onChange={(index, value) => { setProfileId([value, wardProfileConfirm]); }} />
+            <ComboBox<number> title="Профиль:" value={profile.id} items={[...profileList.keys()]} displayValue={value => chars.get(profileList.get(value)?.charId || 0)?.name || ""} onChange={value => { setProfileId([value, wardProfileConfirm]); }} />
         </PropertyGrid>
     </div>
 }

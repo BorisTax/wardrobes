@@ -62,6 +62,7 @@ export enum SpecItem {
     BrushBavariaBrown = 59,
     BrushBavariaGray = 60,
     BrushBavariaBlack = 61,
+    Pantograf = 62,
 }
 
 export enum CORPUS_SPECS {

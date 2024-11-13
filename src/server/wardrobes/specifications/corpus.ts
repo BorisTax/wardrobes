@@ -8,7 +8,7 @@ import { getDSP } from "./functions"
 import { getCoef } from "./functions"
 import { calcFunction } from "./functions"
 import { getKromkaAndZaglByDSP, getKromkaTypeByChar } from "../../routers/functions/dspEdgeZag"
-import { getFurniture, getTrempelByDepth } from "../../routers/functions/furniture"
+import { getFurniture, getPantografByWidth, getTrempelByDepth } from "../../routers/functions/furniture"
 import { getDetailNames, getDetailsByWardrobe, getDVPTemplates } from "../../routers/functions/details"
 import {  getCharIdAndBrushSpecIdByProfileId } from "../../routers/functions/profiles"
 import { getChar } from "../../routers/functions/chars"
@@ -36,6 +36,7 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     result.push([SpecItem.Truba, truba])
     result.push([SpecItem.Flanec, await getFlanec(truba)])
     result.push([SpecItem.Trempel, await getTrempel(data)]);
+    result.push([SpecItem.Pantograf, await getPantograf(data)])
     result.push([SpecItem.Streich, { data: { amount: 12, charId: 0 } }])
     result.push([SpecItem.Stopor, await getStopor(data)])
     result.push([SpecItem.ConfKluch, await getKluch(data)])
@@ -334,6 +335,25 @@ export async function getTrempel(data: WardrobeData): Promise<FullData> {
         else verbose.push(["", `${data.depth}`, "", "нет"]);
     }
     return { data: { amount: count, charId: id }, verbose };
+}
+
+
+export async function getPantograf(data: WardrobeData): Promise<FullData> {
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
+    const items = await getFurniture(data.wardrobeId, SpecItem.Pantograf, data.width, data.height, data.depth );
+
+const verbose: VerboseData = [["Ширина секции", "Пантограф", "Кол-во"]];
+let count = 0
+let charId = 0
+for (let item of items) {
+        const size = calcFunction(item.size, { width: data.width, height: data.height, depth: data.depth, offset: 0 })
+        const { id } = await getPantografByWidth(size)
+        charId = id
+        count += item?.count || 0
+        const charName = (await getChar(id))?.name || ""
+        verbose.push([`${size}`, charName, count]);
+    }
+    return { data: { amount: count, charId }, verbose };
 }
 
 async function getStopor(data: WardrobeData): Promise<FullData> {

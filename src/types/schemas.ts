@@ -95,6 +95,11 @@ export type TrempelSchema = {
     minDepth: number,
     maxDepth: number,
 }
+export type PantografSchema = {
+    id: number,
+    minWidth: number,
+    maxWidth: number,
+}
 export type LacobelSchema = {
     id: number,
     lacobelTypeId: number,
@@ -162,6 +167,7 @@ export enum DATA_TABLE_NAMES {
     WARDROBE_TYPES = 'wardrobe_types',
     WARDROBES = 'wardrobes',
     TREMPEL = 'trempel',
+    PANTOGRAF = 'pantograf',
 }
 
 export enum USER_TABLE_NAMES {

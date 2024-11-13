@@ -1,4 +1,4 @@
-import { DATA_TABLE_NAMES, FurnitureTableSchema, TrempelSchema } from "../../../types/schemas";
+import { DATA_TABLE_NAMES, FurnitureTableSchema, PantografSchema, TrempelSchema } from "../../../types/schemas";
 import { Result } from "../../../types/server";
 import { SpecItem } from "../../../types/specification";
 import { getDataBaseProvider } from "../../options";
@@ -15,11 +15,20 @@ export async function getTrempels(): Promise<Result<TrempelSchema>>{
     const service = new DataBaseService(getDataBaseProvider<TrempelSchema>())
     return await service.getData(DATA_TABLE_NAMES.TREMPEL, [], {})
   }
+  
 export async function getTrempelByDepth(depth: number): Promise<TrempelSchema> {
     const trempels = (await getTrempels()).data
     return trempels.find(t => t.minDepth <= depth && t.maxDepth >= depth) || {id: 0, maxDepth: 0, minDepth: 0}
 }
 
+export async function getPantografs(): Promise<Result<PantografSchema>>{
+  const service = new DataBaseService(getDataBaseProvider<PantografSchema>())
+  return await service.getData(DATA_TABLE_NAMES.PANTOGRAF, [], {})
+}
+export async function getPantografByWidth(width: number): Promise<PantografSchema> {
+  const trempels = (await getPantografs()).data
+  return trempels.find(t => t.minWidth <= width && t.maxWidth >= width) || {id: 0, maxWidth: 0, minWidth: 0}
+}
 export async function getFurnitureTable(): Promise<FurnitureTableSchema[]>{
   const service = new DataBaseService(getDataBaseProvider<FurnitureTableSchema>())
   return (await service.getData(DATA_TABLE_NAMES.FURNITURE, [], {})).data || []

@@ -17,6 +17,6 @@ export default function CheckBox({ checked, disabled = false, onChange, caption 
         onChange,
         id: id || usedId
     }
-    return <div className="d-flex flex-nowrap gap-1" style={{...styles}}><input {...props} /><span>{caption}</span></div>
+    return <div className="d-flex flex-nowrap gap-1" style={{ ...styles }}><input {...props} /><span onClick={() => { onChange() }}>{caption}</span></div>
 }
 

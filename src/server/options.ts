@@ -5,9 +5,9 @@ import { Response, NextFunction, Request } from "express"
 import UserServiceSQLite from './services/userServiceSQLite.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import TemplateServiceSQLite from './services/templateServiceSQLite.js'
 import PermissionServiceSQLite from './services/permissionServiceSQLite.js'
 import DataBaseServiceSQLite from './services/dataBaseServiceSQLite.js'
+import { Template } from '../types/templates.js'
 
 export const JWT_SECRET = "secretkey"
 const __filename = fileURLToPath(import.meta.url);
@@ -20,7 +20,6 @@ export const specificationPath = path.resolve(__dirname, 'database/specification
 export const templatePath = path.resolve(__dirname, 'database/templates.db')
 export const wardrobePath = path.resolve(__dirname, 'database/wardrobe.db')
 export const userServiceProvider = new UserServiceSQLite(usersPath)
-export const templateServiceProvider = new TemplateServiceSQLite(templatePath)
 export const permissionServiceProvider = new PermissionServiceSQLite(usersPath)
 
 export function getDataBaseProvider<T>() {
@@ -29,7 +28,9 @@ export function getDataBaseProvider<T>() {
 export function getDataBaseUserProvider<T>() {
   return new DataBaseServiceSQLite<T>(usersPath)
 }
-
+export function getDataBaseTemplateProvider() {
+  return new DataBaseServiceSQLite<Template>(templatePath)
+}
 export const userRoleParser = async (req: Request, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)
   let token = req.query.token as string

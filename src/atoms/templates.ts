@@ -51,7 +51,13 @@ export const updateFasadTemplateAtom = atom(null, async (get, set, { name, id, r
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(combiStateAtom)
     const data = stringifyFasad(rootFasades[index])
-    const formData = {[TableFields.NAME]: name, [TableFields.ID]: id, [TableFields.DATA]: data, [TableFields.TOKEN]: user.token}
+    const formData = {
+        [TableFields.NAME]: name,
+        [TableFields.ID]: id,
+        [TableFields.DATA]: data,
+        rename,
+        [TableFields.TOKEN]: user.token
+    }
     if(!rename) formData[TableFields.DATA] = data
     try {
         const result = await fetchData(`${API_ROUTE}${TEMPLATES_ROUTE}`, "PUT", JSON.stringify(formData))

@@ -31,16 +31,7 @@ export interface IDataBaseService<T> {
     deleteData: (table: TABLE_NAMES, lookIn: Partial<T> ) => Promise<Result<null>>
     updateData: (table: TABLE_NAMES, lookIn: Partial<T>, update: Partial<T>) => Promise<Result<null>>
 }
-interface ITemplateAbstractService {
-    getFasadTemplates: () => Promise<Result<Template>>
-    addFasadTemplate: ({ }: OmitId<Template>) => Promise<Result<null>>
-    deleteFasadTemplate: (id: number) => Promise<Result<null>>
-    updateFasadTemplate: ({ }: Template) => Promise<Result<null>>
-}
-interface IPriceAbstractService {
-    getPriceList: () => Promise<Result<PriceData>>
-    updatePriceList: (item: PriceData) => Promise<Result<null>>
-}
+
 interface IPermissionAbstractService {
     getPermissions: (roleId: number) => Promise<Result<PermissionSchema>>
     addPermissions: (roleId: number, resource: RESOURCE, permissions: UserPermissions) => Promise<Result<null>>
@@ -52,24 +43,12 @@ interface IPermissionAbstractService {
 export interface IDataBaseServiceProvider<T> extends IDataBaseService<T> {
     dbFile: string
 }
-export interface ITemplateServiceProvider extends ITemplateAbstractService {
-    dbFile: string
-}
-export interface ITemplateService extends ITemplateAbstractService {
-    provider: ITemplateServiceProvider
-}
+
 export interface IUserServiceProvider extends IUserAbstractService {
     dbFile: string
 }
 export interface IUserService extends IUserAbstractService {
     provider: IUserServiceProvider
-}
-
-export interface IPriceServiceProvider extends IPriceAbstractService {
-    dbFile: string
-}
-export interface IPriceService extends IPriceAbstractService {
-    provider: IPriceServiceProvider
 }
 
 export interface IPermissionServiceProvider extends IPermissionAbstractService {

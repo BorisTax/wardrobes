@@ -1,19 +1,15 @@
 import messages from '../messages.js'
-import path from 'path'
-import { fileURLToPath } from 'url';
 import express from "express";
 import { accessDenied } from '../functions/database.js';
 import { MyRequest } from '../../types/server.js';
 import { PERMISSION, RESOURCE } from "../../types/user.js";
-import { templateServiceProvider } from '../options.js';
-import { TemplateService } from '../services/templateService.js';
+import { getDataBaseTemplateProvider } from '../options.js';
 import { Template } from '../../types/templates.js';
 import { hasPermission } from './users.js';
 import { StatusCodes } from 'http-status-codes';
 import { OmitId } from '../../types/materials.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { DataBaseService } from '../services/dataBaseService.js';
+import { TEMPLATE_TABLE_NAMES } from '../../types/schemas.js';
 
 const router = express.Router();
 export default router
@@ -43,39 +39,40 @@ router.post("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.TEMPLATE, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const { name, id, data } = req.body
-  const result = await updateFasadTemplate({ name, id, data });
+  const { name, id, data, rename } = req.body
+  const updateData = rename ? { name } : { name, data } 
+  const result = await updateFasadTemplate(id, updateData);
   res.status(result.status).json(result);
 });
 
 export async function getFasadTemplates() {
-  const templateService = new TemplateService(templateServiceProvider)
-  return await templateService.getFasadTemplates()
+  const service = new DataBaseService(getDataBaseTemplateProvider())
+  return await service.getData(TEMPLATE_TABLE_NAMES.FASAD, [], {})
 }
 
-export async function addFasadTemplate({ name, data }: OmitId<Template>) {
-  const templateService = new TemplateService(templateServiceProvider)
-  const result = await templateService.getFasadTemplates()
+export async function addFasadTemplate(data: OmitId<Template>) {
+  const result = await getFasadTemplates()
   if (!result.success) return result
   const templates = result.data
-  if ((templates as Template[]).find(m => m.name === name)) return { success: false, status: StatusCodes.CONFLICT, message: messages.TEMPLATE_EXIST }
-  return await templateService.addFasadTemplate({ name, data })
+  if ((templates as Template[]).find(m => m.name === data.name)) return { success: false, status: StatusCodes.CONFLICT, message: messages.TEMPLATE_EXIST }
+  const service = new DataBaseService(getDataBaseTemplateProvider())
+  return await service.addData(TEMPLATE_TABLE_NAMES.FASAD, data)
 }
 
-export async function updateFasadTemplate({ name, id, data }: Template) {
-  const templateService = new TemplateService(templateServiceProvider)
-  const result = await templateService.getFasadTemplates()
-  if (!result.success) return result
-  const templates = result.data
-  if (!(templates as Template[]).find(m => m.name === name)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.TEMPLATE_NO_EXIST }
-  return await templateService.updateFasadTemplate({ name, id, data })
-}
-
-export async function deleteFasadTemplate(id: number) {
-  const templateService = new TemplateService(templateServiceProvider)
-  const result = await templateService.getFasadTemplates()
+export async function updateFasadTemplate(id: number, data: Partial<Template>) {
+  const result = await getFasadTemplates()
   if (!result.success) return result
   const templates = result.data
   if (!(templates as Template[]).find(m => m.id === id)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.TEMPLATE_NO_EXIST }
-  return await templateService.deleteFasadTemplate(id)
+  const service = new DataBaseService(getDataBaseTemplateProvider())
+  return await service.updateData(TEMPLATE_TABLE_NAMES.FASAD, { id }, data)
+}
+
+export async function deleteFasadTemplate(id: number) {
+  const result = await getFasadTemplates()
+  if (!result.success) return result
+  const templates = result.data
+  if (!(templates as Template[]).find(m => m.id === id)) return { success: false, status: StatusCodes.NOT_FOUND, message: messages.TEMPLATE_NO_EXIST }
+  const service = new DataBaseService(getDataBaseTemplateProvider())
+  return await service.deleteData(TEMPLATE_TABLE_NAMES.FASAD, { id })
 }

@@ -141,7 +141,7 @@ export type AllData = {
 }
 
 
-export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES;
+export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES | TEMPLATE_TABLE_NAMES;
 
 export enum DATA_TABLE_NAMES {
     CHARS = 'chars',
@@ -169,7 +169,9 @@ export enum DATA_TABLE_NAMES {
     TREMPEL = 'trempel',
     PANTOGRAF = 'pantograf',
 }
-
+export enum TEMPLATE_TABLE_NAMES {
+    FASAD = 'fasad',
+}
 export enum USER_TABLE_NAMES {
     USERS = 'users',
     TOKENS = 'tokens',

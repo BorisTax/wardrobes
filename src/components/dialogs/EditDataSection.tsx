@@ -41,7 +41,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
         setNewValues(props.items.map(i => i.value))
         setExtValue("")
         setChecked(() => props.items.map(p => !!p.readonly))
-    }, [props.items])
+    }, [...props.items.map(i => i.value)])
     return <>
         <div className="editmaterial-container">
             <div className="edit-section-grid">

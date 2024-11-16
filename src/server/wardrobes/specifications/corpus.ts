@@ -8,7 +8,7 @@ import { getDSP } from "./functions"
 import { getCoef } from "./functions"
 import { calcFunction } from "./functions"
 import { getKromkaAndZaglByDSP, getKromkaTypeByChar } from "../../routers/functions/dspEdgeZag"
-import { getFurniture, getPantografByWidth, getTrempelByDepth } from "../../routers/functions/furniture"
+import { getFurniture } from "../../routers/functions/furniture"
 import { getDetailNames, getDetailsByWardrobe, getDVPTemplates } from "../../routers/functions/details"
 import {  getCharIdAndBrushSpecIdByProfileId } from "../../routers/functions/profiles"
 import { getChar } from "../../routers/functions/chars"
@@ -325,32 +325,30 @@ async function  getFlanec(truba: FullData & { count: number }): Promise<FullData
 export async function getTrempel(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const items = await getFurniture(data.wardrobeId, SpecItem.Trempel, data.width, data.height, data.depth );
-    const {id, maxDepth, minDepth} = await getTrempelByDepth(data.depth)
+    const { charId, minDepth, maxDepth } = items[0] || {charId: 0, maxDepth: 0, minDepth: 0}
     const verbose: VerboseData = [["Ширина шкафа", "Глубина шкафа", "Тремпель", "Кол-во"]];
     let count = 0
     for (let item of items) {
         count += item?.count || 0
-        const charName = (await getChar(id))?.name || ""
+        const charName = (await getChar(charId))?.name || ""
         if (count > 0) verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), getFineRange(minDepth, maxDepth), charName, `${count}`]);
         else verbose.push(["", `${data.depth}`, "", "нет"]);
     }
-    return { data: { amount: count, charId: id }, verbose };
+    return { data: { amount: count, charId }, verbose };
 }
 
 
 export async function getPantograf(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const items = await getFurniture(data.wardrobeId, SpecItem.Pantograf, data.width, data.height, data.depth );
-
-const verbose: VerboseData = [["Ширина секции", "Пантограф", "Кол-во"]];
-let count = 0
-let charId = 0
-for (let item of items) {
+    const items = await getFurniture(data.wardrobeId, SpecItem.Pantograf, data.width, data.height, data.depth);
+    const verbose: VerboseData = [["Ширина секции", "Пантограф", "Кол-во"]];
+    let count = 0
+    let charId = 0
+    for (let item of items) {
         const size = calcFunction(item.size, { width: data.width, height: data.height, depth: data.depth, offset: 0 })
-        const { id } = await getPantografByWidth(size)
-        charId = id
+        charId = item.charId || 0
         count += item?.count || 0
-        const charName = (await getChar(id))?.name || ""
+        const charName = (await getChar(charId))?.name || ""
         verbose.push([`${size}`, charName, count]);
     }
     return { data: { amount: count, charId }, verbose };

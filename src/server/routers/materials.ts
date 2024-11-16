@@ -1,4 +1,3 @@
-import path from 'path'
 import express from "express";
 import { accessDenied } from '../functions/database.js';
 import { addProfile, deleteProfile, getProfiles, getProfileTypes, updateProfile } from './functions/profiles.js';

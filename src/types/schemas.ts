@@ -76,6 +76,7 @@ export type FurnitureTableSchema = {
     maxDepth: number,
     count: number,
     size: string,
+    charId: number,
 }
 
 export type DspKromkaZaglSchema = {
@@ -90,16 +91,7 @@ export type ProfileSchema = {
     type: number,
     brushSpecId: number,
 }
-export type TrempelSchema = {
-    id: number,
-    minDepth: number,
-    maxDepth: number,
-}
-export type PantografSchema = {
-    id: number,
-    minWidth: number,
-    maxWidth: number,
-}
+
 export type LacobelSchema = {
     id: number,
     lacobelTypeId: number,

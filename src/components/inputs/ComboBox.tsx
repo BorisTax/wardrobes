@@ -27,7 +27,7 @@ export default function ComboBox<T>(props: ComboBoxProps<T> = { items: [], disab
         <>
             {props.title ? <span className="text-end text-nowrap" style={{ ...props.styles }}>{props.title}</span> : <></>}
             <select size={!props.size ? 1 : props.size}
-                value={props.displayValue(value)}
+                value={props.displayValue(value) || ""}
                 style={{ ...props.styles }}
                 disabled={props.disabled}
                 onClick={(e) => { e.stopPropagation() }}

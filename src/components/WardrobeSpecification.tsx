@@ -10,6 +10,7 @@ import { wardrobeDataAtom } from "../atoms/wardrobe"
 import { WARDROBE_TYPE } from "../types/wardrobe"
 import { getFasadCount } from "../functions/wardrobe"
 import { CORPUS_SPECS } from "../types/specification"
+import ImageButtonBar from "./inputs/Image'ButtonBar"
 
 export default function WardrobeSpecification() {
     const saveToExcel = useSetAtom(saveToExcelAtom)
@@ -31,7 +32,9 @@ export default function WardrobeSpecification() {
         if (specIndex >= specifications.length) setSpecIndex(0)
     }, [specifications, specIndex])
     return <div>
-        <ImageButton icon="excel" caption="Сохранить в Excel" title="Сохранить в Excel" onClick={() => saveToExcel(specification.spec, captions[specIndex] as string)} />
+        <ImageButtonBar>
+            <ImageButton icon="excel" caption="Сохранить в Excel" title="Сохранить в Excel" onClick={() => saveToExcel(specification.spec, captions[specIndex] as string)} />
+        </ImageButtonBar>
         <div className="d-flex flex-row flex-wrap align-items-center gap-1">
             {heads}
         </div>

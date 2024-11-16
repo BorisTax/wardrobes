@@ -1,4 +1,4 @@
-import { ReactNode, ReactNodeArray } from "react"
+import { ReactNode } from "react"
 
 export type ComboBoxProps<T> = {
     onChange?: (value: T, index: number) => void

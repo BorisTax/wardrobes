@@ -58,7 +58,7 @@ export default function WardrobeCalculator() {
     }, [depth, height])
     return <div className="container">
         <div className="row">
-            <div className={`container col-xs-12 col-sm-12 ${perm?.Read ? "col-md-6 col-lg-4" : "col-md-12 col-lg-12"}`}>
+            <div className='container col-xs-12 col-sm-12 col-md-6 col-lg-4'>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
                         <div className="text-center">Основные параметры</div>

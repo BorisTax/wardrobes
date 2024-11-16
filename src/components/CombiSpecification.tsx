@@ -6,6 +6,7 @@ import ImageButton from "./inputs/ImageButton"
 import { saveToExcelAtom } from "../atoms/export"
 import SpecificationTable from "./SpecificationTable"
 import { activeRootFasadIndexAtom, setActiveRootFasadAtom } from "../atoms/fasades"
+import ImageButtonBar from "./inputs/Image'ButtonBar"
 
 export default function CombiSpecification() {
     const saveToExcel = useSetAtom(saveToExcelAtom)
@@ -20,7 +21,9 @@ export default function CombiSpecification() {
         setFasadIndex(activeRootFasadIndex)
     }, [activeRootFasadIndex])
     return <div className="">
-        <ImageButton icon="excel" title="Сохранить в Excel" caption="Сохранить в Excel" onClick={() => saveToExcel(specification, `Фасад (${fasadIndex + 1} из ${specifications.length})`)} />
+        <ImageButtonBar justifyContent="flex-end">
+            <ImageButton icon="excel" title="Сохранить в Excel" caption="Сохранить в Excel" onClick={() => saveToExcel(specification, `Фасад (${fasadIndex + 1} из ${specifications.length})`)} />
+        </ImageButtonBar>
         <div className="d-flex flex-row flex-nowrap justify-content-center align-items-center gap-1">
             {fasades}
         </div>

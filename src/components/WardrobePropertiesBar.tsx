@@ -15,6 +15,7 @@ import { wardrobeTypesAtom } from "../atoms/storage"
 import { profileAtom } from "../atoms/materials/profiles"
 import { charAtom } from "../atoms/materials/chars"
 import useMessage from "../custom-hooks/useMessage"
+import ImageButtonBar from "./inputs/Image'ButtonBar"
 const fasades = [ 2, 3, 4, 5, 6]
 export default function WardrobePropertiesBar() {
     const user = useAtomValue(userAtom)
@@ -62,13 +63,13 @@ export default function WardrobePropertiesBar() {
     return <div className="properties-bar">
         <div className="d-flex flex-nowrap justify-content-between">
             <div>Параметры шкафа</div>
-            <div className="d-flex flex-nowrap  align-self-center gap-2 h-100">
+            <ImageButtonBar>
                 <ImageButton title="Настройки по умолчанию" icon="new" onClick={async () => { if (await showConfirm("Сбросить в начальное состояние?")) resetAppData() }} />
                 <ImageButton title="Открыть" icon="open" disabled={readFileDisabled} onClick={() => { openState() }} />
                 <ImageButton title="Сохранить" icon="save" disabled={saveFileDisabled} onClick={() => { saveState() }} />
                 <ImageButton title="Отменить" icon="undo" disabled={!previous} onClick={() => { undo() }} />
                 <ImageButton title="Повторить" icon="redo" disabled={!next} onClick={() => { redo() }} />
-            </div>
+            </ImageButtonBar>
         </div>
         <hr />
         <PropertyGrid>

@@ -10,7 +10,6 @@ export default function ImageButtonBar(props: ImageButtonBarProps) {
         display: "flex",
         justifyContent: props.justifyContent || "flex-start",
         flexWrap: "nowrap",
-        gap: "1em",
     }}>
         {props.children}
     </div>

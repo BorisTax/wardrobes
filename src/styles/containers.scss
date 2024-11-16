@@ -137,6 +137,7 @@
   @media (min-width: 1240px) {
     .combifasades-container {
       grid-template-columns: auto auto auto;
+      gap: 1rem;
     }
   }
 
@@ -190,6 +191,12 @@
   max-width: 380px;
 }
 
+.wardrobe-calculator-container{
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 1rem;
+}
 .edit-container {
   display: flex;
   flex-direction: row;

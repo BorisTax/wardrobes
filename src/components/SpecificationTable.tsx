@@ -5,7 +5,7 @@ import { userAtom } from "../atoms/users"
 import { OutputSpecSchema, specificationInProgress } from "../atoms/specification"
 import { setVerboseDataAtom } from "../atoms/verbose"
 import { showVerboseDialogAtom } from "../atoms/dialogs"
-import { SpecificationResult, TotalData, VerboseData } from "../types/wardrobe"
+import { SpecificationResult, VerboseData } from "../types/wardrobe"
 import { RESOURCE } from "../types/user"
 import CheckBox from "./inputs/CheckBox"
 import { unitsAtom } from "../atoms/storage"
@@ -15,7 +15,8 @@ import { specListAtom } from "../atoms/specification"
 type SpecificationTableProps = {
     purposes: CHAR_PURPOSE[],
     specification: SpecificationResult[],
-    hint?: string
+    hint?: string,
+    legendToRight?: boolean
 }
 type ExtOutputSpecSchema = OutputSpecSchema & { specId: number, verbose: VerboseData }
 
@@ -23,7 +24,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     const { permissions } = useAtomValue(userAtom)
     const unitsData = useAtomValue(unitsAtom)
     const loading = useAtomValue(specificationInProgress)
-    const permSpec =  permissions.get(RESOURCE.SPECIFICATION)
+    const permSpec = permissions.get(RESOURCE.SPECIFICATION)
     const specData = useAtomValue(specListAtom)
     const charData = useAtomValue(charAtom)
     const showVerbose = useSetAtom(showVerboseDialogAtom)
@@ -40,7 +41,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             specList.push({ specId: sp[0], specCode, specName, charCode, charName, amount, units, verbose: sp[1].verbose as VerboseData })
         })
         return [...specList]
-    }, [specData, props.specification]) 
+    }, [specData, props.specification])
     const [showAll, setShowAll] = useState(false)
     const [showCodes, setShowCodes] = useState(false)
     const contents = list.filter(i => props.purposes.some(p => i.amount !== 0 || showAll)).toSorted((s1, s2) => s1.specName > s2.specName ? 1 : -1).map((item: ExtOutputSpecSchema, index: number) => {
@@ -58,27 +59,31 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             <td className="table-data-cell">{item.units}</td>
         </tr >
     })
-    return <div className="specification-table">
-        <div className="table-data">
-            <table>
-                <thead>
-                    <tr>
-                        <th className="table-header">№</th>
-                        <th className="table-header">Код</th>
-                        <th className="table-header">Наименование</th>
-                        <th className="table-header">Характеристика</th>
-                        <th className="table-header">Кол-во</th>
-                        <th className="table-header">Ед</th>
-                    </tr>
-                </thead>
-                <tbody>{contents}</tbody>
-            </table>
+    return <div className={`d-flex ${props.legendToRight ? "flex-row" : "flex-column"}`}>
+        <div className="specification-table">
+            <div className="table-data">
+                <table>
+                    <thead>
+                        <tr>
+                            <th className="table-header">№</th>
+                            <th className="table-header">Код</th>
+                            <th className="table-header">Наименование</th>
+                            <th className="table-header">Характеристика</th>
+                            <th className="table-header">Кол-во</th>
+                            <th className="table-header">Ед</th>
+                        </tr>
+                    </thead>
+                    <tbody>{contents}</tbody>
+                </table>
+            </div>
+            {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
         </div>
-        <hr />
-        {props.hint && <div className="fw-bold text-danger">{props.hint}</div>}
-        <CheckBox checked={showAll} caption="Показать все позиции" onChange={() => { setShowAll(!showAll) }} />
-        <CheckBox checked={showCodes} caption="Отображать код характеристики" onChange={() => { setShowCodes(!showCodes) }} />
-        {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
+        <div className="p-3">
+            {props.hint && <div className="fw-bold text-danger">{props.hint}</div>}
+            <div>Нажмите на наименование номенклатуры, чтобы получить детальную информацию</div>
+            <CheckBox checked={showAll} caption="Показать все позиции" onChange={() => { setShowAll(!showAll) }} />
+            <CheckBox checked={showCodes} caption="Отображать код характеристики" onChange={() => { setShowCodes(!showCodes) }} />
+        </div>
     </div>
 }
 

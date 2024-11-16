@@ -19,6 +19,7 @@ import { fasadTypesAtom, fasadTypesToCharAtom } from "../atoms/storage"
 import { charAtom } from "../atoms/materials/chars"
 import { combiStateAtom } from "../atoms/app"
 import useConfirm from "../custom-hooks/useConfirm"
+import ImageButtonBar from "./inputs/Image'ButtonBar"
 const sectionsTemplate = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const directions: Map<Division, string> = new Map()
 export default function PropertiesBar() {
@@ -57,13 +58,13 @@ export default function PropertiesBar() {
     return <div className="properties-bar" onClick={(e) => { e.stopPropagation() }}> 
         <div className="property-bar-header">
             Параметры фасада
-            <div className="d-flex gap-1">
+            <ImageButtonBar justifyContent="flex-end">
                 <ImageButton title="Сбросить деление фасада" icon="new" disabled={(fasad?.level === 0) && !fasad.children.length} onClick={async () => { if (await confirm("Сбросить деление фасада?")) resetRootFasad() }} />
                 {permTemp?.Read && <ImageButton title="Загрузить из шаблона" icon="open" visible={fasad !== null} onClick={() => { showTemplateDialog(false) }} />}
                 {permTemp?.Create && <ImageButton title="Сохранить как шаблон" icon="save" visible={fasad !== null} onClick={() => { showTemplateDialog(true) }} />}
                 {/* {fasad && <ImageButton title="Скопировать фасад" icon="copy" onClick={() => { copyFasadDialogRef?.current?.showModal() }} />} */}
                 <ImageButton title="Перейти на уровень вверх" icon="selectParent" onClick={() => { setActiveFasad(fasadParent) }} disabled={((fasad === null) || (fasad?.level === 0))} />
-            </div>
+            </ImageButtonBar>
         </div>
         <hr />
         <PropertyGrid>

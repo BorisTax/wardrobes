@@ -17,7 +17,7 @@ export default function NavBar() {
     {permWard?.Read && <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />}
     <>
       <MenuSeparator />
-      {permMat?.Read && <ImageLink link={"materials"} caption="База материалов" icon="editMaterials" />}
+      {permMat?.Read && <ImageLink link={"materials"} caption="База данных" icon="editMaterials" />}
     </>
 
     {permUsers?.Read &&

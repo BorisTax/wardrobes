@@ -63,7 +63,7 @@ export default function WardrobePropertiesBar() {
     return <div className="properties-bar">
         <div className="d-flex flex-nowrap justify-content-between">
             <div>Параметры шкафа</div>
-            <ImageButtonBar>
+            <ImageButtonBar justifyContent="flex-end">
                 <ImageButton title="Настройки по умолчанию" icon="new" onClick={async () => { if (await showConfirm("Сбросить в начальное состояние?")) resetAppData() }} />
                 <ImageButton title="Открыть" icon="open" disabled={readFileDisabled} onClick={() => { openState() }} />
                 <ImageButton title="Сохранить" icon="save" disabled={saveFileDisabled} onClick={() => { saveState() }} />

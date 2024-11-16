@@ -52,107 +52,101 @@ export default function WardrobeCalculator() {
         if (standSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: extStand.length } } }))
     }, [extStand.length, standSameHeight])
     useEffect(() => {
-        const newHeight = consoleSameHeight? height: extComplect.console.height
-        const newDepth = consoleSameDepth? depth: extComplect.console.depth
+        const newHeight = consoleSameHeight ? height : extComplect.console.height
+        const newDepth = consoleSameDepth ? depth : extComplect.console.depth
         setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: newHeight, depth: newDepth } } }))
     }, [depth, height])
-    return <div className="container">
-        <div className="row">
-            <div className='container col-xs-12 col-sm-12 col-md-6 col-lg-4'>
-                <div className="row">
-                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
-                        <div className="text-center">Основные параметры</div>
-                        <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
-                            <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
-                            <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
-                            <CheckBox caption="схемный" checked={data.schema} disabled={data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM} onChange={async () => {
-                                if (data.schema) {
-                                    if (await confirm("Все изменения в деталировке будут сброшены. Продолжить?")) setData(prev => ({ ...prev, schema: !data.schema }))
-                                } else setData(prev => ({ ...prev, schema: !data.schema }));
-                            }} />
-                            {data.schema ? <input type="button" value="Редактор деталей" onClick={() => { showEditDetails() }} /> : <div></div>}
-                            <div className="text-end">Ширина: </div>
-                            <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={800} max={5400} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} submitOnLostFocus={true}/>
-                            <div className="text-end">Глубина: </div>
-                            <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={350} max={1000} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }}  submitOnLostFocus={true}/>
-                            <div className="text-end">Высота: </div>
-                            <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1700} max={2700} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }}  submitOnLostFocus={true}/>
-                            <ComboBox<number> title="Цвет ДСП:" value={dspId} items={dsp16List} displayValue={value => chars.get(value)?.name} onChange={value => { setData(prev => ({ ...prev, dspId: value })) }} />
-                            {wardType !== WARDROBE_TYPE.GARDEROB && <ComboBox<number> title="Цвет профиля:" value={profileId} items={[...profiles.keys()]} displayValue={value => chars.get(profiles.get(value)?.charId || 0)?.name || ""} onChange={value => { setData(prev => ({ ...prev, profileId: value })) }} />}
-                        </PropertyGrid>
-                        {wardType !== WARDROBE_TYPE.GARDEROB && <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
-                            <div className="text-end">Фасадов всего: </div>
-                            <div className="d-flex align-items-center justify-content-between"><div>{totalFasades}</div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, fasades: initFasades })) }}>Сбросить</div></div>
-                            <ComboBox<number> title="ДСП:" value={fasades.dsp.count} items={numbers} displayValue={value => `${value}`} onChange={value => { if (+value + totalFasades - fasades.dsp.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, dsp: { count: +value, matId: new Array(+value).fill(dspDefaultId) } } })) }} />
-                            {fasades.dsp.count > 0 && fasades.dsp.matId.map((m, i) => <ComboBox<number> styles={styles} key={"dsp" + i} title={`${i + 1}`} items={dsp10List} value={fasades.dsp.matId[i]}  displayValue={value => chars.get(value)?.name} onChange={value => { const matId = [...fasades.dsp.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, dsp: { ...prev.fasades.dsp, matId } } })) }} />)}
-                            <ComboBox<number> title="Зеркало:" value={fasades.mirror.count} items={numbers} displayValue={value => `${value}`} onChange={value => { if (+value + totalFasades - fasades.mirror.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, mirror: { count: +value, matId: new Array(+value).fill(mirrorDefaultId) } } })) }} />
-                            {fasades.mirror.count > 0 && fasades.mirror.matId.map((m, i) => <ComboBox<number> styles={styles} key={"mirror" + i} title={`${i + 1}`} items={mirrorList} value={fasades.mirror.matId[i]} displayValue={value => chars.get(value)?.name}  onChange={value => { const matId = [...fasades.mirror.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, mirror: { ...prev.fasades.mirror, matId } } })) }} />)}
-                            <ComboBox<number> title="ФМП:" value={fasades.fmp.count} items={numbers}displayValue={value => `${value}`}  onChange={value => { if (+value + totalFasades - fasades.fmp.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, fmp: { count: +value, matId: new Array(+value).fill(fmpDefaultId) } } })) }} />
-                            {fasades.fmp.count > 0 && fasades.fmp.matId.map((m, i) => <ComboBox<number> styles={styles} key={"fmp" + i} title={`${i + 1}`} items={fmpList} value={fasades.fmp.matId[i]} displayValue={value => chars.get(value)?.name}  onChange={value => { const matId = [...fasades.fmp.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, fmp: { ...prev.fasades.fmp, matId } } })) }} />)}
-                            <ComboBox<number> title="Пескоструй:" value={fasades.sand.count} items={numbers}displayValue={value => `${value}`}  onChange={value => { if (+value + totalFasades - fasades.sand.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, sand: { count: +value, matId: new Array(+value).fill(sandDefaultId) } } })) }} />
-                            {fasades.sand.count > 0 && fasades.sand.matId.map((m, i) => <ComboBox<number> styles={styles} key={"sand" + i} title={`${i + 1}`} items={sandList} value={fasades.sand.matId[i]} displayValue={value => chars.get(value)?.name}  onChange={value => { const matId = [...fasades.sand.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, sand: { ...prev.fasades.sand, matId } } })) }} />)}
-                            <ComboBox<number> title="Лакобель:" value={fasades.lacobel.count} items={numbers} displayValue={value => `${value}`}  onChange={value => { if (+value + totalFasades - fasades.lacobel.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, lacobel: { count: +value, matId: new Array(+value).fill(lacobelDefaultId) } } })) }} />
-                            {fasades.lacobel.count > 0 && fasades.lacobel.matId.map((m, i) => <ComboBox<number> styles={styles} key={"lacobel" + i} title={`${i + 1}`} items={lacobelList} value={fasades.lacobel.matId[i]} displayValue={value => chars.get(value)?.name}  onChange={value => { const matId = [...fasades.lacobel.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, lacobel: { ...prev.fasades.lacobel, matId } } })) }} />)}
-                        </PropertyGrid>}
-                    </div>
-                    {wardType !== WARDROBE_TYPE.SYSTEM && <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6 wardrobe-param-container">
-                    <div className={`text-center ${showExt ? "toggle-section-button-show" : "toggle-section-button-hidden"}`} role="button" onClick={() => setShowExt(!showExt)}>Доп. комплектация</div>
-                        <PropertyGrid hidden={!showExt} style={{ padding: "0.5em", border: "1px solid" }}>
-                            <div></div><div className="d-flex align-items-center justify-content-between"><div></div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, extComplect: getInitExtComplect(prev.height, prev.depth) })); setConsoles({ consoleSameDepth: true, consoleSameHeight: true, standSameHeight: true }) }}>Сбросить</div></div>
-                            <div className="text-end">Телескоп: </div>
-                            <TextBox value={extComplect.telescope} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, telescope: +value } })) }} />
-                            <hr /><hr />
-                            <div className="text-end">Консоли кол-во: </div>
-                            <TextBox value={extComplect.console.count} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, count: +value } } })) }} />
-                            <div className="d-flex flex-column align-items-end">
-                                <div className="text-end">Высота консоли: </div>
-                                <CheckBox styles={{fontSize: "0.8em"}} checked={consoleSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameHeight: !consoleSameHeight })); if (!consoleSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: prev.height } } })) }} />
-                            </div>
-                            <TextBox disabled={consoleSameHeight} value={extComplect.console.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={3000} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: +value } } })) }} />
-                            <div className="d-flex flex-column align-items-end">
-                                <div className="text-end">Глубина консоли: </div>
-                                <CheckBox styles={{ fontSize: "0.8em" }} checked={consoleSameDepth} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameDepth: !consoleSameDepth })); if (!consoleSameDepth) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: prev.depth } } })) }} />
-                            </div>
-                            <TextBox disabled={consoleSameDepth} value={extComplect.console.depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={800} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: +value } } })) }} />
-                            <ComboBox<number> title="Ширина консоли:" items={consoleWidth} value={extComplect.console.width} displayValue={value => `${value}`} onChange={value => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, width: +value } } })) }} />
-                            <ComboBox<CONSOLE_TYPE> title="Тип консоли:" value={extComplect.console.typeId} items={[...consoleTypes.keys()]} displayValue={value => consoleTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, typeId: value } } })) }} />
-                            <hr /><hr />
-                            <div className="text-end">Козырек: </div>
-                            <TextBox value={extComplect.blinder} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={1} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, blinder: +value } })) }} />
-                            <div className="text-end">Полка доп (полочн): </div>
-                            <TextBox value={extComplect.shelf} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, shelf: +value } })) }} />
-                            <div className="text-end">Полка доп (плат): </div>
-                            <TextBox value={extComplect.shelfPlat} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, shelfPlat: +value } })) }} />
-                            <div className="text-end">Перемычка (доп): </div>
-                            <TextBox value={extComplect.pillar} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, pillar: +value } })) }} />
-                            <hr /><hr />
-                            <div className="text-end">Стойка (доп) кол-во: </div>
-                            <TextBox value={extComplect.stand.count} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, count: +value } } })) }} />
-                            <div className="d-flex flex-column align-items-end">
-                                <div className="text-end">Стойка (доп) размер: </div>
-                                <CheckBox styles={{ fontSize: "0.8em" }} checked={standSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, standSameHeight: !standSameHeight })); }} />
-                            </div>
-                            <TextBox disabled={standSameHeight} value={standSameHeight ? extStand.length : extComplect.stand.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2750} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: +value } } })) }} />
-                            <hr /><hr />    
-                            <div className="text-end">Труба (доп): </div>
-                            <TextBox value={extComplect.truba} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, truba: +value } })) }} />
-                            <div className="text-end">Тремпель (доп): </div>
-                            <TextBox value={extComplect.trempel} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, trempel: +value } })) }} />
-                            <div className="text-end">Точки света: </div>
-                            <TextBox value={extComplect.light} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, light: +value } })) }} />
-                        </PropertyGrid>
-                    </div>}
-                </div>
+    return <div className="wardrobe-calculator-container">
+        <div>
+            <div className="wardrobe-param-container">
+                <div className="text-center">Основные параметры</div>
+                <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
+                    <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
+                    <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
+                    <CheckBox caption="схемный" checked={data.schema} disabled={data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM} onChange={async () => {
+                        if (data.schema) {
+                            if (await confirm("Все изменения в деталировке будут сброшены. Продолжить?")) setData(prev => ({ ...prev, schema: !data.schema }))
+                        } else setData(prev => ({ ...prev, schema: !data.schema }));
+                    }} />
+                    {data.schema ? <input type="button" value="Редактор деталей" onClick={() => { showEditDetails() }} /> : <div></div>}
+                    <div className="text-end">Ширина: </div>
+                    <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={800} max={5400} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} submitOnLostFocus={true} />
+                    <div className="text-end">Глубина: </div>
+                    <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={350} max={1000} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} submitOnLostFocus={true} />
+                    <div className="text-end">Высота: </div>
+                    <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1700} max={2700} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }} submitOnLostFocus={true} />
+                    <ComboBox<number> title="Цвет ДСП:" value={dspId} items={dsp16List} displayValue={value => chars.get(value)?.name} onChange={value => { setData(prev => ({ ...prev, dspId: value })) }} />
+                    {wardType !== WARDROBE_TYPE.GARDEROB && <ComboBox<number> title="Цвет профиля:" value={profileId} items={[...profiles.keys()]} displayValue={value => chars.get(profiles.get(value)?.charId || 0)?.name || ""} onChange={value => { setData(prev => ({ ...prev, profileId: value })) }} />}
+                </PropertyGrid>
+                {wardType !== WARDROBE_TYPE.GARDEROB && <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
+                    <div className="text-end">Фасадов всего: </div>
+                    <div className="d-flex align-items-center justify-content-between"><div>{totalFasades}</div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, fasades: initFasades })) }}>Сбросить</div></div>
+                    <ComboBox<number> title="ДСП:" value={fasades.dsp.count} items={numbers} displayValue={value => `${value}`} onChange={value => { if (+value + totalFasades - fasades.dsp.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, dsp: { count: +value, matId: new Array(+value).fill(dspDefaultId) } } })) }} />
+                    {fasades.dsp.count > 0 && fasades.dsp.matId.map((m, i) => <ComboBox<number> styles={styles} key={"dsp" + i} title={`${i + 1}`} items={dsp10List} value={fasades.dsp.matId[i]} displayValue={value => chars.get(value)?.name} onChange={value => { const matId = [...fasades.dsp.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, dsp: { ...prev.fasades.dsp, matId } } })) }} />)}
+                    <ComboBox<number> title="Зеркало:" value={fasades.mirror.count} items={numbers} displayValue={value => `${value}`} onChange={value => { if (+value + totalFasades - fasades.mirror.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, mirror: { count: +value, matId: new Array(+value).fill(mirrorDefaultId) } } })) }} />
+                    {fasades.mirror.count > 0 && fasades.mirror.matId.map((m, i) => <ComboBox<number> styles={styles} key={"mirror" + i} title={`${i + 1}`} items={mirrorList} value={fasades.mirror.matId[i]} displayValue={value => chars.get(value)?.name} onChange={value => { const matId = [...fasades.mirror.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, mirror: { ...prev.fasades.mirror, matId } } })) }} />)}
+                    <ComboBox<number> title="ФМП:" value={fasades.fmp.count} items={numbers} displayValue={value => `${value}`} onChange={value => { if (+value + totalFasades - fasades.fmp.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, fmp: { count: +value, matId: new Array(+value).fill(fmpDefaultId) } } })) }} />
+                    {fasades.fmp.count > 0 && fasades.fmp.matId.map((m, i) => <ComboBox<number> styles={styles} key={"fmp" + i} title={`${i + 1}`} items={fmpList} value={fasades.fmp.matId[i]} displayValue={value => chars.get(value)?.name} onChange={value => { const matId = [...fasades.fmp.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, fmp: { ...prev.fasades.fmp, matId } } })) }} />)}
+                    <ComboBox<number> title="Пескоструй:" value={fasades.sand.count} items={numbers} displayValue={value => `${value}`} onChange={value => { if (+value + totalFasades - fasades.sand.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, sand: { count: +value, matId: new Array(+value).fill(sandDefaultId) } } })) }} />
+                    {fasades.sand.count > 0 && fasades.sand.matId.map((m, i) => <ComboBox<number> styles={styles} key={"sand" + i} title={`${i + 1}`} items={sandList} value={fasades.sand.matId[i]} displayValue={value => chars.get(value)?.name} onChange={value => { const matId = [...fasades.sand.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, sand: { ...prev.fasades.sand, matId } } })) }} />)}
+                    <ComboBox<number> title="Лакобель:" value={fasades.lacobel.count} items={numbers} displayValue={value => `${value}`} onChange={value => { if (+value + totalFasades - fasades.lacobel.count <= maxFasades) setData(prev => ({ ...prev, fasades: { ...fasades, lacobel: { count: +value, matId: new Array(+value).fill(lacobelDefaultId) } } })) }} />
+                    {fasades.lacobel.count > 0 && fasades.lacobel.matId.map((m, i) => <ComboBox<number> styles={styles} key={"lacobel" + i} title={`${i + 1}`} items={lacobelList} value={fasades.lacobel.matId[i]} displayValue={value => chars.get(value)?.name} onChange={value => { const matId = [...fasades.lacobel.matId]; matId[i] = value; setData(prev => ({ ...prev, fasades: { ...prev.fasades, lacobel: { ...prev.fasades.lacobel, matId } } })) }} />)}
+                </PropertyGrid>}
             </div>
-            {perm?.Read && <div className="col-xs-12 col-sm-12 col-md-6 col-lg-8">
-                <WardrobeSpecification />
+            {wardType !== WARDROBE_TYPE.SYSTEM && <div className="wardrobe-param-container">
+                <div className={`text-center ${showExt ? "toggle-section-button-show" : "toggle-section-button-hidden"}`} role="button" onClick={() => setShowExt(!showExt)}>Доп. комплектация</div>
+                <PropertyGrid hidden={!showExt} style={{ padding: "0.5em", border: "1px solid" }}>
+                    <div></div><div className="d-flex align-items-center justify-content-between"><div></div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, extComplect: getInitExtComplect(prev.height, prev.depth) })); setConsoles({ consoleSameDepth: true, consoleSameHeight: true, standSameHeight: true }) }}>Сбросить</div></div>
+                    <div className="text-end">Телескоп: </div>
+                    <TextBox value={extComplect.telescope} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, telescope: +value } })) }} />
+                    <hr /><hr />
+                    <div className="text-end">Консоли кол-во: </div>
+                    <TextBox value={extComplect.console.count} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, count: +value } } })) }} />
+                    <div className="d-flex flex-column align-items-end">
+                        <div className="text-end">Высота консоли: </div>
+                        <CheckBox styles={{ fontSize: "0.8em" }} checked={consoleSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameHeight: !consoleSameHeight })); if (!consoleSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: prev.height } } })) }} />
+                    </div>
+                    <TextBox disabled={consoleSameHeight} value={extComplect.console.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={3000} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: +value } } })) }} />
+                    <div className="d-flex flex-column align-items-end">
+                        <div className="text-end">Глубина консоли: </div>
+                        <CheckBox styles={{ fontSize: "0.8em" }} checked={consoleSameDepth} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameDepth: !consoleSameDepth })); if (!consoleSameDepth) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: prev.depth } } })) }} />
+                    </div>
+                    <TextBox disabled={consoleSameDepth} value={extComplect.console.depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={800} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: +value } } })) }} />
+                    <ComboBox<number> title="Ширина консоли:" items={consoleWidth} value={extComplect.console.width} displayValue={value => `${value}`} onChange={value => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, width: +value } } })) }} />
+                    <ComboBox<CONSOLE_TYPE> title="Тип консоли:" value={extComplect.console.typeId} items={[...consoleTypes.keys()]} displayValue={value => consoleTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, typeId: value } } })) }} />
+                    <hr /><hr />
+                    <div className="text-end">Козырек: </div>
+                    <TextBox value={extComplect.blinder} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={1} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, blinder: +value } })) }} />
+                    <div className="text-end">Полка доп (полочн): </div>
+                    <TextBox value={extComplect.shelf} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, shelf: +value } })) }} />
+                    <div className="text-end">Полка доп (плат): </div>
+                    <TextBox value={extComplect.shelfPlat} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, shelfPlat: +value } })) }} />
+                    <div className="text-end">Перемычка (доп): </div>
+                    <TextBox value={extComplect.pillar} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, pillar: +value } })) }} />
+                    <hr /><hr />
+                    <div className="text-end">Стойка (доп) кол-во: </div>
+                    <TextBox value={extComplect.stand.count} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, count: +value } } })) }} />
+                    <div className="d-flex flex-column align-items-end">
+                        <div className="text-end">Стойка (доп) размер: </div>
+                        <CheckBox styles={{ fontSize: "0.8em" }} checked={standSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, standSameHeight: !standSameHeight })); }} />
+                    </div>
+                    <TextBox disabled={standSameHeight} value={standSameHeight ? extStand.length : extComplect.stand.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2750} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: +value } } })) }} />
+                    <hr /><hr />
+                    <div className="text-end">Труба (доп): </div>
+                    <TextBox value={extComplect.truba} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, truba: +value } })) }} />
+                    <div className="text-end">Тремпель (доп): </div>
+                    <TextBox value={extComplect.trempel} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, trempel: +value } })) }} />
+                    <div className="text-end">Точки света: </div>
+                    <TextBox value={extComplect.light} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, light: +value } })) }} />
+                </PropertyGrid>
             </div>}
         </div>
+        <WardrobeSpecification />
         <EditDetailDialog />
     </div>
 }
 
-function useMaterials(chars: ExtMap<CharsSchema>){
+function useMaterials(chars: ExtMap<CharsSchema>) {
     const fasadTypeToChar = useAtomValue(fasadTypesToCharAtom)
     const specToChar = useAtomValue(specToCharAtom)
     const charPurpose = useAtomValue(charPurposeAtom)

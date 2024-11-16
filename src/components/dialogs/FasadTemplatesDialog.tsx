@@ -56,7 +56,7 @@ export default function FasadTemplatesDialog() {
                         <div key={t.name} className={curTemplate && (t.name === curTemplate.name) ? "template-item template-item-selected" : "template-item"} onClick={() => { setTemplate(t) }}>{t.name}</div>)}
                 </div>
             </div>
-            <div className="d-flex flex-column align-items-center">
+            <div className="d-flex flex-column align-items-center flex-nowrap">
                 <div>Предпросмотр</div>
                 {fasad && <FasadPreviewContainer refObject={templatePreviewContainerRef} fasad={fasad} />}
             </div>

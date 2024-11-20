@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { editDetailDialogAtom } from "../../atoms/dialogs"
 import DialogWindow from "./DialogWindow"
-import TableData from "../TableData"
+import TableData from "../inputs/TableData"
 import { setWardrobeDataAtom, wardrobeDataAtom } from "../../atoms/wardrobe"
 import { Detail, DETAIL_NAME, DRILL_TYPE, KROMKA_TYPE } from "../../types/wardrobe"
 import { getEdgeDescripton } from "../../functions/wardrobe"
@@ -48,7 +48,7 @@ export default function EditDetailDialog() {
     const [detIndex, setDetIndex] = useState(0)
     const detail = details[detIndex] || defaultDetail
     const [, setEditDetailDialogAtomRef] = useAtom(editDetailDialogAtom)
-    const heads = ["Деталь", "Длина", "Ширина", "Кол-во", "Кромка 2", "Кромка 0.45", "Крепеж"]
+    const heads = [{ caption: "Деталь" }, { caption: "Длина" }, { caption: "Ширина" }, { caption: "Кол-во" }, { caption: "Кромка 2" }, { caption: "Кромка 0.45" }, { caption: "Крепеж" }]
     const contents = details.map((d, index) => ({ key: index, data: [detailNames.get(d.id) || "", d.length, d.width, d.count, getEdgeDescripton(d, KROMKA_TYPE.THICK), getEdgeDescripton(d, KROMKA_TYPE.THIN), drill.get(getDrillCaption(d)) || ""] }))
     const editItems: EditDataItem[] = [
         { caption: "Деталь:", value: detail.id || 0, valueCaption: value => detailNames.get(value as number) || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: [...detailNames.keys()], optional: true },
@@ -66,7 +66,7 @@ export default function EditDetailDialog() {
     }, [setEditDetailDialogAtomRef, dialogRef])
     return <DialogWindow dialogRef={dialogRef} title={"Редактор деталей"} onClose={()=>{calculate()}}>
         <EditContainer>
-            <TableData heads={heads} content={contents} onSelectRow={(index) => setDetIndex(index)} />
+            <TableData header={heads} content={contents} onSelectRow={key => setDetIndex(key as number)} />
             <EditDataSection name={""} items={editItems} dontAsk={true}
             onUpdate={async (checked, values) => {
                 const newDetails = [...details]

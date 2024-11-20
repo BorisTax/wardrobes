@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
-import TableData, { TableDataRow } from "../../TableData"
+import TableData, { TableDataRow } from "../../inputs/TableData"
 import { InputType, PropertyType } from "../../../types/property"
 import messages from "../../../server/messages"
 import EditContainer from "../../EditContainer"
@@ -43,7 +43,7 @@ export default function EditDetailsTable() {
     const details = useMemo(() => wardrobeDetails.filter(d => !currentDetailId || (d.detailId === currentDetailId)), [wardrobeDetails, currentDetailId])
     const [detailId, setDetailId] = useState(details.at(0)?.id || 0)
     const detail = details.find(d => d.id === detailId) || emptyDetailItem()
-    const heads = ['Деталь', 'Ширина от', 'Ширина до', 'Высота от', 'Высота до', 'Кол-во', 'Длина', 'Ширина']
+    const heads = [{ caption: 'Деталь', sorted: true }, { caption: 'Ширина от', sorted: true }, { caption: 'Ширина до', sorted: true }, { caption: 'Высота от', sorted: true }, { caption: 'Высота до', sorted: true }, { caption: 'Кол-во', sorted: true }, { caption: 'Длина', sorted: true }, { caption: 'Ширина', sorted: true }]
     const contents: TableDataRow[] = details.map(d => ({ key: d.id, data: [detailNames.get(d.detailId) || "", d.minWidth, d.maxWidth, d.minHeight, d.maxHeight, d.count, d.length, d.width] }))
     
     const editItems: EditDataItem[] = [
@@ -65,7 +65,7 @@ export default function EditDetailsTable() {
                 <hr/>
                 <ComboBox<number> value={currentDetailId} displayValue={value => detailNames.get(value)} items={distinct} onChange={value => setCurrentDetailId(value)} withEmpty={true} />
                 <hr/>
-            <TableData heads={heads} content={contents} onSelectKey={value => { setDetailId(value as number) }} />
+            <TableData header={heads} content={contents} onSelectRow={value => { setDetailId(value as number) }} />
         </div>
         <div>
             {(perm?.Read) ? <EditDataSection name={detailNames.get(detail?.detailId)} items={editItems}

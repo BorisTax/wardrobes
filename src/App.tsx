@@ -8,7 +8,6 @@ import './styles/containers.scss'
 import './styles/messages.scss'
 import './styles/inputs.scss'
 import './styles/templates.scss'
-import './styles/tables.scss'
 import './styles/navbar.scss'
 import combi from './images/combi.png';
 import wardrobe from './images/wardrobe.png';
@@ -16,7 +15,7 @@ import wardrobe from './images/wardrobe.png';
 import Header from './components/Header'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/dialogs/LoginDialog'
-const EditMaterialDialog = lazy(() => import('./components/dialogs/EditMaterialDialog'))
+const EditMaterialDialog = lazy(() => import('./components/dialogs/EditDataBaseDialog'))
 import {  userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
@@ -29,7 +28,7 @@ import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
 const CombiFasades = lazy(() => import('./components/CombiFasades'))
 const WardrobeCalculator = lazy(() => import('./components/WardrobeCalculator'))
-const EditSpecificationDialog = lazy(()=>import('./components/dialogs/EditSpecificationDialog'))
+const EditSpecificationDialog = lazy(()=>import('./components/dialogs/editDataBaseDialogs/EditSpecificationDialog'))
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
 import NavBar from './components/NavBar'

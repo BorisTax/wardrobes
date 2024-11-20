@@ -2,13 +2,13 @@ import { useEffect, useState } from "react"
 import { useAtomValue } from "jotai"
 import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
-import EditSpecificationDialog from "./EditSpecificationDialog"
+import EditSpecificationDialog from "./editDataBaseDialogs/EditSpecificationDialog"
 import { useNavigate } from "react-router-dom"
-import EditChars from "./editMaterialDialogs/EditChars"
-import EditSpecToChars from "./editMaterialDialogs/EditSpecToChars"
-import EditDSPKromkaZagl from "./editMaterialDialogs/EditDSPKromkaZagl"
-import EditDetailsTable from "./editMaterialDialogs/EditDetailsTable"
-import EditFurnitureTable from "./editMaterialDialogs/EditFurnitureTable"
+import EditChars from "./editDataBaseDialogs/EditChars"
+import EditSpecToChars from "./editDataBaseDialogs/EditSpecToChars"
+import EditDSPKromkaZagl from "./editDataBaseDialogs/EditDSPKromkaZagl"
+import EditDetailsTable from "./editDataBaseDialogs/EditDetailsTable"
+import EditFurnitureTable from "./editDataBaseDialogs/EditFurnitureTable"
 enum MaterialGroup{
     SPECIFICATION = 1,
     CHARS = 2,
@@ -25,7 +25,7 @@ matGroup.set(MaterialGroup.DSP_EDGE, "ДСП - Кромка - Заглушка")
 matGroup.set(MaterialGroup.DETAIL_TABLE, "Деталировки")
 matGroup.set(MaterialGroup.FURNITURE_TABLE, "Фурнитура")
 
-export default function EditMaterialDialog() {
+export default function EditDataBaseDialog() {
     const navigate = useNavigate()
     const { permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.SPECIFICATION)

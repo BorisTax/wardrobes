@@ -6,7 +6,7 @@ import { activeUsersAtom, allUsersAtom, createUserAtom, deleteUserAtom, loadActi
 import { timeToString } from "../../../server/functions/user"
 import { RESOURCE } from "../../../types/user"
 import EditPermissionsDialog from "./EditPermissionsDialog"
-import TableData from "../../TableData"
+import TableData from "../../inputs/TableData"
 import { useNavigate } from "react-router-dom"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
@@ -27,8 +27,8 @@ export default function EditUsersDialog() {
     const updateUser = useSetAtom(updateUserAtom)
     const deleteUser = useSetAtom(deleteUserAtom)
     const showConfirm = useConfirm()
-    const userListHeader = ["Имя", "Права"]
-    const activeUserListHeader = ["Имя", "Права", "Время с момента входа", "Время последней активности"]
+    const userListHeader = [{ caption: "Имя" }, { caption: "Права" }]
+    const activeUserListHeader = [{ caption: "Имя" }, { caption: "Права" }, { caption: "Время с момента входа" }, { caption: "Время последней активности" }]
     const [userIndex, setUserIndex] = useState(0)
     const user = users[userIndex] || { name: "", roleId: 0 }
     const userlist = users.map(u => {
@@ -66,7 +66,7 @@ export default function EditUsersDialog() {
         <hr />
         Все пользователи
         <EditContainer>
-            <TableData heads={userListHeader} content={userlist} onSelectRow={(index)=>setUserIndex(index)} />
+            <TableData header={userListHeader} content={userlist} onSelectRow={(index) => setUserIndex(index as number)} />
             <EditDataSection items={userEditItems} name={user.name}
                 onAdd={async (checked, values) => {
                     const name = values[0] as string
@@ -92,7 +92,7 @@ export default function EditUsersDialog() {
         </EditContainer>
         <hr />
         В сети
-        <TableData heads={activeUserListHeader} content={activeuserlist} />
+        <TableData header={activeUserListHeader} content={activeuserlist} />
         <hr />
         <EditPermissionsDialog />
     </div>

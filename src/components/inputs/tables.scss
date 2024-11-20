@@ -1,0 +1,102 @@
+@import "./vars.scss";
+
+.table {
+  text-align: left !important;
+  position: relative !important;
+  border-collapse: collapse !important;
+  background-color: $defaultBackColor !important;
+}
+.specification-table{
+  position: relative;
+}
+
+
+.tr-attention {
+  font-weight: bold;
+  background-color: #88dffa !important;
+}
+
+.tr-noattention {
+  color: #818181 !important;
+}
+
+.table-data {
+  font-size: 0.8rem !important;
+  max-height: 85svh !important;
+  background-color: $defaultBackColor !important;
+  overflow: auto !important;
+}
+
+.table-data-row {
+  text-wrap: nowrap;
+  height: 0.5rem !important;
+}
+.table-data-row:hover {
+  background-color: #88dffa !important;
+
+}
+.table-data-row-selected {
+  font-weight: bold !important;
+}
+.table-data-cell {
+  border: 1px solid black !important;
+  padding: 0.3em !important;
+  overflow: hidden !important;
+}
+
+.table-data-cell-verbose:hover {
+  color: rgb(255, 0, 0) !important;
+  font-weight: bold !important;
+}
+
+.table-header {
+  font-weight: bold !important;
+  position: sticky !important;
+  top: 0 !important;
+  background-color: white !important;
+  border: 1px solid black !important;
+  text-align: center !important;
+  text-wrap: nowrap !important;
+  white-space: pre-wrap !important;
+  padding: 0.3em !important;
+}
+
+
+.speclist {
+  font-size: 0.8rem;
+  -display: grid;
+  -grid-template-columns: auto auto auto auto auto auto;
+  overflow: scroll;
+}
+
+.table-grid {
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto auto;
+  gap: 0.2rem;
+  background-color: $defaultBackColor;
+
+}
+
+.edit-section-grid {
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto auto 200px;
+  gap: 0.2rem;
+  -background-color: $defaultBackColor;
+}
+
+@mixin sort{
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 1.5em;
+  aspect-ratio: 1/1;
+}
+.sortDesc {
+  @include sort;
+  background-image: url("./sortDesc.svg");
+}
+.sortAsc {
+  @include sort;
+  background-image: url("./sortAsc.svg");
+}

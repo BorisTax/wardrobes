@@ -11,6 +11,8 @@ import CheckBox from "./inputs/CheckBox"
 import { unitsAtom } from "../atoms/storage"
 import { charAtom } from "../atoms/materials/chars"
 import { specListAtom } from "../atoms/specification"
+import TableData, { TableDataHeader, TableDataRow } from "./inputs/TableData"
+
 
 type SpecificationTableProps = {
     purposes: CHAR_PURPOSE[],
@@ -44,38 +46,29 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     }, [specData, props.specification])
     const [showAll, setShowAll] = useState(false)
     const [showCodes, setShowCodes] = useState(false)
-    const contents = list.filter(i => props.purposes.some(p => i.amount !== 0 || showAll)).toSorted((s1, s2) => s1.specName > s2.specName ? 1 : -1).map((item: ExtOutputSpecSchema, index: number) => {
+    const header: TableDataHeader[] = [
+        { caption: "Код", sorted: true },
+        { caption: "Наименование", sorted: true, defaultSorted: true },
+        { caption: "Характеристика" },
+        { caption: "Кол-во", sorted: true },
+        { caption: "Ед" }]
+    const contents: TableDataRow[] = list.filter(i => props.purposes.some(_ => i.amount !== 0 || showAll)).toSorted((s1, s2) => s1.specName > s2.specName ? 1 : -1).map((item: ExtOutputSpecSchema, index: number) => {
         const amount = item.amount || 0
         const charCode = (item?.charCode && showCodes) ? `(${item.charCode})` : ""
         const char = `${item.charName} ${charCode}`
-        const className = (amount > 0) ? "tr-attention" : "tr-noattention"
-        const verbose = (item.verbose) ? { className: "table-data-cell table-data-cell-hover", role: "button", onClick: () => { if (!permSpec?.Read) return; setVerboseData(item.verbose, item.specId); showVerbose() } } : {}
-        return <tr key={index} className={"table-data-row " + className}>
-            <td className="table-data-cell" >{index + 1}</td>
-            <td className="table-data-cell" >{item.specCode}</td>
-            <td className="table-data-cell" {...verbose}>{item.specName}</td>
-            <td className="table-data-cell">{char}</td>
-            <td className="table-data-cell">{Number(amount.toFixed(3))}</td>
-            <td className="table-data-cell">{item.units}</td>
-        </tr >
+        const verbose = (item.verbose) ? { className: "table-data-cell-verbose", role: "button", onClick: () => { if (!permSpec?.Read) return; setVerboseData(item.verbose, item.specId); showVerbose() } } : {}
+        return { key:index, data: [
+            item.specCode,
+            <span {...verbose}>{item.specName}</span>,
+            char,
+            Number(amount.toFixed(3)),
+            item.units
+        ]
+        }
     })
     return <div className={`d-flex ${props.legendToRight ? "flex-row" : "flex-column"}`}>
         <div className="specification-table">
-            <div className="table-data">
-                <table>
-                    <thead>
-                        <tr>
-                            <th className="table-header">№</th>
-                            <th className="table-header">Код</th>
-                            <th className="table-header">Наименование</th>
-                            <th className="table-header">Характеристика</th>
-                            <th className="table-header">Кол-во</th>
-                            <th className="table-header">Ед</th>
-                        </tr>
-                    </thead>
-                    <tbody>{contents}</tbody>
-                </table>
-            </div>
+            <TableData header={header} content={contents} setRowStyle={row => row[3] !== 0 ? "tr-attention" : "tr-noattention"} />
             {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
         </div>
         <div className="p-3">

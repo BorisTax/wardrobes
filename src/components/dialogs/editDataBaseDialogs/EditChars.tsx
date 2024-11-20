@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { addCharAtom, deleteCharAtom, updateCharAtom } from "../../../atoms/materials/chars"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
-import TableData, { TableDataRow } from "../../TableData"
+import TableData, { TableDataRow } from "../../inputs/TableData"
 import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
 import EditContainer from "../../EditContainer"
@@ -23,7 +23,7 @@ export default function EditChars() {
     const initialCharId = useMemo(() => [...chars.keys()][0] || 0, [chars])
     const [selectedCharId, setSelectedCharId] = useState(initialCharId)
     const image = useImageUrl(selectedCharId)
-    const heads = ['Наименование', 'Код', 'Тип']
+    const heads = [{ caption: 'Наименование', sorted: true }, { caption: 'Код', sorted: true }, { caption: 'Тип', sorted: true }]
     const contents: TableDataRow[] = []
     chars.forEach((c, key) => contents.push({key, data: [c.name, c.code, charTypes.get(c.char_type_id)]}))
     const editItems: EditDataItem[] = [
@@ -34,7 +34,7 @@ export default function EditChars() {
     ]
     return <EditContainer>
         <div>
-            <TableData heads={heads} content={contents} onSelectKey={value => { setSelectedCharId(value as number) }} />
+            <TableData header={heads} content={contents} onSelectRow={value => { setSelectedCharId(value as number) }} />
         </div>
         {(perm?.Read) ? <EditDataSection name={chars.get(selectedCharId)?.name} items={editItems}
             onUpdate={perm?.Update ? async (checked, values) => {

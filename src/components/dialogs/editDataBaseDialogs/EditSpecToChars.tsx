@@ -3,7 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import ComboBox from "../../inputs/ComboBox"
 import { addSpecToCharAtom, deleteSpecToCharAtom } from "../../../atoms/materials/chars"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
-import TableData, { TableDataRow } from "../../TableData"
+import TableData, { TableDataRow } from "../../inputs/TableData"
 import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
 import EditContainer from "../../EditContainer"
@@ -27,7 +27,7 @@ export default function EditSpecToChars() {
     const allCharList = [...char.keys()].filter(c => char.get(c)?.char_type_id === specList.get(selectedSpecId)?.charType)
     const initialCharId = useMemo(() => charList[0] || 0, [charList])
     const [selectedCharId, setSelectedCharId] = useState(initialCharId)
-    const heads = ['Наименование', 'Код']
+    const heads = [{ caption: 'Наименование', sorted: true }, { caption: 'Код', sorted: true }]
     const contents: TableDataRow[] = []
     charList.forEach(ch => (contents.push({ key: ch, data: [char.get(ch)?.name, char.get(ch)?.code] })))
     const editItems: EditDataItem[] = [
@@ -43,7 +43,7 @@ export default function EditSpecToChars() {
                     onChange={value => { setSelectedSpecId(value) }} />
             </div>
             <hr />
-            {contents.length > 0 && <TableData heads={heads} content={contents} onSelectKey={key => { setSelectedCharId(key as number) }} />}
+            {contents.length > 0 && <TableData header={heads} content={contents} onSelectRow={key => { setSelectedCharId(key as number) }} />}
         </div>
         {(perm?.Read && contents.length > 0) ? <EditDataSection name={specList.get(selectedSpecId)?.name + "" + char.get(selectedCharId)?.name} items={editItems}
             onDelete={perm?.Delete ? async () => {

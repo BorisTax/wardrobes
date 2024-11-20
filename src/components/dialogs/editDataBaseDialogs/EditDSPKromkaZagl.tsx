@@ -2,7 +2,7 @@ import {  useEffect, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import messages from "../../../server/messages"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
-import TableData, { TableDataRow } from "../../TableData"
+import TableData, { TableDataRow } from "../../inputs/TableData"
 import { InputType } from "../../../types/property"
 import EditContainer from "../../EditContainer"
 import { userAtom } from "../../../atoms/users"
@@ -29,7 +29,7 @@ export default function EditDSPKromkaZagl() {
     const deleteDspEdge = useSetAtom(deleteDspEdgeAtom)
     const addDspEdge = useSetAtom(addDspEdgeAtom)
     const updateDspEdge = useSetAtom(updateDspEdgeAtom)
-    const heads = ['ДСП', 'Кромка', 'Заглушка']
+    const heads = [{ caption: 'ДСП', sorted: true }, { caption: 'Кромка', sorted: true }, { caption: 'Заглушка', sorted: true }]
     const contents: TableDataRow[] = []
     dspEdgeZag.forEach((d, key) => contents.push({key, data: [char.get(key)?.name, char.get(d.kromkaId)?.name, char.get(d.zaglushkaId)?.name]}))
     const editItems: EditDataItem[] = [
@@ -41,7 +41,7 @@ export default function EditDSPKromkaZagl() {
         loadDspEdge()
     }, [perm?.Read])
     return <EditContainer>
-        <TableData heads={heads} content={contents} onSelectKey={key => { setDspId(key as number) }} />
+        <TableData header={heads} content={contents} onSelectRow={key => { setDspId(key as number) }} />
         {(perm?.Read) ? <EditDataSection name={char.get(dspId)?.name} items={editItems}
             onUpdate={perm?.Update ? async (checked, values) => {
                 const usedKromkaId = checked[1] ? values[1] as number : 0

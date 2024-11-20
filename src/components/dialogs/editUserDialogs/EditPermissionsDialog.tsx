@@ -3,7 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import messages from "../../../server/messages"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
-import TableData from "../../TableData"
+import TableData from "../../inputs/TableData"
 import EditContainer from "../../EditContainer"
 import { deleteRoleAtom, userAtom, userRolesAtom } from "../../../atoms/users"
 import { PermissionSchema, RESOURCE } from "../../../types/user"
@@ -32,7 +32,7 @@ export default function EditPermissionsDialog() {
     const deletePermissions = useSetAtom(deletePermissionsAtom)
     const addPermissions = useSetAtom(addPermissionsAtom)
     const updatePermissions = useSetAtom(updatePermissionsAtom)
-    const heads = ['Права', 'Чтение', 'Создание', 'Обновление', 'Удаление']
+    const heads = [{ caption: 'Права' }, { caption: 'Чтение' }, { caption: 'Создание' }, { caption: 'Обновление' }, { caption: 'Удаление' }]
     const contents = permData.map((p: PermissionSchema, index) => ({ key: index, data: [resources.get(p.resourceId), boolToYesNo(p.read), boolToYesNo(p.create), boolToYesNo(p.update), boolToYesNo(p.delete)] }))
     const editItems: EditDataItem[] = [
         { caption: "Роль:", value: roles.get(roleId) || "", message: messages.ENTER_ROLE, type: InputType.TEXT, readonly: true },
@@ -66,7 +66,7 @@ export default function EditPermissionsDialog() {
                 }} />}
             </div>
             <hr />
-            <TableData heads={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index) }} />
+            <TableData header={heads} content={contents} onSelectRow={(index) => { setSelectedIndex(index as number) }} />
             <AddUserRoleDialog dialogRef={addUserRoleDialogRef} setLoading={(state: boolean) => setLoading(state)} />
             {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
         </div>

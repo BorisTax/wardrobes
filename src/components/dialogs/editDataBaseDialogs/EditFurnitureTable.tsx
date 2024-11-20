@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import EditDataSection, { EditDataItem } from "../EditDataSection"
-import TableData, { TableDataRow } from "../../TableData"
+import TableData, { TableDataRow } from "../../inputs/TableData"
 import { InputType, PropertyType } from "../../../types/property"
 import messages from "../../../server/messages"
 import EditContainer from "../../EditContainer"
@@ -51,7 +51,7 @@ export default function EditFurnitureTable() {
     const [itemId, setItemId] = useState(items[0]&&items[0].id)
     const item = items.find(i => i.id === itemId) || emptyFurnitureItem()
     const editCharList = useMemo(() => specToChar.filter(s => currentEditSpec ? s.id === currentEditSpec : s.id === item?.specId).map(s => s.charId), [specToChar, currentEditSpec, item?.specId])
-    const heads = ['Фурнитура', 'Ширина от', 'Ширина до', 'Глубина от', 'Глубина до', 'Высота от', 'Высота до', 'Кол-во', 'Размер', 'Характеристика']
+    const heads = [{ caption: 'Фурнитура', sorted: true }, { caption: 'Ширина от', sorted: true }, { caption: 'Ширина до', sorted: true }, { caption: 'Глубина от', sorted: true }, { caption: 'Глубина до', sorted: true }, { caption: 'Высота от', sorted: true }, { caption: 'Высота до', sorted: true }, { caption: 'Кол-во', sorted: true }, { caption: 'Размер', sorted: true }, { caption: 'Характеристика', sorted: true }]
     const contents: TableDataRow[] = items.map(d => ({ key: d.id, data: [spec.get(d.specId)?.name || "", d.minWidth, d.maxWidth, d.minDepth, d.maxDepth, d.minHeight, d.maxHeight, d.count, d.size, chars.get(d.charId)?.name || ""] }))
     
     const editItems: EditDataItem[] = [
@@ -84,7 +84,7 @@ export default function EditFurnitureTable() {
                 <hr/>
             <ComboBox<number> value={currentSpec} displayValue={value => spec.get(value)?.name} items={distinct} onChange={value => setCurrentSpec(value)} withEmpty={true} />
             <hr/>
-            <TableData heads={heads} content={contents} onSelectKey={key => { setItemId(key as number) }} />
+            <TableData header={heads} content={contents} onSelectRow={key => { setItemId(key as number) }} />
         </div>
         <div>
             {(perm?.Read) ? <EditDataSection name={spec.get(item.specId)?.name || ""} items={editItems}

@@ -1,7 +1,7 @@
 import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getKromka, getKromkaDescripton, getKromkaLength, getFasadCount, getMinifixByDetail } from "./functions"
 import { emptyFullData } from "./functions"
 import { SpecItem } from "../../../types/specification"
-import { DETAIL_NAME, DVPData, Detail, KROMKA_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe"
+import { DETAIL_NAME, DVPData, Detail, KROMKA_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_TYPE, WARDROBE_KIND } from "../../../types/wardrobe"
 import { WardrobeData } from "../../../types/wardrobe"
 import { getFineRange } from "./functions"
 import { getDSP } from "./functions"
@@ -94,29 +94,39 @@ export async function getDetails(wardrobeTypeId: number, wardrobeId: number, wid
 
 async function getDVP(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const dvp = await getDVPData(data.width, data.height, data.depth);
     const coef = await getCoef(SpecItem.DVP);
-    const area = dvp.dvpLength * dvp.dvpWidth * dvp.dvpCount / 1000000;
-    const areaCoef = area * coef;
-    const verbose = [["", "Длина", "Ширина", "Кол-во", ""]];
-    const count = dvp.dvpCount
-    verbose.push(["Расчетные", `${dvp.dvpRealLength}`, `${dvp.dvpRealWidth} =((${data.height}-30-2x${count - 1})/${count})`, `${dvp.dvpCount}`, ``]);
-    verbose.push(["Распиловочные", `${dvp.dvpLength}`, `${dvp.dvpWidth}`, `${dvp.dvpCount}`, `${area.toFixed(3)} x ${coef}= ${areaCoef.toFixed(3)}`]);
-    return { data: { amount: areaCoef, charId: 0 }, verbose };
+    let totalArea = 0
+    const verbose = [["Расчетные размеры (Длина х Ширина (расчет ширины))", "Распиловочные размеры", "Кол-во", "Площадь"]];
+    const depth = data.wardrobeId===WARDROBE_KIND.CORNER?450:data.depth
+    const inputData = [{ width: data.width, height: data.height, depth }]
+    if (data.wardrobeId === WARDROBE_KIND.CORNER) inputData.push({ width: data.width - 477, height: data.height, depth })
+    for (let d of inputData) {
+        const dvp = await getDVPData(d.width, d.height, d.depth);
+        const area = dvp.dvpLength * dvp.dvpWidth * dvp.dvpCount / 1000000;
+        totalArea += area;
+        const count = dvp.dvpCount
+        verbose.push([`${dvp.dvpRealLength} х ${dvp.dvpRealWidth} ((${data.height}-30-2x${count - 1})/${count})`, `${dvp.dvpLength} х ${dvp.dvpWidth}`, `${dvp.dvpCount}`, `${area.toFixed(3)}`]);
+    }
+    verbose.push(["", '', `Итого:`, `${totalArea.toFixed(3)} x ${coef}= ${(totalArea * coef).toFixed(3)}`]);
+    return { data: { amount: totalArea * coef, charId: 0 }, verbose };
 }
 
 async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const { width, height, depth } = data;
-    const dvpData = await getDVPData(width, height, depth);
     const coef = await getCoef(SpecItem.PlankaDVP);
     const verbose: VerboseData = [["Длина планки", "Кол-во", "Итого"]];
-    const total = dvpData.dvpPlanka * dvpData.dvpPlankaCount / 1000;
-    const dvpLength = dvpData.dvpRealLength + 3
-    const totalCoef = total * coef;
-    verbose.push([`(${dvpLength}-32) = ${dvpData.dvpPlanka}`, dvpData.dvpPlankaCount, `${(dvpData.dvpPlanka / 1000).toFixed(3)} x ${dvpData.dvpPlankaCount} = ${total.toFixed(3)}`]);
-    if (coef !== 1) verbose.push(["", "", `${total.toFixed(3)} x ${coef} = ${totalCoef.toFixed(3)}`]);
-    return { data: { amount: totalCoef, charId: 0 }, verbose };
+    let total = 0
+    const inputData = [{ width: data.width, height: data.height, depth: data.depth }]
+    if (data.wardrobeId === WARDROBE_KIND.CORNER) inputData.push({ width: data.width - 500, height: data.height, depth: data.depth })
+    for (let d of inputData) {
+        const dvpData = await getDVPData(d.width, d.height, d.depth);
+        const len = dvpData.dvpPlanka * dvpData.dvpPlankaCount / 1000;
+        total += len
+        const dvpLength = dvpData.dvpRealLength + 3
+        verbose.push([`${dvpLength}-32 = ${dvpData.dvpPlanka}`, dvpData.dvpPlankaCount, `${(dvpData.dvpPlanka / 1000).toFixed(3)} x ${dvpData.dvpPlankaCount} = ${len.toFixed(3)}`]);
+    }
+    verbose.push(["", "Итого:", `${total.toFixed(3)} x ${coef} = ${(total * coef).toFixed(3)}`]);
+    return { data: { amount: total * coef, charId: 0 }, verbose };
 }
 
 async function getDVPData(width: number, height: number, depth: number): Promise<DVPData> {

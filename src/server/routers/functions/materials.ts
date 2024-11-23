@@ -1,7 +1,7 @@
 import { AllData, DATA_TABLE_NAMES, FasadDefaultCharSchema, LacobelSchema } from "../../../types/schemas"
 import { getDataBaseProvider } from "../../options"
 import { DataBaseService } from "../../services/dataBaseService"
-import { getConsoleTypes, getFasadTypes, getWardrobes, getWardrobeTypes } from "./wardrobe"
+import { getConsoleTypes, getFasadTypes, getWardrobes, getWardrobesDimensions, getWardrobeTypes } from "./wardrobe"
 import { getCharPurpose, getChars, getCharTypes, getFasadTypeToChar } from "./chars"
 import { getProfiles, getProfileTypes } from "./profiles"
 import { getSpecList, getSpecToCharList, getUnits } from "./spec"
@@ -32,6 +32,7 @@ export async function getAllData(): Promise<AllData> {
     const specToChar = (await getSpecToCharList()).data
     const detailNames = (await getDetailNames()).data
     const charPurpose = (await getCharPurpose()).data
+    const wardrobesDimensions = (await getWardrobesDimensions()).data
     return {
         chars,
         fasadDefaultChars,
@@ -48,6 +49,7 @@ export async function getAllData(): Promise<AllData> {
         profileTypes,
         spec,
         specToChar,
-        detailNames
+        detailNames,
+        wardrobesDimensions,
     }
   }

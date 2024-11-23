@@ -2,8 +2,9 @@ import { AppState } from "../types/app"
 import { ProfileType } from "../types/enums"
 import { cloneFasad, excludeFasadParent, getFasadState } from "./fasades"
 import { Division, FASAD_TYPE } from "../types/enums"
-import {  Detail, KROMKA_TYPE, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
+import {  Detail, KROMKA_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { Profile } from "../types/materials"
+import { WardrobesDimensionsSchema } from "../types/schemas"
 
 
 
@@ -77,4 +78,8 @@ export function getEdgeDescripton(detail: Detail, edge: KROMKA_TYPE): string {
     if (length > 0) result.push(`${length} по длине`)
     if (width > 0) result.push(`${width} по ширине`)
     return result.join(', ')
+}
+
+export function getInitialWardrobeDimensions(wardrobeId: WARDROBE_KIND, wardrobeDimensions: WardrobesDimensionsSchema[]){
+    return wardrobeDimensions.find(w => w.wardrobeId === wardrobeId) || { minWidth: 0, maxWidth: 0, minHeight: 0, maxHeight: 0, minDepth: 0, maxDepth: 0, defaultDepth: 0, defaultHeight: 0, defaultWidth: 0 }
 }

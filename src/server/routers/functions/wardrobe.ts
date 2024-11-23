@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { InitialAppState as InitialCombiState } from "../../../types/app";
 import { FASAD_TYPE, ProfileType } from "../../../types/enums";
-import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema } from "../../../types/schemas";
+import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema, WardrobesDimensionsSchema } from "../../../types/schemas";
 import { Result } from "../../../types/server";
 import { WARDROBE_KIND, WARDROBE_TYPE, FasadesData, WardrobeData, CONSOLE_TYPE } from "../../../types/wardrobe";
 import { getDataBaseProvider } from "../../options";
@@ -19,6 +19,12 @@ export async function getWardrobeTypes() {
   const service = new DataBaseService(getDataBaseProvider<WardrobeTypesSchema>());
   return await service.getData(DATA_TABLE_NAMES.WARDROBE_TYPES, [], {});
 }
+
+export async function getWardrobesDimensions() {
+  const service = new DataBaseService(getDataBaseProvider<WardrobesDimensionsSchema>());
+  return await service.getData(DATA_TABLE_NAMES.WARDROBES_DIMENSIONS, [], {});
+}
+
 export async function getConsoleTypes() {
   const service = new DataBaseService(getDataBaseProvider<ConsoleTypesSchema>());
   return await service.getData(DATA_TABLE_NAMES.CONSOLE_TYPES, [], {});
@@ -67,6 +73,7 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
   const dspDefault = defaultChars.find(d => d.id === FASAD_TYPE.DSP)?.charId || 0
   const profileId = profiles[0].id;
   const details = await getDetails(WARDROBE_TYPE.WARDROBE, WARDROBE_KIND.STANDART, 2400, 2100, 600);
+  const defaultDims = (await getWardrobesDimensions()).data.find(d => d?.wardrobeId === WARDROBE_KIND.STANDART)
   return {
     success: true, status: StatusCodes.OK,
     data: [{
@@ -74,9 +81,9 @@ export async function getInitialWardrobeData(): Promise<Result<WardrobeData>> {
       wardrobeTypeId: WARDROBE_TYPE.WARDROBE,
       schema: false,
       details,
-      width: 2400,
-      depth: 600,
-      height: 2400,
+      width: defaultDims?.defaultWidth || 0,
+      depth: defaultDims?.defaultDepth || 0,
+      height: defaultDims?.defaultHeight || 0,
       dspId: dspDefault,
       profileId,
       fasades: initFasades,

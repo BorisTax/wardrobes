@@ -114,7 +114,11 @@ export enum DRILL_TYPE {
 }
 
 export enum WARDROBE_KIND {
-    STANDART = 1
+    STANDART = 1,
+    ULTRA = 2,
+    LUXE = 3,
+    COMFORT = 4,
+    CORNER = 5,
 }
 
 export type Detail = {

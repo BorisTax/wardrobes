@@ -16,12 +16,13 @@ import { useDetail } from "../custom-hooks/useDetail"
 import useConfirm from "../custom-hooks/useConfirm"
 import { showDetailDialogAtom } from "../atoms/dialogs"
 import EditDetailDialog from "./dialogs/EditDetailDialog"
-import { consoleTypesAtom, ExtMap, fasadTypesToCharAtom, wardrobeAtom, wardrobeTypesAtom } from "../atoms/storage"
+import { consoleTypesAtom, ExtMap, fasadTypesToCharAtom, wardrobeAtom, wardrobesDimensionsAtom, wardrobeTypesAtom } from "../atoms/storage"
 import { profileAtom } from "../atoms/materials/profiles"
 import { charAtom, charPurposeAtom } from "../atoms/materials/chars"
 import { specToCharAtom } from "../atoms/specification"
 import { CharsSchema } from "../types/schemas"
 import { useDefaultFasadChars } from "../custom-hooks/materials"
+import { getInitialWardrobeDimensions } from "../functions/wardrobe"
 
 const numbers = [0, 1, 2, 3, 4, 5, 6]
 const styles = { fontStyle: "italic", color: "gray" }
@@ -34,6 +35,7 @@ export default function WardrobeCalculator() {
     const wardKinds = useAtomValue(wardrobeAtom)
     const consoleTypes = useAtomValue(consoleTypesAtom)
     const data = useAtomValue(wardrobeDataAtom)
+    const wardrobesDimensions = useAtomValue(wardrobesDimensionsAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
 
     const chars = useAtomValue(charAtom)
@@ -43,6 +45,7 @@ export default function WardrobeCalculator() {
     const { dsp16List, dsp10List, mirrorList, fmpList, sandList, lacobelList } = useMaterials(chars)
     const profiles = useAtomValue(profileAtom)
     const { wardrobeId: wardKind, wardrobeTypeId: wardType, width, depth, height, dspId, fasades, profileId, extComplect } = data
+    const { minWidth, maxWidth, minHeight, maxHeight, minDepth, maxDepth } = getInitialWardrobeDimensions(wardKind, wardrobesDimensions)
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
     const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardrobeTypeId, data.wardrobeId, data.width, data.height) || { length: 0 }
@@ -61,7 +64,7 @@ export default function WardrobeCalculator() {
             <div className="wardrobe-param-container">
                 <div className="text-center">Основные параметры</div>
                 <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
-                    <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
+                    <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={value => { const dims = getInitialWardrobeDimensions(value, wardrobesDimensions); setData(prev => ({ ...prev, wardrobeId: value, width: dims.defaultWidth, height: dims.defaultHeight, depth: dims.defaultDepth, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
                     <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
                     <CheckBox caption="схемный" checked={data.schema} disabled={data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM} onChange={async () => {
                         if (data.schema) {
@@ -70,11 +73,11 @@ export default function WardrobeCalculator() {
                     }} />
                     {data.schema ? <input type="button" value="Редактор деталей" onClick={() => { showEditDetails() }} /> : <div></div>}
                     <div className="text-end">Ширина: </div>
-                    <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={800} max={5400} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} submitOnLostFocus={true} />
+                    <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minWidth} max={maxWidth} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} submitOnLostFocus={true} />
                     <div className="text-end">Глубина: </div>
-                    <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={350} max={1000} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} submitOnLostFocus={true} />
+                    <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minDepth} max={maxDepth} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} submitOnLostFocus={true} />
                     <div className="text-end">Высота: </div>
-                    <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1700} max={2700} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }} submitOnLostFocus={true} />
+                    <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minHeight} max={maxHeight} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }} submitOnLostFocus={true} />
                     <ComboBox<number> title="Цвет ДСП:" value={dspId} items={dsp16List} displayValue={value => chars.get(value)?.name} onChange={value => { setData(prev => ({ ...prev, dspId: value })) }} />
                     {wardType !== WARDROBE_TYPE.GARDEROB && <ComboBox<number> title="Цвет профиля:" value={profileId} items={[...profiles.keys()]} displayValue={value => chars.get(profiles.get(value)?.charId || 0)?.name || ""} onChange={value => { setData(prev => ({ ...prev, profileId: value })) }} />}
                 </PropertyGrid>

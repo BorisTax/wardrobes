@@ -78,7 +78,19 @@ export type FurnitureTableSchema = {
     size: string,
     charId: number,
 }
-
+export type WardrobesDimensionsSchema = {
+    id: number
+    wardrobeId: number,
+    minWidth: number,
+    maxWidth: number,
+    minHeight: number,
+    maxHeight: number,
+    minDepth: number,
+    maxDepth: number,
+    defaultWidth: number,
+    defaultHeight: number,
+    defaultDepth: number,
+}
 export type DspKromkaZaglSchema = {
     id: number,
     kromkaId: number,
@@ -130,6 +142,7 @@ export type AllData = {
     spec: SpecSchema[],
     specToChar: SpecToCharSchema[],
     detailNames: DetailSchema[],
+    wardrobesDimensions: WardrobesDimensionsSchema[],
 }
 
 
@@ -158,6 +171,7 @@ export enum DATA_TABLE_NAMES {
     UNITS = 'units',
     WARDROBE_TYPES = 'wardrobe_types',
     WARDROBES = 'wardrobes',
+    WARDROBES_DIMENSIONS = 'wardrobes_dimensions',
     TREMPEL = 'trempel',
     PANTOGRAF = 'pantograf',
 }

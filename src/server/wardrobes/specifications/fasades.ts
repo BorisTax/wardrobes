@@ -319,8 +319,8 @@ async function calcEdges(fasad: FasadState): Promise<{ outer: EdgesData[], inner
         const full: EdgesData = { width: fasad.width, height: fasad.height, edges: [] }
         if (left) outer.edges.push({ side: EdgeSides.LEFT, length: fasad.height }); else inner.edges.push({ side: EdgeSides.LEFT, length: fasad.height })
         if (right) outer.edges.push({ side: EdgeSides.RIGHT, length: fasad.height }); else inner.edges.push({ side: EdgeSides.RIGHT, length: fasad.height })
-        if (top) outer.edges.push({ side: EdgeSides.TOP, length: fasad.width }); else inner.edges.push({ side: EdgeSides.TOP, length: fasad.height })
-        if (bottom) outer.edges.push({ side: EdgeSides.BOTTOM, length: fasad.width }); else inner.edges.push({ side: EdgeSides.BOTTOM, length: fasad.height })
+        if (top) outer.edges.push({ side: EdgeSides.TOP, length: fasad.width }); else inner.edges.push({ side: EdgeSides.TOP, length: fasad.width })
+        if (bottom) outer.edges.push({ side: EdgeSides.BOTTOM, length: fasad.width }); else inner.edges.push({ side: EdgeSides.BOTTOM, length: fasad.width })
         full.edges.push({ side: EdgeSides.LEFT, length: fasad.height })
         full.edges.push({ side: EdgeSides.RIGHT, length: fasad.height })
         full.edges.push({ side: EdgeSides.TOP, length: fasad.width })

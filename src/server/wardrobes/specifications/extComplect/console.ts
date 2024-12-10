@@ -2,7 +2,7 @@ import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, DETAIL_NAME, Detail, FullData, CONSOLE_TYPE } from "../../../../types/wardrobe";
 import { getCommonData } from "../corpus";
 import { consoleRoofKromka, consoleShelfKromka, consoleStandKromka, consoleStandSideKromka } from "../kromka";
-import { getDetailNames } from "../../../routers/functions/details";
+import { getDrill } from "../functions";
 
 
 export async function getConsoleSpecification(data: WardrobeData): Promise<SpecificationResult[]> {
@@ -22,9 +22,8 @@ export async function getConsoleSpecification(data: WardrobeData): Promise<Speci
         details.push({ id: DETAIL_NAME.CONSOLE_SHELF, count: 2, length: console.depth - 20, width: console.width - 89, kromka: consoleShelfKromka() });
         if (console.height >= 2300) details.push({ id: DETAIL_NAME.CONSOLE_SHELF, count: 1, length: console.depth - 20, width: console.width - 96, kromka: consoleShelfKromka() });
     }
+    details.forEach(d => d.drill = getDrill(d.id))
     await getCommonData(data, details, result)
-    result.push([SpecItem.Minifix, await getConsoleMinifix()])
-    result.push([SpecItem.Confirmat, await getConsoleConfirmat(details)])
     result.push([SpecItem.Leg, { data: { amount: 1 } }])
     result.push([SpecItem.StyagkaM6, { data: { amount: 3 } }])
     const karton = 2
@@ -34,23 +33,4 @@ export async function getConsoleSpecification(data: WardrobeData): Promise<Speci
     return result
 }
 
-async function getConsoleMinifix(): Promise<FullData> {
-    const detailNames = (await getDetailNames()).data
-    const verbose = [["Деталь", "Кол-во", "Минификсы"]]
-    const caption = detailNames.find(n => n.id === DETAIL_NAME.CONSOLE_ROOF)?.name || ""
-    const count = 2 * 3
-    verbose.push([caption, `2`, `${count}`])
-    return { data: { amount: count }, verbose }
-}
-async function getConsoleConfirmat(details: Detail[]): Promise<FullData> {
-    const detailNames = (await getDetailNames()).data
-    const verbose = [["Деталь", "Кол-во", "Конфирматы"]]
-    let total = 0
-    for (let d of details) {
-        if (d.id !== DETAIL_NAME.CONSOLE_SHELF) continue;
-        const caption = detailNames.find(n => n.id === d.id)?.name || ""
-        verbose.push([caption, `${d.count}`, `${d.count * 3}`])
-        total += d.count * 3
-    }
-    return { data: { amount: total }, verbose }
-}
+

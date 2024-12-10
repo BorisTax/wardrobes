@@ -14,7 +14,6 @@ export default function FasadContainer({ index }: FasadContainerProps): ReactEle
     const innerWidth = window.innerWidth
     const rootFasad = rootFasades[index]
     const ratio = rootFasad.width / rootFasad.height
-    const aspectRatio = `${rootFasad.width}/${rootFasad.height}`
     const activeFasad = useAtomValue(activeFasadAtom)
     const sectionRef = useRef<HTMLDivElement>(null)
     const activeClass = activeRootFasadIndex === index ? "fw-bold" : ""

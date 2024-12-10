@@ -124,10 +124,13 @@ export function calcFunction(func: string, { width, height, depth, offset }: { w
     }
 }
 
-export function getDrill(detail: WardrobeDetailTableSchema): DRILL_TYPE[] {
-    if ([DETAIL_NAME.STAND, DETAIL_NAME.INNER_STAND].includes(detail.detailId)) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.MINIFIX2]
-    if ([DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT].includes(detail.detailId)) return [DRILL_TYPE.CONFIRMAT2, DRILL_TYPE.CONFIRMAT2]
-    if ([DETAIL_NAME.PILLAR].includes(detail.detailId)) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.CONFIRMAT2]
+export function getDrill(detailId: number): DRILL_TYPE[] {
+    if ([DETAIL_NAME.STAND, DETAIL_NAME.INNER_STAND].includes(detailId)) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.MINIFIX2]
+    if ([DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT].includes(detailId)) return [DRILL_TYPE.CONFIRMAT2, DRILL_TYPE.CONFIRMAT2]
+    if ([DETAIL_NAME.PILLAR].includes(detailId)) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.CONFIRMAT2]
+    if ([DETAIL_NAME.CONSOLE_STAND].includes(detailId)) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.MINIFIX2]
+    if ([DETAIL_NAME.CONSOLE_BACK_STAND].includes(detailId)) return [DRILL_TYPE.MINIFIX1, DRILL_TYPE.MINIFIX1]
+    if ([DETAIL_NAME.CONSOLE_SHELF].includes(detailId)) return [DRILL_TYPE.CONFIRMAT2, DRILL_TYPE.CONFIRMAT1]
     return []
 } 
 

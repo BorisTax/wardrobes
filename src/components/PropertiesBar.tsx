@@ -24,12 +24,10 @@ const sectionsTemplate = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const directions: Map<Division, string> = new Map()
 export default function PropertiesBar() {
     const { permissions } = useAtomValue(userAtom)
-    const permSpec = permissions.get(RESOURCE.SPECIFICATION)
     const permTemp = permissions.get(RESOURCE.TEMPLATE)
     const fasad = useAtomValue(activeFasadAtom)
     const { rootFasades } = useAtomValue(combiStateAtom)
     const fasadParent = fasad?.parent
-    const { minSize } = useAtomValue(settingsAtom)
     const fasadTypes = useAtomValue(fasadTypesAtom)
     const fasadTypeToChar = useAtomValue(fasadTypesToCharAtom)
     const chars = useAtomValue(charAtom)
@@ -38,7 +36,7 @@ export default function PropertiesBar() {
         const filtered=fasadTypeToChar.filter(ft => ft.id === fasadType)
         const sorted = (fasadType === FASAD_TYPE.DSP || fasadType === FASAD_TYPE.LACOBEL) ? filtered.toSorted((f1, f2) => (chars.get(f1.charId)?.name || "") > (chars.get(f2.charId)?.name || "") ? 1 : -1) : filtered;
         return sorted.map(ft => ft.charId)
-    }, [fasadTypeToChar, fasadType])
+    }, [fasadTypeToChar, fasadType, chars])
     const sections = fasad ? sectionsTemplate : []
     const resetRootFasad = useSetAtom(resetRootFasadAtom)
     const setHeight = useSetAtom(setHeightAtom)
@@ -50,7 +48,6 @@ export default function PropertiesBar() {
     const setProfileDirection = useSetAtom(setProfileDirectionAtom)
     const divideFasad = useSetAtom(divideFasadAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
-    const copyFasadDialogRef =  useAtomValue(copyFasadDialogAtom)
     const showTemplateDialog = useSetAtom(showTemplatesDialogAtom)
     const totalWidthRatio = getTotalFasadWidthRatio(fasadParent)
     const totalHeightRatio = getTotalFasadHeightRatio(fasadParent)

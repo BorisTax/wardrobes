@@ -1,6 +1,6 @@
 import { MouseEvent, ReactElement, WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import FasadState from "../../classes/FasadState";
-import { Division, FASAD_TYPE } from "../../types/enums";
+import { Division } from "../../types/enums";
 import FixedHeight from "./FixedHeight";
 import FixedWidth from "./FixedWidth";
 import FixedBoth from "./FixedBoth";
@@ -8,7 +8,6 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { setActiveFasadAtom } from "../../atoms/fasades";
 import { useImageUrl } from "../../custom-hooks/useImage";
 import { settingsAtom } from "../../atoms/settings";
-import { FasadBackImageProps, getInitialBackImageProps } from "../../classes/FasadState";
 import { hasFasadImage } from "../../functions/fasades";
 type FasadSectionProps = {
     fasad: FasadState
@@ -26,8 +25,6 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         backImageProps.left = 0
         backImageProps.size = ""
     }
-    const [{ top, left, size, repeat, drag, x0, y0, hasImage }, setBackImagePosition] = useState({ hasImage: false, ...backImageProps, drag: false, x0: 0, y0: 0 })
-    useMemo(() => { setBackImagePosition(prev => ({ ...prev, ...backImageProps })) }, [fasad, backImageProps.top, backImageProps.left, backImageProps.size, backImageProps.repeat])
     const { showFixIcons } = useAtomValue(settingsAtom)
     const setActiveFasad = useSetAtom(setActiveFasadAtom)
     const imageUrl = useImageUrl(fasad.materialId)
@@ -58,47 +55,13 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
             objectFit: "cover",
             cursor: "pointer",
             border: "1px solid black",
-            backgroundPosition: `top ${top}px left ${left}px`,
-            backgroundSize: typeof size === "number" ? `${size}%` : size,
-            backgroundRepeat: repeat ? "repeat" : "no-repeat",
+            backgroundRepeat: "repeat",
         }
         events = { 
             onClick: (e: MouseEvent) => { 
                 e.stopPropagation(); 
                 setActiveFasad(fasad)
              },
-            onMouseDown: (e: MouseEvent) => { 
-                if(!adjustImage) return
-                if (e.button === 1) {
-                    const initProps = getInitialBackImageProps()
-                    setBackImagePosition(prev => ({ ...prev, ...initProps }))
-                    fasad.backImageProps = {...initProps}
-                    return
-                }
-                if (e.button !== 0) return
-                if (!e.shiftKey) return
-                if (!hasImage) return;
-                setBackImagePosition(prev => ({ ...prev, drag: true, x0: e.clientX, y0: e.clientY })) 
-            },
-            onMouseMove: (e: MouseEvent) => {
-                if (e.button !== 0) return
-                if (!drag) return;
-                const dx = e.clientX - x0
-                const dy = e.clientY - y0
-                setBackImagePosition(prev => ({ ...prev, top: prev.top + dy, left: prev.left + dx, x0: e.clientX, y0: e.clientY }))
-            },
-            onMouseUp: (e: MouseEvent) => { 
-                if(!adjustImage) return
-                if (e.button !== 0) return true; 
-                setBackImagePosition(prev => ({ ...prev, drag: false })) 
-                fasad.backImageProps = {top, left, size, repeat}
-            },
-            onMouseLeave: () => { 
-                if(!adjustImage) return
-                setBackImagePosition(prev => ({ ...prev, drag: false }))
-                fasad.backImageProps = {top, left, size, repeat}
-            },
-
         }
         classes = "fasad-section"
     }else{
@@ -121,37 +84,15 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         image.src = imageSrc
         if (fasadRef.current) {
             fasadRef.current.style.backgroundImage = imageSrc || getComputedStyle(fasadRef.current).getPropertyValue('--default-image')
-            fasadRef.current.style.backgroundPosition = `top 0px left 0px`
-            fasadRef.current.style.backgroundSize = ""
-            setBackImagePosition(prev => ({ ...prev, hasImage: false }))
+            //fasadRef.current.style.backgroundPosition = `top 0px left 0px`
+            //fasadRef.current.style.backgroundSize = ""
+            //setBackImagePosition(prev => ({ ...prev, hasImage: false }))
         }
         if (fasadRef.current && onlyFasad && imageSrc) {
                 fasadRef.current.style.backgroundImage = `url(${imageSrc})`
-                setBackgroundStyle(fasadRef.current, {top, left, size, repeat})
-                setBackImagePosition(prev => ({ ...prev, hasImage: true }))
             }
     }, [imageUrl, onlyFasad])
-    useEffect(() => {
-        if(!adjustImage) return
-        const onWheel = (e: WheelEvent) => {
-            e.preventDefault()
-            if (!hasImage) return;
-            const dx = e.clientX - (e.target as HTMLDivElement).offsetLeft - left
-            const dy = e.clientY - (e.target as HTMLDivElement).offsetTop - top
-            const scale = Math.sign(e.deltaY) >= 0 ? e.shiftKey ? 0.99 : 0.9 : e.shiftKey ? 1.01 : 1.1;
-            setBackImagePosition(prev => {
-                const pSize = typeof prev.size === "string" ? 100 : prev.size;
-                return ({ ...prev, size: pSize * scale, top: top + dy * (1 - scale), left: left + dx * (1 - scale) })
-            })
-            fasad.backImageProps = { top, left, size, repeat }
-        }
-        // @ts-ignore
-        fasadRef.current?.addEventListener("wheel", onWheel, { passive: false })
-        return () => {
-            // @ts-ignore
-            fasadRef.current?.removeEventListener("wheel", onWheel)
-        }
-    }, [hasImage, left, top, adjustImage])
+
     return <div ref={onlyFasad ? fasadRef : nullRef} className={classes} style={{
         display: "grid",
         ...gridTemplate,
@@ -164,11 +105,3 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     </div>
 }
 
-
-
-function setBackgroundStyle(element: HTMLDivElement, props: FasadBackImageProps){
-    element.style.backgroundPosition = `top ${props.top}px left ${props.left}px`
-    element.style.backgroundSize = typeof props.size === "number" ? `${props.size}%` : props.size
-    element.style.backgroundRepeat = props.repeat ? "repeat" : "no-repeat"
-
-}

@@ -9,8 +9,6 @@ import TextBox from "./inputs/TextBox"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import WardrobeSpecification from "./WardrobeSpecification"
 import { getInitExtComplect, initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
-import { RESOURCE } from "../types/user"
-import { userAtom } from "../atoms/users"
 import CheckBox from "./inputs/CheckBox"
 import { useDetail } from "../custom-hooks/useDetail"
 import useConfirm from "../custom-hooks/useConfirm"
@@ -19,7 +17,6 @@ import EditDetailDialog from "./dialogs/EditDetailDialog"
 import { consoleTypesAtom, ExtMap, fasadTypesToCharAtom, wardrobeAtom, wardrobesDimensionsAtom, wardrobeTypesAtom } from "../atoms/storage"
 import { profileAtom } from "../atoms/materials/profiles"
 import { charAtom, charPurposeAtom } from "../atoms/materials/chars"
-import { specToCharAtom } from "../atoms/specification"
 import { CharsSchema } from "../types/schemas"
 import { useDefaultFasadChars } from "../custom-hooks/materials"
 import { getInitialWardrobeDimensions } from "../functions/wardrobe"
@@ -29,18 +26,14 @@ const styles = { fontStyle: "italic", color: "gray" }
 const maxFasades = 6
 const consoleWidth = [150, 200, 250, 300, 350, 400, 450, 500]
 export default function WardrobeCalculator() {
-    const { permissions } = useAtomValue(userAtom)
-    const perm = permissions.get(RESOURCE.SPECIFICATION)
     const wardTypes = useAtomValue(wardrobeTypesAtom)
     const wardKinds = useAtomValue(wardrobeAtom)
     const consoleTypes = useAtomValue(consoleTypesAtom)
     const data = useAtomValue(wardrobeDataAtom)
     const wardrobesDimensions = useAtomValue(wardrobesDimensionsAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
-
     const chars = useAtomValue(charAtom)
     const { dspDefaultId, fmpDefaultId, lacobelDefaultId, mirrorDefaultId, sandDefaultId } = useDefaultFasadChars()
-
     const [showExt, setShowExt] = useState(false)
     const { dsp16List, dsp10List, mirrorList, fmpList, sandList, lacobelList } = useMaterials(chars)
     const profiles = useAtomValue(profileAtom)
@@ -48,17 +41,17 @@ export default function WardrobeCalculator() {
     const { minWidth, maxWidth, minHeight, maxHeight, minDepth, maxDepth } = getInitialWardrobeDimensions(wardKind, wardrobesDimensions)
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
-    const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardrobeTypeId, data.wardrobeId, data.width, data.height) || { length: 0 }
+    const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth) || { length: 0 }
     const confirm = useConfirm()
     const showEditDetails = useSetAtom(showDetailDialogAtom)
     useEffect(() => {
         if (standSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: extStand.length } } }))
-    }, [extStand.length, standSameHeight])
+    }, [extStand.length, standSameHeight, setData])
     useEffect(() => {
         const newHeight = consoleSameHeight ? height : extComplect.console.height
         const newDepth = consoleSameDepth ? depth : extComplect.console.depth
         setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: newHeight, depth: newDepth } } }))
-    }, [depth, height])
+    }, [depth, height, setData, consoleSameDepth, consoleSameHeight, extComplect.console.depth, extComplect.console.height])
     return <div className="wardrobe-calculator-container">
         <div>
             <div className="wardrobe-param-container">
@@ -101,46 +94,40 @@ export default function WardrobeCalculator() {
                 <PropertyGrid hidden={!showExt} style={{ padding: "0.5em", border: "1px solid" }}>
                     <div></div><div className="d-flex align-items-center justify-content-between"><div></div><div className="small-button" role="button" onClick={() => { setData(prev => ({ ...prev, extComplect: getInitExtComplect(prev.height, prev.depth) })); setConsoles({ consoleSameDepth: true, consoleSameHeight: true, standSameHeight: true }) }}>Сбросить</div></div>
                     <div className="text-end">Телескоп: </div>
-                    <TextBox value={extComplect.telescope} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, telescope: +value } })) }} />
+                    <CheckBox checked={extComplect.telescope ? true : false} onChange={() => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, telescope: 1 - extComplect.telescope } })) }} />
                     <hr /><hr />
-                    <div className="text-end">Консоли кол-во: </div>
-                    <TextBox value={extComplect.console.count} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, count: +value } } })) }} />
-                    <div className="d-flex flex-column align-items-end">
-                        <div className="text-end">Высота консоли: </div>
-                        <CheckBox styles={{ fontSize: "0.8em" }} checked={consoleSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameHeight: !consoleSameHeight })); if (!consoleSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: prev.height } } })) }} />
-                    </div>
-                    <TextBox disabled={consoleSameHeight} value={extComplect.console.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={3000} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: +value } } })) }} />
-                    <div className="d-flex flex-column align-items-end">
-                        <div className="text-end">Глубина консоли: </div>
-                        <CheckBox styles={{ fontSize: "0.8em" }} checked={consoleSameDepth} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameDepth: !consoleSameDepth })); if (!consoleSameDepth) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: prev.depth } } })) }} />
-                    </div>
-                    <TextBox disabled={consoleSameDepth} value={extComplect.console.depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={800} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: +value } } })) }} />
-                    <ComboBox<number> title="Ширина консоли:" items={consoleWidth} value={extComplect.console.width} displayValue={value => `${value}`} onChange={value => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, width: +value } } })) }} />
-                    <ComboBox<CONSOLE_TYPE> title="Тип консоли:" value={extComplect.console.typeId} items={[...consoleTypes.keys()]} displayValue={value => consoleTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, typeId: value } } })) }} />
+                    <div className="text-end">Консоль: </div>
+                    <CheckBox checked={extComplect.console.count ? true : false} onChange={() => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, count: 1 - extComplect.console.count } } })) }} />
+                    {extComplect.console.count ? <>
+                        <div className="d-flex flex-column align-items-end">
+                            <div className="text-end">Высота консоли: </div>
+                            <CheckBox styles={{ fontSize: "0.8em" }} checked={consoleSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameHeight: !consoleSameHeight })); if (!consoleSameHeight) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: prev.height } } })) }} />
+                        </div>
+                        <TextBox disabled={consoleSameHeight} value={extComplect.console.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={3000} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: +value } } })) }} />
+                        <div className="d-flex flex-column align-items-end">
+                            <div className="text-end">Глубина консоли: </div>
+                            <CheckBox styles={{ fontSize: "0.8em" }} checked={consoleSameDepth} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, consoleSameDepth: !consoleSameDepth })); if (!consoleSameDepth) setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: prev.depth } } })) }} />
+                        </div>
+                        <TextBox disabled={consoleSameDepth} value={extComplect.console.depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={800} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, depth: +value } } })) }} />
+                        <ComboBox<number> title="Ширина консоли:" items={consoleWidth} value={extComplect.console.width} displayValue={value => `${value}`} onChange={value => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, width: +value } } })) }} />
+                        <ComboBox<CONSOLE_TYPE> title="Тип консоли:" value={extComplect.console.typeId} items={[...consoleTypes.keys()]} displayValue={value => consoleTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, typeId: value } } })) }} />
                     <hr /><hr />
+                    </> : <></>}
                     <div className="text-end">Козырек: </div>
-                    <TextBox value={extComplect.blinder} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={1} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, blinder: +value } })) }} />
-                    <div className="text-end">Полка доп (полочн): </div>
-                    <TextBox value={extComplect.shelf} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, shelf: +value } })) }} />
-                    <div className="text-end">Полка доп (плат): </div>
-                    <TextBox value={extComplect.shelfPlat} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, shelfPlat: +value } })) }} />
-                    <div className="text-end">Перемычка (доп): </div>
-                    <TextBox value={extComplect.pillar} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, pillar: +value } })) }} />
+                    <CheckBox checked={extComplect.blinder ? true : false} onChange={() => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, blinder: 1 - extComplect.blinder } })) }} />
+                    <div className="text-end">Полка доп (плат) </div>
+                    <CheckBox checked={extComplect.shelfPlat ? true : false} onChange={() => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, shelfPlat: 1 - extComplect.shelfPlat } })) }} />
                     <hr /><hr />
-                    <div className="text-end">Стойка (доп) кол-во: </div>
-                    <TextBox value={extComplect.stand.count} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, count: +value } } })) }} />
-                    <div className="d-flex flex-column align-items-end">
-                        <div className="text-end">Стойка (доп) размер: </div>
-                        <CheckBox styles={{ fontSize: "0.8em" }} checked={standSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, standSameHeight: !standSameHeight })); }} />
-                    </div>
-                    <TextBox disabled={standSameHeight} value={standSameHeight ? extStand.length : extComplect.stand.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2750} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: +value } } })) }} />
-                    <hr /><hr />
-                    <div className="text-end">Труба (доп): </div>
-                    <TextBox value={extComplect.truba} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, truba: +value } })) }} />
-                    <div className="text-end">Тремпель (доп): </div>
-                    <TextBox value={extComplect.trempel} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, trempel: +value } })) }} />
-                    <div className="text-end">Точки света: </div>
-                    <TextBox value={extComplect.light} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={10} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, light: +value } })) }} />
+                    <div className="text-end">Стойка (доп) </div>
+                    <CheckBox checked={extComplect.stand.count ? true : false} onChange={() => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, count: 1 - extComplect.stand.count } } })) }} />
+                    {extComplect.stand.count ? <>
+                        <div className="d-flex flex-column align-items-end">
+                            <div className="text-end">Размер: </div>
+                            <CheckBox styles={{ fontSize: "0.8em" }} checked={standSameHeight} caption="как у шкафа" onChange={() => { setConsoles(prev => ({ ...prev, standSameHeight: !standSameHeight })); }} />
+                        </div>
+                        <TextBox disabled={standSameHeight} value={standSameHeight ? extStand.length : extComplect.stand.height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={0} max={2750} setValue={(value) => { setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, stand: { ...prev.extComplect.stand, height: +value } } })) }} />
+                        <hr /><hr />
+                    </> : <></>}
                 </PropertyGrid>
             </div>}
         </div>
@@ -151,14 +138,13 @@ export default function WardrobeCalculator() {
 
 function useMaterials(chars: ExtMap<CharsSchema>) {
     const fasadTypeToChar = useAtomValue(fasadTypesToCharAtom)
-    const specToChar = useAtomValue(specToCharAtom)
     const charPurpose = useAtomValue(charPurposeAtom)
-    const dsp16List = useMemo(() => charPurpose.filter(c => c.purposeId !== CHAR_PURPOSE.FASAD).map(s => s.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [specToChar])
-    const dsp10List = useMemo(() => charPurpose.filter(c => c.purposeId !== CHAR_PURPOSE.CORPUS).map(s => s.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [specToChar])
-    const mirrorList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.MIRROR).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [fasadTypeToChar])
-    const fmpList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.FMP).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [fasadTypeToChar])
-    const sandList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.SAND).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [fasadTypeToChar])
-    const lacobelList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.LACOBEL).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [fasadTypeToChar])
+    const dsp16List = useMemo(() => charPurpose.filter(c => c.purposeId !== CHAR_PURPOSE.FASAD).map(s => s.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [chars, charPurpose])
+    const dsp10List = useMemo(() => charPurpose.filter(c => c.purposeId !== CHAR_PURPOSE.CORPUS).map(s => s.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [chars, charPurpose])
+    const mirrorList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.MIRROR).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [chars, fasadTypeToChar])
+    const fmpList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.FMP).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [chars, fasadTypeToChar])
+    const sandList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.SAND).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [chars, fasadTypeToChar])
+    const lacobelList = useMemo(() => fasadTypeToChar.filter(f => f.id === FASAD_TYPE.LACOBEL).map(f => f.charId).toSorted((d1, d2) => (chars.get(d1)?.name || "") > (chars.get(d2)?.name || "") ? 1 : -1), [chars, fasadTypeToChar])
     return {
         dsp16List,
         dsp10List,

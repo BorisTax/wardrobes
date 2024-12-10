@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const data = req.body
+  const { data } = req.body
   const result = await updateSpecList(data);
   res.status(result.status).json(result);
 });

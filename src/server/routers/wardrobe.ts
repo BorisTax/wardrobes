@@ -40,7 +40,7 @@ router.get(DETAIL_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SPECIFICATION, [PERMISSION.READ]))) return accessDenied(res)
   const { wardTypeId, wardrobeId, detailId, width, height } = req.query
   const result = await getDetail((wardTypeId ? +wardTypeId : 0), (wardrobeId ? +wardrobeId : 0), (detailId ? +detailId : 0), width ? (+width) : 0, height ? (+height) : 0)
-  res.status(200).json({ success: true, data: result });
+  res.status(200).json({ success: true, data: [result] });
 });
 
 router.get(DETAILS_ROUTE, async (req, res) => {

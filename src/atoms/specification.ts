@@ -10,6 +10,7 @@ import { AppState } from "../types/app";
 import { API_ROUTE, COMBIDATA_ROUTE, DATA_ROUTE, SPECIFICATION_ROUTE } from "../types/routes";
 import { SpecSchema, SpecToCharSchema } from "../types/schemas";
 import { ExtMap } from "./storage";
+import messages from "../server/messages";
 
 
 export const specificationCombiAtom = atom<SpecificationResult[][]>([[]])
@@ -20,7 +21,14 @@ export const specListAtom = atom<ExtMap<SpecSchema>>(new Map());
 export const specToCharAtom = atom<SpecToCharSchema[]>([]);
 
 export const updateSpecListAtom = atom(null, async (get, set, data: SpecSchema) => {
-    return { success: true, message: "" }
+    const { token } = get(userAtom)
+    try {
+        const result = await fetchData(`${API_ROUTE}${SPECIFICATION_ROUTE}`, "PUT", JSON.stringify({ data, token }))
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR}
+     }
 })
 
 export const calculateSpecificationsAtom = atom(null, async (get, set, resetDetails: boolean = false) => {

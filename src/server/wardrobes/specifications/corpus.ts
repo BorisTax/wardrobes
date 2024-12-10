@@ -82,11 +82,11 @@ export async function getDetails(wardrobeTypeId: number, wardrobeId: number, wid
     const details: Detail[] =  detailsData.map(dd => (
         {   
             id: dd.detailId,
-            name: detailNames.find(n => n.id === dd.wardrobeId)?.name || "",
+            name: detailNames.find(n => n.id === dd.detailId)?.name || "",
             length: calcFunction(dd.length, { width, height, depth, offset }),
             width: calcFunction(dd.width, { width, height, depth, offset }),
             count: dd.count,
-            drill: getDrill(dd),
+            drill: getDrill(dd.detailId),
             kromka: getKromka(wardrobeTypeId, dd)
         }))
     return details;

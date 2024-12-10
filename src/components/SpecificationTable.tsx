@@ -43,7 +43,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
             specList.push({ specId: sp[0], specCode, specName, charCode, charName, amount, units, verbose: sp[1].verbose as VerboseData })
         })
         return [...specList]
-    }, [specData, props.specification])
+    }, [specData, charData, unitsData, props.specification])
     const [showAll, setShowAll] = useState(false)
     const [showCodes, setShowCodes] = useState(false)
     const header: TableDataHeader[] = [
@@ -57,13 +57,14 @@ export default function SpecificationTable(props: SpecificationTableProps) {
         const charCode = (item?.charCode && showCodes) ? `(${item.charCode})` : ""
         const char = `${item.charName} ${charCode}`
         const verbose = (item.verbose) ? { className: "table-data-cell-verbose", role: "button", onClick: () => { if (!permSpec?.Read) return; setVerboseData(item.verbose, item.specId); showVerbose() } } : {}
-        return { key:index, data: [
-            item.specCode,
-            <span {...verbose}>{item.specName}</span>,
-            char,
-            Number(amount.toFixed(3)),
-            item.units
-        ]
+        return {
+            key: index, data: [
+                item.specCode,
+                <span key={index} {...verbose}>{item.specName}</span>,
+                char,
+                Number(amount.toFixed(3)),
+                item.units
+            ]
         }
     })
     return <div className={`d-flex ${props.legendToRight ? "flex-row" : "flex-column"}`}>

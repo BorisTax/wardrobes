@@ -21,6 +21,6 @@
     "esm": true,
     "experimentalSpecifierResolution": "node",
   },
-  "include": ["src"],
+  "include": ["src", "src/components/inputs/.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

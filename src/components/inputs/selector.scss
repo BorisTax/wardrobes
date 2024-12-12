@@ -1,0 +1,18 @@
+.selector-button:hover{
+    background-color: aqua;
+    color: rgb(255, 255, 255);
+}
+.selector-button{
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 0.1em 0.5em;
+    color: rgb(255, 255, 255);
+}
+.selector-button-active{
+    background-color: green;
+    color: rgb(255, 255, 255);
+}
+.selector-button-inactive{
+    background-color: rgb(245, 239, 239);
+    color: rgb(0, 0, 0);
+}

@@ -34,13 +34,12 @@ export default function Selector<T>(props: SelectorProps<T> = { items: [], disab
     return (
         <>
             {props.title ? <span className="text-end text-nowrap" style={{ ...props.styles }}>{props.title}</span> : <></>}
-            <div
-                style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.2em" }}
-                onClick={(e) => { e.stopPropagation() }}
-            >
-                {options}
-            </div>
-
+                <div
+                    className="selector-button-container"
+                    onClick={(e) => { e.stopPropagation() }}
+                >
+                    {options}
+                </div>
         </>
     );
 }

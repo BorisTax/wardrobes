@@ -58,8 +58,8 @@ export default function WardrobeCalculator() {
             <div className="wardrobe-param-container">
                 <div className="text-center">Основные параметры</div>
                 <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
-                    <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={value => { const dims = getInitialWardrobeDimensions(value, wardrobesDimensions); setData(prev => ({ ...prev, wardrobeId: value, width: dims.defaultWidth, height: dims.defaultHeight, depth: dims.defaultDepth, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
                     <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
+                    {wardType !== WARDROBE_TYPE.SYSTEM && <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={[...wardKinds.keys()]} displayValue={value => wardKinds.get(value)} onChange={value => { const dims = getInitialWardrobeDimensions(value, wardrobesDimensions); setData(prev => ({ ...prev, wardrobeId: value, width: dims.defaultWidth, height: dims.defaultHeight, depth: dims.defaultDepth, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />}
                     <CheckBox caption="схемный" checked={data.schema} disabled={data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM} onChange={async () => {
                         if (data.schema) {
                             if (await confirm("Все изменения в деталировке будут сброшены. Продолжить?")) setData(prev => ({ ...prev, schema: !data.schema }))
@@ -68,11 +68,14 @@ export default function WardrobeCalculator() {
                     {data.schema ? <input type="button" value="Редактор деталей" onClick={() => { showEditDetails() }} /> : <div></div>}
                     <div className="text-end">Ширина: </div>
                     <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minWidth} max={maxWidth} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} submitOnLostFocus={true} />
-                    <div className="text-end">Глубина: </div>
-                    <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minDepth} max={maxDepth} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} submitOnLostFocus={true} />
+                    {wardType !== WARDROBE_TYPE.SYSTEM && <>
+                        <div className="text-end">Глубина: </div>
+                        <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minDepth} max={maxDepth} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} submitOnLostFocus={true} />
+
+                    </>}
                     <div className="text-end">Высота: </div>
                     <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minHeight} max={maxHeight} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }} submitOnLostFocus={true} />
-                    <ComboBox<number> title="Цвет ДСП:" value={dspId} items={dsp16List} displayValue={value => chars.get(value)?.name} onChange={value => { setData(prev => ({ ...prev, dspId: value })) }} />
+                    {wardType !== WARDROBE_TYPE.SYSTEM && <ComboBox<number> title="Цвет ДСП:" value={dspId} items={dsp16List} displayValue={value => chars.get(value)?.name} onChange={value => { setData(prev => ({ ...prev, dspId: value })) }} />}
                     {wardType !== WARDROBE_TYPE.GARDEROB && <ComboBox<number> title="Цвет профиля:" value={profileId} items={[...profiles.keys()]} displayValue={value => chars.get(profiles.get(value)?.charId || 0)?.name || ""} onChange={value => { setData(prev => ({ ...prev, profileId: value })) }} />}
                 </PropertyGrid>
                 {wardType !== WARDROBE_TYPE.GARDEROB && <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>

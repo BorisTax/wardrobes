@@ -83,7 +83,7 @@ export default function WardrobePropertiesBar() {
             <PropertyRow>
                 <TextBox name="height" value={wardHeight} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1800} max={2700} setValue={(value) => { setWardHeight([+value, wardHeightConfirm]) }} submitOnLostFocus={true} />
             </PropertyRow>
-            <Selector<number> title="Кол-во фасадов:" value={fasadCount} items={fasades} displayValue={value => `${value}`} onChange={value => { setFasadCount([+value, wardFasadCountConfirm]) }} />
+            <Selector<number> title="Кол-во фасадов:" value={fasadCount} items={fasades} displayValue={value => <div>&nbsp;{value}&nbsp;</div>} onChange={value => { setFasadCount([+value, wardFasadCountConfirm]) }} columns={fasades.length} />
             <ComboBox<number> title="Профиль:" value={profile.id} items={[...profileList.keys()]} displayValue={value => chars.get(profileList.get(value)?.charId || 0)?.name || ""} onChange={value => { setProfileId([value, wardProfileConfirm]); }} />
         </PropertyGrid>
     </div>

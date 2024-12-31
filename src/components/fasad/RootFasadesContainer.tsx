@@ -4,7 +4,6 @@ import { combiStateAtom } from "../../atoms/app";
 import FasadContainer from "./FasadContainer";
 import FasadState from "../../classes/FasadState";
 import { isLandscape } from "../../functions/functions";
-import CombiSpecification from "../CombiSpecification";
 
 export default function RootFasadesContainer(): ReactElement {
     const [, rerender] = useState(0)
@@ -45,7 +44,7 @@ const resize = (ratio: number, rootFasades: FasadState[], rootFasadesContainerRe
         const width = fasadWidth * visibleCount
         rootFasadesContainerRef.current.style.height = `${height}px`
         rootFasadesContainerRef.current.style.width = `${width}px`
-        rootFasadesContainerRef.current.style.overflowX = visibleCount < rootFasades.length ? "scroll" : "unset"
+        //rootFasadesContainerRef.current.style.overflowX = visibleCount < rootFasades.length ? "scroll" : "unset"
     } else {
         const visibleCount = Math.ceil(rootFasades.length / 2)
         const width = parseFloat(getComputedStyle(propertiesContainer).width);
@@ -54,7 +53,7 @@ const resize = (ratio: number, rootFasades: FasadState[], rootFasadesContainerRe
         const height = fasadWidth / ratio
         rootFasadesContainerRef.current.style.width = `${width}px`
         rootFasadesContainerRef.current.style.height = `${height}px`
-        rootFasadesContainerRef.current.style.overflowX = visibleCount < rootFasades.length ? "scroll" : "unset"
+        //rootFasadesContainerRef.current.style.overflowX = visibleCount < rootFasades.length ? "scroll" : "unset"
     }
     
 }

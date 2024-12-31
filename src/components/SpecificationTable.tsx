@@ -12,6 +12,7 @@ import { unitsAtom } from "../atoms/storage"
 import { charAtom } from "../atoms/materials/chars"
 import { specListAtom } from "../atoms/specification"
 import TableData, { TableDataHeader, TableDataRow } from "./inputs/TableData"
+import LoadIndicator from "./LoadIndicator"
 
 
 type SpecificationTableProps = {
@@ -70,7 +71,7 @@ export default function SpecificationTable(props: SpecificationTableProps) {
     return <div className={`d-flex ${props.legendToRight ? "flex-row" : "flex-column"}`}>
         <div className="specification-table">
             <TableData header={header} content={contents} setRowStyle={row => row[3] !== 0 ? "tr-attention" : "tr-noattention"} />
-            {loading && <div className="spinner-container" onClick={(e) => { e.stopPropagation() }}><div className="spinner"></div></div>}
+            {loading && <LoadIndicator />}
         </div>
         <div className="p-3">
             {props.hint && <div className="fw-bold text-danger">{props.hint}</div>}

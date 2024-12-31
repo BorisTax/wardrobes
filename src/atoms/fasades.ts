@@ -91,9 +91,10 @@ export const divideFasadAtom = atom(null, (get, set, count: number) => {
     const appData = cloneAppState(get(combiStateAtom))
     activeFasad = getActiveFasad(appData.rootFasades)
     if (!activeFasad) return
-    divideFasad(activeFasad, count, minSize)
+    const prevCount = activeFasad.children.length
+    if (!divideFasad(activeFasad, count, minSize)) return
     setActiveFasad(appData.rootFasades, activeFasad)
-    set(combiStateAtom, appData, true)
+    set(combiStateAtom, appData, true, !(prevCount === activeFasad.children.length && prevCount === 0))
 })
 
 export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {
@@ -143,11 +144,9 @@ export const setFasadTypeAtom = atom(null, (get, set, type: FASAD_TYPE, useHisto
 
 export const setProfileDirectionAtom = atom(null, (get, set, direction: string) => {
     const activeFasad = get(activeFasadAtom)
-    const { minSize } = get(settingsAtom)
     if (!activeFasad) return
-    const appData = get(combiStateAtom)
-    activeFasad.division = getProfileDirection(direction)
-    divideFasad(activeFasad, activeFasad.children.length, minSize)
-    set(combiStateAtom, { ...appData }, true)
+    activeFasad.division = direction as Division
+    const count = activeFasad?.children.length
+    set(divideFasadAtom, count)
 })
 

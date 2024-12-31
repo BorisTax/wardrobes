@@ -5,20 +5,14 @@ export type SelectorProps<T> = {
     onChange?: (value: T, index: number) => void
     items: T[]
     value?: T
-    displayValue: (value: T) => string | undefined
+    displayValue: (value: T) => string | undefined | ReactNode
     title?: string
     disabled?: boolean
     size?: number
-    styles?: object
-}
-const styleActive = {
-    backgroundColor: "green",
-}
-const styleInActive = {
-    backgroundColor: "gray",
+    columns?: number
 }
 
-export default function Selector<T>(props: SelectorProps<T> = { items: [], disabled: false, title: "", size: 1, styles: {}, displayValue: () => "" }) {
+export default function Selector<T>(props: SelectorProps<T> = { items: [], disabled: false, title: "", size: 1, displayValue: () => "" }) {
     const items: T[] = props.items instanceof Map ? [...props.items.values()] : props.items
     let valueIndex: T = items.findIndex(i => i === props.value) as T
     const options: ReactNode[] = items?.map((i, index) => {
@@ -33,8 +27,9 @@ export default function Selector<T>(props: SelectorProps<T> = { items: [], disab
     )
     return (
         <>
-            {props.title ? <span className="text-end text-nowrap" style={{ ...props.styles }}>{props.title}</span> : <></>}
-                <div
+            {props.title ? <span className="text-end text-nowrap">{props.title}</span> : <></>}
+                <div    
+                    style={{gridTemplateColumns: `repeat(${props.columns || items.length}, 1fr)`}}
                     className="selector-button-container"
                     onClick={(e) => { e.stopPropagation() }}
                 >

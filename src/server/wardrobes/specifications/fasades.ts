@@ -159,10 +159,9 @@ async function calcArakal(fasad: FasadState): Promise<FullData[]> {
     const result = await calcArea(fasad, f => f.fasadType === FASAD_TYPE.SAND)
     const coef = await getCoef(SpecItem.Arakal)
     const finalResult = result.map(r => {
-        const area = r.data.amount
-        r.data.amount = area * coef
+        const area = r.data.amount * coef
         const verbose = [["Высота фасада", "Ширина фасада", "Площадь", ""], ...r.verbose as VerboseData, ["", "Итого", `${area.toFixed(3)}`, (coef !== 1) ? `x ${coef} = ${(area * coef).toFixed(3)}` : ""]]
-        return { ...r, verbose: area > 0 ? verbose : undefined }
+        return { data: { amount: area, charId: 0 }, verbose: area > 0 ? verbose : undefined }
     })
     return finalResult
 }

@@ -98,31 +98,31 @@ export const divideFasadAtom = atom(null, (get, set, count: number) => {
 })
 
 export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {
-    const activeFasad = get(activeFasadAtom)
     const { minSize } = get(settingsAtom)
+    const appData = cloneAppState(get(combiStateAtom))
+    const activeFasad = getActiveFasad(appData.rootFasades)
     if (!activeFasad) return
-    const appData = get(combiStateAtom)
     fixFasadHeight(activeFasad, fixed)
     const parent = activeFasad.parent
     if (!fixed && parent)
         if (parent.division === Division.WIDTH) 
                 DistributePartsOnWidth(parent, null, 0, false, minSize);
             else DistributePartsOnHeight(parent, null, 0, false, minSize);
-    set(combiStateAtom, { ...appData }, true)
+    set(combiStateAtom, appData, true)
 })
 
 export const setFixedWidthAtom = atom(null, (get, set, fixed: boolean) => {
-    const activeFasad = get(activeFasadAtom)
     const { minSize } = get(settingsAtom)
+    const appData = cloneAppState(get(combiStateAtom))
+    const activeFasad = getActiveFasad(appData.rootFasades)
     if (!activeFasad) return
-    const appData = get(combiStateAtom)
     fixFasadWidth(activeFasad, fixed)
     const parent = activeFasad.parent
     if (!fixed && parent)
         if (parent.division === Division.WIDTH) 
                 DistributePartsOnWidth(parent, null, 0, false, minSize);
             else DistributePartsOnHeight(parent, null, 0, false, minSize);
-    set(combiStateAtom, { ...appData }, true)
+    set(combiStateAtom, appData, true)
 })
 
 export const setMaterialIdAtom = atom(null, (get, set, matId: number) => {

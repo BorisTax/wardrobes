@@ -296,7 +296,11 @@ export function divideFasad(fasad: FasadState, count: number, minSize: number) {
 
 function divideOnHeight(fasad: FasadState, count: number, minSize: number): boolean {
     const profileTotal = (count - 1)
-    if (fasad.children.length > 1) setFasadMaterialId(fasad, fasad.children[0].materialId)
+    if (fasad.children.length > 1) {
+        setFasadType(fasad, fasad.children[0].fasadType)
+        setFasadMaterialId(fasad, fasad.children[0].materialId)
+    }
+
     const partHeight = +((fasad.height - profileTotal) / count).toFixed(1)
     if (partHeight < minSize) return false
     const partLast = +(fasad.height - partHeight * (count - 1) - profileTotal).toFixed(1)
@@ -317,7 +321,10 @@ function divideOnHeight(fasad: FasadState, count: number, minSize: number): bool
 }
 function divideOnWidth(fasad: FasadState, count: number, minSize: number): boolean {
     const profileTotal = (count - 1)
-    if (fasad.children.length > 1) setFasadMaterialId(fasad, fasad.children[0].materialId)
+    if (fasad.children.length > 1) {
+        setFasadType(fasad, fasad.children[0].fasadType)
+        setFasadMaterialId(fasad, fasad.children[0].materialId)
+    }
     const partWidth = +((fasad.width - profileTotal) / count).toFixed(1)
     if (partWidth < minSize) return false
     const partLast = +(fasad.width - partWidth * (count - 1) - profileTotal).toFixed(1)

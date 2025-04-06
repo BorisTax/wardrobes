@@ -4,8 +4,8 @@ services:
     build: .
     restart: always
     environment:
-      - VERSION=2.2.8
-    image: boristax/wardrobes:v2.2.8
+      - VERSION=2.2.9
+    image: boristax/wardrobes:v2.2.9
     ports:
       - "5555:5555"
     command: npm run start

@@ -118,7 +118,10 @@ export const setWardWidthAtom = atom(null, async (get, set, [wardWidth, confirmC
     const newAppData = cloneAppState(state)
     newAppData.wardWidth = wardWidth
     const setWidth = newAppData.rootFasades.every((f: FasadState) => trySetWidth(f, newAppData.rootFasades, fasadWidth, minSize))
-    await setAppDataAtom(setWidth, newAppData, set, confirmCallback, true)
+    const res = await setAppDataAtom(setWidth, newAppData, set, confirmCallback, true)
+    if (!res) return
+    const fasadCount = newAppData.wardWidth < 2200 ? 2 : 3
+    set(setFasadCountAtom, [fasadCount, async () => true])
 })
 
 export const setWardHeightAtom = atom(null, async (get, set, [wardHeight, confirmCallback]: SetAtomComfirm<number>) => {

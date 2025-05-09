@@ -24,7 +24,7 @@ const directions: Map<Division, string> = new Map()
 export default function PropertiesBar() {
     const { permissions } = useAtomValue(userAtom)
     const permTemp = permissions.get(RESOURCE.TEMPLATE)
-    const fasad = useAtomValue(activeFasadAtom)
+    const fasad = useAtomValue(activeFasadAtom).at(-1)
     const fasadParent = fasad?.parent
     const fasadTypes = useAtomValue(fasadTypesAtom)
     const fasadTypeToChar = useAtomValue(fasadTypesToCharAtom)

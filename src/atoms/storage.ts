@@ -2,7 +2,7 @@ import { atom, Getter } from "jotai";
 import { OmitId } from "../types/materials";
 import { FetchResult, fetchGetData } from "../functions/fetch";
 import { UserPermissions, RESOURCE } from "../types/user";
-import { AllData, DefaultSchema, DetailSchema, FasadTypeToCharSchema, WardrobesDimensionsSchema } from "../types/schemas";
+import { AllData, DefaultSchema, DetailSchema, FasadTypeToCharSchema, WardrobesDimensionsSchema, WardrobesSchema } from "../types/schemas";
 import { API_ROUTE, MATERIALS_ROUTE, ALLDATA_ROUTE, WARDROBE_ROUTE, INITIAL_WARDROBEDATA_ROUTE } from "../types/routes";
 import { WardrobeData } from "../types/wardrobe";
 import { setWardrobeDataAtom } from "./wardrobe";
@@ -24,7 +24,7 @@ export const wardrobesDimensionsAtom = atom<WardrobesDimensionsSchema[]>([])
 export const consoleTypesAtom = atom<DefaultMap>(new Map())
 export const unitsAtom = atom<DefaultMap>(new Map())
 export const detailNamesAtom = atom<DefaultMap>(new Map())
-
+export const wardrobeUseAtom = atom<ExtMap<boolean>>(new Map())
 
 export const getFasadDefaultCharsAtom = (get: Getter, fasadType: FASAD_TYPE) => {
     const defaultChars = get(fasadDefaultCharsAtom)
@@ -54,6 +54,7 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
 
         set(wardrobeTypesAtom, makeDefaultMap(allData.wardrobeTypes || []))
         set(wardrobeAtom, makeDefaultMap(allData.wardrobes || []))
+        set(wardrobeUseAtom, makeWardrobeUseMap(allData.wardrobes || []))
         set(wardrobesDimensionsAtom, allData.wardrobesDimensions || [])
         set(consoleTypesAtom, makeDefaultMap(allData.consoleTypes || []))
         const result: FetchResult<WardrobeData> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_WARDROBEDATA_ROUTE}?token=${token}`)
@@ -84,5 +85,10 @@ export const makeExtMap = <T extends { id: number }>(data: T[]): ExtMap<T> => {
     return m
 }
 
+export const makeWardrobeUseMap = (data: WardrobesSchema[]): ExtMap<boolean> => {
+    const m = new Map()
+    data.forEach(r => m.set(r.id, r.use))
+    return m
+}
 
 

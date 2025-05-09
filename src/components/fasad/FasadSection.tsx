@@ -12,13 +12,14 @@ import { hasFasadImage } from "../../functions/fasades";
 type FasadSectionProps = {
     fasad: FasadState
     rootFasad: FasadState
-    activeFasad?: FasadState
+    activeFasades: FasadState[]
 }
 export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fasad = props.fasad
     const adjustImage = hasFasadImage(fasad)
     const onlyFasad = fasad.children.length === 0
-    const activeFasad = props.activeFasad
+    const activeFasades = props.activeFasades
+    const active = activeFasades.includes(fasad)
     const backImageProps = fasad.backImageProps
     if (!adjustImage) {
         backImageProps.top = 0
@@ -41,7 +42,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         gridTemplate = divHeight ? { gridTemplateRows: template, gridTemplateColumns: "1fr" } : { gridTemplateRows: "1fr", gridTemplateColumns: template }
     }
     let styles: object = fasad.level === 0 ? { height: "100%" } : {}
-    styles = { ...styles, boxShadow: (fasad === activeFasad) ? "inset 0px 0px 10px red" : "" }
+    styles = { ...styles, boxShadow: active ? "inset 0px 0px 10px red" : "" }
     let events = {}
     let classes = ""
     if (onlyFasad) {
@@ -60,14 +61,14 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
         events = { 
             onClick: (e: MouseEvent) => { 
                 e.stopPropagation(); 
-                setActiveFasad(fasad)
+                setActiveFasad(fasad, e.shiftKey === true)
              },
         }
         classes = "fasad-section"
     }else{
         styles = {
             ...styles,
-            border: (fasad === activeFasad) ? "1px solid red" : "",
+            border: active ? "1px solid red" : "",
             backgroundColor: "white",
             backgroundImage: ""
         }
@@ -76,7 +77,7 @@ export default function FasadSection(props: FasadSectionProps): ReactElement {
     const fixedWidth = fasad.children.length === 0 && fasad.fixedWidth && showFixIcons
     const fixedBoth = fixedHeight && fixedWidth
     const fixed = fixedBoth ? <FixedBoth /> : fixedHeight ? <FixedHeight /> : fixedWidth ? <FixedWidth /> : <></>
-    const contents = fasad.children.length > 1 ? fasad.children.map((f: FasadState, i: number) => <FasadSection key={i} fasad={f} activeFasad={props.activeFasad} rootFasad={props.rootFasad}/>) : ""
+    const contents = fasad.children.length > 1 ? fasad.children.map((f: FasadState, i: number) => <FasadSection key={i} fasad={f} activeFasades={props.activeFasades} rootFasad={props.rootFasad} />) : ""
 
     useEffect(() => {
         const image = new Image()

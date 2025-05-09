@@ -1,4 +1,4 @@
-import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getConfirmatByDetail, getDrill, getKromka, getKromkaDescripton, getKromkaLength, getFasadCount, getMinifixByDetail } from "./functions"
+import { correctFasadCount, emptyFullDataIfCorpus, emptyFullDataIfNoFasades, emptyFullDataIfSystem, getKromka, getKromkaDescripton, getKromkaLength, getFasadCount, nullDetail } from "./functions"
 import { emptyFullData } from "./functions"
 import { SpecItem } from "../../../types/specification"
 import { DETAIL_NAME, DVPData, Detail, KROMKA_TYPE, FullData, SpecificationResult, VerboseData, WARDROBE_TYPE, WARDROBE_KIND } from "../../../types/wardrobe"
@@ -9,7 +9,7 @@ import { getCoef } from "./functions"
 import { calcFunction } from "./functions"
 import { getKromkaAndZaglByDSP, getKromkaTypeByChar } from "../../routers/functions/dspEdgeZag"
 import { getFurniture } from "../../routers/functions/furniture"
-import { getDetailNames, getDetailsByWardrobe, getDVPTemplates } from "../../routers/functions/details"
+import { getDetailsFromDB, getDetailsByWardrobe, getDVPTemplates } from "../../routers/functions/details"
 import {  getCharIdAndBrushSpecIdByProfileId } from "../../routers/functions/profiles"
 import { getChar } from "../../routers/functions/chars"
 import { getSpecList } from "../../routers/functions/spec"
@@ -77,18 +77,20 @@ export function useMinifix(detail: DETAIL_NAME): boolean {
 
 export async function getDetails(wardrobeTypeId: number, wardrobeId: number, width: number, height: number, depth: number): Promise<Detail[]> {
     const detailsData = await getDetailsByWardrobe(wardrobeId, width, height)
-    const detailNames = (await getDetailNames()).data
+    const detailNames = (await getDetailsFromDB()).data
     const offset = wardrobeTypeId === WARDROBE_TYPE.GARDEROB ? 0 : 100;
-    const details: Detail[] =  detailsData.map(dd => (
-        {   
+    const details: Detail[] =  detailsData.map(dd => {
+        const det = detailNames.find(n => n.id === dd.detailId) || nullDetail()
+        return {   
             id: dd.detailId,
-            name: detailNames.find(n => n.id === dd.detailId)?.name || "",
+            name: det.name,
             length: calcFunction(dd.length, { width, height, depth, offset }),
             width: calcFunction(dd.width, { width, height, depth, offset }),
             count: dd.count,
-            drill: getDrill(dd.detailId),
-            kromka: getKromka(wardrobeTypeId, dd)
-        }))
+            confirmat: det.confirmat,
+            minifix: det.minifix,
+            kromka: getKromka(det)
+        }})
     return details;
 }
 
@@ -168,11 +170,11 @@ async function getLegs(data: WardrobeData): Promise<FullData> {
 
 export async function getConfirmat(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data
+    const detailNames = (await getDetailsFromDB()).data
     const verbose: VerboseData = [["Деталь", "Кол-во", "Конфирматы \n на 1 деталь", "Итого"]];
     let total = 0;
     details.forEach(d => {
-        const conf = getConfirmatByDetail(d)
+        const conf = d.confirmat
         if (conf === 0) return
         const caption = detailNames.find(n => n.id === d.id)?.name || "";
         verbose.push([caption, `${d.count}`, `${conf}`, `${d.count * conf}`]);
@@ -190,11 +192,11 @@ async function getZagConfirmat(data: WardrobeData, details: Detail[], zaglushkaI
 
 export async function getMinifix(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data
+    const detailNames = (await getDetailsFromDB()).data
     const verbose: VerboseData = [["Деталь", "Кол-во", `Минификсы \n на 1 деталь`, "Итого"]];
     let total = 0;
     details.forEach(d => {
-        const count = getMinifixByDetail(d)
+        const count = d.minifix
         if (count === 0) return
         const caption = detailNames.find(n => n.id === d.id)?.name || "";
         verbose.push([caption, `${d.count}`, `${count}`, `${d.count * count}`]);
@@ -239,7 +241,7 @@ async function getStyagka(data: WardrobeData): Promise<FullData> {
 
 export async function getKromkaPrimary(data: WardrobeData, details: Detail[], kromkaId: number): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data
+    const detailNames = (await getDetailsFromDB()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let total = 0;
     details.forEach(d => {
@@ -258,7 +260,7 @@ export async function getKromkaPrimary(data: WardrobeData, details: Detail[], kr
 
 export async function getKromkaSecondary(data: WardrobeData, details: Detail[], kromkaSpecId: number, kromkaId: number): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data
+    const detailNames = (await getDetailsFromDB()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Кромка", "Длина кромки, м", ""]];
     let total = 0;
     details.forEach(d => {

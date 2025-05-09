@@ -5,7 +5,7 @@ import { getConsoleTypes, getFasadTypes, getWardrobes, getWardrobesDimensions, g
 import { getCharPurpose, getChars, getCharTypes, getFasadTypeToChar } from "./chars"
 import { getProfiles, getProfileTypes } from "./profiles"
 import { getSpecList, getSpecToCharList, getUnits } from "./spec"
-import { getDetailNames } from "./details"
+import { getDetailsFromDB } from "./details"
 
 export async function getLacobels() {
     const service = new DataBaseService(getDataBaseProvider<LacobelSchema>())
@@ -30,7 +30,7 @@ export async function getAllData(): Promise<AllData> {
     const profileTypes = await getProfileTypes()
     const spec = (await getSpecList()).data
     const specToChar = (await getSpecToCharList()).data
-    const detailNames = (await getDetailNames()).data
+    const detailNames = (await getDetailsFromDB()).data
     const charPurpose = (await getCharPurpose()).data
     const wardrobesDimensions = (await getWardrobesDimensions()).data
     return {

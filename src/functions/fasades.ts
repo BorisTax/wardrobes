@@ -274,21 +274,22 @@ export function DistributePartsOnHeight(fasad: FasadState, initiator: FasadState
 }
 
 
-export function getActiveFasad(fasades: FasadState[]): FasadState | undefined {
+export function getActiveFasad(fasades: FasadState[]): FasadState[] {
+    const active = []
     for(let f of fasades){
-        if(f.active) return f
-        let active = getActiveFasad(f.children)
-        if(active) return active
+        if(f.active) active.push(f)
+        getActiveFasad(f.children).forEach(a => active.push(a))
     }
+    return active
 }
 
-export function setActiveFasad(fasades: FasadState[], activeFasad?: FasadState) {
+export function setActiveFasad(fasades: FasadState[], activeFasad: FasadState | undefined, multiple: boolean) {
     fasades.forEach(f => {
-        if (f.children.length > 0) setActiveFasad(f.children, activeFasad)
-        f.active = (activeFasad === f)
+        if (f.children.length > 0) setActiveFasad(f.children, activeFasad, multiple)
+        const ok = (activeFasad === f)
+        f.active = multiple ? f.active || ok : ok
     })
 }
-
 
 export function divideFasad(fasad: FasadState, count: number, minSize: number) {
     if (fasad.division === Division.HEIGHT) return divideOnHeight(fasad, count, minSize); else return divideOnWidth(fasad, count, minSize)
@@ -344,3 +345,7 @@ function divideOnWidth(fasad: FasadState, count: number, minSize: number): boole
     return true
 }
 
+export function hasSameParent(fasades: FasadState[]):boolean{
+    if (fasades.length === 0) return false
+    return fasades.every(f => f.parent === fasades[0].parent)
+}

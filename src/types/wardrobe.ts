@@ -95,9 +95,9 @@ export enum CONSOLE_TYPE {
     RADIAL = 2,
 }
 export enum KROMKA_TYPE {
-    THICK = 'THICK',
-    THIN = 'THIN',
-    NONE = 'NONE'
+    THICK = 2,
+    THIN = 1,
+    NONE = 0
 }
 export type KROMKA_SIDE = {
     L1: KROMKA_TYPE
@@ -118,7 +118,9 @@ export enum WARDROBE_KIND {
     ULTRA = 2,
     LUXE = 3,
     COMFORT = 4,
-    CORNER = 5,
+    CORNER = 5,    
+    CONSOLE = 6,
+    CONSOLE_RADIUS = 7
 }
 
 export type Detail = {
@@ -127,7 +129,8 @@ export type Detail = {
     width: number
     count: number
     kromka: KROMKA_SIDE
-    drill?: DRILL_TYPE[]
+    confirmat: number,
+    minifix: number
 }
 
 export enum DETAIL_NAME {

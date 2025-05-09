@@ -1,4 +1,5 @@
 import { CHAR_PURPOSE, CHAR_TYPE } from "./enums"
+import { KROMKA_TYPE } from "./wardrobe"
 
 export type KeySet<T> = (keyof T)[]
 
@@ -49,12 +50,11 @@ export type CharPurposeSchema ={
 export type CharTypesSchema = DefaultSchema
 export type FasadTypesSchema = DefaultSchema
 export type WardrobeDetailSchema = DefaultSchema
-export type DetailSchema = DefaultSchema
 export type LacobelTypesSchema = DefaultSchema
 export type MatPurposeSchema = DefaultSchema
 export type ConsoleTypesSchema = DefaultSchema
 export type WardrobeTypesSchema = DefaultSchema
-export type WardrobesSchema = DefaultSchema
+export type WardrobesSchema = DefaultSchema & {use: boolean}
 export type ProfileTypesSchema = DefaultSchema
 export type UnitsSchema = DefaultSchema
 
@@ -63,7 +63,16 @@ export type DVPTableSchema = {
     width: number,
     length: number
 }
-
+export type DetailSchema = {
+    id: number,
+    name: string,
+    el1: KROMKA_TYPE,
+    el2: KROMKA_TYPE,
+    ew1: KROMKA_TYPE,
+    ew2: KROMKA_TYPE,
+    confirmat: number,
+    minifix: number
+}
 export type FurnitureTableSchema = {
     id: number
     wardrobeId: number,

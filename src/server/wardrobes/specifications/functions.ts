@@ -1,12 +1,9 @@
-import { DefaultSchema, FurnitureTableSchema } from "../../../types/schemas";
+import { DefaultSchema, DetailSchema, FurnitureTableSchema } from "../../../types/schemas";
 import { SpecItem } from "../../../types/specification";
 import { DETAIL_NAME, DRILL_TYPE, Detail, KROMKA_SIDE, KROMKA_TYPE, FullData, SpecificationResult, WARDROBE_TYPE, WardrobeData } from "../../../types/wardrobe";
-import { WardrobeDetailTableSchema } from "../../../types/schemas";
 import { getSpecList } from "../../routers/functions/spec";
 import { getWardrobes } from "../../routers/functions/wardrobe";
-import { allNoneKromka, singleLengthThickDoubleWidthThinKromka, singleLengthThickKromka, singleLengthThinKromka } from "./kromka";
-import { getDetailNames } from "../../routers/functions/details";
-import { off } from "process";
+import { getDetailsFromDB } from "../../routers/functions/details";
 
 
 export function emptyFullData(): FullData {
@@ -65,7 +62,7 @@ export async function getWardrobeName(id: number): Promise<string> {
 
 export async function getDSP(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
-    const detailNames = (await getDetailNames()).data
+    const detailNames = (await getDetailsFromDB()).data
     const verbose = [["Деталь", "Длина", "Ширина", "Кол-во", "Площадь", ""]]
     let totalArea = 0
     details.forEach(d => {
@@ -83,12 +80,6 @@ export async function getCoef(item: SpecItem): Promise<number> {
     const list = await getSpecList()
     const coef = list.data?.find(s => s.id === item)?.coef || 1
     return coef
-}
-export function getConfirmatByDetail(detail: Detail): number {
-    return detail.drill?.reduce((prev, curr) => prev + ((curr === DRILL_TYPE.CONFIRMAT1 ? 1 : 0) + (curr === DRILL_TYPE.CONFIRMAT2 ? 2 : 0)), 0) || 0
-}
-export function getMinifixByDetail(detail: Detail): number {
-    return detail.drill?.reduce((prev, curr) => prev + ((curr === DRILL_TYPE.MINIFIX1 ? 1 : 0) + (curr === DRILL_TYPE.MINIFIX2 ? 2 : 0)), 0) || 0
 }
 
 
@@ -124,6 +115,19 @@ export function calcFunction(func: string, { width, height, depth, offset }: { w
     }
 }
 
+export function nullDetail(): DetailSchema {
+    return {
+        id: -1,
+        name: "",
+        el1: KROMKA_TYPE.NONE,
+        el2: KROMKA_TYPE.NONE,
+        ew1: KROMKA_TYPE.NONE,
+        ew2: KROMKA_TYPE.NONE,
+        confirmat: 0,
+        minifix: 0
+    }
+}
+
 export function getDrill(detailId: number): DRILL_TYPE[] {
     if ([DETAIL_NAME.STAND, DETAIL_NAME.INNER_STAND].includes(detailId)) return [DRILL_TYPE.MINIFIX2, DRILL_TYPE.MINIFIX2]
     if ([DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT].includes(detailId)) return [DRILL_TYPE.CONFIRMAT2, DRILL_TYPE.CONFIRMAT2]
@@ -134,11 +138,8 @@ export function getDrill(detailId: number): DRILL_TYPE[] {
     return []
 } 
 
-export function getKromka(wardTypeId: WARDROBE_TYPE, detail: WardrobeDetailTableSchema): KROMKA_SIDE {
-    if ([DETAIL_NAME.ROOF].includes(detail.detailId)) return singleLengthThickDoubleWidthThinKromka()
-    if ([DETAIL_NAME.STAND].includes(detail.detailId)) return singleLengthThickKromka()
-    if ([DETAIL_NAME.INNER_STAND, DETAIL_NAME.SHELF, DETAIL_NAME.SHELF_PLAT, DETAIL_NAME.PILLAR].includes(detail.detailId)) return wardTypeId === WARDROBE_TYPE.GARDEROB ? singleLengthThickKromka() : singleLengthThinKromka()
-    return allNoneKromka()
+export function getKromka(detail: DetailSchema): KROMKA_SIDE {
+    return { L1: detail.el1, L2: detail.el2, W1: detail.ew1, W2: detail.ew2 }
 }
 
 export function getArmirovkaTapes(width: number, tolerance: number): { tape400: number; tape200: number; } {

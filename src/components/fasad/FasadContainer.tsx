@@ -14,7 +14,7 @@ export default function FasadContainer({ index }: FasadContainerProps): ReactEle
     const innerWidth = window.innerWidth
     const rootFasad = rootFasades[index]
     const ratio = rootFasad.width / rootFasad.height
-    const activeFasad = useAtomValue(activeFasadAtom)
+    const activeFasades = useAtomValue(activeFasadAtom)
     const sectionRef = useRef<HTMLDivElement>(null)
     const activeClass = activeRootFasadIndex === index ? "fw-bold" : ""
     const resize = (ratio: number) => {
@@ -28,7 +28,7 @@ export default function FasadContainer({ index }: FasadContainerProps): ReactEle
     return <div className="fasad-container">
         <div className={`text-center ${activeClass}`}>{`${index + 1}`}</div>
         <div ref={sectionRef} className='fasad-section-container' style={{ height: "100%", width: "auto" }}>
-            <FasadSection fasad={rootFasad} activeFasad={activeFasad} rootFasad={rootFasad} />
+            <FasadSection fasad={rootFasad} activeFasades={activeFasades} rootFasad={rootFasad} />
         </div>
     </div>
 }

@@ -39,7 +39,7 @@ export default function TextBox(props: TextBoxProps) {
           e.stopPropagation();
         }}
         onBlur={() => {
-          if (props.submitOnLostFocus) submit(); else setState({ ...state, value: state.prevValue })
+          if (props.submitOnLostFocus && state.value !== state.prevValue) submit(); else setState({ ...state, value: state.prevValue })
         }}
       >
         <input

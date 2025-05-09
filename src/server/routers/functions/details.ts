@@ -1,4 +1,4 @@
-import { DATA_TABLE_NAMES, DefaultSchema, DVPTableSchema } from "../../../types/schemas"
+import { DATA_TABLE_NAMES, DefaultSchema, DetailSchema, DVPTableSchema } from "../../../types/schemas"
 import { Result } from "../../../types/server"
 import { WardrobeDetailTableSchema } from "../../../types/schemas"
 import { getDataBaseProvider } from "../../options"
@@ -24,8 +24,8 @@ export async function getDVPTemplates(): Promise<Result<DVPTableSchema>> {
   const service = new DataBaseService(getDataBaseProvider<DVPTableSchema>())
   return await service.getData(DATA_TABLE_NAMES.DVP_TABLE, [], {})
 }
-export async function getDetailNames(): Promise<Result<DefaultSchema>> {
-  const service = new DataBaseService(getDataBaseProvider<DefaultSchema>())
+export async function getDetailsFromDB(): Promise<Result<DetailSchema>> {
+  const service = new DataBaseService(getDataBaseProvider<DetailSchema>())
   return await service.getData(DATA_TABLE_NAMES.DETAILS, [], {})
 }
 

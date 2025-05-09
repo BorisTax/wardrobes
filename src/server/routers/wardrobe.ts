@@ -7,7 +7,6 @@ import { getDetails } from "../wardrobes/specifications/corpus.js";
 import { CONSOLE_TYPES_ROUTE, DETAIL_ROUTE, DETAILS_ROUTE, FURNITURE_TABLE_ROUTE, INITIAL_COMBISTATE_ROUTE, INITIAL_WARDROBEDATA_ROUTE, WARDROBE_DETAIL_TABLE_ROUTE, WARDROBE_KINDS_ROUTE, WARDROBE_TYPES_ROUTE } from "../../types/routes.js";
 import { getInitialCombiState, getInitialWardrobeData, getWardrobes, getWardrobeTypes, getConsoleTypes, getDetail } from "./functions/wardrobe.js";
 import { addDetailTable, deleteDetailTable, getAllDetailsFromTable, updateDetailTable } from "./functions/details.js";
-import { WardrobeDetailTableSchema } from "../../types/schemas.js";
 import { addFurnitureTable, deleteFurnitureTable, getFurnitureTable, updateFurnitureTable } from "./functions/furniture.js";
 
 const router = express.Router();

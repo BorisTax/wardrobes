@@ -1,7 +1,7 @@
 import { atom } from 'jotai'
 import FasadState from '../classes/FasadState'
 import { Division, FASAD_TYPE } from '../types/enums'
-import { cloneFasad, DistributePartsOnHeight, DistributePartsOnWidth, divideFasad, fixFasadHeight, fixFasadWidth, getActiveFasad, getRootFasad, isFasadExist, setActiveFasad, setFasadMaterialId, setFasadType, trySetHeight, trySetWidth } from '../functions/fasades'
+import { cloneFasad, DistributePartsOnHeight, DistributePartsOnWidth, divideFasad, fixFasadHeight, fixFasadWidth, getActiveFasad, getRootFasad, hasSameParent, isFasadExist, setActiveFasad, setFasadMaterialId, setFasadType, trySetHeight, trySetWidth } from '../functions/fasades'
 import { getProfileDirection } from '../functions/materials'
 import { combiStateAtom } from './app'
 import { AppState } from '../types/app'
@@ -15,23 +15,23 @@ export const copyFasadAtom = atom(null, (get, set, dest: number, source: number)
     set(combiStateAtom, appData, true)
 })
 
-export const activeFasadAtom = atom<FasadState | undefined>((get) => {
+export const activeFasadAtom = atom<FasadState[]>((get) => {
     const appData: AppState = get(combiStateAtom)
     return getActiveFasad(appData.rootFasades)
 })
-export const setActiveFasadAtom = atom(null, (get, set, activeFasad?: FasadState) => {
+export const setActiveFasadAtom = atom(null, (get, set, activeFasad: FasadState | undefined, multiple: boolean = false) => {
     const appData = get(combiStateAtom)
-    setActiveFasad( appData.rootFasades, activeFasad)
+    setActiveFasad( appData.rootFasades, activeFasad, multiple)
     set(combiStateAtom, { ...appData }, false, false)
 })
 export const setActiveRootFasadAtom = atom(null, (get, set, index: number) => {
     const appData = get(combiStateAtom)
-    setActiveFasad( appData.rootFasades, appData.rootFasades[index])
+    setActiveFasad( appData.rootFasades, appData.rootFasades[index], false)
     set(combiStateAtom, { ...appData }, false, false)
 })
 export const activeRootFasadIndexAtom = atom((get) => {
     const { rootFasades } = get(combiStateAtom)
-    const active = getActiveFasad(rootFasades)
+    const active = getActiveFasad(rootFasades)[0]
     if(!active) return -1
     const root = getRootFasad(active, rootFasades)
     return rootFasades.findIndex(r => r === root)
@@ -40,110 +40,147 @@ export const activeRootFasadIndexAtom = atom((get) => {
 export const resetRootFasadAtom = atom(null, (get, set) => {
     const appData = get(combiStateAtom)
     const newAppState = cloneAppState(appData)
-    const activeFasad = getActiveFasad(newAppState.rootFasades)
+    const activeFasad = getActiveFasad(newAppState.rootFasades)[0]
     if(!activeFasad) return
     const rootFasad = getRootFasad(activeFasad, newAppState.rootFasades)
     rootFasad.children = []
-    setActiveFasad(newAppState.rootFasades, rootFasad)
+    setActiveFasad(newAppState.rootFasades, rootFasad, false)
     set(combiStateAtom, newAppState, true, true)
 })
+
 export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const { minSize } = get(settingsAtom)
     const state = cloneAppState(get(combiStateAtom))
-    const activeFasad = getActiveFasad(state.rootFasades)
-    if(!activeFasad) return
-    if (activeFasad && newHeight < 20) {
-        activeFasad.heightRatio = newHeight
-        const parent = activeFasad.parent
-        if(parent) DistributePartsOnHeight(parent, null, 0, false, minSize)
+    const activeFasades = getActiveFasad(state.rootFasades)
+    if (activeFasades.length === 0) return
+    if(!hasSameParent(activeFasades)) return
+    if (newHeight < 20) {
+        if (activeFasades.every(activeFasad => {
+            activeFasad.heightRatio = newHeight
+            const parent = activeFasad.parent
+            if (parent) {
+                DistributePartsOnHeight(parent, null, 0, false, minSize)
+                return true
+            }
+        })) {
             set(combiStateAtom, state, true)
-        return
-    }
-    const height = activeFasad.fasadType === FASAD_TYPE.DSP ? newHeight : newHeight + 3
-    if (trySetHeight(activeFasad, state.rootFasades, height, minSize)) {
-        if(activeFasad) fixFasadHeight(activeFasad, true)
-        set(combiStateAtom, state, true)
+        }
+    } else {
+        if (activeFasades.every(activeFasad => {
+            const height = activeFasad.fasadType === FASAD_TYPE.DSP ? newHeight : newHeight + 3
+            if (trySetHeight(activeFasad, state.rootFasades, height, minSize)) {
+                if (activeFasad) fixFasadHeight(activeFasad, true)
+                return true
+            }
+        })) {
+            set(combiStateAtom, state, true)
+        }
     }
 })
 
 export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
-    const state = cloneAppState(get(combiStateAtom))
-    const activeFasad = getActiveFasad(state.rootFasades)
-    if (!activeFasad) return
     const { minSize } = get(settingsAtom)
-    if (activeFasad && newWidth < 20) {
-        activeFasad.widthRatio = newWidth
-        const parent = activeFasad.parent
-        if(parent) DistributePartsOnWidth(parent, null, 0, false, minSize)
+    const state = cloneAppState(get(combiStateAtom))
+    const activeFasades = getActiveFasad(state.rootFasades)
+    if (activeFasades.length === 0) return
+    if(!hasSameParent(activeFasades)) return
+    if (newWidth < 20) {
+        if (activeFasades.every(activeFasad => {
+            activeFasad.widthRatio = newWidth
+            const parent = activeFasad.parent
+            if (parent) {
+                DistributePartsOnWidth(parent, null, 0, false, minSize)
+                return true
+            }
+        })) {
             set(combiStateAtom, state, true)
-        return
-    }
-    const width = activeFasad.fasadType === FASAD_TYPE.DSP ? newWidth : newWidth + 3
-    if (trySetWidth(activeFasad, state.rootFasades, width, minSize)) {
-        if(activeFasad) fixFasadWidth(activeFasad, true)
-        set(combiStateAtom, state, true)
+        }
+    } else {
+        if (activeFasades.every(activeFasad => {
+            const width = activeFasad.fasadType === FASAD_TYPE.DSP ? newWidth : newWidth + 3
+            if (trySetWidth(activeFasad, state.rootFasades, width, minSize)) {
+                if (activeFasad) fixFasadWidth(activeFasad, true)
+                return true
+            }
+        })) {
+            set(combiStateAtom, state, true)
+        }
     }
 })
+
 export const divideFasadAtom = atom(null, (get, set, count: number) => {
-    let activeFasad = get(activeFasadAtom)
     const { minSize } = get(settingsAtom)
-    if (!activeFasad) return
     const appData = cloneAppState(get(combiStateAtom))
-    activeFasad = getActiveFasad(appData.rootFasades)
+    const activeFasad = getActiveFasad(appData.rootFasades)[0]
     if (!activeFasad) return
     const prevCount = activeFasad.children.length
     if (!divideFasad(activeFasad, count, minSize)) return
-    setActiveFasad(appData.rootFasades, activeFasad)
+    setActiveFasad(appData.rootFasades, activeFasad, false)
     set(combiStateAtom, appData, true, !(prevCount === activeFasad.children.length && prevCount === 0))
 })
 
 export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {
     const { minSize } = get(settingsAtom)
     const appData = cloneAppState(get(combiStateAtom))
-    const activeFasad = getActiveFasad(appData.rootFasades)
-    if (!activeFasad) return
-    fixFasadHeight(activeFasad, fixed)
-    const parent = activeFasad.parent
-    if (!fixed && parent)
-        if (parent.division === Division.WIDTH) 
+    const activeFasades = getActiveFasad(appData.rootFasades)
+    if (activeFasades.length === 0) return
+    if (activeFasades.every(activeFasad => {
+        fixFasadHeight(activeFasad, fixed)
+        const parent = activeFasad.parent
+        if (!fixed && parent)
+            if (parent.division === Division.WIDTH)
                 DistributePartsOnWidth(parent, null, 0, false, minSize);
             else DistributePartsOnHeight(parent, null, 0, false, minSize);
-    set(combiStateAtom, appData, true)
+        return true
+    })) {
+        set(combiStateAtom, appData, true)
+    }
 })
 
 export const setFixedWidthAtom = atom(null, (get, set, fixed: boolean) => {
     const { minSize } = get(settingsAtom)
     const appData = cloneAppState(get(combiStateAtom))
-    const activeFasad = getActiveFasad(appData.rootFasades)
-    if (!activeFasad) return
-    fixFasadWidth(activeFasad, fixed)
-    const parent = activeFasad.parent
-    if (!fixed && parent)
-        if (parent.division === Division.WIDTH) 
+    const activeFasades = getActiveFasad(appData.rootFasades)
+    if (activeFasades.length === 0) return
+    if (activeFasades.every(activeFasad => {
+        fixFasadWidth(activeFasad, fixed)
+        const parent = activeFasad.parent
+        if (!fixed && parent)
+            if (parent.division === Division.WIDTH)
                 DistributePartsOnWidth(parent, null, 0, false, minSize);
             else DistributePartsOnHeight(parent, null, 0, false, minSize);
-    set(combiStateAtom, appData, true)
+        return true
+    })) {
+        set(combiStateAtom, appData, true)
+    }
 })
 
 export const setMaterialIdAtom = atom(null, (get, set, matId: number) => {
     const appData = cloneAppState(get(combiStateAtom))
-    const activeFasad = getActiveFasad(appData.rootFasades)
-    if (!activeFasad) return
-    setFasadMaterialId(activeFasad, matId)
+    const activeFasades = getActiveFasad(appData.rootFasades)
+    if (activeFasades.length === 0) return
+    activeFasades.forEach(activeFasad => {
+        setFasadMaterialId(activeFasad, matId)
+    })
     set(combiStateAtom, { ...appData }, true)
 })
+
 export const setFasadTypeAtom = atom(null, (get, set, type: FASAD_TYPE, useHistory = true) => {
     const appData = cloneAppState(get(combiStateAtom))
-    const activeFasad = getActiveFasad(appData.rootFasades)
-    if (!activeFasad) return
-    setFasadType(activeFasad, type)
-    const matId = getFasadDefaultChar(get, type)
-    setFasadMaterialId(activeFasad, matId)
-    set(combiStateAtom, { ...appData }, useHistory as boolean)
+    const activeFasades = getActiveFasad(appData.rootFasades)
+    if (activeFasades.length === 0) return
+    if (activeFasades.every(activeFasad => {
+        setFasadType(activeFasad, type)
+        const matId = getFasadDefaultChar(get, type)
+        setFasadMaterialId(activeFasad, matId)
+        return true
+    })) {
+        set(combiStateAtom, { ...appData }, useHistory as boolean)
+    }
 })
 
 export const setProfileDirectionAtom = atom(null, (get, set, direction: string) => {
-    const activeFasad = get(activeFasadAtom)
+    const activeFasad = get(activeFasadAtom)[0]
     if (!activeFasad) return
     activeFasad.division = direction as Division
     const count = activeFasad?.children.length

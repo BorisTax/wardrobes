@@ -53,7 +53,7 @@ export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
     const state = cloneAppState(get(combiStateAtom))
     const activeFasades = getActiveFasad(state.rootFasades)
     if (activeFasades.length === 0) return
-    if(!hasSameParent(activeFasades)) return
+    //if(!hasSameParent(activeFasades)) return
     if (newHeight < 20) {
         if (activeFasades.every(activeFasad => {
             activeFasad.heightRatio = newHeight
@@ -67,8 +67,7 @@ export const setHeightAtom = atom(null, (get, set, newHeight: number) => {
         }
     } else {
         if (activeFasades.every(activeFasad => {
-            const height = activeFasad.fasadType === FASAD_TYPE.DSP ? newHeight : newHeight + 3
-            if (trySetHeight(activeFasad, state.rootFasades, height, minSize)) {
+            if (trySetHeight(activeFasad, state.rootFasades, newHeight, minSize)) {
                 if (activeFasad) fixFasadHeight(activeFasad, true)
                 return true
             }
@@ -83,7 +82,7 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
     const state = cloneAppState(get(combiStateAtom))
     const activeFasades = getActiveFasad(state.rootFasades)
     if (activeFasades.length === 0) return
-    if(!hasSameParent(activeFasades)) return
+    //if(!hasSameParent(activeFasades)) return
     if (newWidth < 20) {
         if (activeFasades.every(activeFasad => {
             activeFasad.widthRatio = newWidth
@@ -97,8 +96,7 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
         }
     } else {
         if (activeFasades.every(activeFasad => {
-            const width = activeFasad.fasadType === FASAD_TYPE.DSP ? newWidth : newWidth + 3
-            if (trySetWidth(activeFasad, state.rootFasades, width, minSize)) {
+            if (trySetWidth(activeFasad, state.rootFasades, newWidth, minSize)) {
                 if (activeFasad) fixFasadWidth(activeFasad, true)
                 return true
             }
@@ -111,12 +109,17 @@ export const setWidthAtom = atom(null, (get, set, newWidth: number) => {
 export const divideFasadAtom = atom(null, (get, set, count: number) => {
     const { minSize } = get(settingsAtom)
     const appData = cloneAppState(get(combiStateAtom))
-    const activeFasad = getActiveFasad(appData.rootFasades)[0]
-    if (!activeFasad) return
-    const prevCount = activeFasad.children.length
-    if (!divideFasad(activeFasad, count, minSize)) return
-    setActiveFasad(appData.rootFasades, activeFasad, false)
-    set(combiStateAtom, appData, true, !(prevCount === activeFasad.children.length && prevCount === 0))
+    const activeFasades = getActiveFasad(appData.rootFasades)
+    if (activeFasades.length === 0) return
+    let calculate = true
+    if (activeFasades.every(activeFasad => {
+        const prevCount = activeFasad.children.length
+        calculate = calculate || !(prevCount === activeFasad.children.length && prevCount === 0)
+        if (divideFasad(activeFasad, count, minSize)) return true
+    })) {
+        //setActiveFasad(appData.rootFasades, activeFasad, false)
+        set(combiStateAtom, appData, true, calculate)
+    }
 })
 
 export const setFixedHeightAtom = atom(null, (get, set, fixed: boolean) => {

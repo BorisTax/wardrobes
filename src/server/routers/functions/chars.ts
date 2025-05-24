@@ -1,6 +1,6 @@
 import { OmitId } from '../../../types/materials.js';
 import { getDataBaseProvider } from '../../options.js';
-import { CharPurposeSchema, CharsSchema, DATA_TABLE_NAMES, DefaultSchema, FasadTypeToCharSchema } from '../../../types/schemas.js';
+import { CharPurposeSchema, CharsSchema, DATA_TABLE_NAMES, DefaultSchema } from '../../../types/schemas.js';
 import { DataBaseService } from '../../services/dataBaseService.js';
 
 export async function getMaterialTypes() {
@@ -19,6 +19,20 @@ export async function getCharTypes() {
 export async function getCharPurpose() {
   const service = new DataBaseService(getDataBaseProvider<CharPurposeSchema>())
   return await service.getData(DATA_TABLE_NAMES.CHAR_PURPOSE, [], {})
+}
+export async function addCharPurpose(data: CharPurposeSchema) {
+  const service = new DataBaseService(getDataBaseProvider<CharPurposeSchema>())
+  return await service.addData(DATA_TABLE_NAMES.CHAR_PURPOSE, data)
+}
+
+export async function updateCharPurpose(oldData: CharPurposeSchema, data: Partial<CharPurposeSchema>) {
+  const service = new DataBaseService(getDataBaseProvider<CharPurposeSchema>())
+  return await service.updateData(DATA_TABLE_NAMES.CHAR_PURPOSE, oldData, data)
+}
+
+export async function deleteCharPurpose(charId: number) {
+  const service = new DataBaseService(getDataBaseProvider<CharPurposeSchema>())
+  return await service.deleteData(DATA_TABLE_NAMES.CHAR_PURPOSE, { charId })
 }
 
 export async function addChar(data: OmitId<CharsSchema>) {
@@ -50,7 +64,3 @@ export async function getChar(id: number) {
   return result[0]
 }
 
-export async function getFasadTypeToChar() {
-  const service = new DataBaseService(getDataBaseProvider<FasadTypeToCharSchema>())
-  return await service.getData(DATA_TABLE_NAMES.FASAD_TYPE_TO_CHAR, [], {})
-}

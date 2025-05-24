@@ -45,7 +45,7 @@ export default function EditSpecToChars() {
             <hr />
             {contents.length > 0 && <TableData header={heads} content={contents} onSelectRow={key => { setSelectedCharId(key as number) }} />}
         </div>
-        {(perm?.Read && contents.length > 0) ? <EditDataSection name={specList.get(selectedSpecId)?.name + "" + char.get(selectedCharId)?.name} items={editItems}
+        {(perm?.Read ) ? <EditDataSection name={specList.get(selectedSpecId)?.name + "" + char.get(selectedCharId)?.name} items={editItems}
             onDelete={perm?.Delete ? async () => {
                 const result = await deleteSpecToChar({ id: selectedSpecId, charId: selectedCharId })
                 setSelectedCharId(charList[0] || 0)

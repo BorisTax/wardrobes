@@ -139,6 +139,7 @@ export type AllData = {
     fasadDefaultChars: FasadDefaultCharSchema[],
     charTypes: CharTypesSchema[],
     charPurpose: CharPurposeSchema[],
+    matPurposes: DefaultSchema[],
     lacobels: LacobelSchema[],
     consoleTypes: ConsoleTypesSchema[],
     fasadTypes: FasadTypesSchema[],

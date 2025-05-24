@@ -9,18 +9,24 @@ import EditSpecToChars from "./editDataBaseDialogs/EditSpecToChars"
 import EditDSPKromkaZagl from "./editDataBaseDialogs/EditDSPKromkaZagl"
 import EditDetailsTable from "./editDataBaseDialogs/EditDetailsTable"
 import EditFurnitureTable from "./editDataBaseDialogs/EditFurnitureTable"
+import EditFasadTypeToChars from "./editDataBaseDialogs/EditFasadTypeToChars"
+import EditCharPurpose from "./editDataBaseDialogs/EditCharPurpose"
 enum MaterialGroup{
     SPECIFICATION = 1,
     CHARS = 2,
     SPEC_TO_CHAR = 3,
-    DSP_EDGE = 4,
-    DETAIL_TABLE = 5,
-    FURNITURE_TABLE = 6,
+    FASAD_TYPE_TO_CHAR = 4,
+    CHAR_PURPOSE = 5,
+    DSP_EDGE = 6,
+    DETAIL_TABLE = 7,
+    FURNITURE_TABLE = 8,
 }
 const matGroup=new Map()
 matGroup.set(MaterialGroup.SPECIFICATION, "Номенклатура")
 matGroup.set(MaterialGroup.CHARS, "Характеристики")
 matGroup.set(MaterialGroup.SPEC_TO_CHAR, "Характеристики номенклатур")
+matGroup.set(MaterialGroup.FASAD_TYPE_TO_CHAR, "Характеристики фасадов")
+matGroup.set(MaterialGroup.CHAR_PURPOSE, "Назначение характеристик")
 matGroup.set(MaterialGroup.DSP_EDGE, "ДСП - Кромка - Заглушка")
 matGroup.set(MaterialGroup.DETAIL_TABLE, "Деталировки")
 matGroup.set(MaterialGroup.FURNITURE_TABLE, "Фурнитура")
@@ -50,5 +56,7 @@ function getGroup(group: MaterialGroup) {
     groups.set(MaterialGroup.DSP_EDGE, <EditDSPKromkaZagl />)
     groups.set(MaterialGroup.DETAIL_TABLE, <EditDetailsTable />)
     groups.set(MaterialGroup.FURNITURE_TABLE, <EditFurnitureTable />)
+    groups.set(MaterialGroup.FASAD_TYPE_TO_CHAR, <EditFasadTypeToChars />)
+    groups.set(MaterialGroup.CHAR_PURPOSE, <EditCharPurpose />)
     return groups.get(group) || <></>
 }

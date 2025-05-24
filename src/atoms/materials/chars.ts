@@ -2,13 +2,13 @@ import { atom } from "jotai"
 import { userAtom } from "../users"
 import { RESOURCE } from "../../types/user"
 import { fetchData, fetchGetData, FetchResult } from "../../functions/fetch"
-import { API_ROUTE, CHARS_ROUTE, IMAGE_ROUTE, MATERIALS_ROUTE, SPEC_TO_CHAR_ROUTE } from "../../types/routes"
+import { API_ROUTE, CHAR_PURPOSE_ROUTE, CHARS_ROUTE, FASAD_TYPES_TO_CHAR_ROUTE, IMAGE_ROUTE, MATERIALS_ROUTE, SPEC_TO_CHAR_ROUTE } from "../../types/routes"
 import messages from "../../server/messages"
 import { OmitId } from "../../types/materials"
 import { TableFields } from "../../types/server"
 import FasadState from "../../classes/FasadState"
 import { FASAD_TYPE } from "../../types/enums"
-import { CharPurposeSchema, CharsSchema, FasadDefaultCharSchema, SpecToCharSchema } from "../../types/schemas"
+import { CharPurposeSchema, CharsSchema, FasadDefaultCharSchema, FasadTypeToCharSchema, MatPurposeSchema, SpecToCharSchema } from "../../types/schemas"
 import { ExtMap, DefaultMap, makeExtMap } from "../storage"
 import { setFasadMaterialId, setFasadType } from "../../functions/fasades"
 import { specToCharAtom } from "../specification"
@@ -20,7 +20,9 @@ export const charArrayAtom = atom((get) => {
 });
 export const charTypesAtom = atom<DefaultMap>(new Map());
 export const charPurposeAtom = atom<CharPurposeSchema[]>([]);
+export const matPurposeAtom = atom<DefaultMap>(new Map());
 export const fasadDefaultCharsAtom = atom<ExtMap<FasadDefaultCharSchema>>(new Map());
+export const fasadTypesToCharAtom = atom<FasadTypeToCharSchema[]>([]);
 
 export const loadCharAtom = atom(null, async (get, set) => {
     const { token, permissions } = get(userAtom)
@@ -101,6 +103,111 @@ export const addSpecToCharAtom = atom(null, async (get, set, data: SpecToCharSch
          return { success: false, message: messages.QUERY_ERROR }
         }
 })
+
+export const loadFasadTypeToCharAtom = atom(null, async (get, set) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
+    try{
+        const result = await fetchGetData<FasadTypeToCharSchema>(`${API_ROUTE}${MATERIALS_ROUTE}${FASAD_TYPES_TO_CHAR_ROUTE}?token=${token}`)
+        set(fasadTypesToCharAtom, result.data)
+        return { success: result.success as boolean, message: result.message as string }
+    }catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+     }
+})
+
+export const addFasadTypeToCharAtom = atom(null, async (get, set, data: FasadTypeToCharSchema) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
+    try {
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${FASAD_TYPES_TO_CHAR_ROUTE}`, "POST", JSON.stringify({ data, token }))
+        set(loadFasadTypeToCharAtom)
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+})
+export const updateFasadTypeToCharAtom = atom(null, async (get, set, oldData: FasadTypeToCharSchema, data: FasadTypeToCharSchema) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
+    try {
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${FASAD_TYPES_TO_CHAR_ROUTE}`, "PUT", JSON.stringify({ oldData, data, token }))
+        set(loadFasadTypeToCharAtom)
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+})
+
+export const deleteFasadTypeToCharAtom = atom(null, async (get, set, data: FasadTypeToCharSchema) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
+    try {
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${FASAD_TYPES_TO_CHAR_ROUTE}`, "DELETE", JSON.stringify({ data, token }))
+        set(loadFasadTypeToCharAtom)
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+})
+
+
+export const loadCharPurposeAtom = atom(null, async (get, set) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
+    try{
+        const result = await fetchGetData<CharPurposeSchema>(`${API_ROUTE}${MATERIALS_ROUTE}${CHAR_PURPOSE_ROUTE}?token=${token}`)
+        set(charPurposeAtom, result.data)
+        return { success: result.success as boolean, message: result.message as string }
+    }catch (e) { 
+        console.error(e)
+        return { success: false, message: messages.QUERY_ERROR }
+     }
+})
+
+export const addCharPurposeAtom = atom(null, async (get, set, data: CharPurposeSchema) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
+    try {
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${CHAR_PURPOSE_ROUTE}`, "POST", JSON.stringify({ data, token }))
+        set(loadCharPurposeAtom)
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+})
+export const updateCharPurposeAtom = atom(null, async (get, set, oldData: CharPurposeSchema, data: CharPurposeSchema) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
+    try {
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${CHAR_PURPOSE_ROUTE}`, "PUT", JSON.stringify({ oldData, data, token }))
+        set(loadCharPurposeAtom)
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+})
+
+export const deleteCharPurposeAtom = atom(null, async (get, set, charId: number) => {
+    const { token, permissions } = get(userAtom)
+    if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
+    try {
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${CHAR_PURPOSE_ROUTE}`, "DELETE", JSON.stringify({ charId, token }))
+        set(loadCharPurposeAtom)
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+})
+
+
 
 
 export function setInitialMaterials(rootFasades: FasadState[], fasadType: FASAD_TYPE, materialId: number) {

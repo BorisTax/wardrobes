@@ -1,8 +1,9 @@
-import { AllData, DATA_TABLE_NAMES, FasadDefaultCharSchema, LacobelSchema } from "../../../types/schemas"
+import { AllData, DATA_TABLE_NAMES, DefaultSchema, FasadDefaultCharSchema, LacobelSchema } from "../../../types/schemas"
 import { getDataBaseProvider } from "../../options"
 import { DataBaseService } from "../../services/dataBaseService"
 import { getConsoleTypes, getFasadTypes, getWardrobes, getWardrobesDimensions, getWardrobeTypes } from "./wardrobe"
-import { getCharPurpose, getChars, getCharTypes, getFasadTypeToChar } from "./chars"
+import { getCharPurpose, getChars, getCharTypes } from "./chars"
+import { getFasadTypeToChar } from './fasadTypeToChar'
 import { getProfiles, getProfileTypes } from "./profiles"
 import { getSpecList, getSpecToCharList, getUnits } from "./spec"
 import { getDetailsFromDB } from "./details"
@@ -15,6 +16,10 @@ export async function getFasadDefaultChar() {
   const service = new DataBaseService(getDataBaseProvider<FasadDefaultCharSchema>())
   return await service.getData(DATA_TABLE_NAMES.FASAD_DEFAULT_CHAR, [], {})
 }
+export async function getMatPurposes() {
+    const service = new DataBaseService(getDataBaseProvider<DefaultSchema>())
+    return await service.getData(DATA_TABLE_NAMES.MAT_PURPOSE, [], {})
+  }
 export async function getAllData(): Promise<AllData> {
     const chars = (await getChars()).data
     const fasadDefaultChars = (await getFasadDefaultChar()).data
@@ -32,12 +37,14 @@ export async function getAllData(): Promise<AllData> {
     const specToChar = (await getSpecToCharList()).data
     const detailNames = (await getDetailsFromDB()).data
     const charPurpose = (await getCharPurpose()).data
+    const matPurposes = (await getMatPurposes()).data
     const wardrobesDimensions = (await getWardrobesDimensions()).data
     return {
         chars,
         fasadDefaultChars,
         charTypes,
         charPurpose,
+        matPurposes,
         lacobels,
         consoleTypes,
         fasadTypes,

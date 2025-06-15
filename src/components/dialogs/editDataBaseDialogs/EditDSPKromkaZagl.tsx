@@ -33,9 +33,9 @@ export default function EditDSPKromkaZagl() {
     const contents: TableDataRow[] = []
     dspEdgeZag.forEach((d, key) => contents.push({key, data: [char.get(key)?.name, char.get(d.kromkaId)?.name, char.get(d.zaglushkaId)?.name]}))
     const editItems: EditDataItem[] = [
-        { caption: "ДСП:", value: dspId, valueCaption: value => char.get(value as number)?.name || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: dspList },
-        { caption: "Кромка:", value: kromkaId, valueCaption: value => char.get(value as number)?.name || "", message: messages.ENTER_CODE, type: InputType.LIST, list: colors },
-        { caption: "Заглушка:", value: zaglushkaId, valueCaption: value => char.get(value as number)?.name || "", message: messages.ENTER_CODE, type: InputType.LIST, list: colors },
+        { title: "ДСП:", value: dspId, displayValue: value => char.get(value as number)?.name || "", message: messages.ENTER_CAPTION, inputType: InputType.LIST, list: dspList },
+        { title: "Кромка:", value: kromkaId, displayValue: value => char.get(value as number)?.name || "", message: messages.ENTER_CODE, inputType: InputType.LIST, list: colors },
+        { title: "Заглушка:", value: zaglushkaId, displayValue: value => char.get(value as number)?.name || "", message: messages.ENTER_CODE, inputType: InputType.LIST, list: colors },
     ]
     useEffect(()=>{
         loadDspEdge()

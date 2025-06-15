@@ -34,7 +34,7 @@ export default function EditFasadTypeToChars() {
     const contents: TableDataRow[] = []
     charList.forEach(ch => (contents.push({ key: ch, data: [char.get(ch)?.name, char.get(ch)?.code] })))
     const editItems: EditDataItem[] = [
-        { caption: "Характеристика:", value: selectedCharId, valueCaption: value => char.get(value as number)?.name || "", list: allCharList, message: messages.ENTER_CAPTION, type: InputType.LIST },
+        { title: "Характеристика:", value: selectedCharId, displayValue: value => char.get(value as number)?.name || "", list: allCharList, message: messages.ENTER_CAPTION, inputType: InputType.LIST },
     ]
     useEffect(() => {
         setSelectedId(initialFasadTypeId)

@@ -48,9 +48,9 @@ export default function EditUsersDialog() {
     }
     )
     const userEditItems: EditDataItem[] = [
-        { caption: "Имя:", type: InputType.TEXT, value: user.name, message: messages.ENTER_NAME },
-        { caption: "Роль:", type: InputType.LIST, value: user.roleId, valueCaption: (value) => roles.get(value as number) || "", list: [...roles.keys()], message: messages.ENTER_ROLE },
-        { caption: "Пароль:", type: InputType.TEXT, value: "", message: messages.ENTER_PASSWORD, checkValue: (value) => checkPassword(value as string) },
+        { title: "Имя:", inputType: InputType.TEXT, value: user.name, message: messages.ENTER_NAME },
+        { title: "Роль:", inputType: InputType.LIST, value: user.roleId, displayValue: (value) => roles.get(value as number) || "", list: [...roles.keys()], message: messages.ENTER_ROLE },
+        { title: "Пароль:", inputType: InputType.TEXT, value: "", message: messages.ENTER_PASSWORD, checkValue: (value) => checkPassword(value as string) },
     ]
     useEffect(() => {
         if (!perm?.Read) navigate("/")

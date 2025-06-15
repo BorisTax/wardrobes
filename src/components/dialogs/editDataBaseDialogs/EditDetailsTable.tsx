@@ -47,14 +47,14 @@ export default function EditDetailsTable() {
     const contents: TableDataRow[] = details.map(d => ({ key: d.id, data: [detailNames.get(d.detailId) || "", d.minWidth, d.maxWidth, d.minHeight, d.maxHeight, d.count, d.length, d.width] }))
     
     const editItems: EditDataItem[] = [
-        { caption: "Деталь:", value: detail.detailId, valueCaption: value => detailNames.get(value as number) || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: [...detailNames.keys()], listWithEmptyRow: true },
-        { caption: "Ширина от:", value: detail.minWidth,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Ширина до:", value: detail.maxWidth,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Высота от:", value: detail.minHeight,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Высота до:", value: detail.maxHeight,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Кол-во:", value: detail.count,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Длина:", value: detail.length,  type: InputType.TEXT },
-        { caption: "Ширина:", value: detail.width,  type: InputType.TEXT },
+        { title: "Деталь:", value: detail.detailId, displayValue: value => detailNames.get(value as number) || "", message: messages.ENTER_CAPTION, inputType: InputType.LIST, list: [...detailNames.keys()], listWithEmptyRow: true },
+        { title: "Ширина от:", value: detail.minWidth,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Ширина до:", value: detail.maxWidth,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Высота от:", value: detail.minHeight,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Высота до:", value: detail.maxHeight,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Кол-во:", value: detail.count,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Длина:", value: detail.length,  inputType: InputType.TEXT },
+        { title: "Ширина:", value: detail.width,  inputType: InputType.TEXT },
     ]
     useEffect(() => {
         loadDetails()

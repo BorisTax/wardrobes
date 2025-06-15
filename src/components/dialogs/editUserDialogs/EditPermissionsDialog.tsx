@@ -35,12 +35,12 @@ export default function EditPermissionsDialog() {
     const heads = [{ caption: 'Права' }, { caption: 'Чтение' }, { caption: 'Создание' }, { caption: 'Обновление' }, { caption: 'Удаление' }]
     const contents = permData.map((p: PermissionSchema, index) => ({ key: index, data: [resources.get(p.resourceId), boolToYesNo(p.read), boolToYesNo(p.create), boolToYesNo(p.update), boolToYesNo(p.delete)] }))
     const editItems: EditDataItem[] = [
-        { caption: "Роль:", value: roles.get(roleId) || "", message: messages.ENTER_ROLE, type: InputType.TEXT, readonly: true },
-        { caption: "Права:", value: resourceId, valueCaption: (value) => { return resources.get(value as number) || ""}, message: messages.ENTER_RESOURCE, type: InputType.LIST, list: [...resources.keys()] },
-        { caption: "Чтение:", value: Read, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
-        { caption: "Создание:", value: Create, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
-        { caption: "Обновление:", value: Update, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
-        { caption: "Удаление:", value: Delete, valueCaption: (value) => boolToYesNo(value as boolean), message: "", type: InputType.CHECKBOX },
+        { title: "Роль:", value: roles.get(roleId) || "", message: messages.ENTER_ROLE, inputType: InputType.TEXT, readonly: true },
+        { title: "Права:", value: resourceId, displayValue: (value) => { return resources.get(value as number) || ""}, message: messages.ENTER_RESOURCE, inputType: InputType.LIST, list: [...resources.keys()] },
+        { title: "Чтение:", value: Read, displayValue: (value) => boolToYesNo(value as boolean), message: "", inputType: InputType.CHECKBOX },
+        { title: "Создание:", value: Create, displayValue: (value) => boolToYesNo(value as boolean), message: "", inputType: InputType.CHECKBOX },
+        { title: "Обновление:", value: Update, displayValue: (value) => boolToYesNo(value as boolean), message: "", inputType: InputType.CHECKBOX },
+        { title: "Удаление:", value: Delete, displayValue: (value) => boolToYesNo(value as boolean), message: "", inputType: InputType.CHECKBOX },
     ]
     useEffect(() => {
         setRoleId([...roles.keys()][0] || 0)

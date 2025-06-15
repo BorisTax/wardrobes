@@ -28,8 +28,8 @@ export default function EditCharPurpose() {
     const contents: TableDataRow[] = []
     charPurposes.forEach(ch => (contents.push({ key: ch.charId, data: [char.get(ch.charId)?.name, char.get(ch.charId)?.code, matPurposes.get(ch.purposeId)] })))
     const editItems: EditDataItem[] = [
-        { caption: "Характеристика:", value: selectedCharId, valueCaption: value => char.get(value as number)?.name || "", list: allCharList, message: messages.ENTER_CAPTION, type: InputType.LIST },
-        { caption: "Назначение:", value: selectedPurposeId, valueCaption: value => matPurposes.get(value as number) || "", list: [...matPurposes.keys()], message: messages.ENTER_CAPTION, type: InputType.LIST },
+        { title: "Характеристика:", value: selectedCharId, displayValue: value => char.get(value as number)?.name || "", list: allCharList, message: messages.ENTER_CAPTION, inputType: InputType.LIST },
+        { title: "Назначение:", value: selectedPurposeId, displayValue: value => matPurposes.get(value as number) || "", list: [...matPurposes.keys()], message: messages.ENTER_CAPTION, inputType: InputType.LIST },
     ]
     useEffect(() => {
         setSelectedCharId(charPurposes[0].charId)

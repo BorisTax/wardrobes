@@ -43,16 +43,16 @@ export default function EditDetailDialog() {
     const heads = [{ caption: "Деталь" }, { caption: "Длина" }, { caption: "Ширина" }, { caption: "Кол-во" }, { caption: "Кромка 2" }, { caption: "Кромка 0.45" }, { caption: "Конфирматы" }, { caption: "Минификсы" }]
     const contents = details.map((d, index) => ({ key: index, data: [detailNames.get(d.id) || "", d.length, d.width, d.count, getEdgeDescripton(d, KROMKA_TYPE.THICK), getEdgeDescripton(d, KROMKA_TYPE.THIN), d.confirmat, d.minifix] }))
     const editItems: EditDataItem[] = [
-        { caption: "Деталь:", value: detail.id || 0, valueCaption: value => detailNames.get(value as number) || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: [...detailNames.keys()], optional: true },
-        { caption: "Длина:", value: `${detail.length}`, message: messages.ENTER_LENGTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Ширина:", value: `${detail.width}`, message: messages.ENTER_WIDTH, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Кол-во:", value: `${detail.count}`,message: messages.ENTER_COUNT, type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Кромка по длине 1:", value: detail.kromka?.L1, list: [...edges.keys()], valueCaption: value => edges.get(value as KROMKA_TYPE) || "", message: "", type: InputType.LIST },
-        { caption: "Кромка по длине 2:", value: detail.kromka?.L2, list: [...edges.keys()], valueCaption: value => edges.get(value as KROMKA_TYPE) || "", message: "", type: InputType.LIST },
-        { caption: "Кромка по ширине 1:", value: detail.kromka?.W1, list: [...edges.keys()], valueCaption: value => edges.get(value as KROMKA_TYPE) || "", message: "", type: InputType.LIST},
-        { caption: "Кромка по ширине 2:", value: detail.kromka?.W2, list: [...edges.keys()], valueCaption: value => edges.get(value as KROMKA_TYPE) || "", message: "", type: InputType.LIST },
-        { caption: "Конфирматы:", value: detail.confirmat, message: "", type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Минификсы:", value: detail.minifix, message: "", type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Деталь:", value: detail.id || 0, displayValue: value => detailNames.get(value as number) || "", message: messages.ENTER_CAPTION, inputType: InputType.LIST, list: [...detailNames.keys()], optional: true },
+        { title: "Длина:", value: `${detail.length}`, message: messages.ENTER_LENGTH, inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Ширина:", value: `${detail.width}`, message: messages.ENTER_WIDTH, inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Кол-во:", value: `${detail.count}`,message: messages.ENTER_COUNT, inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Кромка по длине 1:", value: detail.kromka?.L1, list: [...edges.keys()], displayValue: value => edges.get(value as KROMKA_TYPE) || "", message: "", inputType: InputType.LIST },
+        { title: "Кромка по длине 2:", value: detail.kromka?.L2, list: [...edges.keys()], displayValue: value => edges.get(value as KROMKA_TYPE) || "", message: "", inputType: InputType.LIST },
+        { title: "Кромка по ширине 1:", value: detail.kromka?.W1, list: [...edges.keys()], displayValue: value => edges.get(value as KROMKA_TYPE) || "", message: "", inputType: InputType.LIST},
+        { title: "Кромка по ширине 2:", value: detail.kromka?.W2, list: [...edges.keys()], displayValue: value => edges.get(value as KROMKA_TYPE) || "", message: "", inputType: InputType.LIST },
+        { title: "Конфирматы:", value: detail.confirmat, message: "", inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Минификсы:", value: detail.minifix, message: "", inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
     ]
     useEffect(() => {
         setEditDetailDialogAtomRef(dialogRef)

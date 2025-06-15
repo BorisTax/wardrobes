@@ -27,10 +27,10 @@ export default function EditChars() {
     const contents: TableDataRow[] = []
     chars.forEach((c, key) => contents.push({key, data: [c.name, c.code, charTypes.get(c.char_type_id)]}))
     const editItems: EditDataItem[] = [
-        { caption: "Наименование:", value: chars.get(selectedCharId)?.name || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
-        { caption: "Код:", value: chars.get(selectedCharId)?.code || "", message: messages.ENTER_CODE, type: InputType.TEXT },
-        { caption: "Тип:", value: chars.get(selectedCharId)?.char_type_id || 0, valueCaption: (value) => charTypes.get(value as number) || "", list: [...charTypes.keys()], type: InputType.LIST, message: ""},
-        { caption: "Изображение:", value: image || "", message: messages.ENTER_IMAGE, type: InputType.FILE },
+        { title: "Наименование:", value: chars.get(selectedCharId)?.name || "", message: messages.ENTER_CAPTION, inputType: InputType.TEXT },
+        { title: "Код:", value: chars.get(selectedCharId)?.code || "", message: messages.ENTER_CODE, inputType: InputType.TEXT },
+        { title: "Тип:", value: chars.get(selectedCharId)?.char_type_id || 0, displayValue: (value) => charTypes.get(value as number) || "", list: [...charTypes.keys()], inputType: InputType.LIST, message: ""},
+        { title: "Изображение:", value: image || "", message: messages.ENTER_IMAGE, inputType: InputType.FILE },
     ]
     return <EditContainer>
         <div>

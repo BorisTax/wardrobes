@@ -55,16 +55,16 @@ export default function EditFurnitureTable() {
     const contents: TableDataRow[] = items.map(d => ({ key: d.id, data: [spec.get(d.specId)?.name || "", d.minWidth, d.maxWidth, d.minDepth, d.maxDepth, d.minHeight, d.maxHeight, d.count, d.size, chars.get(d.charId)?.name || ""] }))
     
     const editItems: EditDataItem[] = [
-        { caption: "Фурнитура:", value: item.specId, valueCaption: value => spec.get(value as number)?.name || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: [...spec.keys()], listWithEmptyRow: true, onChange: value => setCurrentEditSpec(value as number) },
-        { caption: "Ширина от:", value: item.minWidth,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Ширина до:", value: item.maxWidth,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Глубина от:", value: item.minDepth,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Глубина до:", value: item.maxDepth,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Высота от:", value: item.minHeight,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Высота до:", value: item.maxHeight,  type: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
-        { caption: "Кол-во:", value: item.count,  type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
-        { caption: "Размер:", value: item.size, type: InputType.TEXT, optional: true },
-        { caption: "Характеристика:", value: item?.charId || 0, valueCaption: value => chars.get(value as number)?.name || "", message: messages.ENTER_CAPTION, type: InputType.LIST, list: editCharList, listWithEmptyRow: true, optional: true },
+        { title: "Фурнитура:", value: item.specId, displayValue: value => spec.get(value as number)?.name || "", message: messages.ENTER_CAPTION, inputType: InputType.LIST, list: [...spec.keys()], listWithEmptyRow: true, onChange: value => setCurrentEditSpec(value as number) },
+        { title: "Ширина от:", value: item.minWidth,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Ширина до:", value: item.maxWidth,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Глубина от:", value: item.minDepth,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Глубина до:", value: item.maxDepth,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Высота от:", value: item.minHeight,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Высота до:", value: item.maxHeight,  inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER },
+        { title: "Кол-во:", value: item.count,  inputType: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
+        { title: "Размер:", value: item.size, inputType: InputType.TEXT, optional: true },
+        { title: "Характеристика:", value: item?.charId || 0, displayValue: value => chars.get(value as number)?.name || "", message: messages.ENTER_CAPTION, inputType: InputType.LIST, list: editCharList, listWithEmptyRow: true, optional: true },
     ]
     useEffect(() => {
         loadData()

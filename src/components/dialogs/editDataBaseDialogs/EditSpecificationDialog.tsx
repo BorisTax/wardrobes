@@ -26,9 +26,9 @@ export default function EditSpecificationDialog() {
     const contents: TableDataRow[] = []
     specList.forEach((sp: OmitId<SpecSchema>, key) => (contents.push({ key, data: [sp.code, sp.name, units.get(sp.units), `${sp.coef}`] })))
     const editItems: EditDataItem[] =  [
-        { caption: "Наименование:", value: specList.get(selectedKey)?.name || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
-        { caption: "Коэф-т:", value: specList.get(selectedKey)?.coef || 0, message: messages.ENTER_COEF, type: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
-        { caption: "Код:", value: specList.get(selectedKey)?.code || "", message: messages.ENTER_CODE, type: InputType.TEXT },
+        { title: "Наименование:", value: specList.get(selectedKey)?.name || "", message: messages.ENTER_CAPTION, inputType: InputType.TEXT },
+        { title: "Коэф-т:", value: specList.get(selectedKey)?.coef || 0, message: messages.ENTER_COEF, inputType: InputType.TEXT, propertyType: PropertyType.POSITIVE_NUMBER },
+        { title: "Код:", value: specList.get(selectedKey)?.code || "", message: messages.ENTER_CODE, inputType: InputType.TEXT },
     ]
     useEffect(() => {
         if (!perm?.Read) navigate('/')

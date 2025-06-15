@@ -9,9 +9,9 @@ import CheckBox from "../inputs/CheckBox"
 import { MAX_FILE_SIZE } from "../../options"
 type ValueType = string | boolean | number
 export type EditDataItem = {
-    caption: string
+    title: string
     value: ValueType
-    valueCaption?: (value: ValueType) => string
+    displayValue?: (value: ValueType) => string
     message?: string
     readonly?: boolean
     optional?: boolean
@@ -19,11 +19,11 @@ export type EditDataItem = {
     checkValue?: (value: ValueType) => { success: boolean, message: string }
     onChange?: (value: ValueType) => void
 } & ({
-    type: InputType.LIST
+    inputType: InputType.LIST
     list: ValueType[]
     listWithEmptyRow?: boolean
 } | {
-    type: Exclude<InputType, InputType.LIST>
+    inputType: Exclude<InputType, InputType.LIST>
 })
 
 export type EditDataSectionProps = {
@@ -50,12 +50,12 @@ export default function EditDataSection(props: EditDataSectionProps) {
     return <>
         <div className="editmaterial-container">
             <div className="edit-section-grid">
-                {props.items.map((i, index) => <Fragment key={i.caption}><span className="text-end text-nowrap">{i.caption}</span>
+                {props.items.map((i, index) => <Fragment key={i.title}><span className="text-end text-nowrap">{i.title}</span>
                     {i.readonly || (!props.onUpdate && !props.onAdd) ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
-                    {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value;; i.onChange && i.onChange(p[index]); return [...p] }) }} submitOnLostFocus={true} />}
-                    {i.type === InputType.CHECKBOX && <CheckBox caption={i.valueCaption && i.valueCaption(newValues[index])} checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; i.onChange && i.onChange(prev[index]); return [...p] }) }} />}
-                    {(i.type === InputType.LIST) && <ComboBox<ValueType> value={newValues[index] as ValueType} items={i.list as ValueType[]} displayValue={value => i.valueCaption ? i.valueCaption(value) : ""} disabled={!checked[index] || i.readonly} withEmpty={i.listWithEmptyRow} onChange={value => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }); i.onChange && i.onChange(value) }} />}
-                    {i.type === InputType.FILE && <div>
+                    {i.inputType === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value;; i.onChange && i.onChange(p[index]); return [...p] }) }} submitOnLostFocus={true} />}
+                    {i.inputType === InputType.CHECKBOX && <CheckBox caption={i.displayValue && i.displayValue(newValues[index])} checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; i.onChange && i.onChange(prev[index]); return [...p] }) }} />}
+                    {(i.inputType === InputType.LIST) && <ComboBox<ValueType> value={newValues[index] as ValueType} items={i.list as ValueType[]} displayValue={value => i.displayValue ? i.displayValue(value) : ""} disabled={!checked[index] || i.readonly} withEmpty={i.listWithEmptyRow} onChange={value => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }); i.onChange && i.onChange(value) }} />}
+                    {i.inputType === InputType.FILE && <div>
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]
                             if (file && file.size > MAX_FILE_SIZE) { showMessage("Файл слишком большой (макс. 2МБ)"); return }
@@ -75,7 +75,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
             <div className="editmaterial-buttons-container">
                 {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every((c, index) => c || props.items[index].readonly))} onClick={async () => {
                     if (!props.onAdd) return
-                    const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
+                    const values = props.items.map((p, i) => p.displayValue ? p.displayValue(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
                     if (!check.success) { showMessage(rusMessages[check.message]); return }
                     const message = getAddMessage({ checked, items: props.items, newValues: values })
@@ -88,7 +88,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                 }} />}
                 {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some((c, index) => c && !props.items[index].readonly))} onClick={ async () => {
                     if (!props.onUpdate) return
-                    const values = props.items.map((p, i) => p.valueCaption ? p.valueCaption(newValues[i]) : newValues[i])
+                    const values = props.items.map((p, i) => p.displayValue ? p.displayValue(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
                     if (!check.success) { showMessage(rusMessages[check.message]); return }
                     const message = getMessage({ checked, items: props.items, newValues: values, extValue })
@@ -149,7 +149,7 @@ function checkFields({ checked, items, newValues }: { checked: boolean[], items:
 function getMessage({ checked, items, newValues, extValue }: { checked: boolean[], items: EditDataItem[], newValues: ValueType[], extValue?: string }): string {
     const msg: string[] = []
     checked.forEach((c, index) => {
-        if (c) msg.push(`${items[index].caption} "${extValue || newValues[index]}"`)
+        if (c) msg.push(`${items[index].title} "${extValue || newValues[index]}"`)
     })
     return `Обновить - ${msg.join(' ')} ?`
 }
@@ -157,7 +157,7 @@ function getMessage({ checked, items, newValues, extValue }: { checked: boolean[
 function getAddMessage({ checked, items, newValues }: { checked: boolean[], items: EditDataItem[], newValues: ValueType[] }): string {
     const msg: string[] = []
     checked.forEach((c, index) => {
-        if (c) msg.push(`${items[index].caption} "${newValues[index]}"`)
+        if (c) msg.push(`${items[index].title} "${newValues[index]}"`)
     })
     return `Добавить - ${msg.join(', ')} ?`
 }

@@ -12,16 +12,20 @@ export type EditDataItem = {
     caption: string
     value: ValueType
     valueCaption?: (value: ValueType) => string
-    list?: ValueType[]
-    listWithEmptyRow?: boolean
     message?: string
     readonly?: boolean
-    type: InputType
     optional?: boolean
     propertyType?: PropertyType
     checkValue?: (value: ValueType) => { success: boolean, message: string }
     onChange?: (value: ValueType) => void
-}
+} & ({
+    type: InputType.LIST
+    list: ValueType[]
+    listWithEmptyRow?: boolean
+} | {
+    type: Exclude<InputType, InputType.LIST>
+})
+
 export type EditDataSectionProps = {
     items: EditDataItem[]
     name?: string
@@ -50,7 +54,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     {i.readonly || (!props.onUpdate && !props.onAdd) ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
                     {i.type === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value;; i.onChange && i.onChange(p[index]); return [...p] }) }} submitOnLostFocus={true} />}
                     {i.type === InputType.CHECKBOX && <CheckBox caption={i.valueCaption && i.valueCaption(newValues[index])} checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; i.onChange && i.onChange(prev[index]); return [...p] }) }} />}
-                    {(i.list && i.type === InputType.LIST) && <ComboBox<ValueType> value={newValues[index] as ValueType} items={i.list as ValueType[]} displayValue={value => i.valueCaption ? i.valueCaption(value) : ""} disabled={!checked[index] || i.readonly} withEmpty={i.listWithEmptyRow} onChange={value => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }); i.onChange && i.onChange(value) }} />}
+                    {(i.type === InputType.LIST) && <ComboBox<ValueType> value={newValues[index] as ValueType} items={i.list as ValueType[]} displayValue={value => i.valueCaption ? i.valueCaption(value) : ""} disabled={!checked[index] || i.readonly} withEmpty={i.listWithEmptyRow} onChange={value => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }); i.onChange && i.onChange(value) }} />}
                     {i.type === InputType.FILE && <div>
                         <input style={{ display: "none" }} disabled={!checked[index] || i.readonly} type="file" ref={imageRef} accept="image/jpg, image/png, image/jpeg" src={newValues[index] as string} onChange={(e) => {
                             const file = e.target.files && e.target.files[0]

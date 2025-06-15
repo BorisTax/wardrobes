@@ -29,7 +29,7 @@ export default function EditChars() {
     const editItems: EditDataItem[] = [
         { caption: "Наименование:", value: chars.get(selectedCharId)?.name || "", message: messages.ENTER_CAPTION, type: InputType.TEXT },
         { caption: "Код:", value: chars.get(selectedCharId)?.code || "", message: messages.ENTER_CODE, type: InputType.TEXT },
-        { caption: "Тип:", value: chars.get(selectedCharId)?.char_type_id || 0, valueCaption: (value) => charTypes.get(value as number) || "", list: [...charTypes.keys()], message: "", type: InputType.LIST },
+        { caption: "Тип:", value: chars.get(selectedCharId)?.char_type_id || 0, valueCaption: (value) => charTypes.get(value as number) || "", list: [...charTypes.keys()], type: InputType.LIST, message: ""},
         { caption: "Изображение:", value: image || "", message: messages.ENTER_IMAGE, type: InputType.FILE },
     ]
     return <EditContainer>

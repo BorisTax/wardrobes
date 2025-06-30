@@ -128,7 +128,7 @@ async function getDVPPlanka(data: WardrobeData): Promise<FullData> {
         verbose.push([`${dvpLength}-32 = ${dvpData.dvpPlanka}`, dvpData.dvpPlankaCount, `${(dvpData.dvpPlanka / 1000).toFixed(3)} x ${dvpData.dvpPlankaCount} = ${len.toFixed(3)}`]);
     }
     verbose.push(["", "Итого:", `${total.toFixed(3)} x ${coef} = ${(total * coef).toFixed(3)}`]);
-    return { data: { amount: total * coef, charId: 0 }, verbose };
+    return { data: { amount: total * coef, charId: 122 }, verbose };
 }
 
 async function getDVPData(width: number, height: number, depth: number): Promise<DVPData> {

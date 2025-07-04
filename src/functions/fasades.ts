@@ -287,7 +287,7 @@ export function setActiveFasad(fasades: FasadState[], activeFasad: FasadState | 
     fasades.forEach(f => {
         if (f.children.length > 0) setActiveFasad(f.children, activeFasad, multiple)
         const ok = (activeFasad === f)
-        f.active = multiple ? f.active || ok : ok
+        f.active = multiple ? (f.active || ok) && f.children.length === 0 : ok
     })
 }
 

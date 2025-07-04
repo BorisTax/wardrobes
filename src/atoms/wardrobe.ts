@@ -5,6 +5,8 @@ import { userAtom } from "./users"
 import { calculateSpecificationsAtom } from "./specification"
 import { API_ROUTE, DETAIL_ROUTE, DETAILS_ROUTE, WARDROBE_ID_PARAM, WARDROBE_ROUTE, WARDTYPE_ID_PARAM } from "../types/routes"
 import { loadedInitialWardrobeDataAtom } from "./storage"
+import { WardrobesFasadCountSchema } from "../types/schemas"
+
 
 export const initFasades: FasadesData = {
     dsp: { count: 0, matId: [] },
@@ -12,6 +14,13 @@ export const initFasades: FasadesData = {
     fmp: { count: 0, matId: [] },
     sand: { count: 0, matId: [] },
     lacobel: { count: 0, matId: [] },
+}
+
+export function getInitFasades(wardData: WardrobeData, wardrobesFasadCount:WardrobesFasadCountSchema[], defaultFasadChar: number): FasadesData{
+    if (wardData.wardrobeTypeId === WARDROBE_TYPE.GARDEROB) return initFasades
+    const wardId = (wardData.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) ? WARDROBE_KIND.STANDART : wardData.wardrobeId
+    const fasadCount = wardrobesFasadCount.find(wfc => wfc.wardrobeId === wardId && wardData.width >= wfc.minWidth && wardData.width <= wfc.maxWidth)?.fasadCount || 0
+    return { ...initFasades, dsp: { count: fasadCount, matId: new Array(fasadCount).fill(defaultFasadChar) } }
 }
 
 export const getInitExtComplect = (height: number, depth: number) => ({

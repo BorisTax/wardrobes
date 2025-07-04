@@ -14,11 +14,11 @@ export function useMaterialMap(materialList: FasadMaterial[]): Map<number, Fasad
 
 export function useDefaultFasadChars(){
     const fasadDefaultChars = useAtomValue(fasadDefaultCharsAtom)
-    const dspDefaultId = fasadDefaultChars.get(FASAD_TYPE.DSP)?.charId
-    const mirrorDefaultId = fasadDefaultChars.get(FASAD_TYPE.MIRROR)?.charId
-    const lacobelDefaultId = fasadDefaultChars.get(FASAD_TYPE.LACOBEL)?.charId
-    const sandDefaultId = fasadDefaultChars.get(FASAD_TYPE.SAND)?.charId
-    const fmpDefaultId = fasadDefaultChars.get(FASAD_TYPE.FMP)?.charId
+    const dspDefaultId = fasadDefaultChars.get(FASAD_TYPE.DSP)?.charId || 0
+    const mirrorDefaultId = fasadDefaultChars.get(FASAD_TYPE.MIRROR)?.charId || 0
+    const lacobelDefaultId = fasadDefaultChars.get(FASAD_TYPE.LACOBEL)?.charId || 0
+    const sandDefaultId = fasadDefaultChars.get(FASAD_TYPE.SAND)?.charId || 0
+    const fmpDefaultId = fasadDefaultChars.get(FASAD_TYPE.FMP)?.charId || 0
     return {
         dspDefaultId,
         mirrorDefaultId,

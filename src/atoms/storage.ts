@@ -2,7 +2,7 @@ import { atom, Getter } from "jotai";
 import { OmitId } from "../types/materials";
 import { FetchResult, fetchGetData } from "../functions/fetch";
 import { UserPermissions, RESOURCE } from "../types/user";
-import { AllData, DefaultSchema, DetailSchema, WardrobesDimensionsSchema, WardrobesSchema } from "../types/schemas";
+import { AllData, DefaultSchema, DetailSchema, WardrobesDimensionsSchema, WardrobesFasadCountSchema, WardrobesSchema } from "../types/schemas";
 import { API_ROUTE, MATERIALS_ROUTE, ALLDATA_ROUTE, WARDROBE_ROUTE, INITIAL_WARDROBEDATA_ROUTE } from "../types/routes";
 import { WardrobeData } from "../types/wardrobe";
 import { setWardrobeDataAtom } from "./wardrobe";
@@ -20,6 +20,7 @@ export const fasadTypesAtom = atom<DefaultMap>(new Map())
 export const wardrobeTypesAtom = atom<DefaultMap>(new Map())
 export const wardrobeAtom = atom<DefaultMap>(new Map())
 export const wardrobesDimensionsAtom = atom<WardrobesDimensionsSchema[]>([])
+export const wardrobesFasadCountAtom = atom<WardrobesFasadCountSchema[]>([])
 export const consoleTypesAtom = atom<DefaultMap>(new Map())
 export const unitsAtom = atom<DefaultMap>(new Map())
 export const detailNamesAtom = atom<DefaultMap>(new Map())
@@ -55,6 +56,7 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
         set(wardrobeTypesAtom, makeDefaultMap(allData.wardrobeTypes || []))
         set(wardrobeAtom, makeDefaultMap(allData.wardrobes || []))
         set(wardrobeUseAtom, makeWardrobeUseMap(allData.wardrobes || []))
+        set(wardrobesFasadCountAtom, allData.wardrobesFasadCount || [])
         set(wardrobesDimensionsAtom, allData.wardrobesDimensions || [])
         set(consoleTypesAtom, makeDefaultMap(allData.consoleTypes || []))
         const result: FetchResult<WardrobeData> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_WARDROBEDATA_ROUTE}?token=${token}`)

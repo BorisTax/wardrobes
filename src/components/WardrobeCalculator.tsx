@@ -8,13 +8,13 @@ import { CHAR_PURPOSE, FASAD_TYPE } from "../types/enums"
 import TextBox from "./inputs/TextBox"
 import { WARDROBE_KIND } from "../types/wardrobe"
 import WardrobeSpecification from "./WardrobeSpecification"
-import { getInitExtComplect, initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
+import { getInitExtComplect, getInitFasades, initFasades, setWardrobeDataAtom, wardrobeDataAtom } from "../atoms/wardrobe"
 import CheckBox from "./inputs/CheckBox"
 import { useDetail } from "../custom-hooks/useDetail"
 import useConfirm from "../custom-hooks/useConfirm"
 import { showDetailDialogAtom } from "../atoms/dialogs"
 import EditDetailDialog from "./dialogs/EditDetailDialog"
-import { consoleTypesAtom, ExtMap, wardrobeAtom, wardrobesDimensionsAtom, wardrobeTypesAtom, wardrobeUseAtom } from "../atoms/storage"
+import { consoleTypesAtom, ExtMap, wardrobeAtom, wardrobesDimensionsAtom, wardrobesFasadCountAtom, wardrobeTypesAtom, wardrobeUseAtom } from "../atoms/storage"
 import { fasadTypesToCharAtom } from "../atoms/materials/chars"
 import { profileAtom } from "../atoms/materials/profiles"
 import { charAtom, charPurposeAtom } from "../atoms/materials/chars"
@@ -35,6 +35,7 @@ export default function WardrobeCalculator() {
     const consoleTypes = useAtomValue(consoleTypesAtom)
     const data = useAtomValue(wardrobeDataAtom)
     const wardrobesDimensions = useAtomValue(wardrobesDimensionsAtom)
+    const wardrobesFasadCount = useAtomValue(wardrobesFasadCountAtom)
     const setData = useSetAtom(setWardrobeDataAtom)
     const chars = useAtomValue(charAtom)
     const { dspDefaultId, fmpDefaultId, lacobelDefaultId, mirrorDefaultId, sandDefaultId } = useDefaultFasadChars()
@@ -61,8 +62,19 @@ export default function WardrobeCalculator() {
             <div className="wardrobe-param-container">
                 <div className="text-center">Основные параметры</div>
                 <PropertyGrid style={{ padding: "0.5em", border: "1px solid" }}>
-                    <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
-                    {wardType !== WARDROBE_TYPE.SYSTEM && <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={wardKindsKeys} displayValue={value => wardKinds.get(value)} onChange={value => { const dims = getInitialWardrobeDimensions(value, wardrobesDimensions); setData(prev => ({ ...prev, wardrobeId: value, width: dims.defaultWidth, height: dims.defaultHeight, depth: dims.defaultDepth, fasades: initFasades, extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />}
+                    <ComboBox<WARDROBE_TYPE> disabled={data.schema} title="Тип шкафа:" value={wardType} items={[...wardTypes.keys()]} displayValue={value => wardTypes.get(value)} onChange={value => { setData(prev => ({ ...prev, wardrobeTypeId: value, fasades: getInitFasades({...prev, wardrobeTypeId: value}, wardrobesFasadCount, dspDefaultId), extComplect: getInitExtComplect(prev.height, prev.depth) })) }} />
+                    {wardType !== WARDROBE_TYPE.SYSTEM && 
+                        <ComboBox<WARDROBE_KIND> disabled={data.schema} title="Серия шкафа:" value={wardKind} items={wardKindsKeys} displayValue={value => wardKinds.get(value)} 
+                            onChange={value => { 
+                                const dims = getInitialWardrobeDimensions(value, wardrobesDimensions); 
+                                setData(prev => ({ ...prev, 
+                                                    wardrobeId: value, 
+                                                    width: dims.defaultWidth, 
+                                                    height: dims.defaultHeight, 
+                                                    depth: dims.defaultDepth, 
+                                                    fasades: getInitFasades({...prev, wardrobeId: value, width: dims.defaultWidth, height: dims.defaultHeight, depth: dims.defaultDepth}, wardrobesFasadCount, dspDefaultId), 
+                                                    extComplect: getInitExtComplect(prev.height, prev.depth) })) }} 
+                            />}
                     <CheckBox caption="схемный" checked={data.schema} disabled={data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM} onChange={async () => {
                         if (data.schema) {
                             if (await confirm("Все изменения в деталировке будут сброшены. Продолжить?")) setData(prev => ({ ...prev, schema: !data.schema }))
@@ -70,7 +82,7 @@ export default function WardrobeCalculator() {
                     }} />
                     {data.schema ? <input type="button" value="Редактор деталей" onClick={() => { showEditDetails() }} /> : <div></div>}
                     <div className="text-end">Ширина: </div>
-                    <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minWidth} max={maxWidth} setValue={(value) => { setData(prev => ({ ...prev, width: +value })) }} submitOnLostFocus={true} />
+                    <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minWidth} max={maxWidth} setValue={(value) => { setData(prev => ({ ...prev, width: +value, fasades: getInitFasades({...prev, width: +value}, wardrobesFasadCount, dspDefaultId) })) }} submitOnLostFocus={true} />
                     {wardType !== WARDROBE_TYPE.SYSTEM && <>
                         <div className="text-end">Глубина: </div>
                         <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minDepth} max={maxDepth} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} submitOnLostFocus={true} />

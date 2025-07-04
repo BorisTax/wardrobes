@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { InitialAppState as InitialCombiState } from "../../../types/app";
 import { FASAD_TYPE, ProfileType } from "../../../types/enums";
-import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema, WardrobesDimensionsSchema } from "../../../types/schemas";
+import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema, WardrobesDimensionsSchema, WardrobesFasadCountSchema } from "../../../types/schemas";
 import { Result } from "../../../types/server";
 import { WARDROBE_KIND, WARDROBE_TYPE, FasadesData, WardrobeData, CONSOLE_TYPE } from "../../../types/wardrobe";
 import { getDataBaseProvider } from "../../options";
@@ -24,7 +24,10 @@ export async function getWardrobesDimensions() {
   const service = new DataBaseService(getDataBaseProvider<WardrobesDimensionsSchema>());
   return await service.getData(DATA_TABLE_NAMES.WARDROBES_DIMENSIONS, [], {});
 }
-
+export async function getWardrobesFasadCount() {
+  const service = new DataBaseService(getDataBaseProvider<WardrobesFasadCountSchema>());
+  return await service.getData(DATA_TABLE_NAMES.WARDROBES_FASAD_COUNT, [], {});
+}
 export async function getConsoleTypes() {
   const service = new DataBaseService(getDataBaseProvider<ConsoleTypesSchema>());
   return await service.getData(DATA_TABLE_NAMES.CONSOLE_TYPES, [], {});
@@ -60,7 +63,7 @@ export async function getInitialCombiState(): Promise<Result<InitialCombiState>>
 }
 
 const initFasades: FasadesData = {
-  dsp: { count: 0, matId: [] },
+  dsp: { count: 2, matId: [83, 83] },
   mirror: { count: 0, matId: [] },
   fmp: { count: 0, matId: [] },
   sand: { count: 0, matId: [] },

@@ -66,7 +66,7 @@ export default function PropertiesBar() {
         <PropertyGrid>
             <div className="text-end">Высота: </div>
             <PropertyRow>
-                <TextBox value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} width="100px"/>
+                <TextBox value={height} type={PropertyType.POSITIVE_NUMBER} min={1} setValue={(value) => { setHeight(+value) }} disabled={disabledHeight} width="100px"/>
                 <ToggleButton pressed={fixHeight} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать высоту" visible={!disabledFixHeight} onClick={() => { setFixedHeight(!fixHeight) }} />
                 {totalHeightRatio > 0 && !fixHeight &&
                     <span>{`${fasad?.heightRatio}/${totalHeightRatio}`}</span>
@@ -74,7 +74,7 @@ export default function PropertiesBar() {
             </PropertyRow>
             <div className="text-end">Ширина: </div>
             <PropertyRow>
-                <TextBox value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={1} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth}  width="100px"/>
+                <TextBox value={width} type={PropertyType.POSITIVE_NUMBER} min={1} setValue={(value) => { setWidth(+value) }} disabled={disabledWidth}  width="100px"/>
                 <ToggleButton pressed={fixWidth} iconPressed="fix" iconUnPressed="unfix" title="Зафиксировать ширину" visible={!disabledFixWidth} onClick={() => { setFixedWidth(!fixWidth) }} />
                 {totalWidthRatio > 0 && !fixWidth &&
                     <span>{`${fasad?.widthRatio}/${totalWidthRatio}`}</span>

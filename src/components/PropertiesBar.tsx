@@ -81,7 +81,7 @@ export default function PropertiesBar() {
                 }
             </PropertyRow>
             <ComboBox<FASAD_TYPE> title="Тип:" value={fasadType} items={[...fasadTypes.keys()]} displayValue={value => fasadTypes.get(value)} disabled={!fasad} onChange={value => { setFasadType(value) }} />
-            <ComboBox<number> title="Цвет/Рисунок:" value={materialId} items={materials} displayValue={value => chars.get(value)?.name} disabled={!fasad} onChange={value => { setMaterialId(value) }} />
+            <ComboBox<number> title="Цвет/Рисунок:" value={materialId} items={materials} displayValue={value => chars.get(value)?.name} disabled={!fasad} onChange={value => { setMaterialId(value) }} styles={{minWidth: "250px"}}/>
             <Selector<Division> title="Направление профиля:" value={direction} items={[...directions.keys()]} displayValue={value => directions.get(value)} disabled={!fasad} onChange={value => { setProfileDirection(value) }} />
             <Selector<number> title="Кол-во секций:" value={sectionCount} items={sections} displayValue={value => `${value}`} disabled={!fasad} onChange={value => { divideFasad(value) }} columns={5}/>
         </PropertyGrid>

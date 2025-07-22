@@ -1,6 +1,7 @@
 import { SpecItem } from "../../../../types/specification";
 import { WardrobeData, SpecificationResult, Detail, CONSOLE_TYPE, WARDROBE_KIND, WARDROBE_TYPE } from "../../../../types/wardrobe";
 import {  getDetailsFromDB } from "../../../routers/functions/details";
+import { getAllCharOfSpec } from "../../../routers/functions/spec";
 import { getCommonData, getDetails} from "../corpus";
 import { getKromka, nullDetail } from "../functions";
 
@@ -24,7 +25,8 @@ export async function getConsoleSpecification(data: WardrobeData): Promise<Speci
         }
     })
     await getCommonData(data, details, result)
-    result.push([SpecItem.Leg, { data: { amount: 1 } }])
+    const legCharId = (await getAllCharOfSpec(SpecItem.Leg))[0] || 0
+    result.push([SpecItem.Leg, { data: { amount: 1, charId: legCharId } }])
     result.push([SpecItem.StyagkaM6, { data: { amount: 3 } }])
     const karton = 2
     result.push([SpecItem.Karton, { data: { amount: karton } }])

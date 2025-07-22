@@ -12,7 +12,7 @@ import { getFurniture } from "../../routers/functions/furniture"
 import { getDetailsFromDB, getDetailsByWardrobe, getDVPTemplates } from "../../routers/functions/details"
 import {  getCharIdAndBrushSpecIdByProfileId } from "../../routers/functions/profiles"
 import { getChar } from "../../routers/functions/chars"
-import { getSpecList } from "../../routers/functions/spec"
+import { getAllCharOfSpec, getSpecList } from "../../routers/functions/spec"
 
 export async function getCorpusSpecification(data: WardrobeData, resetDetails: boolean, verbose = false): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
@@ -162,16 +162,18 @@ async function getKarton(data: WardrobeData): Promise<FullData> {
 async function getLegs(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const item = (await getFurniture(data.wardrobeId, SpecItem.Leg, data.width, data.height, data.depth))[0]
+    const charId = (await getAllCharOfSpec(SpecItem.Leg))[0] || 0
     const result = item?.count || 0
     const verbose = [["Ширина шкафа", "Кол-во"]];
     verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth || 0), `${result}`]);
-    return { data: { amount: result, charId: 0 }, verbose };
+    return { data: { amount: result, charId }, verbose };
 }
 
 export async function getConfirmat(data: WardrobeData, details: Detail[]): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const detailNames = (await getDetailsFromDB()).data
     const verbose: VerboseData = [["Деталь", "Кол-во", "Конфирматы \n на 1 деталь", "Итого"]];
+    const charId = (await getAllCharOfSpec(SpecItem.Confirmat))[0] || 0
     let total = 0;
     details.forEach(d => {
         const conf = d.confirmat
@@ -181,7 +183,7 @@ export async function getConfirmat(data: WardrobeData, details: Detail[]): Promi
         total += d.count * conf;
     });
     verbose.push(["", "", "Итого:", total]);
-    return { data: { amount: total, charId: 0 }, verbose: total ? verbose : undefined };
+    return { data: { amount: total, charId }, verbose: total ? verbose : undefined };
 }
 
 async function getZagConfirmat(data: WardrobeData, details: Detail[], zaglushkaId: number): Promise<FullData> {

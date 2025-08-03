@@ -80,6 +80,20 @@ export function getEdgeDescripton(detail: Detail, edge: KROMKA_TYPE): string {
     return result.join(', ')
 }
 
-export function getInitialWardrobeDimensions(wardrobeId: WARDROBE_KIND, wardrobeDimensions: WardrobesDimensionsSchema[]){
-    return wardrobeDimensions.find(w => w.wardrobeId === wardrobeId) || { minWidth: 0, maxWidth: 0, minHeight: 0, maxHeight: 0, minDepth: 0, maxDepth: 0, defaultDepth: 0, defaultHeight: 0, defaultWidth: 0 }
+export function getInitialWardrobeDimensions(wardrobeId: WARDROBE_KIND, wardrobeDimensions: WardrobesDimensionsSchema[]) {
+    return wardrobeDimensions.find(w => w.wardrobeId === wardrobeId) ||
+    {
+        minWidth: 0,
+        maxWidth: 0,
+        minHeight: 0,
+        maxHeight: 0,
+        minDepth: 0,
+        maxDepth: 0,
+        defaultDepth: 0,
+        defaultHeight: 0,
+        defaultWidth: 0,
+        editDepth: false,
+        editHeight: false,
+        editWidth: false,
+    }
 }

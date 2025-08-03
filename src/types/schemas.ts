@@ -99,6 +99,9 @@ export type WardrobesDimensionsSchema = {
     defaultWidth: number,
     defaultHeight: number,
     defaultDepth: number,
+    editWidth: boolean,
+    editHeight: boolean,
+    editDepth: boolean,
 }
 export type WardrobesFasadCountSchema = {
     id: number

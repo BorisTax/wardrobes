@@ -43,7 +43,7 @@ export default function WardrobeCalculator() {
     const { dsp16List, dsp10List, mirrorList, fmpList, sandList, lacobelList } = useMaterials(chars)
     const profiles = useAtomValue(profileAtom)
     const { wardrobeId: wardKind, wardrobeTypeId: wardType, width, depth, height, dspId, fasades, profileId, extComplect } = data
-    const { minWidth, maxWidth, minHeight, maxHeight, minDepth, maxDepth } = getInitialWardrobeDimensions(wardKind, wardrobesDimensions)
+    const { minWidth, maxWidth, minHeight, maxHeight, minDepth, maxDepth, editDepth, editHeight, editWidth } = getInitialWardrobeDimensions(wardKind, wardrobesDimensions)
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
     const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth) || { length: 0 }
@@ -82,14 +82,14 @@ export default function WardrobeCalculator() {
                     }} />
                     {data.schema ? <input type="button" value="Редактор деталей" onClick={() => { showEditDetails() }} /> : <div></div>}
                     <div className="text-end">Ширина: </div>
-                    <TextBox disabled={data.schema} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minWidth} max={maxWidth} setValue={(value) => { setData(prev => ({ ...prev, width: +value, fasades: getInitFasades({...prev, width: +value}, wardrobesFasadCount, dspDefaultId) })) }} submitOnLostFocus={true} />
-                    {wardType !== WARDROBE_TYPE.SYSTEM && <>
+                    <TextBox disabled={data.schema || !editWidth} value={width} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minWidth} max={maxWidth} setValue={(value) => { setData(prev => ({ ...prev, width: +value, fasades: getInitFasades({...prev, width: +value}, wardrobesFasadCount, dspDefaultId) })) }} submitOnLostFocus={true} />
+                    {wardType !== WARDROBE_TYPE.SYSTEM && wardKind !== WARDROBE_KIND.CORNER && <>
                         <div className="text-end">Глубина: </div>
-                        <TextBox disabled={data.schema} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minDepth} max={maxDepth} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} submitOnLostFocus={true} />
+                        <TextBox disabled={data.schema || !editDepth} value={depth} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minDepth} max={maxDepth} setValue={(value) => { setData(prev => ({ ...prev, depth: +value })) }} submitOnLostFocus={true} />
 
                     </>}
                     <div className="text-end">Высота: </div>
-                    <TextBox disabled={data.schema} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minHeight} max={maxHeight} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }} submitOnLostFocus={true} />
+                    <TextBox disabled={data.schema || !editHeight} value={height} type={PropertyType.INTEGER_POSITIVE_NUMBER} min={minHeight} max={maxHeight} setValue={(value) => { setData(prev => ({ ...prev, height: +value })) }} submitOnLostFocus={true} />
                     {wardType !== WARDROBE_TYPE.SYSTEM && <ComboBox<number> title="Цвет ДСП:" value={dspId} items={dsp16List} displayValue={value => chars.get(value)?.name} onChange={value => { setData(prev => ({ ...prev, dspId: value })) }} />}
                     {wardType !== WARDROBE_TYPE.GARDEROB && <ComboBox<number> title="Цвет профиля:" value={profileId} items={[...profiles.keys()]} displayValue={value => chars.get(profiles.get(value)?.charId || 0)?.name || ""} onChange={value => { setData(prev => ({ ...prev, profileId: value })) }} />}
                 </PropertyGrid>

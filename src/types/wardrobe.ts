@@ -1,6 +1,5 @@
 import { FASAD_TYPE } from "./enums"
 import { SpecSchema } from "./schemas"
-import { PriceData } from "./server"
 import { SPEC_GROUP } from "./specification"
 import { SpecItem } from "./specification"
 

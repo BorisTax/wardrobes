@@ -349,3 +349,12 @@ export function hasSameParent(fasades: FasadState[]):boolean{
     if (fasades.length === 0) return false
     return fasades.every(f => f.parent === fasades[0].parent)
 }
+
+export function hasCrossProfile(fasad: FasadState): boolean {
+    if (fasad.children.length === 0) return false
+    for (let f of fasad.children) {
+        if (hasCrossProfile(f)) return true
+        if (f.children.length > 0 && f.division !== fasad.division) return true
+    }
+    return false
+}

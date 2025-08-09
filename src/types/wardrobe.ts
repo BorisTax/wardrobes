@@ -52,6 +52,7 @@ export type DVPData = {
     dvpLength: number,
     dvpRealWidth: number,
     dvpRealLength: number,
+    dvpRows: number,
     dvpCount: number,
     dvpPlanka: number,
     dvpPlankaCount: number

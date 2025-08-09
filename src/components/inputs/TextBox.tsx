@@ -16,8 +16,13 @@ export type TextBoxProps = {
 export default function TextBox(props: TextBoxProps) {
     const [state, setState] = useState({ value: props.value, prevValue: props.value })
     useEffect(() => {
-        setState({ prevValue: props.value, value: props.value })
-    }, [props.value])
+        let value = props.value
+        if (typeof value === 'number'){
+          if (value < (props.min as number)) props.setValue(props.min as number);
+          if (value > (props.max as number)) props.setValue(props.max as number);
+        }
+        setState({ prevValue: value, value })
+    }, [props.value, props.min, props.max])
     const onChange = (v: string) => {
         if (v === "") { setState({ ...state, value: v }); return }
         const { value, correct } = test(v, props.type)

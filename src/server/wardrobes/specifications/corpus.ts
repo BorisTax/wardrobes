@@ -107,7 +107,7 @@ async function getDVP(data: WardrobeData): Promise<FullData> {
         const area = dvp.dvpLength * dvp.dvpWidth * dvp.dvpCount / 1000000;
         totalArea += area;
         const count = dvp.dvpCount
-        verbose.push([`${dvp.dvpRealLength} х ${dvp.dvpRealWidth} ((${data.height}-30-2x${count - 1})/${count})`, `${dvp.dvpLength} х ${dvp.dvpWidth}`, `${dvp.dvpCount}`, `${area.toFixed(3)}`]);
+        verbose.push([`${dvp.dvpRealLength} х ${dvp.dvpRealWidth} ((${data.height}-30-2x${count - 1})/${dvp.dvpRows})`, `${dvp.dvpLength} х ${dvp.dvpWidth}`, `${dvp.dvpCount}`, `${area.toFixed(3)}`]);
     }
     verbose.push(["", '', `Итого:`, `${totalArea.toFixed(3)} x ${coef}= ${(totalArea * coef).toFixed(3)}`]);
     return { data: { amount: totalArea * coef, charId: 0 }, verbose };
@@ -147,7 +147,7 @@ async function getDVPData(width: number, height: number, depth: number): Promise
     const { width: dvpWidth, length: dvpLength } = dvpData ? dvpData : { width: dvpRealWidth, length: dvpRealLength }
     const dvpPlanka = roof - 32;
     const dvpPlankaCount = section === 1 ? (dvpCount - 1) : (dvpCount / 2 - 1) * 2;
-    return { dvpWidth, dvpLength, dvpRealWidth, dvpRealLength, dvpCount, dvpPlanka, dvpPlankaCount };
+    return { dvpWidth, dvpLength, dvpRealWidth, dvpRealLength, dvpRows: dvpCount / section, dvpCount, dvpPlanka, dvpPlankaCount };
 }
 
 async function getKarton(data: WardrobeData): Promise<FullData> {
@@ -232,6 +232,7 @@ export async function getSamorez16(data: WardrobeData): Promise<FullData> {
 }
 
 async function getStyagka(data: WardrobeData): Promise<FullData> {
+    if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const details = await getDetailsByWardrobe(data.wardrobeId, data.width, data.height)
     const roof = details.find(d => d.detailId === DETAIL_NAME.ROOF)
     const ward = roof?.count === 2 ? "Одинарный" : "Двойной"

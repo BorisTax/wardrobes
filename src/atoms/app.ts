@@ -87,7 +87,9 @@ export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmC
     if (newCount > prevCount) {
         const sample = newState.rootFasades[0]
         for (let i = prevCount; i < newCount; i++) newState.rootFasades.push(getFasadState(fasadWidth, sample.height, sample.division, sample.fasadType, sample.materialId))
-    } else newState.rootFasades = newState.rootFasades.filter((_, index) => index < newCount)
+    } else {
+        newState.rootFasades = newState.rootFasades.filter((_, index) => index < newCount)
+    }
     const setWidth = newState.rootFasades.every((f: FasadState) => trySetWidth(f,  newState.rootFasades, fasadWidth, minSize))
     await setAppDataAtom(setWidth, newState, set, confirmCallback, true)
 })

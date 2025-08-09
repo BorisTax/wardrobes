@@ -43,7 +43,8 @@ export default function WardrobeCalculator() {
     const { dsp16List, dsp10List, mirrorList, fmpList, sandList, lacobelList } = useMaterials(chars)
     const profiles = useAtomValue(profileAtom)
     const { wardrobeId: wardKind, wardrobeTypeId: wardType, width, depth, height, dspId, fasades, profileId, extComplect } = data
-    const { minWidth, maxWidth, minHeight, maxHeight, minDepth, maxDepth, editDepth, editHeight, editWidth } = getInitialWardrobeDimensions(wardKind, wardrobesDimensions)
+    const { minWidth, maxWidth: maxPrevWidth, minHeight, maxHeight, minDepth, maxDepth, editDepth, editHeight, editWidth } = getInitialWardrobeDimensions(wardKind, wardrobesDimensions)
+    const maxWidth = wardType === WARDROBE_TYPE.SYSTEM ? 5000: maxPrevWidth
     const totalFasades = Object.values(fasades).reduce((a, f) => f.count + a, 0)
     const [{ consoleSameHeight, consoleSameDepth, standSameHeight }, setConsoles] = useState({ consoleSameHeight: true, consoleSameDepth: true, standSameHeight: true })
     const extStand = useDetail(DETAIL_NAME.INNER_STAND, data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth) || { length: 0 }

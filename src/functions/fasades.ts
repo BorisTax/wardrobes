@@ -351,6 +351,7 @@ export function hasSameParent(fasades: FasadState[]):boolean{
 }
 
 export function hasCrossProfile(fasad: FasadState): boolean {
+    if (!fasad) return false
     if (fasad.children.length === 0) return false
     for (let f of fasad.children) {
         if (hasCrossProfile(f)) return true

@@ -34,7 +34,7 @@ export default function CombiSpecification() {
             </div>
             <hr/>
             <SpecificationTable purposes={[CHAR_PURPOSE.FASAD, CHAR_PURPOSE.BOTH]} specification={specification} />
-            {crossProfile && profile.type === ProfileType.BAVARIA && <Warning text="Внимание! Профиль Бавария не используется в стык!"/>}
+            {crossProfile && profile.type === ProfileType.BAVARIA && <Warning text="Внимание! Данное деление фасада не подходит для профиля Бавария!"/>}
         </div>
     </div>
 }

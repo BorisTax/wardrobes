@@ -143,7 +143,8 @@ async function getDVPData(width: number, height: number, depth: number): Promise
     const roof = width / section;
     const dvpRealLength = roof - 3;
     const data = (await getDVPTemplates()).data || [{ width: 0, length: 0 }];
-    const dvpData = data.filter(d => d.width >= dvpRealWidth && d.length >= dvpRealLength).sort((i1, i2) => ((i1.width - dvpRealWidth) + (i1.length - dvpRealLength)) < ((i2.width - dvpRealWidth) + (i2.length - dvpRealLength)) ? -1 : 1)[0]
+    //const dvpData = data.filter(d => d.width >= dvpRealWidth && d.length >= dvpRealLength).sort((i1, i2) => ((i1.width - dvpRealWidth) + (i1.length - dvpRealLength)) < ((i2.width - dvpRealWidth) + (i2.length - dvpRealLength)) ? -1 : 1)[0]
+    const dvpData = data.filter(d => d.width >= dvpRealWidth && d.length >= dvpRealLength).sort((i1, i2) => (i1.width * i1.length - dvpRealWidth * dvpRealLength) < (i2.width * i2.length - dvpRealWidth * dvpRealLength) ? -1 : 1)[0]
     const { width: dvpWidth, length: dvpLength } = dvpData ? dvpData : { width: dvpRealWidth, length: dvpRealLength }
     const dvpPlanka = roof - 32;
     const dvpPlankaCount = section === 1 ? (dvpCount - 1) : (dvpCount / 2 - 1) * 2;

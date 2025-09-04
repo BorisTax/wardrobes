@@ -4,13 +4,19 @@ services:
     build: .
     restart: always
     environment:
-      - VERSION=2.3.9
-    image: boristax/wardrobes:v2.3.9
+      - VERSION=2.4.0
+    image: boristax/wardrobes:v2.4.0
     ports:
       - "5555:5555"
     command: npm run start
     volumes: 
-      - wardrobes-db:/app/src/server/database
+      - wardrobes-db:/app/src/server/database/wardrobes
+      - stol-db:/app/src/server/database/stol
+      - users-db:/app/src/server/database/users
 volumes:
+  users-db:
+      external: true
   wardrobes-db:
+      external: true
+  stol-db:
       external: true

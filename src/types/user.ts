@@ -12,6 +12,7 @@ export enum RESOURCE {
     COMBIFASADES = 9,
     WARDROBES = 10,
     MATERIALS_DB = 11,
+    SKLAD_STOL = 12,
 }
 export enum PERMISSION {
     READ = 'READ',

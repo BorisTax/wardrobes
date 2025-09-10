@@ -1,4 +1,3 @@
-import { OmitId } from '../../types/materials.js';
 import { Result } from '../../types/server.js';
 import { IDataBaseService } from '../../types/services.js';
 import { dataBaseQuery } from '../functions/database.js';
@@ -27,6 +26,10 @@ export default class DataBaseServiceSQLite<T> implements IDataBaseService<T> {
     async updateData(table: TABLE_NAMES, lookIn: Partial<T>, update: Partial<T>): Promise<Result<null>> {
         const query = getUpdateQuery(table, lookIn, update)
         return dataBaseQuery(this.dbFile, query.query, query.params, { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
+    }
+    async clearData(table: TABLE_NAMES): Promise<Result<null>> {
+        const query = `delete from ${table};`
+        return dataBaseQuery(this.dbFile, query, [], { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
     }
 }
 

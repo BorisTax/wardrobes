@@ -36,3 +36,10 @@ export const FURNITURE_TABLE_ROUTE = '/furnitureTable';
 
 export const WARDROBE_ID_PARAM = 'wardrobeId';
 export const WARDTYPE_ID_PARAM = 'wardTypeId';
+
+export const SKLAD_ROUTE = '/sklad';
+export const STOL_SKLAD_ROUTE = '/stol_sklad';
+export const STOL_COLORS_ROUTE = '/stol_colors';
+export const INCOME_ROUTE = '/income';
+export const OUTCOME_ROUTE = '/outcome';
+export const CLEAR_ALL_STOL_SKLAD_ROUTE = '/clear_all';

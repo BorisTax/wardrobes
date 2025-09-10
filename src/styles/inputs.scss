@@ -1,6 +1,26 @@
+@import "./vars.scss";
+
 .textbox{
     color: black;
 }
+
 .textbox-incorrect{
     color: red;
+}
+
+.groupbox {
+    position: relative;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 0.5em;
+    width: fit-content;
+}
+
+.groupbox-caption {
+    position: absolute;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    top: -0.75em;
+    background-color: $defaultBackColor;
+    width: fit-content;
 }

@@ -26,17 +26,30 @@ export type EditDataItem = {
     inputType: Exclude<InputType, InputType.LIST>
 })
 
+type UpdateAction = (checked: boolean[], values: (ValueType)[]) => Promise<{ success: boolean, message: string }>
+type AddAction = (checked: boolean[], values: (ValueType)[]) => Promise<{ success: boolean, message: string }>
+type DeleteAction = (name: ValueType, values?: ValueType[]) => Promise<{ success: boolean, message: string }>
+type ActionProp = {
+    caption: string,
+    question?: (values: ValueType[]) => string
+}
+
+type UpdateActionProp = (ActionProp & { onAction: UpdateAction }) | UpdateAction
+type AddActionProp = (ActionProp & { onAction: AddAction }) | AddAction
+type DeleteActionProp = (ActionProp & { onAction: DeleteAction }) | DeleteAction
+
 export type EditDataSectionProps = {
     items: EditDataItem[]
-    name?: string
+    name?: string | number
     dontAsk?: boolean
-    onUpdate?: (checked: boolean[], values: (ValueType)[]) => Promise<{ success: boolean, message: string }>
-    onAdd?: (checked: boolean[], values: (ValueType)[]) => Promise<{ success: boolean, message: string }>
-    onDelete?: (name: ValueType) => Promise<{ success: boolean, message: string }>
+    dontUseCheckBoxes?: boolean 
+    onUpdate?: UpdateActionProp
+    onAdd?: AddActionProp
+    onDelete?: DeleteActionProp
 }
 export default function EditDataSection(props: EditDataSectionProps) {
     const [loading, setLoading] = useState(false)
-    const [checked, setChecked] = useState(props.items.map(() => false))
+    const [checked, setChecked] = useState(props.items.map(() => false || !!props.dontUseCheckBoxes))
     const [newValues, setNewValues] = useState(props.items.map(i => i.value))
     const [extValue, setExtValue] = useState("")
     const showMessage = useMessage()
@@ -45,13 +58,13 @@ export default function EditDataSection(props: EditDataSectionProps) {
     useEffect(() => {
         setNewValues(props.items.map(i => i.value))
         setExtValue("")
-        setChecked(() => props.items.map(p => !!p.readonly))
+        setChecked(() => props.items.map(p => !!p.readonly || !!props.dontUseCheckBoxes))
     }, [...props.items.map(i => i.value)])
     return <>
         <div className="editmaterial-container">
             <div className="edit-section-grid">
                 {props.items.map((i, index) => <Fragment key={i.title}><span className="text-end text-nowrap">{i.title}</span>
-                    {i.readonly || (!props.onUpdate && !props.onAdd) ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
+                    {i.readonly || (props.dontUseCheckBoxes || (!props.onUpdate && !props.onAdd)) ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
                     {i.inputType === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value;; i.onChange && i.onChange(p[index]); return [...p] }) }} submitOnLostFocus={true} />}
                     {i.inputType === InputType.CHECKBOX && <CheckBox caption={i.displayValue && i.displayValue(newValues[index])} checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; i.onChange && i.onChange(prev[index]); return [...p] }) }} />}
                     {(i.inputType === InputType.LIST) && <ComboBox<ValueType> value={newValues[index] as ValueType} items={i.list as ValueType[]} displayValue={value => i.displayValue ? i.displayValue(value) : ""} disabled={!checked[index] || i.readonly} withEmpty={i.listWithEmptyRow} onChange={value => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }); i.onChange && i.onChange(value) }} />}
@@ -73,43 +86,50 @@ export default function EditDataSection(props: EditDataSectionProps) {
                 )}
             </div>
             <div className="editmaterial-buttons-container">
-                {props.onAdd && < input type="button" value="Добавить" disabled={!(checked.every((c, index) => c || props.items[index].readonly))} onClick={async () => {
+                {props.onAdd && < input type="button" value={(props.onAdd as ActionProp)?.caption || "Добавить"} disabled={!(checked.every((c, index) => c || props.items[index].readonly))} onClick={async () => {
                     if (!props.onAdd) return
                     const values = props.items.map((p, i) => p.displayValue ? p.displayValue(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
-                    if (!check.success) { showMessage(rusMessages[check.message]); return }
-                    const message = getAddMessage({ checked, items: props.items, newValues: values })
+                    if (!check.success) { showMessage(rusMessages[check.message] || check.message); return }
+                    const question = (props.onAdd as ActionProp).question && ((props.onAdd as ActionProp).question as Function)(values)
+                    const message = question || getAddMessage({ checked, items: props.items, newValues: values })
                     const conf = props.dontAsk || await showConfirm(message)
                     if (!conf) return
                     setLoading(true)
-                    const result = await props.onAdd(checked, newValues)
+                    const onAdd = typeof props.onAdd === 'function' ? props.onAdd : props.onAdd.onAction
+                    const result = await onAdd(checked, newValues)
                     setLoading(false)
                     if (result.message) showMessage(rusMessages[result.message])
                 }} />}
-                {props.onUpdate && < input type="button" value="Обновить" disabled={!(checked.some((c, index) => c && !props.items[index].readonly))} onClick={ async () => {
+                {props.onUpdate && < input type="button" value={(props.onUpdate as ActionProp)?.caption ||"Обновить"} disabled={!(checked.some((c, index) => c && !props.items[index].readonly))} onClick={ async () => {
                     if (!props.onUpdate) return
                     const values = props.items.map((p, i) => p.displayValue ? p.displayValue(newValues[i]) : newValues[i])
                     const check = checkFields({ checked, items: props.items, newValues: values })
-                    if (!check.success) { showMessage(rusMessages[check.message]); return }
-                    const message = getMessage({ checked, items: props.items, newValues: values, extValue })
+                    if (!check.success) { showMessage(rusMessages[check.message] || check.message); return }
+                    const question = (props.onUpdate as ActionProp).question && ((props.onUpdate as ActionProp).question as Function)(values)
+                    const message = question || getMessage({ checked, items: props.items, newValues: values, extValue })
                     const conf = props.dontAsk || await showConfirm(message)
                     if (!conf) return
                     setLoading(true)
-                    const result = await props.onUpdate(checked, newValues)
+                    const onUpdate = typeof props.onUpdate === 'function' ? props.onUpdate : props.onUpdate.onAction
+                    const result = await onUpdate(checked, newValues)
                     setLoading(false)
                     if (result.message) showMessage(rusMessages[result.message])
                 }} />}
-                {props.onDelete && <input type="button" value="Удалить" onClick={async () => {
+                {props.onDelete && <input type="button" value={(props.onDelete as ActionProp)?.caption ||"Удалить"} onClick={async () => {
                     if (!props.onDelete) return
-                    const message = getDeleteMessage(props.name as string)
+                    const values = props.items.map((p, i) => p.displayValue ? p.displayValue(newValues[i]) : newValues[i])
+                    const question = (props.onDelete as ActionProp).question && ((props.onDelete as ActionProp).question as Function)(values)
+                    const message = question || getDeleteMessage(props.name as string)
                     const conf = props.dontAsk || await showConfirm(message)
                     if (!conf) return
                     setLoading(true)
-                    const result = await props.onDelete(props.name as string)
+                    const onDelete = typeof props.onDelete === 'function' ? props.onDelete : props.onDelete.onAction
+                    const result = await onDelete(props.name as string, newValues)
                     setLoading(false)
                     if (result.message) showMessage(rusMessages[result.message])
                 }} />}
-                {(props.onAdd || props.onUpdate) && <>
+                {((props.onAdd || props.onUpdate) && !props.dontUseCheckBoxes) && <>
                     < input type="button" value="Выделить все" onClick={() => {
                         setChecked(checked.map(c => true))
                     }} />

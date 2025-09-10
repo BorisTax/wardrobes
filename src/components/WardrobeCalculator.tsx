@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import ComboBox from "./inputs/ComboBox"
-import PropertyGrid from "./PropertyGrid"
+import PropertyGrid from "./inputs/PropertyGrid"
 import { CONSOLE_TYPE, DETAIL_NAME, WARDROBE_TYPE } from "../types/wardrobe"
 import { PropertyType } from "../types/property"
 import { useAtomValue, useSetAtom } from "jotai"

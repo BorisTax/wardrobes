@@ -167,7 +167,7 @@ export type AllData = {
 }
 
 
-export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES | TEMPLATE_TABLE_NAMES;
+export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES | TEMPLATE_TABLE_NAMES | SKLAD_TABLE_NAMES;
 
 export enum DATA_TABLE_NAMES {
     CHARS = 'chars',
@@ -211,5 +211,23 @@ export enum USER_TABLE_NAMES {
     SUPERROLES = 'superroles',
 }
 
+export enum SKLAD_TABLE_NAMES {
+    STOL_SKLAD = 'stol_sklad',
+    STOL_INCOME = 'stol_income',
+    STOL_OUTCOME = 'stol_outcome',
+    STOL_COLORS = 'stol_colors',
+}
 
-
+export type StolColorsTableSchema = {
+    id: number
+    name: string
+}
+export type StolTableSchema = {
+    id: number
+    length: number
+    amount: number
+}
+export type IncomeTableSchema = StolTableSchema & {
+    date: number
+}
+export type OutcomeTableSchema = IncomeTableSchema

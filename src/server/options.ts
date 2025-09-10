@@ -16,10 +16,14 @@ export const databaseZipFile = path.resolve(__dirname, 'database.zip')
 export const databaseFolder = path.resolve(__dirname, 'database')
 export const usersPath = path.resolve(__dirname, 'database/users/users.db')
 export const dataPath = path.resolve(__dirname, 'database/wardrobes/data.db')
+export const skladPath = path.resolve(__dirname, 'database/sklad/sklad.db')
 export const templatePath = path.resolve(__dirname, 'database/wardrobes/templates.db')
 export const userServiceProvider = new UserServiceSQLite(usersPath)
 export const permissionServiceProvider = new PermissionServiceSQLite(usersPath)
 
+export function getDataBaseSkladProvider<T>() {
+  return new DataBaseServiceSQLite<T>(skladPath)
+}
 export function getDataBaseProvider<T>() {
   return new DataBaseServiceSQLite<T>(dataPath)
 }

@@ -11,12 +11,12 @@ services:
     command: npm run start
     volumes: 
       - wardrobes-db:/app/src/server/database/wardrobes
-      - stol-db:/app/src/server/database/stol
+      - sklad-db:/app/src/server/database/sklad
       - users-db:/app/src/server/database/users
 volumes:
   users-db:
       external: true
   wardrobes-db:
       external: true
-  stol-db:
+  sklad-db:
       external: true

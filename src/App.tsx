@@ -33,7 +33,7 @@ import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
 import NavBar from './components/NavBar'
 import LoadIndicator from './components/LoadIndicator'
-
+const Sklad = lazy(() => import('./components/Sklad/Sklad'))
 function App() {
   const user = useAtomValue(userAtom)
   const setAppData = useSetAtom(combiStateAtom)
@@ -72,6 +72,7 @@ function App() {
               <Route path="/login" element={<LoginDialog />}/>
               <Route path="/combi" element={<CombiFasades />} />
               <Route path="/calculator" element={<WardrobeCalculator />} />
+              <Route path="/sklad_stol" element={<Sklad />} />
               <Route path="/schema" element={<SchemaDialog />} />
               <Route path="/specification" element={<EditSpecificationDialog />} />
               <Route path="/materials" element={<EditMaterialDialog />} />

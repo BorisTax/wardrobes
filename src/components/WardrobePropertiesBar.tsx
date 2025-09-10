@@ -1,6 +1,6 @@
 import { PropertyType } from "../types/property"
-import PropertyGrid from "./PropertyGrid"
-import PropertyRow from "./PropertyRow"
+import PropertyGrid from "./inputs/PropertyGrid"
+import PropertyRow from "./inputs/PropertyRow"
 import { useAtomValue, useSetAtom } from "jotai"
 import ComboBox from "./inputs/ComboBox"
 import { combiStateAtom, historyCombiAtom, openStateAtom, redoAtom, resetAppDataAtom, saveStateAtom, setFasadCountAtom, setProfileIdAtom, setWardHeightAtom, setWardTypeAtom, setWardWidthAtom, undoAtom } from "../atoms/app"

@@ -30,6 +30,7 @@ export interface IDataBaseService<T> {
     addData: (table: TABLE_NAMES, data: Partial<T>) => Promise<Result<T>>
     deleteData: (table: TABLE_NAMES, lookIn: Partial<T> ) => Promise<Result<null>>
     updateData: (table: TABLE_NAMES, lookIn: Partial<T>, update: Partial<T>) => Promise<Result<null>>
+    clearData: (table: TABLE_NAMES) => Promise<Result<null>>
 }
 
 interface IPermissionAbstractService {

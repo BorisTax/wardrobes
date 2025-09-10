@@ -2,7 +2,7 @@ import { atom, Getter } from "jotai";
 import { OmitId } from "../types/materials";
 import { FetchResult, fetchGetData } from "../functions/fetch";
 import { UserPermissions, RESOURCE } from "../types/user";
-import { AllData, DefaultSchema, DetailSchema, WardrobesDimensionsSchema, WardrobesFasadCountSchema, WardrobesSchema } from "../types/schemas";
+import { AllData, DefaultSchema, WardrobesDimensionsSchema, WardrobesFasadCountSchema, WardrobesSchema } from "../types/schemas";
 import { API_ROUTE, MATERIALS_ROUTE, ALLDATA_ROUTE, WARDROBE_ROUTE, INITIAL_WARDROBEDATA_ROUTE } from "../types/routes";
 import { WardrobeData } from "../types/wardrobe";
 import { setWardrobeDataAtom } from "./wardrobe";

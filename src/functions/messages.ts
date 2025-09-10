@@ -76,6 +76,11 @@ export const rusMessages = {
   [messages.ENTER_LENGTH]: "Введите длину",
   [messages.ENTER_WIDTH]: "Введите ширину",
   [messages.ENTER_COUNT]: "Введите кол-во",
+
+  [messages.SKLAD_STOL_ADDED]: "Столешница добавлена",
+  [messages.SKLAD_STOL_DELETED]: "Столешница удалена",
+  [messages.SKLAD_STOL_NOEXIST]: "Столешница не найдена",
+  [messages.SKLAD_STOL_EXCEED_AMOUNT]: "Кол-во превышено",
 }
 
 

@@ -11,10 +11,12 @@ export default function NavBar() {
   const permUsers = permissions.get(RESOURCE.USERS)
   const permCombi = permissions.get(RESOURCE.COMBIFASADES)
   const permWard = permissions.get(RESOURCE.WARDROBES)
+  const permSkladStol = permissions.get(RESOURCE.SKLAD_STOL)
   const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   return <div className="data-navbar">
     {permCombi?.Read && <ImageLink link={"combi"} caption="Комби-фасады" icon="combiButton" />}
     {permWard?.Read && <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />}
+    {permSkladStol?.Read && <ImageLink link={"sklad_stol"} caption="Учет столешниц" icon="wardrobeButton" />}
     <>
       <MenuSeparator />
       {permMat?.Read && <ImageLink link={"materials"} caption="База данных" icon="editMaterials" />}

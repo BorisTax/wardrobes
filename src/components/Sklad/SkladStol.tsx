@@ -4,7 +4,7 @@ import PropertyGrid from "../inputs/PropertyGrid"
 import { InputType, PropertyType } from "../../types/property"
 import { useAtomValue, useSetAtom } from "jotai"
 import TextBox from "../inputs/TextBox"
-import { addStolAtom, clearStolAtom, deleteStolAtom, loadStolColorsAtom, loadStolSkladAtom, stolColorsAtom, stolIncomeAtom, stolOutcomeAtom, stolSkladAtom } from "../../atoms/sklad"
+import { addStolAtom, clearStolAtom, deleteStolAtom, loadStolColorsAtom, loadStolIncomeAtom, loadStolSkladAtom, stolColorsAtom, stolIncomeAtom, stolOutcomeAtom, stolSkladAtom } from "../../atoms/sklad"
 import TableData, { TableDataHeader } from "../inputs/TableData"
 import EditContainer from "../EditContainer"
 import EditDataSection, { EditDataItem } from "../dialogs/EditDataSection"
@@ -20,6 +20,7 @@ export default function SkladStol() {
     const perm = permissions.get(RESOURCE.SKLAD_STOL)
     const loadStolColors = useSetAtom(loadStolColorsAtom)
     const loadStolSklad = useSetAtom(loadStolSkladAtom)
+    const loadStolIncome = useSetAtom(loadStolIncomeAtom)
     const addStol = useSetAtom(addStolAtom)
     const deleteStol = useSetAtom(deleteStolAtom)
     const clearStol = useSetAtom(clearStolAtom)
@@ -39,6 +40,8 @@ export default function SkladStol() {
     useEffect(() => {
         loadStolColors()
         loadStolSklad()
+        loadStolIncome(true)
+        loadStolIncome(false)
     }, [])
     const filterComboStyle ={
         width: "fit-content"

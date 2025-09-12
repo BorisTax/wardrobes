@@ -16,7 +16,7 @@ export default function NavBar() {
   return <div className="data-navbar">
     {permCombi?.Read && <ImageLink link={"combi"} caption="Комби-фасады" icon="combiButton" />}
     {permWard?.Read && <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />}
-    {permSkladStol?.Read && <ImageLink link={"sklad_stol"} caption="Учет столешниц" icon="wardrobeButton" />}
+    {permSkladStol?.Read && <ImageLink link={"sklad_stol"} caption="Учет столешниц" icon="editMaterials" />}
     <>
       <MenuSeparator />
       {permMat?.Read && <ImageLink link={"materials"} caption="База данных" icon="editMaterials" />}

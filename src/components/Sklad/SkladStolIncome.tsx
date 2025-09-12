@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react"
 import ComboBox from "../inputs/ComboBox"
 import { PropertyType } from "../../types/property"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue } from "jotai"
 import TextBox from "../inputs/TextBox"
-import { loadStolIncomeAtom, stolColorsAtom, stolIncomeAtom, stolOutcomeAtom } from "../../atoms/sklad"
+import { stolColorsAtom, stolIncomeAtom, stolOutcomeAtom } from "../../atoms/sklad"
 import TableData, { TableDataHeader } from "../inputs/TableData"
 import { getDateFormat, getDateInputValue, getMaxDateTime } from "../../functions/date"
 import GroupBox from "../inputs/GroupBox"
 
 export default function SkladStolIncome({ income }: { income: boolean }) {
-    const loadStolIncome = useSetAtom(loadStolIncomeAtom)
     const listFull = income ? useAtomValue(stolIncomeAtom) : useAtomValue(stolOutcomeAtom)
     const stolColors = useAtomValue(stolColorsAtom)
     const listDistinctId = [...new Set(listFull.map(s => s.id))]
@@ -20,9 +19,6 @@ export default function SkladStolIncome({ income }: { income: boolean }) {
     const maxDateValue = getDateInputValue(filterMaxDate)
     const header: TableDataHeader[] = [{ caption: "Дата" }, { caption: "Столешница" }, { caption: "Длина" }, { caption: "Кол-во" }]
     const contents = list.map(ss => ({ key: ss.id, data: [getDateFormat(ss.date), stolColors.get(ss.id), ss.length, ss.amount] }))
-    useEffect(() => {
-        loadStolIncome(income)
-    }, [income])
     useEffect(() => {
         setFilter(prev => ({ ...prev, filterMinDate: minDate }))
     }, [minDate])

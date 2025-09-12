@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react"
-import { useAtomValue } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
 import { useNavigate } from "react-router-dom"
 import SkladStol from "./SkladStol"
 import SkladStolIncome from "./SkladStolIncome"
+import ImageButtonBar from "../inputs/Image'ButtonBar"
+import ImageButton from "../inputs/ImageButton"
+import { saveStolToExcelAtom } from "../../atoms/export"
 enum SkladGroup{
     SKLAD = 1,
     INCOME = 2,
@@ -17,6 +20,7 @@ matGroup.set(SkladGroup.OUTCOME, "Расход")
 
 
 export default function EditDataBaseDialog() {
+    const saveToExcel = useSetAtom(saveStolToExcelAtom)
     const navigate = useNavigate()
     const { permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.SKLAD_STOL)
@@ -27,6 +31,9 @@ export default function EditDataBaseDialog() {
         if (!perm?.Read) navigate('/')
     }, [perm])
     return <div className="database-edit-container">
+            <ImageButtonBar justifyContent="flex-start">
+                <ImageButton icon="excel" title="Сохранить в Excel" caption="Сохранить в Excel" onClick={() => saveToExcel()} />
+            </ImageButtonBar>
         <div className="tab-header-container">{header}</div>
         {content}
     </div>

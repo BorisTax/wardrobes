@@ -116,13 +116,14 @@ export const setProfileIdAtom = atom(null, async (get, set, [profileId, confirmC
 export const setWardWidthAtom = atom(null, async (get, set, [wardWidth, confirmCallback]: SetAtomComfirm<number>) => {
     const state = get(combiStateAtom)
     const { minSize } = get(settingsAtom)
-    const fasadWidth = getFasadWidth(wardWidth, state.fasadCount, state.type, state.profile.type)
+    const fasadCount = wardWidth < 2200 ? 2 : 3
+    const fasadWidth = getFasadWidth(wardWidth, fasadCount, state.type, state.profile.type)
     const newAppData = cloneAppState(state)
     newAppData.wardWidth = wardWidth
+    newAppData.fasadCount = fasadCount
     const setWidth = newAppData.rootFasades.every((f: FasadState) => trySetWidth(f, newAppData.rootFasades, fasadWidth, minSize))
     const res = await setAppDataAtom(setWidth, newAppData, set, confirmCallback, true)
     if (!res) return
-    const fasadCount = newAppData.wardWidth < 2200 ? 2 : 3
     set(setFasadCountAtom, [fasadCount, async () => true])
 })
 

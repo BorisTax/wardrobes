@@ -81,6 +81,7 @@ async function calcSpecification(fasad: FasadState, profile: ProfileSchema): Pro
     spec.set(SpecItem.Streich, await calcStreich(fasad))
     spec.set(SpecItem.Roliki, await calcRoliki(fasad, profile))
     spec.set(SpecItem.RolikiBavaria, await calcRolikiBavaria(fasad, profile))
+    //spec.set(SpecItem.Karton, await calcKarton(fasad))
     return spec;
 }
 async function calcArea(fasad: FasadState, checkFasad: (f: FasadState) => boolean): Promise<FullData[]> {
@@ -414,9 +415,9 @@ async function calcProfileHor(fasad: FasadState, profileCharId: number, top: boo
 }
 
 async function calcProfileVert(fasad: FasadState, profileCharId: number): Promise<FullData[]> {
-    const count = (fasad.height > 2300) ? 2 : 1
-    const verbose = [['Высота фасада', '', '']]
-    verbose.push([`${fasad.height}`, `${count === 1 ? "меньше-равно" : "больше"} 2300 - ${count}шт`])
+    const count = (fasad.height + 157 > 2430) ? 2 : 1
+    const verbose = [['Высота шкафа', '', '']]
+    verbose.push([`${fasad.height + 157}`, `${count === 1 ? "меньше-равно" : "больше"} 2430 - ${count}шт`])
     return [{ data: { amount: count, charId: profileCharId }, verbose: count > 0 ? verbose : undefined }]
 }
 async function calcStreich(fasad: FasadState): Promise<FullData[]>  {

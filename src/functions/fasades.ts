@@ -114,12 +114,31 @@ export function setFasadMaterialId(fasad: FasadState, value: number, toChildren 
     }
 }
 
+
+export function getFasadMaterialId(fasad: FasadState) {
+    let ft = fasad.materialId
+    for (const f of fasad.children) {
+        ft = getFasadMaterialId(f)
+        if (ft === 0 || ft !== fasad.children[0].materialId) return 0
+    }
+    return ft
+}
+
 export function setFasadType(fasad: FasadState, value: FASAD_TYPE, toChildren = true) {
     fasad.fasadType = value
     if (!toChildren) return
     for (const f of fasad.children) {
         setFasadType(f, value, toChildren)
     }
+}
+
+export function getFasadType(fasad: FasadState) {
+    let ft = fasad.fasadType
+    for (const f of fasad.children) {
+        ft = getFasadType(f)
+        if (ft === FASAD_TYPE.COMBI || ft !== fasad.children[0].fasadType) return FASAD_TYPE.COMBI
+    }
+    return ft
 }
 
 export function updateFasadParents(fasad: FasadState) {

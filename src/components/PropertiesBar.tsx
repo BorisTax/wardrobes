@@ -13,7 +13,7 @@ import { showTemplatesDialogAtom } from "../atoms/dialogs"
 import TextBox from "./inputs/TextBox"
 import { useMemo } from "react"
 import { RESOURCE } from "../types/user"
-import { getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
+import { getFasadMaterialId, getFasadType, getTotalFasadHeightRatio, getTotalFasadWidthRatio } from "../functions/fasades"
 import { fasadTypesAtom } from "../atoms/storage"
 import { fasadTypesToCharAtom } from "../atoms/materials/chars"
 import { charAtom } from "../atoms/materials/chars"
@@ -80,8 +80,8 @@ export default function PropertiesBar() {
                     <span>{`${fasad?.widthRatio}/${totalWidthRatio}`}</span>
                 }
             </PropertyRow>
-            <ComboBox<FASAD_TYPE> title="Тип:" value={fasadType} items={[...fasadTypes.keys()]} displayValue={value => fasadTypes.get(value)} disabled={!fasad} onChange={value => { setFasadType(value) }} />
-            <ComboBox<number> title="Цвет/Рисунок:" value={materialId} items={materials} displayValue={value => chars.get(value)?.name} disabled={!fasad} onChange={value => { setMaterialId(value) }} styles={{minWidth: "250px"}}/>
+            <ComboBox<FASAD_TYPE> title="Тип:" value={fasadType} altValue={fasadType === FASAD_TYPE.COMBI ? "КОМБИ" : undefined} items={[...fasadTypes.keys()]} displayValue={value => fasadTypes.get(value)} disabled={!fasad} onChange={value => { setFasadType(value) }} disableTyping={true} />
+            <ComboBox<number> title="Цвет/Рисунок:" value={materialId} altValue={materialId === 0 ? "комби" : undefined} items={materials} displayValue={value => chars.get(value)?.name} disabled={!fasad} onChange={value => { setMaterialId(value) }}  disableTyping={true} styles={{minWidth: "250px"}}/>
             <Selector<Division> title="Направление профиля:" value={direction} items={[...directions.keys()]} displayValue={value => directions.get(value)} disabled={!fasad} onChange={value => { setProfileDirection(value) }} />
             <Selector<number> title="Кол-во секций:" value={sectionCount} items={sections} displayValue={value => `${value}`} disabled={!fasad} onChange={value => { divideFasad(value) }} columns={5}/>
         </PropertyGrid>
@@ -91,8 +91,8 @@ export default function PropertiesBar() {
 function getProperties(fasad: FasadState | undefined) {
     const width = fasad?.width || 0//getFasadCutWidth(fasad)
     const height = fasad?.height || 0//getFasadCutHeight(fasad)
-    const materialId = fasad?.materialId || 0
-    const fasadType = fasad?.fasadType || 0
+    const materialId = fasad? getFasadMaterialId(fasad) : 0
+    const fasadType = fasad ? getFasadType(fasad) : 0//fasad?.fasadType || 0
     directions.clear()
     if (fasad) {
         directions.set(Division.WIDTH, "Верт.")

@@ -13,7 +13,8 @@ export enum FASAD_TYPE {
     MIRROR = 2,
     LACOBEL = 3,
     FMP = 4,
-    SAND = 5
+    SAND = 5,
+    COMBI = 6
 }
 
 export enum LACOBEL_TYPE {

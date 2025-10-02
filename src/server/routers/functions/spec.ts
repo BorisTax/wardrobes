@@ -50,7 +50,7 @@ export async function getSpecData(data: WardrobeData, resetDetails: boolean, ver
   const corpus = await getCorpusSpecification(data, resetDetails, verbose)
   result.push({ type: CORPUS_SPECS.CORPUS, spec: corpus })
   for (let f of fasades) {
-    const fasadSpec = await getFasadSpecification(f, profile as ProfileSchema, verbose)
+    const fasadSpec = await getFasadSpecification(f, profile as ProfileSchema, fasades.length, verbose)
     result.push({ type: FasadSpecById[f.fasadType - 1], spec: fasadSpec })
   }
   const extSpec = await getExtComplectSpecification(data, verbose)
@@ -67,7 +67,7 @@ export async function getSpecCombiData(data: AppState, verbose = false): Promise
   const profile: ProfileSchema | undefined = profiles?.find(p => p.id === data.profile.id)
   if (!profile) return { success: false, status: StatusCodes.BAD_REQUEST, data: result }
   for (let f of data.rootFasades) {
-    const fasadSpec = await getFasadSpecification(f, profile as ProfileSchema, verbose)
+    const fasadSpec = await getFasadSpecification(f, profile as ProfileSchema, data.fasadCount, verbose)
     //const fasadSpecConverted = flattenSpecification(filterEmptySpecification(fasadSpec))
     result.push(fasadSpec)
   }

@@ -43,8 +43,8 @@ export function createFasades(data: WardrobeData, profileType: ProfileType): Fas
     return fasades
 }
 
-export async function getFasadSpecification(fasad: FasadState, profile: ProfileSchema, verbose = false): Promise<SpecificationResult[]> {
-    const spec = await calcSpecification(fasad, profile);
+export async function getFasadSpecification(fasad: FasadState, profile: ProfileSchema, fasadCount: number, verbose = false): Promise<SpecificationResult[]> {
+    const spec = await calcSpecification(fasad, profile, fasadCount);
     const result = flattenSpecification(spec);
     if (!verbose) {
         result.forEach(r => {
@@ -54,7 +54,7 @@ export async function getFasadSpecification(fasad: FasadState, profile: ProfileS
     return result
 }
 
-async function calcSpecification(fasad: FasadState, profile: ProfileSchema): Promise<Map<SpecItem, FullData[]>> {
+async function calcSpecification(fasad: FasadState, profile: ProfileSchema, fasadCount: number): Promise<Map<SpecItem, FullData[]>> {
     const spec = new Map<SpecItem, FullData[]>();
     const lacobels = await (await getLacobels()).data
     const specToChar = await (await getSpecToCharList()).data
@@ -81,7 +81,7 @@ async function calcSpecification(fasad: FasadState, profile: ProfileSchema): Pro
     spec.set(SpecItem.Streich, await calcStreich(fasad))
     spec.set(SpecItem.Roliki, await calcRoliki(fasad, profile))
     spec.set(SpecItem.RolikiBavaria, await calcRolikiBavaria(fasad, profile))
-    //spec.set(SpecItem.Karton, await calcKarton(fasad))
+    spec.set(SpecItem.Karton, await calcKarton(fasadCount))
     return spec;
 }
 async function calcArea(fasad: FasadState, checkFasad: (f: FasadState) => boolean): Promise<FullData[]> {
@@ -202,11 +202,11 @@ async function calcRitrama(fasad: FasadState, lacobel: LacobelSchema[], ritramaC
     const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Ритрама", "Площадь"]]
     let total = 0
     for (let d of dims) {
-        let ritrama = ((d.height + 100) * 1200 / 1000000)
+        let ritrama = ((d.height + 500) * 1200 / 1000000)
         total += ritrama
-        verbose.push([d.height, d.width, `(${d.height}+100)x1200`, ritrama.toFixed(3)])
+        verbose.push([d.height, d.width, `(${d.height}+500)x1200`, ritrama.toFixed(3)])
     }
-    verbose.push(["", "", `Итого:`, total.toFixed(3)])
+    verbose.push(["", "", `Итого:`, total.toFixed(3)]) 
     return [{ data: { amount: total, charId: ritramaCharId }, verbose: total > 0 ? verbose : undefined }]
 }
 
@@ -281,16 +281,16 @@ async function calcPaint(fasad: FasadState): Promise<FullData[]> {
 async function calcEva(fasad: FasadState): Promise<FullData[]>  {
     const dims = await calcDimensions(fasad, f => f.fasadType === FASAD_TYPE.FMP)
     const coef = await getCoef(SpecItem.EVA)
-    const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Площадь",""]]
+    const verbose: VerboseData = [["Высота фасада", "Ширина фасада", "Ева", "Площадь"]]
     let total = 0
     for (let d of dims) {
-        let area = (d.height * d.width) / 1000000;
+        let area = ((d.height + 100) * d.width) / 1000000;
         total += area
-        verbose.push([d.height, d.width, area.toFixed(3)])
+        verbose.push([d.height, d.width, `(${d.height}+100)x${d.width}`, area.toFixed(3)])
     }
     const result = total * coef
     const coefString = coef !== 1 ? `x ${coef} =  ${result.toFixed(3)}` : ""
-    verbose.push(["", `Итого:`, total.toFixed(3), coefString])
+    verbose.push(["","", `Итого:`, total.toFixed(3), coefString])
     return [{ data: { amount: result, charId: 0 }, verbose: result > 0 ? verbose : undefined }]
 }
 
@@ -423,8 +423,8 @@ async function calcProfileVert(fasad: FasadState, profileCharId: number): Promis
 async function calcStreich(fasad: FasadState): Promise<FullData[]>  {
     return [{ data: { amount: 12, charId: 0 } }]
 }
-async function calcKarton(fasad: FasadState): Promise<FullData[]>  {
-    return [{ data: { amount: 0.25, charId: 0 } }]
+async function calcKarton(fasadCount: number): Promise<FullData[]>  {
+    return [{ data: { amount: (fasadCount - 1) * 0.333, charId: 0 } }]
 }
 async function calcRoliki(fasad: FasadState, profile: ProfileSchema): Promise<FullData[]>  {
     if (profile.type === ProfileType.BAVARIA) return [emptyFullData()]

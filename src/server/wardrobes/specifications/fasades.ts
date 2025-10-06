@@ -2,7 +2,7 @@ import FasadState from "../../../classes/FasadState";
 import { getFasadHeight, getFasadWidth } from "../../../functions/wardrobe";
 import { Division, FASAD_TYPE, LACOBEL_TYPE } from "../../../types/enums";
 import { ProfileType } from "../../../types/enums";
-import { FullData, SpecificationResult, VerboseData, WARDROBE_TYPE } from "../../../types/wardrobe";
+import { FullData, SpecificationResult, VerboseData, WARDROBE_TYPE, WardrobeProps } from "../../../types/wardrobe";
 import { SpecItem } from "../../../types/specification";
 import { WardrobeData } from "../../../types/wardrobe";
 import { getArmirovkaTapes, getCoef } from "./functions";
@@ -12,6 +12,7 @@ import { getAllCharOfSpec, getSpecToCharList } from "../../routers/functions/spe
 import { getLacobels } from "../../routers/functions/materials";
 import { LacobelSchema, ProfileSchema } from "../../../types/schemas";
 import { getFasadCutHeight, getFasadCutWidth, getFasadState } from "../../../functions/fasades";
+import { AppState } from "../../../types/app";
 
 export function createFasades(data: WardrobeData, profileType: ProfileType): FasadState[]{
     const fasades: FasadState[] = []
@@ -43,8 +44,8 @@ export function createFasades(data: WardrobeData, profileType: ProfileType): Fas
     return fasades
 }
 
-export async function getFasadSpecification(fasad: FasadState, profile: ProfileSchema, fasadCount: number, verbose = false): Promise<SpecificationResult[]> {
-    const spec = await calcSpecification(fasad, profile, fasadCount);
+export async function getFasadSpecification(fasad: FasadState, profile:ProfileSchema, data: WardrobeProps, verbose = false): Promise<SpecificationResult[]> {
+    const spec = await calcSpecification(fasad, profile, data);
     const result = flattenSpecification(spec);
     if (!verbose) {
         result.forEach(r => {
@@ -54,7 +55,7 @@ export async function getFasadSpecification(fasad: FasadState, profile: ProfileS
     return result
 }
 
-async function calcSpecification(fasad: FasadState, profile: ProfileSchema, fasadCount: number): Promise<Map<SpecItem, FullData[]>> {
+async function calcSpecification(fasad: FasadState, profile:ProfileSchema, data: WardrobeProps): Promise<Map<SpecItem, FullData[]>> {
     const spec = new Map<SpecItem, FullData[]>();
     const lacobels = await (await getLacobels()).data
     const specToChar = await (await getSpecToCharList()).data
@@ -75,13 +76,13 @@ async function calcSpecification(fasad: FasadState, profile: ProfileSchema, fasa
     spec.set(SpecItem.Uplot, await calcUplotnitel(fasad, profile.type));
     spec.set(SpecItem.UplotSoedBavaria, await calcUplotnitelSoed(fasad, profile.type));
     spec.set(SpecItem.ProfileSoed, await calcProfileSoed(fasad, profile.charId))
-    spec.set(SpecItem.ProfileVert, await calcProfileVert(fasad, profile.charId))
+    spec.set(SpecItem.ProfileVert, await calcProfileVert(fasad, profile.charId, data.height))
     spec.set(SpecItem.ProfileHorTop, await calcProfileHor(fasad, profile.charId, true))
     spec.set(SpecItem.ProfileHorBottom, await calcProfileHor(fasad, profile.charId, false))
     spec.set(SpecItem.Streich, await calcStreich(fasad))
     spec.set(SpecItem.Roliki, await calcRoliki(fasad, profile))
     spec.set(SpecItem.RolikiBavaria, await calcRolikiBavaria(fasad, profile))
-    spec.set(SpecItem.Karton, await calcKarton(fasadCount))
+    spec.set(SpecItem.Karton, await calcKarton(data.fasadesCount))
     return spec;
 }
 async function calcArea(fasad: FasadState, checkFasad: (f: FasadState) => boolean): Promise<FullData[]> {
@@ -414,10 +415,10 @@ async function calcProfileHor(fasad: FasadState, profileCharId: number, top: boo
     return [{ data: { amount: result, charId: profileCharId }, verbose: result > 0 ? verbose : undefined }]
 }
 
-async function calcProfileVert(fasad: FasadState, profileCharId: number): Promise<FullData[]> {
-    const count = (fasad.height + 157 > 2430) ? 2 : 1
+async function calcProfileVert(fasad: FasadState, profileCharId: number, height: number): Promise<FullData[]> {
+    const count = (height > 2430) ? 2 : 1
     const verbose = [['Высота шкафа', '', '']]
-    verbose.push([`${fasad.height + 157}`, `${count === 1 ? "меньше-равно" : "больше"} 2430 - ${count}шт`])
+    verbose.push([`${height}`, `${count === 1 ? "меньше-равно" : "больше"} 2430 - ${count}шт`])
     return [{ data: { amount: count, charId: profileCharId }, verbose: count > 0 ? verbose : undefined }]
 }
 async function calcStreich(fasad: FasadState): Promise<FullData[]>  {

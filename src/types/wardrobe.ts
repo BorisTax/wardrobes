@@ -1,4 +1,4 @@
-import { FASAD_TYPE } from "./enums"
+import { FASAD_TYPE, ProfileType } from "./enums"
 import { SpecSchema } from "./schemas"
 import { SPEC_GROUP } from "./specification"
 import { SpecItem } from "./specification"
@@ -46,7 +46,13 @@ export type WardrobeData = {
     profileId: number
     extComplect: ExtComplectData
 }
-
+export type WardrobeProps = {
+    width: number
+    depth: number
+    height: number
+    fasadesCount: number
+    profileType: ProfileType
+}
 export type DVPData = {
     dvpWidth: number,
     dvpLength: number,

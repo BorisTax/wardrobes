@@ -28,7 +28,7 @@ export default function ComboBox<T>(props: ComboBoxProps<T> = { items: [], disab
     if (props.altValue) options.push(<option key={-2} hidden>{props.altValue}</option>)
     return (
         <>
-            {props.title ? <span className="text-end text-nowrap" style={{ ...props.styles }}>{props.title}</span> : <></>}
+            {props.title ? <span className="text-end" style={{ ...props.styles }}>{props.title}</span> : <></>}
             <select size={!props.size ? 1 : props.size}
                 value={props.altValue || props.displayValue(value) || ""}
                 style={{ ...props.styles }}

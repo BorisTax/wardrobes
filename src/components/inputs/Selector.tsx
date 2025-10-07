@@ -27,7 +27,7 @@ export default function Selector<T>(props: SelectorProps<T> = { items: [], disab
     )
     return (
         <>
-            {props.title ? <span className="text-end text-nowrap">{props.title}</span> : <></>}
+            {props.title ? <span className="text-end">{props.title}</span> : <></>}
                 <div    
                     style={{gridTemplateColumns: `repeat(${props.columns || items.length}, 1fr)`}}
                     className="selector-button-container"

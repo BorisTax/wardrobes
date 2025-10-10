@@ -17,7 +17,7 @@ import { getAllCharOfSpec, getSpecList } from "../../routers/functions/spec"
 export async function getCorpusSpecification(data: WardrobeData, resetDetails: boolean, verbose = false): Promise<SpecificationResult[]> {
     const result: SpecificationResult[] = []
     const details = !resetDetails ? data.details : await getDetails(data.wardrobeTypeId, data.wardrobeId, data.width, data.height, data.depth);
-    const karton = await getKarton(data)
+    const karton = data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM ? await getKartonSystem() : await getKarton(data)
     const skotch = data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
     const truba = await getTruba(data)
     await getCommonData(data, details, result)
@@ -159,7 +159,10 @@ async function getKarton(data: WardrobeData): Promise<FullData> {
     verbose.push([getFineRange(item?.minWidth || 0, item?.maxWidth||0), getFineRange(item?.minHeight ||0, item?.maxHeight||0), getFineRange(item?.minDepth||0, item?.maxDepth||0), `${result}`]);
     return { data: { amount: result * coef, charId: 0 }, verbose };
 }
-
+async function getKartonSystem(): Promise<FullData> {
+    const coef = await getCoef(SpecItem.Karton) || 1;
+    return { data: { amount: 0.25, charId: 0 } };
+}
 async function getLegs(data: WardrobeData): Promise<FullData> {
     if (data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM) return emptyFullDataIfSystem()
     const item = (await getFurniture(data.wardrobeId, SpecItem.Leg, data.width, data.height, data.depth))[0]

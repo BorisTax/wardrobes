@@ -25,12 +25,13 @@ export async function getDrawerSpecification(data: WardrobeData): Promise<Specif
         }
     })
     await getCommonData(data, details, result)
+    result.push([SpecItem.DVP, { data: { amount: 0.29 } }])
     result.push([SpecItem.Nails, { data: { amount: 0.0125 } }])
     result.push([SpecItem.Samorez16, { data: { amount: 8 } }])
     result.push([SpecItem.Samorez30, { data: { amount: 2 } }])
     const tel = getTelescope(data.depth)
     if (tel.item) result.push([tel.item, tel.data])
-    const karton = 2
+    const karton = 0.5
     result.push([SpecItem.Karton, { data: { amount: karton } }])
     result.push([SpecItem.Skotch, { data: { amount: karton * 20 } }])
     result.push([SpecItem.ConfKluch, { data: { amount: 1 } }])

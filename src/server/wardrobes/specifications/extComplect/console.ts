@@ -28,7 +28,7 @@ export async function getConsoleSpecification(data: WardrobeData): Promise<Speci
     const legCharId = (await getAllCharOfSpec(SpecItem.Leg))[0] || 0
     result.push([SpecItem.Leg, { data: { amount: 1, charId: legCharId } }])
     result.push([SpecItem.StyagkaM6, { data: { amount: 3 } }])
-    const karton = 2
+    const karton = 1
     result.push([SpecItem.Karton, { data: { amount: karton } }])
     result.push([SpecItem.Skotch, { data: { amount: karton * 20 } }])
     result.push([SpecItem.ConfKluch, { data: { amount: 1 } }])

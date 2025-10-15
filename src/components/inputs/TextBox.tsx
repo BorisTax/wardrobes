@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { PropertyType, RegExp } from "../../types/property"
 
 export type TextBoxProps = {
-    setValue: (value: string | number) => void
+    setValue: (value: string) => void
     value: string | number
     type: PropertyType
     name?: string
@@ -14,14 +14,14 @@ export type TextBoxProps = {
 }
 
 export default function TextBox(props: TextBoxProps) {
-    const [state, setState] = useState({ value: props.value, prevValue: props.value })
+    const [state, setState] = useState({ value: String(props.value), prevValue: String(props.value) })
     useEffect(() => {
         let value = props.value
         if (typeof value === 'number'){
-          if (value < (props.min as number)) props.setValue(props.min as number);
-          if (value > (props.max as number)) props.setValue(props.max as number);
+          if (props.min && value < props.min) props.setValue(String(props.min));
+          if (props.max && value > props.max) props.setValue(String(props.max));
         }
-        setState({ prevValue: value, value })
+        setState({ prevValue: String(value), value: String(value) })
     }, [props.value, props.min, props.max])
     const onChange = (v: string) => {
         if (v === "") { setState({ ...state, value: v }); return }
@@ -65,7 +65,7 @@ export default function TextBox(props: TextBoxProps) {
     );
 }
 
-function test(value: string | number, type: PropertyType) {
+function test(value: string, type: PropertyType) {
     const regexp = RegExp.get(type) || '';
     const result = { value, correct: false }
     if ((`${value}`.match(regexp) !== null) || value === "") { result.correct = true }

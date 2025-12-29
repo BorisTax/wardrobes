@@ -20,6 +20,7 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     const karton = data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM ? await getKartonSystem() : await getKarton(data)
     const skotch = data.wardrobeTypeId === WARDROBE_TYPE.SYSTEM ? 0 : karton.data.amount * 20
     const truba = await getTruba(data)
+    const fasadCount = getFasadCount(data)
     await getCommonData(data, details, result)
     const {brushSpecId, profileCharId} = await getCharIdAndBrushSpecIdByProfileId(data.profileId)
     result.push([SpecItem.DVP, await getDVP(data)])
@@ -28,9 +29,9 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     result.push([SpecItem.Karton, karton])
     result.push([SpecItem.Skotch, { data: { amount: skotch, charId: 0 } }])
     result.push([SpecItem.Nails, await getNails(data)])
-    result.push([brushSpecId, await getBrush(data, brushSpecId)])
-    result.push([SpecItem.NapravTop, await getNaprav(data, profileCharId, true)])
-    result.push([SpecItem.NapravBottom, await getNaprav(data, profileCharId, false)])
+    if (fasadCount > 0) result.push([brushSpecId, await getBrush(data, brushSpecId)])
+    if (fasadCount > 0) result.push([SpecItem.NapravTop, await getNaprav(data, profileCharId, true)])
+    if (fasadCount > 0)result.push([SpecItem.NapravBottom, await getNaprav(data, profileCharId, false)])
     result.push([SpecItem.Samorez16, await getSamorez16(data)])
     result.push([SpecItem.StyagkaM6, await getStyagka(data)])
     result.push([SpecItem.Truba, truba])
@@ -38,7 +39,7 @@ export async function getCorpusSpecification(data: WardrobeData, resetDetails: b
     result.push([SpecItem.Trempel, await getTrempel(data)]);
     result.push([SpecItem.Pantograf, await getPantograf(data)])
     result.push([SpecItem.Streich, { data: { amount: 12, charId: 0 } }])
-    result.push([SpecItem.Stopor, await getStopor(data)])
+    if (fasadCount > 0) result.push([SpecItem.Stopor, await getStopor(data)])
     result.push([SpecItem.ConfKluch, await getKluch(data)])
     result.push([SpecItem.Box, await getBox(data)])
     if (!verbose) {

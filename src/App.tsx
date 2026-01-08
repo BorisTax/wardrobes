@@ -33,6 +33,8 @@ import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
 import SchemaDialog from './components/dialogs/SchemaDialog'
 import NavBar from './components/NavBar'
 import LoadIndicator from './components/LoadIndicator'
+import Decoration from './components/decoration/Decoration'
+import Settings from './components/Settings'
 const Sklad = lazy(() => import('./components/Sklad/Sklad'))
 function App() {
   const user = useAtomValue(userAtom)
@@ -63,6 +65,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+      <Decoration />
       <Header />
       <div className='d-flex flex-nowrap'>
           {user.name && <NavBar />}
@@ -77,6 +80,7 @@ function App() {
               <Route path="/specification" element={<EditSpecificationDialog />} />
               <Route path="/materials" element={<EditMaterialDialog />} />
               <Route path="/users" element={<EditUsersDialog />} />
+              <Route path="/settings" element={<Settings />} />
             </Routes>
           </Suspense>
         </div>

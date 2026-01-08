@@ -1,4 +1,5 @@
 import { CHAR_PURPOSE, CHAR_TYPE } from "./enums"
+import { SettingsThemeSchema } from "./themes"
 import { KROMKA_TYPE } from "./wardrobe"
 
 export type KeySet<T> = (keyof T)[]
@@ -164,10 +165,13 @@ export type AllData = {
     detailNames: DetailSchema[],
     wardrobesDimensions: WardrobesDimensionsSchema[],
     wardrobesFasadCount: WardrobesFasadCountSchema[],
+    settings: {
+        themes: SettingsThemeSchema[]
+    }
 }
 
 
-export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES | TEMPLATE_TABLE_NAMES | SKLAD_TABLE_NAMES;
+export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES | TEMPLATE_TABLE_NAMES | SKLAD_TABLE_NAMES | SETTINGS_TABLE_NAMES;
 
 export enum DATA_TABLE_NAMES {
     CHARS = 'chars',
@@ -216,6 +220,10 @@ export enum SKLAD_TABLE_NAMES {
     STOL_INCOME = 'stol_income',
     STOL_OUTCOME = 'stol_outcome',
     STOL_COLORS = 'stol_colors',
+}
+
+export enum SETTINGS_TABLE_NAMES {
+    THEMES = 'themes',
 }
 
 export type StolColorsTableSchema = {

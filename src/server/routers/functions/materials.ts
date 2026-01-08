@@ -7,6 +7,7 @@ import { getFasadTypeToChar } from './fasadTypeToChar'
 import { getProfiles, getProfileTypes } from "./profiles"
 import { getSpecList, getSpecToCharList, getUnits } from "./spec"
 import { getDetailsFromDB } from "./details"
+import { getThemes } from "./settings"
 
 export async function getLacobels() {
     const service = new DataBaseService(getDataBaseProvider<LacobelSchema>())
@@ -40,6 +41,9 @@ export async function getAllData(): Promise<AllData> {
     const matPurposes = (await getMatPurposes()).data
     const wardrobesDimensions = (await getWardrobesDimensions()).data
     const wardrobesFasadCount = (await getWardrobesFasadCount()).data
+    const settings = {
+      themes: ((await getThemes()).data)
+    }
     return {
         chars,
         fasadDefaultChars,
@@ -59,6 +63,7 @@ export async function getAllData(): Promise<AllData> {
         specToChar,
         detailNames,
         wardrobesDimensions,
-        wardrobesFasadCount
+        wardrobesFasadCount,
+        settings
     }
   }

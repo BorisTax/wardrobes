@@ -20,6 +20,7 @@ export default function NavBar() {
     <>
       <MenuSeparator />
       {permMat?.Read && <ImageLink link={"materials"} caption="База данных" icon="editMaterials" />}
+      {permMat?.Update && <ImageLink link={"settings"} caption="Настройки" icon="settingsButton" />}
     </>
 
     {permUsers?.Read &&

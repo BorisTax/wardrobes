@@ -43,3 +43,6 @@ export const STOL_COLORS_ROUTE = '/stol_colors';
 export const INCOME_ROUTE = '/income';
 export const OUTCOME_ROUTE = '/outcome';
 export const CLEAR_ALL_STOL_SKLAD_ROUTE = '/clear_all';
+
+export const SETTINGS_ROUTE = '/settings';
+export const THEME_ROUTE = '/theme';

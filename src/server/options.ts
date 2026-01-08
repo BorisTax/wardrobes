@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url'
 import PermissionServiceSQLite from './services/permissionServiceSQLite.js'
 import DataBaseServiceSQLite from './services/dataBaseServiceSQLite.js'
 import { Template } from '../types/templates.js'
+import SettingsServiceSQLite from './services/settingsServiceSQLite.js'
 
 export const JWT_SECRET = "secretkey"
 const __filename = fileURLToPath(import.meta.url);
@@ -18,6 +19,7 @@ export const usersPath = path.resolve(__dirname, 'database/users/users.db')
 export const dataPath = path.resolve(__dirname, 'database/wardrobes/data.db')
 export const skladPath = path.resolve(__dirname, 'database/sklad/sklad.db')
 export const templatePath = path.resolve(__dirname, 'database/wardrobes/templates.db')
+export const settingsPath = path.resolve(__dirname, 'database/settings/settings.db')
 export const userServiceProvider = new UserServiceSQLite(usersPath)
 export const permissionServiceProvider = new PermissionServiceSQLite(usersPath)
 
@@ -32,6 +34,9 @@ export function getDataBaseUserProvider<T>() {
 }
 export function getDataBaseTemplateProvider() {
   return new DataBaseServiceSQLite<Template>(templatePath)
+}
+export function getSettingsProvider() {
+  return new SettingsServiceSQLite(settingsPath)
 }
 export const userRoleParser = async (req: Request, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)

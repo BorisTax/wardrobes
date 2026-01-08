@@ -4,6 +4,7 @@ import { PermissionSchema, ResourceSchema, User } from "./user"
 import { Template } from "./templates"
 import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from "./schemas"
 import { UserPermissions, RESOURCE, UserRole } from "./user"
+import { SettingsThemeSchema } from "./themes"
 
 interface IUserAbstractService {
     getUsers: () => Promise<Result<User>>
@@ -41,6 +42,11 @@ interface IPermissionAbstractService {
     getResourceList: () => Promise<Result<ResourceSchema>>
 }
 
+interface ISettingsAbstractService {
+    getThemes: () => Promise<Result<SettingsThemeSchema>>
+    setTheme: (id: number) => Promise<Result<null>>
+}
+
 export interface IDataBaseServiceProvider<T> extends IDataBaseService<T> {
     dbFile: string
 }
@@ -55,6 +61,13 @@ export interface IUserService extends IUserAbstractService {
 export interface IPermissionServiceProvider extends IPermissionAbstractService {
     dbFile: string
 }
+export interface ISettingsServiceProvider extends ISettingsAbstractService {
+    dbFile: string
+}
 export interface IPermissionService extends IPermissionAbstractService {
     provider: IPermissionServiceProvider
+}
+
+export interface ISettingsService extends ISettingsAbstractService {
+    provider: ISettingsServiceProvider
 }

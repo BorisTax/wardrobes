@@ -12,6 +12,7 @@ import { FASAD_TYPE } from "../types/enums";
 import { setActiveFasadAtom } from "./fasades";
 import { specListAtom, specToCharAtom } from "./specification";
 import { profileAtom, profileTypeAtom } from "./materials/profiles";
+import { themesAtom } from "./themes";
 
 export type DefaultMap = Map<number, string> 
 export type ExtMap<T> = Map<number, OmitId<T>>
@@ -59,6 +60,8 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
         set(wardrobesFasadCountAtom, allData.wardrobesFasadCount || [])
         set(wardrobesDimensionsAtom, allData.wardrobesDimensions || [])
         set(consoleTypesAtom, makeDefaultMap(allData.consoleTypes || []))
+
+        set(themesAtom, allData.settings.themes.map(d => ({ ...d, in_use: !!d.in_use })))
         const result: FetchResult<WardrobeData> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_WARDROBEDATA_ROUTE}?token=${token}`)
         const wardData = result.data[0] as WardrobeData
         if (result.success) {

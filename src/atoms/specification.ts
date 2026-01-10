@@ -21,9 +21,8 @@ export const specListAtom = atom<ExtMap<SpecSchema>>(new Map());
 export const specToCharAtom = atom<SpecToCharSchema[]>([]);
 
 export const updateSpecListAtom = atom(null, async (get, set, data: SpecSchema) => {
-    const { token } = get(userAtom)
     try {
-        const result = await fetchData(`${API_ROUTE}${SPECIFICATION_ROUTE}`, "PUT", JSON.stringify({ data, token }))
+        const result = await fetchData(`${API_ROUTE}${SPECIFICATION_ROUTE}`, "PUT", JSON.stringify({ data }))
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
         console.error(e)
@@ -32,12 +31,10 @@ export const updateSpecListAtom = atom(null, async (get, set, data: SpecSchema) 
 })
 
 export const calculateSpecificationsAtom = atom(null, async (get, set, resetDetails: boolean = false) => {
-    const { token } = get(userAtom)
     const data = get(wardrobeDataAtom)
-    const formData: { data: WardrobeData, resetDetails: boolean, token: string } = {
+    const formData: { data: WardrobeData, resetDetails: boolean } = {
         [TableFields.DATA]: data,
-        resetDetails,
-        [TableFields.TOKEN]: token
+        resetDetails
     }
     set(specificationInProgress, true)
     try {
@@ -49,11 +46,9 @@ export const calculateSpecificationsAtom = atom(null, async (get, set, resetDeta
 })
 
 export const calculateCombiSpecificationsAtom = atom(null, async (get, set) => {
-    const { token } = get(userAtom)
     const data = get(combiStateJSONAtom)
-    const formData: { data: AppState, token: string } = {
-        [TableFields.DATA]: data,
-        [TableFields.TOKEN]: token
+    const formData: { data: AppState } = {
+        [TableFields.DATA]: data
     }
     set(specificationInProgress, true)
     try {

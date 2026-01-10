@@ -11,20 +11,20 @@ import { DefaultMap, makeDefaultMap } from "./storage"
 export const permissionsAtom = atom<PermissionSchema[]>([])
 
 export const loadPermissionsAtom = atom(null, async (get, set, roleId: number)=>{
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     if (!perm?.Read) return
-    const result = await fetchGetData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}?token=${token}&roleId=${roleId}`)
+    const result = await fetchGetData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}?roleId=${roleId}`)
     if(result.success){
         set(permissionsAtom, result.data as PermissionSchema[])
     }
 })
 export const resourceListAtom = atom<DefaultMap>(new Map())
 export const loadResourceListAtom = atom(null, async (get, set) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
     if (!perm?.Read) return
-    const result = await fetchGetData<ResourceSchema>(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}${RESOURCES_ROUTE}?token=${token}`)
+    const result = await fetchGetData<ResourceSchema>(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}${RESOURCES_ROUTE}`)
     if (result.success) {
         set(resourceListAtom, makeDefaultMap(result.data))
     }
@@ -33,7 +33,7 @@ export const loadResourceListAtom = atom(null, async (get, set) => {
 export const deletePermissionsAtom = atom(null, async (get, set, roleId: number, resource: RESOURCE) => {
     const user = get(userAtom)
     try{
-        const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "DELETE", JSON.stringify({ roleId, resource, token: user.token }))
+        const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "DELETE", JSON.stringify({ roleId, resource }))
         await set(loadPermissionsAtom, roleId)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
@@ -43,10 +43,8 @@ export const deletePermissionsAtom = atom(null, async (get, set, roleId: number,
 })
 
 export const addPermissionsAtom = atom(null, async (get, set, permissions: PermissionSchema) => {
-    const user = get(userAtom)
     const data = {
-        [TableFields.PERMISSIONS]: permissions,
-        [TableFields.TOKEN]: user.token
+        [TableFields.PERMISSIONS]: permissions
     }
     try {
         const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "POST", JSON.stringify(data))
@@ -59,10 +57,8 @@ export const addPermissionsAtom = atom(null, async (get, set, permissions: Permi
 })
 
 export const updatePermissionsAtom = atom(null, async (get, set, permissions: PermissionSchema) => {
-    const user = get(userAtom)
     const data = {
-        [TableFields.PERMISSIONS]: permissions,
-        [TableFields.TOKEN]: user.token
+        [TableFields.PERMISSIONS]: permissions
     }
     try {
         const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${PERMISSIONS_ROUTE}`, "PUT", JSON.stringify(data))

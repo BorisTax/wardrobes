@@ -1,10 +1,10 @@
 import { Result, Token } from '../../types/server.js'
-import { PermissionSchema, User } from "../../types/user.js"
+import { User } from "../../types/user.js"
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
 import { SERVER_EVENTS } from "../../types/enums.js"
-import { UserPermissions, RESOURCE, UserRole } from '../../types/user.js'
+import { UserRole } from '../../types/user.js'
 import { StatusCodes } from 'http-status-codes'
 import { badRequestResponse, conflictResponse, forbidResponse } from '../functions/response.js'
 import { Response } from 'express'
@@ -25,10 +25,13 @@ const clearExpiredTokens = async () => {
   for (let t of tokens) {
     if (Date.now() - t.lastActionTime > expiredInterval) {
       await userService.deleteToken(t.token)
-      console.log('Token was deleted by expiration', t.username, t.token.substring(0, 7) + "....." + t.token.substring(t.token.length - 7))
+      console.log('Token was deleted by expiration', t.userName, t.userId, t.token.substring(0, 7) + "....." + t.token.substring(t.token.length - 7))
       events.forEach((v, k) => {
-        try{
-          if (k === t.token) v.end()
+        try {
+          if (k === t.token) {
+            v.end()
+            events.delete(k)
+          }
         } catch (e) { 
           console.error(e)
         }
@@ -52,8 +55,10 @@ export function notifyActiveUsers(message: SERVER_EVENTS) {
 export function logoutUser(token: string) {
   events.forEach((v, k) => {
     try {
-      
-      if (k === token) v.write(getEventSourceMessage(SERVER_EVENTS.LOGOUT))
+      if (k === token) {
+        v.write(getEventSourceMessage(SERVER_EVENTS.LOGOUT))
+        events.delete(k)
+      }
     } catch (e) {
       console.error(e)
     }
@@ -82,9 +87,11 @@ export class UserService implements IUserService {
   async getToken(token: string): Promise<Result<Token>> {
     return this.provider.getToken(token)
   }
-
-  async addToken({ token, username, time, lastActionTime }: Token) {
-    const result = await this.provider.addToken({ token, username, time, lastActionTime })
+  async getTokenByUserId(userId: string): Promise<Token> {
+    return this.provider.getTokenByUserId(userId)
+  }
+  async addToken({ token, userName, userId, time, lastActionTime }: Token) {
+    const result = await this.provider.addToken({ token, userName, userId, time, lastActionTime })
     return result
   }
 

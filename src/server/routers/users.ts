@@ -1,16 +1,16 @@
 import messages from '../messages.js'
 import express from "express";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { UserService, events, getTokens, logoutUser, notifyActiveUsers } from '../services/userService.js';
 import { accessDenied, hashData, incorrectData } from '../functions/database.js';
 import { MyRequest, Result, Token } from '../../types/server.js';
-import { ActiveUser, PERMISSION, User, UserData, UserLoginResult } from "../../types/user.js";
-import { JWT_SECRET, userServiceProvider } from '../options.js';
+import { ActiveUser, PERMISSION, User, UserLoginResult } from "../../types/user.js";
+import {  userServiceProvider } from '../options.js';
 import { SERVER_EVENTS } from "../../types/enums.js";
 import { RESOURCE } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
 import { getAllUserPermissions, getPermissions } from './permissions.js';
+import { randomUUID } from 'crypto';
 
 const router = express.Router();
 export default router
@@ -38,11 +38,11 @@ router.get("/verify", async (req, res) => {
   const tokens = await userService.getTokens();
   const tokenData = (tokens.data as Token[]).find((t: Token) => t.token === token)
   if (!tokenData) return res.json({ success: false });
-  const userRoleId = await userService.getUserRoleId(tokenData?.username)
-  const permissions = await getAllUserPermissions(userRoleId)
+  const roleId = await userService.getUserRoleId(tokenData?.userName)
+  const permissions = await getAllUserPermissions(roleId)
   const result = await userService.updateToken(token)
   notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
-  res.status(result.status).json({ ...result, data: [{ token, permissions }], success: true });
+  res.status(result.status).json({ ...result, data: [{ name: tokenData.userName, userId: tokenData.userId, roleId, permissions }], success: true });
 });
 
 router.post("/login", async (req, res) => {
@@ -54,28 +54,31 @@ router.post("/login", async (req, res) => {
   const time = Date.now()
   const lastActionTime = time
   if (result.success) {
-    userService.addToken({ token: result.data[0].token as string, username: user.name, time, lastActionTime })
+    userService.addToken({ token: result.token as string, userName: user.name, userId: result.data[0].userId, time, lastActionTime })
     notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
-    const userRoleId = await userService.getUserRoleId(user.name)
-    const permissions = await getAllUserPermissions(userRoleId)
-    if (result.data) result.data[0].permissions = permissions
+    //const userRoleId = await userService.getUserRoleId(user.name)
+    //const permissions = await getAllUserPermissions(userRoleId)
+    res.cookie('token', result.token, { httpOnly: true })
   }
+  result.token = undefined
   res.status(result.status).json(result);
 });
 
 router.post("/logout", async (req, res) => {
-  const user = req.body;
+  const token = (req as MyRequest).token as string;
   const userService = new UserService(userServiceProvider)
-  const result = await userService.deleteToken(user.token)
+  const result = await userService.deleteToken(token)
+  res.cookie('token', "")
   res.status(result.status).json(result);
 });
 
 router.post("/logoutuser", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
   const userService = new UserService(userServiceProvider)
-  const user = req.body;
-  const result = await userService.deleteToken(user.usertoken)
-  if(result.success) logoutUser(user.usertoken)
+  const {userId} = req.body;
+  const {token} = await userService.getTokenByUserId(userId)
+  const result = await userService.deleteToken(token)
+  if(result.success) logoutUser(token)
   res.status(result.status).json(result);
 });
 
@@ -86,11 +89,11 @@ router.get("/active", async (req, res) => {
   const tokens = await getTokens();
   const users = await userService.getUsers();
   for (let t of tokens){
-    const user = (users.data as User[]).find((u: User) => u.name === t.username)
+    const user = (users.data as User[]).find((u: User) => u.name === t.userName)
     if (user) {
       const userRoleId = await userService.getUserRoleId(user.name)
       const role = (await userService.getRoles()).data.find(r => r.id === userRoleId) || { name: "", id: 0 }
-      result.data.push({ token: t.token, name: user.name, roleId: role.id, time: t.time, lastActionTime: t.lastActionTime })
+      result.data.push({ userId: t.userId, name: user.name, roleId: role.id, time: t.time, lastActionTime: t.lastActionTime })
     }
   }
   res.status(result.status).json(result);
@@ -135,12 +138,11 @@ router.get("/users", async (req, res) => {
   const userService = new UserService(userServiceProvider)
   const users = (await userService.getUsers()).data
   const roles = (await userService.getRoles()).data
-  const result: UserData[] = []
+  const result = []
   for(let u of users){
     const userRoleId = await userService.getUserRoleId(u.name)
     const role = roles.find(r => r.id === userRoleId) || { name: "", id: 0 }
-    const permissions = await getAllUserPermissions(userRoleId)
-    result.push({ name: u.name, roleId: role.id, permissions })
+    result.push({ name: u.name, roleId: role.id })
   }
   res.status(StatusCodes.OK).json({ success: true, data: result })
 });
@@ -180,9 +182,9 @@ async function loginUser(user: User): Promise<Result<UserLoginResult>> {
   if (!bcrypt.compareSync(user.password, foundUser.password)) return incorrectData(messages.INVALID_USER_DATA)
   const userRoleId = await userService.getUserRoleId(foundUser.name)
   const permissions = await getAllUserPermissions(userRoleId)
-  const random = Math.random()
-  const token = jwt.sign({ name: foundUser.name, roleId: userRoleId, random }, JWT_SECRET, { expiresIn: 1440 });
-  return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, data: [{ token, permissions }] };
+  const userId = randomUUID()
+  const token = randomUUID();
+  return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, token, data: [{ permissions, roleId: userRoleId, userId, name: user.name }] };
 }
 
 export async function hasPermission(req: MyRequest, resource: RESOURCE, permissions: PERMISSION[]): Promise<boolean>{

@@ -4,14 +4,8 @@ import { loadActiveUsersAtom, logoutAtom, userAtom } from './users'
 import { API_ROUTE } from '../types/routes'
 
 export const eventSourceAtom = atom<EventSource | null>(null)
-export const newEventSourceAtom = atom(null, async (get, set, token: string) => {
-    const { token: prevToken } = get(userAtom)
-    const prev = get(eventSourceAtom)
-    if (prev) {
-        if (token === prevToken) return 
-        prev.close()
-    }
-    const eventSource = new EventSource(`${API_ROUTE}/users/events?token=${token}`);
+export const newEventSourceAtom = atom(null, async (get, set) => {
+    const eventSource = new EventSource(`${API_ROUTE}/users/events`);
     eventSource.onmessage = function (event) {
         const data = JSON.parse(event.data)
         console.log("Новое сообщение", data);

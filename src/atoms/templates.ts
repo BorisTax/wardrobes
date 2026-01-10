@@ -15,27 +15,24 @@ import { cloneAppState } from "../functions/wardrobe";
 export const templateListAtom = atom<Template[]>([])
 
 export const loadTemplateListAtom = atom(null, async (get, set) => {
-    const { token } = get(userAtom)
     try {
-        const result: FetchResult<Template> = await fetchGetData(`${API_ROUTE}${TEMPLATES_ROUTE}?token=${token}`)
+        const result: FetchResult<Template> = await fetchGetData(`${API_ROUTE}${TEMPLATES_ROUTE}`)
         if (!result.success) return
         set(templateListAtom, result.data as Template[])
     } catch (e) { console.error(e) }
 })
 
 export const deleteTemplateAtom = atom(null, async (get, set, id) => {
-    const user = get(userAtom)
-    const result = await fetchData(`${API_ROUTE}${TEMPLATES_ROUTE}`, "DELETE", JSON.stringify({ id, token: user.token }))
+    const result = await fetchData(`${API_ROUTE}${TEMPLATES_ROUTE}`, "DELETE", JSON.stringify({ id }))
     await set(loadTemplateListAtom)
     return { success: result.success as boolean, message: result.message as string }
 })
 
 export const addFasadTemplateAtom = atom(null, async (get, set, name: string) => {
-    const user = get(userAtom)
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(combiStateAtom)
     const data = stringifyFasad(rootFasades[index])
-    const formData = JSON.stringify({[TableFields.NAME]: name, [TableFields.DATA]: data, [TableFields.TOKEN]: user.token})
+    const formData = JSON.stringify({[TableFields.NAME]: name, [TableFields.DATA]: data})
     try {
         const result = await fetchData(`${API_ROUTE}${TEMPLATES_ROUTE}`, "POST", formData)
         await set(loadTemplateListAtom)
@@ -47,7 +44,6 @@ export const addFasadTemplateAtom = atom(null, async (get, set, name: string) =>
 })
 
 export const updateFasadTemplateAtom = atom(null, async (get, set, { name, id, rename = false }) => {
-    const user = get(userAtom)
     const index = get(activeRootFasadIndexAtom)
     const { rootFasades } = get(combiStateAtom)
     const data = stringifyFasad(rootFasades[index])
@@ -55,8 +51,7 @@ export const updateFasadTemplateAtom = atom(null, async (get, set, { name, id, r
         [TableFields.NAME]: name,
         [TableFields.ID]: id,
         [TableFields.DATA]: data,
-        rename,
-        [TableFields.TOKEN]: user.token
+        rename
     }
     if(!rename) formData[TableFields.DATA] = data
     try {

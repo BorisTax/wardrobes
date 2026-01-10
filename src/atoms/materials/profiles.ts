@@ -18,19 +18,19 @@ export const profileListAtom = atom<ProfileSchema[]>([initProfile])
 export const activeProfileIndexAtom = atom(0)
 
 export const loadProfileListAtom = atom(null, async (get, set) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
-        const result: FetchResult<ProfileSchema> = await fetchGetData(`${API_ROUTE}/materials/profile?token=${token}`)
+        const result: FetchResult<ProfileSchema> = await fetchGetData(`${API_ROUTE}/materials/profile`)
         if(result.success) set(profileListAtom, result.data as ProfileSchema[]);
     } catch (e) { console.error(e) }
 })
 
 export const deleteProfileAtom = atom(null, async (get, set, profile: ProfileSchema) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
-        const result = await fetchData(`${API_ROUTE}/materials/profile`, "DELETE", JSON.stringify({ id: profile.id, token }))
+        const result = await fetchData(`${API_ROUTE}/materials/profile`, "DELETE", JSON.stringify({ id: profile.id }))
         await set(loadProfileListAtom)
         return { success: result.success as boolean, message: result.message as string }
     }catch (e) { 
@@ -40,12 +40,11 @@ export const deleteProfileAtom = atom(null, async (get, set, profile: ProfileSch
 })
 
 export const addProfileAtom = atom(null, async (get, set, profile: OmitId<ProfileSchema>) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     const data = {
         [TableFields.TYPE]: profile.type,
-        [TableFields.BRUSHID]: profile.brushSpecId,
-        [TableFields.TOKEN]: token
+        [TableFields.BRUSHID]: profile.brushSpecId
     }
     try {
         const result = await fetchData(`${API_ROUTE}/materials/profile`, "POST", JSON.stringify(data))
@@ -58,15 +57,14 @@ export const addProfileAtom = atom(null, async (get, set, profile: OmitId<Profil
 })
 
 export const updateProfileAtom = atom(null, async (get, set, { id, name, type, code, brushId }) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     const data = {
         [TableFields.NAME]: name,
         [TableFields.ID]: id,
         [TableFields.TYPE]: type,
         [TableFields.CODE]: code,
-        [TableFields.BRUSHID]: brushId,
-        [TableFields.TOKEN]: token
+        [TableFields.BRUSHID]: brushId
     }
     try {
         const result = await fetchData(`${API_ROUTE}/materials/profile`, "PUT", JSON.stringify(data))

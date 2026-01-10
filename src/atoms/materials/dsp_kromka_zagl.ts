@@ -11,19 +11,19 @@ import { ExtMap, makeExtMap } from "../storage";
 export const dspKromkaZaglListAtom = atom<ExtMap<DspKromkaZaglSchema>>(new Map())
 
 export const loadDspKromkaZagListAtom = atom(null, async (get, set) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
-        const result: FetchResult<DspKromkaZaglSchema> = await fetchGetData(`${API_ROUTE}${MATERIALS_ROUTE}${DSP_KROMKA_ZAG_ROUTE}?token=${token}`)
+        const result: FetchResult<DspKromkaZaglSchema> = await fetchGetData(`${API_ROUTE}${MATERIALS_ROUTE}${DSP_KROMKA_ZAG_ROUTE}`)
         if(result.success) set(dspKromkaZaglListAtom, makeExtMap(result.data));
     } catch (e) { console.error(e) }
 })
 
 export const deleteDspEdgeAtom = atom(null, async (get, set, id: number) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Delete) return { success: false, message: "" }
     try{
-        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${DSP_KROMKA_ZAG_ROUTE}`, "DELETE", JSON.stringify({ id, token }))
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${DSP_KROMKA_ZAG_ROUTE}`, "DELETE", JSON.stringify({ id }))
         await set(loadDspKromkaZagListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
@@ -33,10 +33,10 @@ export const deleteDspEdgeAtom = atom(null, async (get, set, id: number) => {
 })
 
 export const addDspEdgeAtom = atom(null, async (get, set, data: DspKromkaZaglSchema) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Create) return { success: false, message: "" }
     try {
-        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${DSP_KROMKA_ZAG_ROUTE}`, "POST", JSON.stringify({ data, token }))
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${DSP_KROMKA_ZAG_ROUTE}`, "POST", JSON.stringify({ data }))
         await set(loadDspKromkaZagListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
@@ -46,10 +46,10 @@ export const addDspEdgeAtom = atom(null, async (get, set, data: DspKromkaZaglSch
 })
 
 export const updateDspEdgeAtom = atom(null, async (get, set, data: DspKromkaZaglSchema) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.MATERIALS)?.Update) return { success: false, message: "" }
     try {
-        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${DSP_KROMKA_ZAG_ROUTE}`, "PUT", JSON.stringify({ data, token }))
+        const result = await fetchData(`${API_ROUTE}${MATERIALS_ROUTE}${DSP_KROMKA_ZAG_ROUTE}`, "PUT", JSON.stringify({ data }))
         await set(loadDspKromkaZagListAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 

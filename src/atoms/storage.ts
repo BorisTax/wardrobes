@@ -34,11 +34,11 @@ export const getFasadDefaultCharsAtom = (get: Getter, fasadType: FASAD_TYPE) => 
 
 export const loadedInitialWardrobeDataAtom = atom(false)
 
-export const loadAllDataAtom = atom(null, async (get, set, token, permissions: Map<RESOURCE, UserPermissions>) => {
+export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESOURCE, UserPermissions>) => {
     set(loadedInitialWardrobeDataAtom, false)
     if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
-        let fetchData: FetchResult<AllData> = await (await fetchGetData(`${API_ROUTE}${MATERIALS_ROUTE}${ALLDATA_ROUTE}?token=${token}`))
+        let fetchData: FetchResult<AllData> = await (await fetchGetData(`${API_ROUTE}${MATERIALS_ROUTE}${ALLDATA_ROUTE}`))
         const allData = fetchData.data[0]
         set(fasadTypesAtom, makeDefaultMap(allData.fasadTypes || []))
         set(fasadTypesToCharAtom, allData.fasadTypeToChar || [])
@@ -62,7 +62,7 @@ export const loadAllDataAtom = atom(null, async (get, set, token, permissions: M
         set(consoleTypesAtom, makeDefaultMap(allData.consoleTypes || []))
 
         set(themesAtom, allData.settings.themes.map(d => ({ ...d, in_use: !!d.in_use })))
-        const result: FetchResult<WardrobeData> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_WARDROBEDATA_ROUTE}?token=${token}`)
+        const result: FetchResult<WardrobeData> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${INITIAL_WARDROBEDATA_ROUTE}`)
         const wardData = result.data[0] as WardrobeData
         if (result.success) {
             set(loadedInitialWardrobeDataAtom, true)

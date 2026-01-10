@@ -1,7 +1,5 @@
-import {  OmitId } from "./materials"
-import { Result, Token, PriceData } from "./server"
+import { Result, Token } from "./server"
 import { PermissionSchema, ResourceSchema, User } from "./user"
-import { Template } from "./templates"
 import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from "./schemas"
 import { UserPermissions, RESOURCE, UserRole } from "./user"
 import { SettingsThemeSchema } from "./themes"
@@ -11,7 +9,8 @@ interface IUserAbstractService {
     getUser: (token: string) => Promise<Result<User>>
     getTokens: () => Promise<Result<Token>>
     getToken: (token: string) => Promise<Result<Token>>
-    addToken: ({ token, username, time, lastActionTime }: Token) => Promise<Result<null>>
+    getTokenByUserId: (userId: string) => Promise<Token>
+    addToken: ({ token, userName, userId, time, lastActionTime }: Token) => Promise<Result<null>>
     updateToken: (token: string, lastActionTime: number) => Promise<Result<null>>
     deleteToken: (token: string) => Promise<Result<null>>
     clearAllTokens: () => Promise<Result<null>>

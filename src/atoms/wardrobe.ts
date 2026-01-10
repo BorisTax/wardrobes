@@ -64,9 +64,8 @@ export const setWardrobeDataAtom = atom(null, (get, set, setter: (prev: Wardrobe
 
 
 export const getDetailsAtom = atom(null, async (get, set) => {
-    const { token } = get(userAtom)
     const {wardrobeTypeId: wardType, wardrobeId: wardKind, width, height, depth } = get(wardrobeDataAtom)
-    const result: FetchResult<Detail> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${DETAILS_ROUTE}?token=${token}&${WARDTYPE_ID_PARAM}=${wardType}&${WARDROBE_ID_PARAM}=${wardKind}&width=${width}&height=${height}&depth=${depth}`)
+    const result: FetchResult<Detail> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${DETAILS_ROUTE}?${WARDTYPE_ID_PARAM}=${wardType}&${WARDROBE_ID_PARAM}=${wardKind}&width=${width}&height=${height}&depth=${depth}`)
     const data = result.data as Detail[]
     if (result.success) {
         set(setWardrobeDataAtom, (prev) => ({ ...prev, details: data }))
@@ -75,8 +74,7 @@ export const getDetailsAtom = atom(null, async (get, set) => {
 
 export const detailAtom = atom<Detail | null>(null) 
 export const loadDetailAtom = atom(null, async (get, set, detailId: DETAIL_NAME, wardType:WARDROBE_TYPE,  kind: WARDROBE_KIND, width: number, height: number, depth: number) => {
-    const { token } = get(userAtom)
-    const result = await fetchGetData<Detail>(`${API_ROUTE}${WARDROBE_ROUTE}${DETAIL_ROUTE}?token=${token}&${WARDTYPE_ID_PARAM}=${wardType}&${WARDROBE_ID_PARAM}=${kind}&detailId=${detailId}&width=${width}&height=${height}&depth=${depth}`)
+    const result = await fetchGetData<Detail>(`${API_ROUTE}${WARDROBE_ROUTE}${DETAIL_ROUTE}?${WARDTYPE_ID_PARAM}=${wardType}&${WARDROBE_ID_PARAM}=${kind}&detailId=${detailId}&width=${width}&height=${height}&depth=${depth}`)
     if (result.success) set(detailAtom, result.data[0] as Detail)
 })
 

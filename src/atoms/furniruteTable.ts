@@ -9,17 +9,15 @@ import messages from "../server/messages";
 export const furnitureTableAtom = atom<FurnitureTableSchema[]>([])
 
 export const loadFurnitureTableAtom = atom(null, async (get, set) => {
-    const { token } = get(userAtom)
     try {
-        const result: FetchResult<FurnitureTableSchema> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${FURNITURE_TABLE_ROUTE}?token=${token}`)
+        const result: FetchResult<FurnitureTableSchema> = await fetchGetData(`${API_ROUTE}${WARDROBE_ROUTE}${FURNITURE_TABLE_ROUTE}`)
         set(furnitureTableAtom, result.data as FurnitureTableSchema[])
     } catch (e) { console.error(e) }
 })
 
 export const addvFurnitureTableAtom = atom(null, async (get, set, data: OmitId<FurnitureTableSchema>) => {
-    const { token } = get(userAtom)
     try {
-        const result: FetchResult<FurnitureTableSchema> = await fetchData(`${API_ROUTE}${WARDROBE_ROUTE}${FURNITURE_TABLE_ROUTE}`, "POST", JSON.stringify({...data, token}))
+        const result: FetchResult<FurnitureTableSchema> = await fetchData(`${API_ROUTE}${WARDROBE_ROUTE}${FURNITURE_TABLE_ROUTE}`, "POST", JSON.stringify({...data}))
         set(loadFurnitureTableAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
@@ -29,9 +27,8 @@ export const addvFurnitureTableAtom = atom(null, async (get, set, data: OmitId<F
 })
 
 export const updateFurnitureTableAtom = atom(null, async (get, set, data: Partial<FurnitureTableSchema>) => {
-    const { token } = get(userAtom)
     try {
-        const result: FetchResult<FurnitureTableSchema> = await fetchData(`${API_ROUTE}${WARDROBE_ROUTE}${FURNITURE_TABLE_ROUTE}`, "PUT", JSON.stringify({...data, token}))
+        const result: FetchResult<FurnitureTableSchema> = await fetchData(`${API_ROUTE}${WARDROBE_ROUTE}${FURNITURE_TABLE_ROUTE}`, "PUT", JSON.stringify({...data}))
         set(loadFurnitureTableAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 
@@ -41,9 +38,8 @@ export const updateFurnitureTableAtom = atom(null, async (get, set, data: Partia
 })
 
 export const deleteFurnitureTableAtom = atom(null, async (get, set, id: number) => {
-    const { token } = get(userAtom)
     try {
-        const result: FetchResult<FurnitureTableSchema> = await fetchData(`${API_ROUTE}${WARDROBE_ROUTE}${FURNITURE_TABLE_ROUTE}`, "DELETE", JSON.stringify({ id, token }))
+        const result: FetchResult<FurnitureTableSchema> = await fetchData(`${API_ROUTE}${WARDROBE_ROUTE}${FURNITURE_TABLE_ROUTE}`, "DELETE", JSON.stringify({ id }))
         set(loadFurnitureTableAtom)
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) { 

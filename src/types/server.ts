@@ -3,7 +3,8 @@ import { SpecItem } from "./specification"
 import { FASAD_TYPE } from "./enums"
 export type Token = {
     token: string
-    username: string
+    userName: string
+    userId: string
     time: number
     lastActionTime: number
 }

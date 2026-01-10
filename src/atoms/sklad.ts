@@ -14,31 +14,31 @@ export const stolIncomeAtom = atom<IncomeTableSchema[]>([])
 export const stolOutcomeAtom = atom<OutcomeTableSchema[]>([])
 
 export const loadStolColorsAtom = atom(null, async (get, set) => {
-    const {token, permissions} = get(userAtom)
+    const { permissions} = get(userAtom)
     if(!permissions.get(RESOURCE.SKLAD_STOL)?.Read) return { success: false, message: "" }
     try {
-        const fetchData: FetchResult<StolColorsTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${STOL_COLORS_ROUTE}?token=${token}`))
+        const fetchData: FetchResult<StolColorsTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${STOL_COLORS_ROUTE}`))
         const data = fetchData.data
         set(stolColorsAtom, makeDefaultMap(data))
     } catch (e) { console.error(e) }
 })
 
 export const loadStolSkladAtom = atom(null, async (get, set) => {
-    const {token, permissions} = get(userAtom)
+    const { permissions} = get(userAtom)
     if(!permissions.get(RESOURCE.SKLAD_STOL)?.Read) return { success: false, message: "" }
     try {
-        const fetchData: FetchResult<StolTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${STOL_SKLAD_ROUTE}?token=${token}`))
+        const fetchData: FetchResult<StolTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${STOL_SKLAD_ROUTE}`))
         const data = fetchData.data
         set(stolSkladAtom, data)
     } catch (e) { console.error(e) }
 })
 
 export const loadStolIncomeAtom = atom(null, async (get, set, income: boolean) => {
-    const {token, permissions} = get(userAtom)
+    const { permissions} = get(userAtom)
     if(!permissions.get(RESOURCE.SKLAD_STOL)?.Read) return { success: false, message: "" }
     const route = income?INCOME_ROUTE:OUTCOME_ROUTE
     try {
-        const fetchData: FetchResult<IncomeTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${route}?token=${token}`))
+        const fetchData: FetchResult<IncomeTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${route}`))
         const data = fetchData.data
         income ? set(stolIncomeAtom, data) : set(stolOutcomeAtom, data)
     } catch (e) { console.error(e) }
@@ -46,10 +46,10 @@ export const loadStolIncomeAtom = atom(null, async (get, set, income: boolean) =
 
 
 export const deleteStolAtom = atom(null, async (get, set, data: StolTableSchema) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.SKLAD_STOL)?.Update) return { success: false, message: "" }
     try {
-        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${STOL_SKLAD_ROUTE}`, "PUT", JSON.stringify({ ...data, token }))
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${STOL_SKLAD_ROUTE}`, "PUT", JSON.stringify({ ...data }))
         set(loadStolSkladAtom)
         set(loadStolIncomeAtom, false)
         return { success: result.success as boolean, message: result.message as string }
@@ -60,10 +60,10 @@ export const deleteStolAtom = atom(null, async (get, set, data: StolTableSchema)
 })
 
 export const addStolAtom = atom(null, async (get, set, data: StolTableSchema) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.SKLAD_STOL)?.Update) return { success: false, message: "" }
     try {
-        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${STOL_SKLAD_ROUTE}`, "POST", JSON.stringify({ ...data, token }))
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${STOL_SKLAD_ROUTE}`, "POST", JSON.stringify({ ...data }))
         set(loadStolSkladAtom)
         set(loadStolIncomeAtom, true)
         return { success: result.success as boolean, message: result.message as string }
@@ -75,10 +75,10 @@ export const addStolAtom = atom(null, async (get, set, data: StolTableSchema) =>
 
 
 export const clearStolAtom = atom(null, async (get, set) => {
-    const { token, permissions } = get(userAtom)
+    const { permissions } = get(userAtom)
     if(!permissions.get(RESOURCE.SKLAD_STOL)?.Delete) return { success: false, message: "" }
     try {
-        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${CLEAR_ALL_STOL_SKLAD_ROUTE}`, "DELETE", JSON.stringify({ token }))
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${CLEAR_ALL_STOL_SKLAD_ROUTE}`, "DELETE", JSON.stringify({  }))
         set(loadStolSkladAtom)
         set(loadStolIncomeAtom, true)
         set(loadStolIncomeAtom, false)

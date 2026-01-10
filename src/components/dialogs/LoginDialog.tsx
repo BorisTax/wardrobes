@@ -16,7 +16,7 @@ export default function LoginDialog() {
     const [state, setState] = useState({ loading: false, message: "" })
     const login = (name: string, password: string) => {
         setState({ loading: true, message: "" })
-        const onResolve = (r: Result<UserLoginResult>) => { setUser({ token: r.data[0].token || "", permissions: r.data[0].permissions || [] }); navigate('/') }
+        const onResolve = (r: Result<UserLoginResult>) => { setUser({ name: r.data[0].name || "", roleId: r.data[0].roleId, userId: r.data[0].userId, permissions: r.data[0].permissions || [] }); navigate('/') }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }
         const onCatch = () => { setState({ loading: false, message: "Ошибка сервера" }) }
         onFetch(`${API_ROUTE}/users/login`, JSON.stringify({ name, password }), onResolve, onReject, onCatch)

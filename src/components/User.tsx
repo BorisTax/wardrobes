@@ -19,12 +19,12 @@ export default function User() {
     }
     }>Выход</button>
     useEffect(() => {
-      const { token } = getInitialUser();
-        setUser({ token, permissions: [] }, true);
+        const initUser = getInitialUser();
+        setUser({ ...initUser, permissions: [] }, true);
     }, [setUser]);
     useEffect(() => {
         if (!user.name) navigate('/login')
-      }, [user.name]);
+    }, [user.name]);
     return <div className="user">
         {user.name === "" ? loginButton :<>
             <div className="d-flex flex-column align-items-center p-0">

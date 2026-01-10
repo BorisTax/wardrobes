@@ -37,13 +37,14 @@ export type User = {
 export type UserData = {
     name: string
     roleId: number
+    userId: string
     permissions: PermissionSchema[]
 }
 
 export type ActiveUser = {
     name: string
     roleId: number
-    token: string
+    userId: string
     time: number
     lastActionTime: number
 }
@@ -61,4 +62,4 @@ export type PermissionSchema = {
     delete: number,
 }
 
-export type UserLoginResult = { token: string, permissions: PermissionSchema[] }
+export type UserLoginResult = { name: string, roleId: number, userId: string, permissions: PermissionSchema[] }

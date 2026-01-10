@@ -40,8 +40,7 @@ export function getSettingsProvider() {
 }
 export const userRoleParser = async (req: Request, res: Response, next: NextFunction) => {
   const userService = new UserService(userServiceProvider)
-  let token = req.query.token as string
-  token = (req.body as RequestBody).token || token || "";
+  let token = req.cookies.token as string
   (req as MyRequest).token = token
   const result = await userService.getUser(token)
   const user = result.data && result.data[0]

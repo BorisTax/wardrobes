@@ -1,6 +1,6 @@
 import { atom } from 'jotai'
 import { SERVER_EVENTS } from '../types/enums'
-import { loadActiveUsersAtom, logoutAtom, userAtom } from './users'
+import { loadActiveUsersAtom, logoutAtom } from './users'
 import { API_ROUTE } from '../types/routes'
 
 export const eventSourceAtom = atom<EventSource | null>(null)

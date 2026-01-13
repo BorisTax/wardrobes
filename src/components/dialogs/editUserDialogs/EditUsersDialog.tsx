@@ -31,9 +31,9 @@ export default function EditUsersDialog() {
     const activeUserListHeader = [{ caption: "Имя" }, { caption: "Права" }, { caption: "Время с момента входа" }, { caption: "Время последней активности" }]
     const [userIndex, setUserIndex] = useState(0)
     const user = users[userIndex] || { name: "", roleId: 0 }
-    const userlist = users.map(u => {
+    const userlist = users.map((u, index) => {
         const role = roles.get(u.roleId) || ""
-        return { key: u.name, data: [u.name, role] }
+        return { key: index, data: [u.name, role] }
     })
     const activeuserlist = activeUsers.map(u => {
         const you = u.userId === userId

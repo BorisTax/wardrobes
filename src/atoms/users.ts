@@ -1,5 +1,4 @@
 import { atom, Setter, Getter } from "jotai"
-import { jwtDecode } from 'jwt-decode'
 import { fetchData, fetchGetData } from "../functions/fetch"
 import { PermissionSchema, UserPermissions, RESOURCE, UserData, UserLoginResult, UserRole } from "../types/user"
 import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
@@ -73,7 +72,6 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         set(loadUserRolesAtom)
         set(loadResourceListAtom)
     }
-    set(setTimerAtom)
 }
 )
 
@@ -84,24 +82,16 @@ export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
         return
     }
     set(userAtom, {name: result.data[0].name, roleId: result.data[0].roleId, userId: result.data[0].userId, permissions: result.data[0].permissions || [] })
-    set(setTimerAtom)
 })
 
 
-const timerAtom = atom<NodeJS.Timeout | undefined>(undefined)
-const setTimerAtom = atom(null, async (get, set) => {
-    const timer = get(timerAtom)
-    clearInterval(timer)
-    set(timerAtom, setInterval(() => {
-        set(verifyUserAtom)
-    }, 300000))
-})
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
-    const user = get(userAtom)
     set(closeEventSourceAtom)
     set(userAtom, { name: "", roleId: 0, userId: "", permissions: [] })
+    localStorage.setItem('combiState', "")
     fetchData(`${API_ROUTE}${USERS_ROUTE}/logout`, "POST", "")
 })
+
 export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, userId: string) => {
     await fetchData(`${API_ROUTE}${USERS_ROUTE}/logoutUser`, "POST", JSON.stringify({ userId }))
     set(loadActiveUsersAtom)

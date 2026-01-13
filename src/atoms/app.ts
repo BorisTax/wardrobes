@@ -1,8 +1,8 @@
 import { Getter, Setter, atom } from 'jotai';
-import { AppState, HistoryState, InitialAppState, SetAtomComfirm } from "../types/app";
+import { AppState, COMBI_STORAGE, HistoryState, InitialAppState, SetAtomComfirm } from "../types/app";
 import { cloneAppState, createAppState, getFasadHeight, getFasadWidth, getInitialAppState, stringifyAppState } from "../functions/wardrobe";
 import FasadState from "../classes/FasadState";
-import { excludeFasadParent, getFasadState, trySetHeight, trySetWidth } from "../functions/fasades";
+import { excludeFasadParent, getFasadState, trySetHeight, trySetWidth, updateFasadParents } from "../functions/fasades";
 import { openFile, readFile, saveState } from '../functions/file';
 import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
@@ -43,16 +43,26 @@ export const combiStateJSONAtom = atom(get => {
         rootFasades: state.rootFasades.map(f => excludeFasadParent(f))
     }
 })
-export const combiStateAtom = atom((get) => get(combiAtom).state, (get, set, state: AppState, useHistory: boolean, calculate = true) => {
+
+type CombiStateParams = {
+    state: AppState,
+    useHistory?: boolean,
+    calculate?: boolean,
+    updateParents?: boolean
+}
+export const combiStateAtom = atom((get) => get(combiAtom).state, (get, set, state: AppState, useHistory: boolean = false, calculate: boolean = true, updateParents: boolean = false) => {
     const app = get(combiAtom)
-    localStorage.setItem('combiState', stringifyAppState(state))
+    localStorage.setItem(COMBI_STORAGE, stringifyAppState(state))
+    if(updateParents){
+        state.rootFasades.forEach(r => updateFasadParents(r))
+    }
     if (useHistory) set(combiAtom, { previous: app, state, next: null });
     else set(combiAtom, { ...app, state })
     if (get(loadedInitialCombiStateAtom) && calculate) set(calculateCombiSpecificationsAtom)
 })
 export const saveToStorageAtom = atom(null, (get) => {
     const state = get(combiStateJSONAtom)
-    localStorage.setItem('combiState', JSON.stringify(state))
+    localStorage.setItem(COMBI_STORAGE, JSON.stringify(state))
 })
 export const undoAtom = atom(null, (get: Getter, set: Setter) => {
     const app = get(combiAtom)
@@ -71,10 +81,11 @@ export const openStateAtom = atom(null, async (get: Getter, set: Setter) => {
     const { result, file } = await openFile()
     if (result && file) {
         const { result, content } = await readFile(file)
-        if (result && content) set(combiAtom, { state: content.state as AppState, next: null, previous: null })
+        if (result && content) set(combiStateAtom, content.state as AppState, false, true, true )
     }
 })
 export const resetAppDataAtom = atom(null, (get: Getter, set: Setter) => {
+    localStorage.setItem(COMBI_STORAGE, "")
     set(loadInitialCombiStateAtom)
 })
 export const setFasadCountAtom = atom(null, async (get, set, [newCount, confirmCallback]: SetAtomComfirm<number>) => {
@@ -101,7 +112,7 @@ export const setProfileIdAtom = atom(null, async (get, set, [profileId, confirmC
     const { wardWidth, wardHeight, fasadCount, profile, type, rootFasades } = newAppData
     if (profile.type === newProfile.type) {
         newAppData.profile = newProfile
-        set(combiStateAtom, newAppData, true)
+        set(combiStateAtom,  newAppData,  true)
         return
     }
     const fasadWidth = getFasadWidth(wardWidth, fasadCount, type, newProfile.type)
@@ -152,7 +163,7 @@ export const setWardTypeAtom = atom(null, async (get, set, [wardType, confirmCal
 
 async function setAppDataAtom(condition: boolean, newAppData: AppState, set: Setter, confirmCallback: () => Promise<boolean>, useHistory: boolean) {
     if (condition) {
-        set(combiStateAtom, newAppData, useHistory)
+        set(combiStateAtom,  newAppData, useHistory)
         return true
     }
     const result = await confirmCallback()

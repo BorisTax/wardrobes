@@ -43,9 +43,7 @@ function App() {
   const loadInitialAppState = useSetAtom(loadInitialCombiStateAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
-    const storage = localStorage.getItem('combiState')
-    const appState: AppState = storage ? JSON.parse(storage) : getInitialAppState()
-    setAppData(appState, false)
+
     loadInitialAppState()
     loadVersion()
   }, [user.name])

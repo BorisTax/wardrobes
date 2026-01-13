@@ -76,7 +76,7 @@ export const applyTemplateAtom = atom(null, (get, set, state: FasadState) => {
     res = res && trySetHeight(newFasad, appData.rootFasades,height, minSize)
     if(res){
         appData.rootFasades[index] = newFasad
-        set(combiStateAtom, appData, true)
+        set(combiStateAtom, appData, true, true, true)
         return { success: true, message: "" }
     } else return { success: false, message: messages.TEMPLATE_APPLY_ERROR }
 })

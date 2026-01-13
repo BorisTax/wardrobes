@@ -3,6 +3,8 @@ import { FASAD_TYPE } from "./enums"
 import { Profile } from "./materials"
 import { WARDROBE_TYPE } from "./wardrobe"
 
+export const COMBI_STORAGE = 'combiState'
+
 export type InitialAppState = {
     wardWidth: number
     wardHeight: number

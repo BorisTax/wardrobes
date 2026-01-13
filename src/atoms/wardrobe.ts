@@ -1,7 +1,6 @@
 import { atom } from "jotai"
 import { CONSOLE_TYPE, DETAIL_NAME, Detail, ExtComplectData, FasadesData, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { FetchResult, fetchGetData } from "../functions/fetch"
-import { userAtom } from "./users"
 import { calculateSpecificationsAtom } from "./specification"
 import { API_ROUTE, DETAIL_ROUTE, DETAILS_ROUTE, WARDROBE_ID_PARAM, WARDROBE_ROUTE, WARDTYPE_ID_PARAM } from "../types/routes"
 import { loadedInitialWardrobeDataAtom } from "./storage"

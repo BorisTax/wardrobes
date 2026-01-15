@@ -7,16 +7,22 @@ import { userAtom } from "../../atoms/users"
 import { useNavigate } from "react-router-dom"
 import { UserLoginResult } from "../../types/user"
 import { API_ROUTE } from "../../types/routes"
+import { notifyMessageAtom } from "../../atoms/messages"
 
 export default function LoginDialog() {
     const navigate = useNavigate()
+    const setNotifyMessage = useSetAtom(notifyMessageAtom)
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const setUser = useSetAtom(userAtom)
     const [state, setState] = useState({ loading: false, message: "" })
     const login = (name: string, password: string) => {
         setState({ loading: true, message: "" })
-        const onResolve = (r: Result<UserLoginResult>) => { setUser({ name: r.data[0].name || "", roleId: r.data[0].roleId, userId: r.data[0].userId, permissions: r.data[0].permissions || [] }); navigate('/') }
+        const onResolve = (r: Result<UserLoginResult>) => { 
+            setNotifyMessage("")
+            setUser({ name: r.data[0].name || "", roleId: r.data[0].roleId, userId: r.data[0].userId, permissions: r.data[0].permissions || [] }); 
+            navigate('/') 
+        }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }
         const onCatch = () => { setState({ loading: false, message: "Ошибка сервера" }) }
         onFetch(`${API_ROUTE}/users/login`, JSON.stringify({ name, password }), onResolve, onReject, onCatch)

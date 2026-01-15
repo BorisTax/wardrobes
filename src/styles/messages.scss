@@ -22,3 +22,31 @@
         
     }
 }
+
+@mixin notifyMessage {
+    position: fixed;
+    display: inline;
+    bottom: 50px;
+    max-width: 300px;
+    border-radius: 10px;
+    border: 1px solid;
+    background-color: $warningColor;
+    font-size: 1.5em;
+    font-style: italic;
+    padding: 1em;
+    transition-property: right;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+}
+
+.notifyMessageOff {
+    @include notifyMessage();
+    -visibility: hidden;
+    right: -100px;
+}
+
+.notifyMessageOn {
+    @include notifyMessage();
+    -visibility: visible;
+    right: 50px;
+}

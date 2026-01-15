@@ -25,10 +25,11 @@ const clearExpiredTokens = async () => {
   for (let t of tokens) {
     if (Date.now() - t.lastActionTime > expiredInterval) {
       await userService.deleteToken(t.token)
-      console.log('Token was deleted by expiration', t.userName, t.userId, t.token.substring(0, 7) + "....." + t.token.substring(t.token.length - 7))
+      console.log('Token was deleted by expiration', t.userName, t.userId, t.token)
       events.forEach((v, k) => {
         try {
           if (k === t.token) {
+            logoutUser(t.token, SERVER_EVENTS.EXPIRE)
             v.end()
             events.delete(k)
           }
@@ -52,11 +53,11 @@ export function notifyActiveUsers(message: SERVER_EVENTS) {
   })
 }
 
-export function logoutUser(token: string) {
+export function logoutUser(token: string, message: SERVER_EVENTS) {
   events.forEach((v, k) => {
     try {
       if (k === token) {
-        v.write(getEventSourceMessage(SERVER_EVENTS.LOGOUT))
+        v.write(getEventSourceMessage(message))
         events.delete(k)
       }
     } catch (e) {

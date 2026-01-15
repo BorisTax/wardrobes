@@ -16,25 +16,22 @@ import Header from './components/Header'
 import { createToolTip } from './functions/functions'
 import LoginDialog from './components/dialogs/LoginDialog'
 const EditMaterialDialog = lazy(() => import('./components/dialogs/EditDataBaseDialog'))
-import {  userAtom } from './atoms/users'
+import { userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
-import { AppState } from './types/app'
-import { getInitialAppState } from './functions/wardrobe'
 import { combiStateAtom, loadInitialCombiStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import EditUsersDialog from './components/dialogs/editUserDialogs/EditUsersDialog'
-import SettingsDialog from './components/dialogs/SettingsDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
 const CombiFasades = lazy(() => import('./components/CombiFasades'))
 const WardrobeCalculator = lazy(() => import('./components/WardrobeCalculator'))
-const EditSpecificationDialog = lazy(()=>import('./components/dialogs/editDataBaseDialogs/EditSpecificationDialog'))
 import VerboseDataDialog from './components/dialogs/VerboseDataDialog'
-import SchemaDialog from './components/dialogs/SchemaDialog'
 import NavBar from './components/NavBar'
 import LoadIndicator from './components/LoadIndicator'
 import Decoration from './components/decoration/Decoration'
 import Settings from './components/Settings'
+import { RESOURCE } from './types/user'
+import NotifyMessage from './components/dialogs/NotifyMessage'
 const Sklad = lazy(() => import('./components/Sklad/Sklad'))
 function App() {
   const user = useAtomValue(userAtom)
@@ -63,31 +60,29 @@ function App() {
   return (
     <>
       <BrowserRouter>
-      <Decoration />
-      <Header />
-      <div className='d-flex flex-nowrap'>
+        <Decoration />
+        <Header />
+        <div className='d-flex flex-nowrap'>
           {user.name && <NavBar />}
           <Suspense fallback={<LoadIndicator />}>
             <Routes>
-              <Route path="/" element={<></>}/>
-              <Route path="/login" element={<LoginDialog />}/>
-              <Route path="/combi" element={<CombiFasades />} />
-              <Route path="/calculator" element={<WardrobeCalculator />} />
-              <Route path="/sklad_stol" element={<Sklad />} />
-              <Route path="/schema" element={<SchemaDialog />} />
-              <Route path="/specification" element={<EditSpecificationDialog />} />
-              <Route path="/materials" element={<EditMaterialDialog />} />
-              <Route path="/users" element={<EditUsersDialog />} />
-              <Route path="/settings" element={<Settings />} />
+              <Route path="/" element={<></>} />
+              <Route path="/login" element={<LoginDialog />} />
+              {user.permissions.get(RESOURCE.COMBIFASADES)?.Read ? <Route path="/combi" element={<CombiFasades />} /> : <></>}
+              {user.permissions.get(RESOURCE.WARDROBES)?.Read ? <Route path="/calculator" element={<WardrobeCalculator />} /> : <></>}
+              {user.permissions.get(RESOURCE.SKLAD_STOL)?.Read ? <Route path="/sklad_stol" element={<Sklad />} /> : <></>}
+              {user.permissions.get(RESOURCE.MATERIALS_DB)?.Read ? <Route path="/materials" element={<EditMaterialDialog />} /> : <></>}
+              {user.permissions.get(RESOURCE.USERS)?.Read ? <Route path="/users" element={<EditUsersDialog />} /> : <></>}
+              {user.permissions.get(RESOURCE.SETTINGS)?.Read ? <Route path="/settings" element={<Settings />} /> : <></>}
             </Routes>
           </Suspense>
         </div>
-      <CopyFasadDialog />
-      <FasadTemplatesDialog />
-      <SettingsDialog />
-      <VerboseDataDialog />
-      <MessageDialog />
-      <ConfirmDialog />
+        <CopyFasadDialog />
+        <FasadTemplatesDialog />
+        <VerboseDataDialog />
+        <MessageDialog />
+        <ConfirmDialog />
+        <NotifyMessage />
       </BrowserRouter>
     </>
   )

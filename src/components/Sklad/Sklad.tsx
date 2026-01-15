@@ -1,8 +1,5 @@
-import { useEffect, useState } from "react"
-import { useAtomValue, useSetAtom } from "jotai"
-import { userAtom } from "../../atoms/users"
-import { RESOURCE } from "../../types/user"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react"
+import { useSetAtom } from "jotai"
 import SkladStol from "./SkladStol"
 import SkladStolIncome from "./SkladStolIncome"
 import ImageButtonBar from "../inputs/Image'ButtonBar"
@@ -21,15 +18,9 @@ matGroup.set(SkladGroup.OUTCOME, "Расход")
 
 export default function EditDataBaseDialog() {
     const saveToExcel = useSetAtom(saveStolToExcelAtom)
-    const navigate = useNavigate()
-    const { permissions } = useAtomValue(userAtom)
-    const perm = permissions.get(RESOURCE.SKLAD_STOL)
     const [group, setGroup] = useState<SkladGroup>(SkladGroup.SKLAD)
     const header = [...matGroup.entries()].map((item, index) => <div key={index} className={(group === item[0] ? "tab-button-active" : "tab-button-inactive")} onClick={() => { setGroup(item[0] as SkladGroup) }} role="button">{item[1]}</div>)
     const content = getGroup(group)
-    useEffect(() => {
-        if (!perm?.Read) navigate('/')
-    }, [perm])
     return <div className="database-edit-container">
             <ImageButtonBar justifyContent="flex-start">
                 <ImageButton icon="excel" title="Сохранить в Excel" caption="Сохранить в Excel" onClick={() => saveToExcel()} />

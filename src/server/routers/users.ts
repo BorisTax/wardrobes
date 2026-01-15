@@ -78,7 +78,7 @@ router.post("/logoutuser", async (req, res) => {
   const {userId} = req.body;
   const {token} = await userService.getTokenByUserId(userId)
   const result = await userService.deleteToken(token)
-  if(result.success) logoutUser(token)
+  if(result.success) logoutUser(token, SERVER_EVENTS.LOGOUT)
   res.status(result.status).json(result);
 });
 

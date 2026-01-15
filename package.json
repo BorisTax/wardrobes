@@ -1,7 +1,7 @@
 {
   "name": "wardrobes",
   "private": true,
-  "version": "2.4.10",
+  "version": "2.5.0",
   "type": "module",
   "engines": {
     "node": ">=18.0.0 <22.0.0"

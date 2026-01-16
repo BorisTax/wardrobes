@@ -12,6 +12,7 @@ import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
 import EditContainer from "../../EditContainer"
+import Button from "../../inputs/Button"
 
 export default function EditUsersDialog() {
     const navigate = useNavigate()

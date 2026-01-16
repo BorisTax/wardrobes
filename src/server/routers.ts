@@ -9,7 +9,7 @@ import settingsRouter from './routers/settings.js'
 import wardrobeRouter from './routers/wardrobe.js'
 import skladRouter from './routers/sklad.js'
 import { StatusCodes } from "http-status-codes";
-import { USERS_ROUTE, PERMISSIONS_ROUTE, MATERIALS_ROUTE, TEMPLATES_ROUTE, SPECIFICATION_ROUTE, PRICES_ROUTE, DATABASE_ROUTE, WARDROBE_ROUTE, VERSION_ROUTE, SKLAD_ROUTE, SETTINGS_ROUTE }  from '../types/routes';
+import { USERS_ROUTE, PERMISSIONS_ROUTE, MATERIALS_ROUTE, TEMPLATES_ROUTE, SPECIFICATION_ROUTE, DATABASE_ROUTE, WARDROBE_ROUTE, VERSION_ROUTE, SKLAD_ROUTE, SETTINGS_ROUTE }  from '../types/routes';
 export const router = express.Router();
 
 router.use(USERS_ROUTE, userRouter)

@@ -42,6 +42,7 @@ export const userRoleParser = async (req: Request, res: Response, next: NextFunc
   const userService = new UserService(userServiceProvider)
   let token = req.cookies.token as string
   (req as MyRequest).token = token
+  await userService.updateToken(token)
   const result = await userService.getUser(token)
   const user = result.data && result.data[0]
   if (user) {

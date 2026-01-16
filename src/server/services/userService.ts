@@ -1,5 +1,5 @@
 import { Result, Token } from '../../types/server.js'
-import { User } from "../../types/user.js"
+import { RESOURCE, User, UserPermissions } from "../../types/user.js"
 import { IUserService, IUserServiceProvider } from '../../types/services.js'
 import messages from '../messages.js'
 import { userServiceProvider } from '../options.js'
@@ -8,6 +8,7 @@ import { UserRole } from '../../types/user.js'
 import { StatusCodes } from 'http-status-codes'
 import { badRequestResponse, conflictResponse, forbidResponse } from '../functions/response.js'
 import { Response } from 'express'
+import { getAllUserPermissions } from '../routers/permissions.js'
 
 export const events: Map<string, Response> = new Map()
 
@@ -16,6 +17,13 @@ export async function getTokens(): Promise<Token[]> {
   const result = await userService.getTokens()
   if (result.success) return result.data as Token[]
   return []
+}
+export async function getUserPermissions(userName: string, resource: RESOURCE): Promise<UserPermissions> {
+  const userService = new UserService(userServiceProvider);
+  const roleId = await userService.getUserRoleId(userName)
+  const permissions = await getAllUserPermissions(roleId)
+  const perm = permissions.find(p => p.resourceId === resource)
+  return { Read: !!perm?.read, Create: !!perm?.create, Update: !!perm?.update, Delete: !!perm?.delete }
 }
 
 const expiredInterval = 3600 * 1000
@@ -43,8 +51,12 @@ const clearExpiredTokens = async () => {
 
 setInterval(clearExpiredTokens, 60000)
 
-export function notifyActiveUsers(message: SERVER_EVENTS) {
-  events.forEach((v, k) => {
+export async function notifyActiveUsers(message: SERVER_EVENTS) {
+  const tokens = await getTokens()
+  events.forEach(async (v, k) => {
+    const name = tokens.find(t => t.token === k)?.userName || ""
+    const perm = await getUserPermissions(name, RESOURCE.USERS)
+    if (!perm.Read) return
     try {
       v.write(getEventSourceMessage(message))
     } catch (e) {

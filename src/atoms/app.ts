@@ -8,11 +8,15 @@ import { calculateCombiSpecificationsAtom } from './specification';
 import { FetchResult, fetchGetData } from '../functions/fetch';
 import { settingsAtom } from './settings';
 import { WARDROBE_TYPE } from '../types/wardrobe';
-import { API_ROUTE, INITIAL_COMBISTATE_ROUTE, VERSION_ROUTE, WARDROBE_ROUTE } from '../types/routes';
+import { API_ROUTE, DONT_SLEEP_ROUTE, INITIAL_COMBISTATE_ROUTE, VERSION_ROUTE, WARDROBE_ROUTE } from '../types/routes';
 import { profileAtom } from "./materials/profiles";
 import { Profile } from '../types/materials';
 import { ProfileType } from '../types/enums';
 import { setActiveRootFasadAtom } from './fasades';
+
+setInterval(async () => {
+    await fetchGetData(`${API_ROUTE}${DONT_SLEEP_ROUTE}`)
+}, 1000 * 60)
 
 export const versionAtom = atom("")
 export const loadVersionAtom = atom(null, async (get, set) => {

@@ -48,6 +48,18 @@ export type ActiveUser = {
     time: number
     lastActionTime: number
 }
+export type UserAction = {
+    name: string
+    time: number
+    action: Action
+}
+
+export enum Action {
+    LOGIN = "LOGIN",
+    LOGOUT = "LOGOUT",
+    FORCE_LOGOUT = "FORCE_LOGOUT",
+    EXPIRE_LOGOUT = "EXPIRE_LOGOUT",
+}
 
 export type USER_ROLE_SCHEMA = {
     user: string,

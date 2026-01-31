@@ -1,26 +1,31 @@
 import { dataBaseQuery } from '../functions/database.js'
 import { USER_TABLE_NAMES } from '../../types/schemas.js';
-import { IPermissionServiceProvider } from '../../types/services.js';
 import { Result } from '../../types/server.js';
 import messages from '../messages.js';
 import { PermissionSchema, UserPermissions, RESOURCE, ResourceSchema } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
+import { IPermissionService } from '../../types/services.js';
 const { PERMISSIONS, RESOURCES } = USER_TABLE_NAMES
-export default class PermissionServiceSQLite implements IPermissionServiceProvider {
+export default class PermissionServiceSQLite implements IPermissionService {
     dbFile: string;
     constructor(dbFile: string) {
         this.dbFile = dbFile
     }
-
-    async getPermissions(roleId: number): Promise<Result<PermissionSchema>> {
+    async getAllPermissions(): Promise<Result<PermissionSchema>> {
+        return dataBaseQuery(this.dbFile, `select * from ${PERMISSIONS};`, [], { successStatusCode: StatusCodes.OK })
+    }
+    async getAllRolePermissions(roleId: number): Promise<Result<PermissionSchema>> {
         return dataBaseQuery(this.dbFile, `select * from ${PERMISSIONS} where roleId=?;`, [roleId], { successStatusCode: StatusCodes.OK })
+    }
+    async getPermissions(roleId: number, resourceId: RESOURCE): Promise<Result<PermissionSchema>> {
+        return dataBaseQuery(this.dbFile, `select * from ${PERMISSIONS} where roleId=? and resourceId=?;`, [roleId, resourceId], { successStatusCode: StatusCodes.OK })
     }
     async addPermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions): Promise<Result<null>>  {
         const { Create, Read, Update, Delete } = permissions
-        return dataBaseQuery(this.dbFile, `insert into ${PERMISSIONS} ('roleId', 'resource', 'create', 'read', 'update', 'delete') values(?, ?, ?, ?, ?, ?);`, [roleId, resource, Create ? 1 : 0, Read ? 1 : 0, Update ? 1 : 0, Delete ? 1 : 0], { successStatusCode: StatusCodes.CREATED, successMessage: messages.DATA_UPDATED })
+        return dataBaseQuery(this.dbFile, `insert into ${PERMISSIONS} ('roleId', 'resourceId', 'create', 'read', 'update', 'delete') values(?, ?, ?, ?, ?, ?);`, [roleId, resource, Create ? 1 : 0, Read ? 1 : 0, Update ? 1 : 0, Delete ? 1 : 0], { successStatusCode: StatusCodes.CREATED, successMessage: messages.DATA_UPDATED })
     }
     async deletePermissions(roleId: number, resource: RESOURCE): Promise<Result<null>>  {
-        return dataBaseQuery(this.dbFile, `DELETE FROM ${PERMISSIONS} WHERE roleId=? and resource=?;`, [roleId, resource], { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
+        return dataBaseQuery(this.dbFile, `DELETE FROM ${PERMISSIONS} WHERE roleId=? and resourceId=?;`, [roleId, resource], { successStatusCode: StatusCodes.OK, successMessage: messages.DATA_UPDATED })
     }
     async updatePermissions(roleId: number, resource: RESOURCE, permissions: UserPermissions): Promise<Result<null>>  {
         const { Create, Read, Update, Delete } = permissions

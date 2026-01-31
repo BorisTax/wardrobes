@@ -4,36 +4,35 @@ import { FASAD_TYPE, ProfileType } from "../../../types/enums";
 import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema, WardrobesDimensionsSchema, WardrobesFasadCountSchema } from "../../../types/schemas";
 import { Result } from "../../../types/server";
 import { WARDROBE_KIND, WARDROBE_TYPE, FasadesData, WardrobeData, CONSOLE_TYPE } from "../../../types/wardrobe";
-import { getDataBaseProvider } from "../../options";
-import { DataBaseService } from "../../services/dataBaseService";
 import { getDetails } from "../../wardrobes/specifications/corpus";
 import { getProfiles } from "./profiles";
 import { getFasadDefaultChar } from "./materials";
+import { getDataBaseService } from "../../options";
 
 
 export async function getWardrobes() {
-  const service = new DataBaseService(getDataBaseProvider<WardrobesSchema>());
+  const service = getDataBaseService<WardrobesSchema>()
   return await service.getData(DATA_TABLE_NAMES.WARDROBES, [], {});
 }
 export async function getWardrobeTypes() {
-  const service = new DataBaseService(getDataBaseProvider<WardrobeTypesSchema>());
+  const service = getDataBaseService<WardrobeTypesSchema>()
   return await service.getData(DATA_TABLE_NAMES.WARDROBE_TYPES, [], {});
 }
 
 export async function getWardrobesDimensions() {
-  const service = new DataBaseService(getDataBaseProvider<WardrobesDimensionsSchema>());
+  const service = getDataBaseService<WardrobesDimensionsSchema>()
   return await service.getData(DATA_TABLE_NAMES.WARDROBES_DIMENSIONS, [], {});
 }
 export async function getWardrobesFasadCount() {
-  const service = new DataBaseService(getDataBaseProvider<WardrobesFasadCountSchema>());
+  const service = getDataBaseService<WardrobesFasadCountSchema>()
   return await service.getData(DATA_TABLE_NAMES.WARDROBES_FASAD_COUNT, [], {});
 }
 export async function getConsoleTypes() {
-  const service = new DataBaseService(getDataBaseProvider<ConsoleTypesSchema>());
+  const service = getDataBaseService<ConsoleTypesSchema>()
   return await service.getData(DATA_TABLE_NAMES.CONSOLE_TYPES, [], {});
 }
 export async function getFasadTypes() {
-    const service = new DataBaseService(getDataBaseProvider<FasadTypesSchema>());
+    const service = getDataBaseService<FasadTypesSchema>()
     return await service.getData(DATA_TABLE_NAMES.FASAD_TYPES_TABLE, [], {});
   }
 

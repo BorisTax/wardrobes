@@ -1,6 +1,6 @@
 import { atom } from 'jotai'
 import { SERVER_EVENTS } from '../types/enums'
-import { loadActiveUsersAtom, logoutAtom } from './users'
+import { loadActiveUsersAtom, loadUserActionsAtom, logoutAtom } from './users'
 import { API_ROUTE } from '../types/routes'
 import { notifyMessageAtom } from './messages'
 
@@ -21,6 +21,7 @@ export const newEventSourceAtom = atom(null, async (get, set) => {
                 break;
             case SERVER_EVENTS.UPDATE_ACTIVE_USERS:
                 set(loadActiveUsersAtom)
+                set(loadUserActionsAtom)
                 break;
             default:
         }

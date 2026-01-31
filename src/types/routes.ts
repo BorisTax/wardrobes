@@ -1,6 +1,7 @@
 
 export const API_ROUTE = '/api';
 export const USERS_ROUTE = '/users';
+export const USER_ACTIONS_ROUTE = '/userActions';
 export const VERIFY_ROUTE = '/verify';
 export const PERMISSIONS_ROUTE = USERS_ROUTE + '/permissions';
 export const RESOURCES_ROUTE = '/resources';
@@ -46,3 +47,5 @@ export const CLEAR_ALL_STOL_SKLAD_ROUTE = '/clear_all';
 
 export const SETTINGS_ROUTE = '/settings';
 export const THEME_ROUTE = '/theme';
+
+export const DONT_SLEEP_ROUTE = '/dont_sleep';

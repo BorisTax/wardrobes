@@ -9,7 +9,7 @@ import settingsRouter from './routers/settings.js'
 import wardrobeRouter from './routers/wardrobe.js'
 import skladRouter from './routers/sklad.js'
 import { StatusCodes } from "http-status-codes";
-import { USERS_ROUTE, PERMISSIONS_ROUTE, MATERIALS_ROUTE, TEMPLATES_ROUTE, SPECIFICATION_ROUTE, DATABASE_ROUTE, WARDROBE_ROUTE, VERSION_ROUTE, SKLAD_ROUTE, SETTINGS_ROUTE }  from '../types/routes';
+import { USERS_ROUTE, PERMISSIONS_ROUTE, MATERIALS_ROUTE, TEMPLATES_ROUTE, SPECIFICATION_ROUTE, DATABASE_ROUTE, WARDROBE_ROUTE, VERSION_ROUTE, SKLAD_ROUTE, SETTINGS_ROUTE, DONT_SLEEP_ROUTE }  from '../types/routes';
 export const router = express.Router();
 
 router.use(USERS_ROUTE, userRouter)
@@ -23,4 +23,7 @@ router.use(SETTINGS_ROUTE, settingsRouter)
 router.use(SKLAD_ROUTE, skladRouter)
 router.get(VERSION_ROUTE, (req, res) => {
     res.status(StatusCodes.OK).json({ success: true, data: [process.env.VERSION] })
+})
+router.get(DONT_SLEEP_ROUTE, (req, res) => {
+    res.sendStatus(StatusCodes.OK)
 })

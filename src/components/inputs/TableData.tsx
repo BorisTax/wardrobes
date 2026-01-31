@@ -8,13 +8,14 @@ export type TableDataHeader = {
 }
 export type TableDataRow = {
     key: number | string,
-    data: ReactNode[]
+    data: ReactNode[],
+    styles?: object[]
 }
 
 export type TableDataProps = {
     header: TableDataHeader[]
     content: TableDataRow[]
-    styles?: object[][]
+    styles?: object
     rowNumbers?: boolean
     onSelectRow?: (key: number | string) => void
     setRowStyle?:(row: ReactNode[]) => string
@@ -25,11 +26,10 @@ function initSorted(header: TableDataHeader[]) {
     const sort = header.findIndex(h => h.sorted)
     return sort
 }
-export default function TableData({ header, content, styles = [[{}]], rowNumbers = true, onSelectRow = () => { }, setRowStyle = () => "" }: TableDataProps) {
+export default function TableData({ header, content, styles = {}, rowNumbers = true, onSelectRow = () => { }, setRowStyle = () => "" }: TableDataProps) {
     const [selectedRow, setSelectedRow] = useState(-1)
     const [sortedColumn, setSortedColumn] = useState(initSorted(header))
     const [desc, setDesc] = useState(true)
-    const defStyles = content.map((i, r) => i.data.map((_, c) => { if (styles[r]) return styles[r][c]; else return {} }))
     const sorted = sortedColumn >= 0 ? content.toSorted((r1, r2) => r1.data[sortedColumn] !== null && r1.data[sortedColumn] !== undefined && r2.data[sortedColumn] !== null && r2.data[sortedColumn] !== undefined && r1.data[sortedColumn] < r2.data[sortedColumn] ? desc ? -1 : 1 : desc ? 1 : -1) : content 
     const contents = sorted.map((r, rowIndex) => {
         const className = setRowStyle(r.data)
@@ -39,12 +39,12 @@ export default function TableData({ header, content, styles = [[{}]], rowNumbers
                 if (onSelectRow) { onSelectRow(r.key) }
             }}>
             {rowNumbers && <td className="table-data-cell">{rowIndex + 1}</td>}
-            {r.data.map((i, colIndex) => <td key={'item' + colIndex} className="table-data-cell" style={{ ...defStyles[rowIndex][colIndex] }}>{i}</td>)}
+            {r.data.map((i, colIndex) => <td key={'item' + colIndex} className="table-data-cell" style={r.styles ? r.styles[colIndex] : {}}>{i}</td>)}
         </tr>})
     // useEffect(() => {
     //     setSortedColumn(header.findIndex(h => h.sorted))
     // }, [header])
-    return <div className="table-data">
+    return <div className="table-data" style={{ ...styles }}>
         <table>
             <thead>
                 <tr>

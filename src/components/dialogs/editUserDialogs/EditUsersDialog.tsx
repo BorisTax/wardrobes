@@ -12,7 +12,7 @@ import EditDataSection, { EditDataItem } from "../EditDataSection"
 import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
 import EditContainer from "../../EditContainer"
-import Button from "../../inputs/Button"
+import UserActionsDialog from "./UserActionsDialog"
 
 export default function EditUsersDialog() {
     const navigate = useNavigate()
@@ -60,7 +60,7 @@ export default function EditUsersDialog() {
         loadUsers()
         loadActiveUsers()
     }, [perm, loadActiveUsers, loadUsers])
-    return <div className="edit-user-container">
+    return <div className="p-2">
         <div className="d-flex gap-2">
             <ImageButton title="Обновить" icon='update' onClick={() => { loadUsers(); loadActiveUsers() }} />
         </div>
@@ -93,13 +93,17 @@ export default function EditUsersDialog() {
         </EditContainer>
         <hr />
         В сети
-        <TableData header={activeUserListHeader} content={activeuserlist} />
+        <div className="p-2">
+            <TableData header={activeUserListHeader} content={activeuserlist} />
+        </div>
         <hr />
+        <UserActionsDialog />
+        <hr/>
         <EditPermissionsDialog />
     </div>
 }
 
-function TimeField({ time }: { time: number }) {
+export function TimeField({ time }: { time: number }) {
     const [, rerender] = useState(0)
     useEffect(() => {
         const timeout = setTimeout(() => rerender(Math.random()))

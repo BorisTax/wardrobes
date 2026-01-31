@@ -213,6 +213,7 @@ export enum USER_TABLE_NAMES {
     USER_ROLES = 'user_roles',
     SUPERUSERS = 'superusers',
     SUPERROLES = 'superroles',
+    USERLOG = 'userlog',
 }
 
 export enum SKLAD_TABLE_NAMES {

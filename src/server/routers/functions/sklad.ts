@@ -1,29 +1,28 @@
 import { IncomeTableSchema, OutcomeTableSchema, SKLAD_TABLE_NAMES, StolColorsTableSchema, StolTableSchema } from "../../../types/schemas"
 import { incorrectData, noExistData } from "../../functions/database"
 import messages from "../../messages"
-import { getDataBaseSkladProvider } from "../../options"
-import { DataBaseService } from "../../services/dataBaseService"
+import { getDataBaseSkladService } from "../../options"
 
 export async function getStolColors() {
-    const service = new DataBaseService(getDataBaseSkladProvider<StolColorsTableSchema>())
+    const service = getDataBaseSkladService<StolColorsTableSchema>()
     return await service.getData(SKLAD_TABLE_NAMES.STOL_COLORS, ["id", "name"], {})
 }
 export async function getStol() {
-    const service = new DataBaseService(getDataBaseSkladProvider<StolTableSchema>())
+    const service = getDataBaseSkladService<StolTableSchema>()
     return await service.getData(SKLAD_TABLE_NAMES.STOL_SKLAD, ["id", "amount", "length"], {})
 }
 export async function getStolIncome() {
-    const service = new DataBaseService(getDataBaseSkladProvider<IncomeTableSchema>())
+    const service = getDataBaseSkladService<IncomeTableSchema>()
     return await service.getData(SKLAD_TABLE_NAMES.STOL_INCOME, ["id", "amount", "length", "date"], {})
 }
 export async function getStolOutcome() {
-    const service = new DataBaseService(getDataBaseSkladProvider<OutcomeTableSchema>())
+    const service = getDataBaseSkladService<OutcomeTableSchema>()
     return await service.getData(SKLAD_TABLE_NAMES.STOL_OUTCOME, ["id", "amount", "length", "date"], {})
 }
 
 export async function addStol(data: StolTableSchema) {
-    const service = new DataBaseService(getDataBaseSkladProvider<StolTableSchema>())
-    const incomeService = new DataBaseService(getDataBaseSkladProvider<IncomeTableSchema>())
+    const service = getDataBaseSkladService<StolTableSchema>()
+    const incomeService = getDataBaseSkladService<IncomeTableSchema>()
     const stols = (await getStol()).data
     const stol = stols.find(s => s.length === data.length && s.id === data.id)
     if (!stol){
@@ -35,8 +34,8 @@ export async function addStol(data: StolTableSchema) {
 }
 
 export async function removeStol(data: StolTableSchema) {
-    const service = new DataBaseService(getDataBaseSkladProvider<StolTableSchema>())
-    const outcomeService = new DataBaseService(getDataBaseSkladProvider<OutcomeTableSchema>())
+    const service = getDataBaseSkladService<StolTableSchema>()
+    const outcomeService = getDataBaseSkladService<OutcomeTableSchema>()
     const stols = (await getStol()).data
     const stol = stols.find(s => s.length === data.length && s.id === data.id)
     if (!stol){
@@ -54,7 +53,7 @@ export async function removeStol(data: StolTableSchema) {
 
 
 export async function clearStol() {
-    const service = new DataBaseService(getDataBaseSkladProvider<StolTableSchema>())
+    const service = getDataBaseSkladService<StolTableSchema>()
     await service.clearData(SKLAD_TABLE_NAMES.STOL_SKLAD)
     await service.clearData(SKLAD_TABLE_NAMES.STOL_INCOME)
     return await service.clearData(SKLAD_TABLE_NAMES.STOL_OUTCOME)

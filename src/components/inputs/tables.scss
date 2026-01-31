@@ -22,7 +22,7 @@
 
 .table-data {
   font-size: 0.8rem !important;
-  max-height: 85svh !important;
+  -max-height: 85svh !important;
   background-color: $defaultBackColor !important;
   overflow: auto !important;
 }

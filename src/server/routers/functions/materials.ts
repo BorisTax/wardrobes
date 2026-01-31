@@ -1,6 +1,4 @@
 import { AllData, DATA_TABLE_NAMES, DefaultSchema, FasadDefaultCharSchema, LacobelSchema } from "../../../types/schemas"
-import { getDataBaseProvider } from "../../options"
-import { DataBaseService } from "../../services/dataBaseService"
 import { getConsoleTypes, getFasadTypes, getWardrobes, getWardrobesDimensions, getWardrobesFasadCount, getWardrobeTypes } from "./wardrobe"
 import { getCharPurpose, getChars, getCharTypes } from "./chars"
 import { getFasadTypeToChar } from './fasadTypeToChar'
@@ -8,17 +6,18 @@ import { getProfiles, getProfileTypes } from "./profiles"
 import { getSpecList, getSpecToCharList, getUnits } from "./spec"
 import { getDetailsFromDB } from "./details"
 import { getThemes } from "./settings"
+import { getDataBaseService } from "../../options"
 
 export async function getLacobels() {
-    const service = new DataBaseService(getDataBaseProvider<LacobelSchema>())
+    const service = getDataBaseService<LacobelSchema>()
     return await service.getData(DATA_TABLE_NAMES.LACOBEL, [], {})
   }
 export async function getFasadDefaultChar() {
-  const service = new DataBaseService(getDataBaseProvider<FasadDefaultCharSchema>())
+  const service = getDataBaseService<FasadDefaultCharSchema>()
   return await service.getData(DATA_TABLE_NAMES.FASAD_DEFAULT_CHAR, [], {})
 }
 export async function getMatPurposes() {
-    const service = new DataBaseService(getDataBaseProvider<DefaultSchema>())
+    const service = getDataBaseService<DefaultSchema>()
     return await service.getData(DATA_TABLE_NAMES.MAT_PURPOSE, [], {})
   }
 export async function getAllData(): Promise<AllData> {

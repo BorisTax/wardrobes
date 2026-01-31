@@ -1,12 +1,12 @@
 import { dataBaseQuery, dataBaseTransaction } from '../functions/database.js'
 import { Query, SETTINGS_TABLE_NAMES } from '../../types/schemas.js';
-import { ISettingsServiceProvider } from '../../types/services.js';
 import { Result } from '../../types/server.js';
 import messages from '../messages.js';
 import { StatusCodes } from 'http-status-codes';
 import { SettingsThemeSchema } from '../../types/themes.js';
+import { ISettingsService } from '../../types/services.js';
 const { THEMES } = SETTINGS_TABLE_NAMES
-export default class SettingsServiceSQLite implements ISettingsServiceProvider {
+export default class SettingsServiceSQLite implements ISettingsService {
     dbFile: string;
     constructor(dbFile: string) {
         this.dbFile = dbFile

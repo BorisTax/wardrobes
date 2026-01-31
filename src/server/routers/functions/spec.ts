@@ -4,40 +4,39 @@ import { DATA_TABLE_NAMES, ProfileSchema, SpecSchema, SpecToCharSchema, UnitsSch
 import { Result } from "../../../types/server"
 import { CORPUS_SPECS, FasadSpecById } from "../../../types/specification"
 import { SpecificationMultiResult, SpecificationResult, WardrobeData } from "../../../types/wardrobe"
-import { getDataBaseProvider } from "../../options"
-import { DataBaseService } from "../../services/dataBaseService"
 import { getCorpusSpecification } from "../../wardrobes/specifications/corpus"
 import { getExtComplectSpecification } from "../../wardrobes/specifications/extComplect/extComplect"
 import { createFasades, getFasadSpecification } from "../../wardrobes/specifications/fasades"
 import { getProfiles } from "./profiles"
 import { AppState } from "../../../types/app"
+import { getDataBaseService } from "../../options"
 
 export async function getSpecList(): Promise<Result<SpecSchema>> {
-  const service = new DataBaseService(getDataBaseProvider<SpecSchema>())
+  const service = getDataBaseService<SpecSchema>()
   return await service.getData(DATA_TABLE_NAMES.SPEC, [], {}, { order: "name" })
 }
 export async function getSpecToCharList(): Promise<Result<SpecToCharSchema>> {
-  const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())
+  const service = getDataBaseService<SpecToCharSchema>()
   return await service.getData(DATA_TABLE_NAMES.SPEC_TO_CHAR, [], {})
 }
 export async function updateSpecData(data: SpecSchema): Promise<Result<null>> {
-  const service = new DataBaseService(getDataBaseProvider<SpecSchema>())
+  const service = getDataBaseService<SpecSchema>()
   const { id, ...otherData } = data
   return await service.updateData(DATA_TABLE_NAMES.SPEC, { id }, otherData)
 }
 
 export async function getAllCharOfSpec(specId: number) {
-  const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())
+  const service = getDataBaseService<SpecToCharSchema>()
   const result = await service.getData(DATA_TABLE_NAMES.SPEC_TO_CHAR, ["charId"], { id: specId })
   const charId = (result.data).map(c => c.charId)
   return charId
 }
 export async function addSpecToChar(data: SpecToCharSchema): Promise<Result<SpecToCharSchema>> {
-  const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())
+  const service = getDataBaseService<SpecToCharSchema>()
   return await service.addData(DATA_TABLE_NAMES.SPEC_TO_CHAR, data)
 }
 export async function deleteSpecToChar(data: SpecToCharSchema): Promise<Result<null>> {
-  const service = new DataBaseService(getDataBaseProvider<SpecToCharSchema>())
+  const service = getDataBaseService<SpecToCharSchema>()
   return await service.deleteData(DATA_TABLE_NAMES.SPEC_TO_CHAR, data)
 }
 
@@ -76,6 +75,6 @@ export async function getSpecCombiData(data: AppState, verbose = false): Promise
 
 
 export async function getUnits(): Promise<Result<UnitsSchema>> {
-  const service = new DataBaseService(getDataBaseProvider<UnitsSchema>())
+  const service = getDataBaseService<UnitsSchema>()
   return await service.getData(DATA_TABLE_NAMES.UNITS, [], {})
 }

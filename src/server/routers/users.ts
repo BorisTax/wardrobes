@@ -1,16 +1,17 @@
 import messages from '../messages.js'
 import express from "express";
 import bcrypt from 'bcrypt';
-import { UserService, events, getTokens, logoutUser, notifyActiveUsers } from '../services/userService.js';
+import { clearUserActions, events, getTokens, getUserActions, logoutUser, notifyActiveUsers } from '../services/userService.js';
 import { accessDenied, hashData, incorrectData } from '../functions/database.js';
 import { MyRequest, Result, Token } from '../../types/server.js';
-import { ActiveUser, PERMISSION, User, UserLoginResult } from "../../types/user.js";
-import {  userServiceProvider } from '../options.js';
+import { Action, ActiveUser, PERMISSION, User, UserLoginResult } from "../../types/user.js";
 import { SERVER_EVENTS } from "../../types/enums.js";
 import { RESOURCE } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
 import { getAllUserPermissions, getPermissions } from './permissions.js';
 import { randomUUID } from 'crypto';
+import { getUserService } from '../options.js';
+import { USER_ACTIONS_ROUTE } from '../../types/routes.js';
 
 const router = express.Router();
 export default router
@@ -34,7 +35,7 @@ router.get("/events", async (req, res) => {
 
 router.get("/verify", async (req, res) => {
   const token = (req as MyRequest).token as string;
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const tokens = await userService.getTokens();
   const tokenData = (tokens.data as Token[]).find((t: Token) => t.token === token)
   if (!tokenData) return res.json({ success: false });
@@ -49,13 +50,13 @@ router.post("/login", async (req, res) => {
   const user = req.body;
   if (!user.name) user.name = "";
   if (!user.password) user.password = "";
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const result = await loginUser(user);
   const time = Date.now()
   const lastActionTime = time
   if (result.success) {
     userService.addToken({ token: result.token as string, userName: user.name, userId: result.data[0].userId, time, lastActionTime })
-    notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
+    await notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
     //const userRoleId = await userService.getUserRoleId(user.name)
     //const permissions = await getAllUserPermissions(userRoleId)
     res.cookie('token', result.token, { httpOnly: true })
@@ -66,25 +67,32 @@ router.post("/login", async (req, res) => {
 
 router.post("/logout", async (req, res) => {
   const token = (req as MyRequest).token as string;
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
+  const user = await userService.getUser(token)
   const result = await userService.deleteToken(token)
+  if (user) await userService.dispatchUserAction(user.name, Action.LOGOUT)
   res.cookie('token', "")
   res.status(result.status).json(result);
 });
 
 router.post("/logoutuser", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const {userId} = req.body;
   const {token} = await userService.getTokenByUserId(userId)
+  const user = await userService.getUser(token)
   const result = await userService.deleteToken(token)
-  if(result.success) logoutUser(token, SERVER_EVENTS.LOGOUT)
+  if(result.success) {
+    logoutUser(token, SERVER_EVENTS.LOGOUT)
+    await notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
+    if (user) await userService.dispatchUserAction(user.name, Action.FORCE_LOGOUT)
+  }
   res.status(result.status).json(result);
 });
 
 router.get("/active", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const result: Result<ActiveUser> = { success: true, status: StatusCodes.OK, data: [] }
   const tokens = await getTokens();
   const users = await userService.getUsers();
@@ -101,16 +109,16 @@ router.get("/active", async (req, res) => {
 
 router.post("/logoutall", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   userService.clearAllTokens()
-  notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
+  await notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   events.clear()
   res.status(StatusCodes.OK).json({ success: true });
 });
 
 router.post("/add", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const user = req.body;
   if (!user.name || !user.password) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.registerUser(user.name, user.password, user.roleId);
@@ -118,7 +126,7 @@ router.post("/add", async (req, res) => {
 });
 router.post("/update", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const user = req.body;
   if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.updateUser({userName: user.name, password: user.password, roleId: user.roleId});
@@ -126,7 +134,7 @@ router.post("/update", async (req, res) => {
 });
 router.delete("/delete", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const user = req.body;
   if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.deleteUser(user);
@@ -135,7 +143,7 @@ router.delete("/delete", async (req, res) => {
 
 router.get("/users", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const users = (await userService.getUsers()).data
   const roles = (await userService.getRoles()).data
   const result = []
@@ -149,14 +157,25 @@ router.get("/users", async (req, res) => {
 
 router.get("/roles", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   let result = await userService.getRoles()
+  res.status(result.status).json(result)
+});
+
+router.get(USER_ACTIONS_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
+  const result = await getUserActions()
+  res.status(result.status).json(result)
+});
+router.delete(USER_ACTIONS_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
+  const result = await clearUserActions()
   res.status(result.status).json(result)
 });
 
 router.post("/addRole", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const { name } = req.body;
   if (!name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.addRole(name);
@@ -165,7 +184,7 @@ router.post("/addRole", async (req, res) => {
 
 router.delete("/deleteRole", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const { id } = req.body;
   if (!id) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
   const result = await userService.deleteRole(id);
@@ -173,7 +192,7 @@ router.delete("/deleteRole", async (req, res) => {
 });
 
 async function loginUser(user: User): Promise<Result<UserLoginResult>> {
-  const userService = new UserService(userServiceProvider)
+  const userService = getUserService()
   const result = await userService.getUsers()
   if (!result.success) return { success: false, status: StatusCodes.NOT_FOUND, data: [] };
   const userList = result.data
@@ -184,6 +203,7 @@ async function loginUser(user: User): Promise<Result<UserLoginResult>> {
   const permissions = await getAllUserPermissions(userRoleId)
   const userId = randomUUID()
   const token = randomUUID();
+  userService.dispatchUserAction(user.name, Action.LOGIN)
   return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, token, data: [{ permissions, roleId: userRoleId, userId, name: user.name }] };
 }
 

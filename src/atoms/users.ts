@@ -1,8 +1,8 @@
 import { atom, Setter, Getter } from "jotai"
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { PermissionSchema, UserPermissions, RESOURCE, UserData, UserLoginResult, UserRole } from "../types/user"
+import { PermissionSchema, UserPermissions, RESOURCE, UserData, UserLoginResult, UserRole, UserAction } from "../types/user"
 import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
-import { API_ROUTE, USERS_ROUTE, VERIFY_ROUTE } from "../types/routes"
+import { API_ROUTE, USER_ACTIONS_ROUTE, USERS_ROUTE, VERIFY_ROUTE } from "../types/routes"
 import { DefaultMap, loadAllDataAtom, loadedInitialWardrobeDataAtom, makeDefaultMap } from "./storage"
 import { loadInitialCombiStateAtom } from "./app"
 import { loadResourceListAtom } from "./permissions"
@@ -31,6 +31,7 @@ export const loadUserRolesAtom = atom(null, async (get,set)=>{
 
 export const allUsersAtom = atom<UserData[]>([])
 export const activeUsersAtom = atom<ActiveUserState[]>([])
+export const userActionsAtom = atom<UserAction[]>([])
 export const loadUsersAtom = atom(null, async (get, set) => {
     const { permissions } = get(userAtom)
     const perm = permissions.get(RESOURCE.USERS)
@@ -46,6 +47,23 @@ export const loadActiveUsersAtom = atom(null, async (get, set) => {
     const result = await fetchGetData(`${API_ROUTE}/users/active`)
     if(result.success){
         set(activeUsersAtom, result.data as ActiveUserState[])
+    }
+})
+export const loadUserActionsAtom = atom(null, async (get, set) => {
+    const { permissions } = get(userAtom)
+    if (!permissions.get(RESOURCE.USERS)?.Read) return
+    const result = await fetchGetData(`${API_ROUTE}${USERS_ROUTE}${USER_ACTIONS_ROUTE}`)
+    if(result.success){
+        set(userActionsAtom, result.data as UserAction[])
+    }
+})
+
+export const clearUserActionsAtom = atom(null, async (get, set) => {
+    const { permissions } = get(userAtom)
+    if (!permissions.get(RESOURCE.USERS)?.Read) return
+    const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${USER_ACTIONS_ROUTE}`, "DELETE", "")
+    if(result.success){
+        set(userActionsAtom, result.data as UserAction[])
     }
 })
 

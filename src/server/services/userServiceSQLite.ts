@@ -1,13 +1,13 @@
 import { dataBaseQuery, dataBaseTransaction, hashData } from '../functions/database.js'
-import { IUserServiceProvider } from '../../types/services.js';
 import { Result, Token } from '../../types/server.js';
-import { USER_ROLE_SCHEMA, User } from "../../types/user.js";
+import { USER_ROLE_SCHEMA, User, UserAction } from "../../types/user.js";
 import messages from '../messages.js';
 import { Query, USER_TABLE_NAMES } from '../../types/schemas.js';
 import {  UserRole } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
-const { USERS, TOKENS, PERMISSIONS, USER_ROLES, ROLES, SUPERUSERS, SUPERROLES } = USER_TABLE_NAMES
-export default class UserServiceSQLite implements IUserServiceProvider {
+import { IUserService } from '../../types/services.js';
+const { USERS, TOKENS, PERMISSIONS, USER_ROLES, ROLES, SUPERUSERS, SUPERROLES, USERLOG } = USER_TABLE_NAMES
+export default class UserServiceSQLite implements IUserService {
     dbFile: string;
     constructor(dbFile: string) {
         this.dbFile = dbFile
@@ -16,9 +16,9 @@ export default class UserServiceSQLite implements IUserServiceProvider {
         const result = await dataBaseQuery<User>(this.dbFile, `select * from ${USERS};`, [], { successStatusCode: StatusCodes.OK })
         return { ...result, data: result.data }
     }
-    async getUser(token: string): Promise<Result<User>> {
+    async getUser(token: string): Promise<User> {
         const result = await dataBaseQuery<User>(this.dbFile, `SELECT * FROM ${USERS} join ${TOKENS} on ${TOKENS}.token=? and ${USERS}.name=${TOKENS}.userName;`, [token], { successStatusCode: StatusCodes.OK })
-        return { ...result, data: result.data }
+        return result.data[0]
     }
     async getTokens(): Promise<Result<Token>> {
         const result = await dataBaseQuery<Token>(this.dbFile, `select * from ${TOKENS};`, [], { successStatusCode: StatusCodes.OK })
@@ -35,7 +35,8 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     async addToken({ token, userId, userName, time, lastActionTime }: Token): Promise<Result<null>> {
         return dataBaseQuery(this.dbFile, `INSERT INTO ${TOKENS} (token, userId, userName, time, lastActionTime) VALUES(?, ?, ?, ?, ?)`, [token, userId, userName, time, lastActionTime], { successStatusCode: StatusCodes.CREATED })
     }
-    async updateToken(token: string, lastActionTime: number): Promise<Result<null>> {
+    async updateToken(token: string): Promise<Result<null>> {
+        const lastActionTime = Date.now()
         return dataBaseQuery(this.dbFile, `UPDATE ${TOKENS} set lastActionTime=? WHERE token=?;`, [lastActionTime, token], { successStatusCode: StatusCodes.OK })
     }
     async deleteToken(token: string): Promise<Result<null>> {
@@ -91,5 +92,17 @@ export default class UserServiceSQLite implements IUserServiceProvider {
     }
     async getSuperRoles(): Promise<Result<{ roleId: number }>> {
         return await dataBaseQuery(this.dbFile, `SELECT * FROM ${SUPERROLES};`, [], { successStatusCode: StatusCodes.OK })
+    }
+    async dispatchUserAction(name: string, action: string): Promise<Result<null>> {
+        const time = Date.now()
+        return dataBaseQuery<null>(this.dbFile, `INSERT INTO ${USERLOG} (name, time, action) VALUES(?,?,?);`, [name, time, action], { successStatusCode: StatusCodes.CREATED, successMessage: "" })
+    }
+    async getUserActions() {
+        const result = await dataBaseQuery<UserAction>(this.dbFile, `select * from ${USERLOG};`, [], { successStatusCode: StatusCodes.OK })
+        return { ...result, data: result.data }
+    }
+    async clearUserActions() {
+        const result = await dataBaseQuery<UserAction>(this.dbFile, `delete from ${USERLOG};`, [], { successStatusCode: StatusCodes.OK })
+        return { ...result, data: [] }
     }
 }

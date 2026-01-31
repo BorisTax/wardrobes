@@ -1,12 +1,12 @@
 import { Result, Token } from "./server"
-import { PermissionSchema, ResourceSchema, User } from "./user"
+import { PermissionSchema, RESOURCE, ResourceSchema, User, UserAction, UserPermissions } from "./user"
 import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from "./schemas"
-import { UserPermissions, RESOURCE, UserRole } from "./user"
+import { UserRole } from "./user"
 import { SettingsThemeSchema } from "./themes"
 
-interface IUserAbstractService {
+export interface IUserService {
     getUsers: () => Promise<Result<User>>
-    getUser: (token: string) => Promise<Result<User>>
+    getUser: (token: string) => Promise<User>
     getTokens: () => Promise<Result<Token>>
     getToken: (token: string) => Promise<Result<Token>>
     getTokenByUserId: (userId: string) => Promise<Token>
@@ -23,6 +23,9 @@ interface IUserAbstractService {
     deleteRole: (id: number) => Promise<Result<null>>
     getSuperUsers: () => Promise<Result<{ name: string }>>
     getSuperRoles: () => Promise<Result<{ roleId: number }>>
+    dispatchUserAction: (userName: string, action: string) => Promise<Result<null>>
+    getUserActions: () => Promise<Result<UserAction>>
+    clearUserActions: () => Promise<Result<null>>
 }
 
 export interface IDataBaseService<T> {
@@ -33,40 +36,18 @@ export interface IDataBaseService<T> {
     clearData: (table: TABLE_NAMES) => Promise<Result<null>>
 }
 
-interface IPermissionAbstractService {
-    getPermissions: (roleId: number) => Promise<Result<PermissionSchema>>
+export interface IPermissionService {
+    getAllPermissions: () => Promise<Result<PermissionSchema>>
+    getAllRolePermissions: (roleId: number) => Promise<Result<PermissionSchema>>
+    getPermissions: (roleId: number, resourceId: RESOURCE) => Promise<Result<PermissionSchema>>
     addPermissions: (roleId: number, resource: RESOURCE, permissions: UserPermissions) => Promise<Result<null>>
     deletePermissions: (roleId: number, resource: RESOURCE) => Promise<Result<null>>
     updatePermissions: (roleId: number, resource: RESOURCE, permissions: UserPermissions) => Promise<Result<null>>
     getResourceList: () => Promise<Result<ResourceSchema>>
 }
 
-interface ISettingsAbstractService {
+export interface ISettingsService {
     getThemes: () => Promise<Result<SettingsThemeSchema>>
     setTheme: (id: number) => Promise<Result<null>>
 }
 
-export interface IDataBaseServiceProvider<T> extends IDataBaseService<T> {
-    dbFile: string
-}
-
-export interface IUserServiceProvider extends IUserAbstractService {
-    dbFile: string
-}
-export interface IUserService extends IUserAbstractService {
-    provider: IUserServiceProvider
-}
-
-export interface IPermissionServiceProvider extends IPermissionAbstractService {
-    dbFile: string
-}
-export interface ISettingsServiceProvider extends ISettingsAbstractService {
-    dbFile: string
-}
-export interface IPermissionService extends IPermissionAbstractService {
-    provider: IPermissionServiceProvider
-}
-
-export interface ISettingsService extends ISettingsAbstractService {
-    provider: ISettingsServiceProvider
-}

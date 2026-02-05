@@ -8,7 +8,8 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { router } from './routers.js'
 import { userRoleParser } from './options.js';
-import { API_ROUTE } from '../types/routes.js';
+import { API_ROUTE, DONT_SLEEP_ROUTE } from '../types/routes.js';
+import { StatusCodes } from 'http-status-codes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,6 +23,9 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 5
 app.use(bodyParser.json({limit: '50mb'}))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, '../../dist')))
+app.use(DONT_SLEEP_ROUTE, (req, res) => {
+    res.sendStatus(StatusCodes.OK)
+})
 app.use(userRoleParser)
 
 app.use(API_ROUTE, router)

@@ -24,6 +24,3 @@ router.use(SKLAD_ROUTE, skladRouter)
 router.get(VERSION_ROUTE, (req, res) => {
     res.status(StatusCodes.OK).json({ success: true, data: [process.env.VERSION] })
 })
-router.get(DONT_SLEEP_ROUTE, (req, res) => {
-    res.sendStatus(StatusCodes.OK)
-})

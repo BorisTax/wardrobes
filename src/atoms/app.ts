@@ -15,7 +15,7 @@ import { ProfileType } from '../types/enums';
 import { setActiveRootFasadAtom } from './fasades';
 
 setInterval(async () => {
-    await fetchGetData(`${API_ROUTE}${DONT_SLEEP_ROUTE}`)
+    await fetchGetData(`${DONT_SLEEP_ROUTE}`)
 }, 1000 * 60)
 
 export const versionAtom = atom("")

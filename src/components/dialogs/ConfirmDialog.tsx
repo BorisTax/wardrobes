@@ -10,7 +10,7 @@ export default function ConfirmDialog() {
         setConfirmDialogRef(dialogRef)
     }, [setConfirmDialogRef])
     return <dialog ref={dialogRef}>
-        <div className="confirm-message">{message}</div>
+        <div className="confirm-message"><pre>{message}</pre></div>
         <div className="d-flex justify-content-center gap-2">
             <button className="btn btn-primary" onClick={() => { onYesAction(); dialogRef.current?.close(); }}>Да</button>
             <button className="btn btn-secondary"  onClick={() => { onNoAction(); dialogRef.current?.close(); }}>Нет</button>

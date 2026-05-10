@@ -47,6 +47,7 @@ export const CLEAR_ALL_STOL_SKLAD_ROUTE = '/clear_all_stol';
 export const MAT_SKLAD_ROUTE = '/mat_sklad';
 export const MAT_COLORS_SKLAD_ROUTE = '/mat_colors';
 export const MAT_THICK_SKLAD_ROUTE = '/mat_thickness';
+export const MAT_DEPART_SKLAD_ROUTE = '/mat_department';
 export const MAT_INCOME_ROUTE = '/incomeMat';
 export const MAT_OUTCOME_ROUTE = '/outcomeMat';
 export const CLEAR_ALL_MAT_SKLAD_ROUTE = '/clear_all_mat';

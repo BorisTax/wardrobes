@@ -10,7 +10,7 @@ import { stolColorsAtom, stolIncomeAtom, stolOutcomeAtom, stolSkladAtom } from "
 import { getDateFormat } from "../functions/date";
 import Excel from "exceljs"
 import {saveAs} from "file-saver";
-import { matSkladAtom, matSkladColorsAtom, matSkladIncomeAtom, matSkladOutcomeAtom, matSkladThickAtom } from "./skladMat";
+import { matSkladAtom, matSkladColorsAtom, matSkladDepartAtom, matSkladIncomeAtom, matSkladOutcomeAtom, matSkladThickAtom } from "./skladMat";
 
 export const saveToExcelAtom = atom(null, async (get, _, specification: SpecificationResult[], fileName: string) => {
     const spec = get(specListAtom)
@@ -82,6 +82,7 @@ export const saveStolToExcelAtom = atom(null, async (get, _) => {
 export const saveMatToExcelAtom = atom(null, async (get, _) => {
     const colors = get(matSkladColorsAtom)
     const thick = get(matSkladThickAtom)
+    const depart = get(matSkladDepartAtom)
     const matSklad = get(matSkladAtom)
     const matIncome = get(matSkladIncomeAtom)
     const matOutCome = get(matSkladOutcomeAtom)
@@ -90,14 +91,16 @@ export const saveMatToExcelAtom = atom(null, async (get, _) => {
     const incomeSheet = workbook.addWorksheet('Приход');
     const outcomeSheet = workbook.addWorksheet('Расход');
     skladSheet.columns = [
-        { header: 'Материал', key: 'name', width: 40, alignment: { vertical: 'middle', horizontal: 'center' } },
-        { header: 'Толщина', key: 'name', width: 12, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Цех', key: 'depart', width: 12, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Материал', key: 'mat', width: 40, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Толщина', key: 'thick', width: 12, alignment: { vertical: 'middle', horizontal: 'center' } },
         { header: 'Длина', key: 'length', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } },
-        { header: 'Ширина', key: 'name', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Ширина', key: 'width', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } },
         { header: 'Кол-во', key: 'amount', width: 8, alignment: { vertical: 'middle', horizontal: 'center' } }
     ];
     incomeSheet.columns = [
         { header: 'Дата', key: 'date', width: 20, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Цех', key: 'depart', width: 12, alignment: { vertical: 'middle', horizontal: 'center' } },
         { header: 'Материал', key: 'name', width: 40, alignment: { vertical: 'middle', horizontal: 'center' } },
         { header: 'Толщина', key: 'thickId', width: 12, alignment: { vertical: 'middle', horizontal: 'center' } },
         { header: 'Длина', key: 'length', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } },
@@ -107,9 +110,9 @@ export const saveMatToExcelAtom = atom(null, async (get, _) => {
 
     ];
     outcomeSheet.columns = incomeSheet.columns
-    const skladRows = matSklad.map(s => [colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count])
-    const incomeRows = matIncome.map(s => [getDateFormat(s.date), colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count, s.user])
-    const outcomeRows = matOutCome.map(s => [getDateFormat(s.date), colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count, s.user])
+    const skladRows = matSklad.map(s => [depart.get(s.department), colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count])
+    const incomeRows = matIncome.map(s => [getDateFormat(s.date), depart.get(s.department), colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count, s.user])
+    const outcomeRows = matOutCome.map(s => [getDateFormat(s.date), depart.get(s.department), colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count, s.user])
     skladSheet.addRows(skladRows)
     incomeSheet.addRows(incomeRows)
     outcomeSheet.addRows(outcomeRows)

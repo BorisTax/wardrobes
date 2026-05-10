@@ -1,8 +1,8 @@
 import { atom } from "jotai";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { RESOURCE } from "../types/user";
-import { IncomeMatTableSchema, MatSkladColorsTableSchema, MatSkladTableSchema, MatSkladThicknessTableSchema, OutcomeMatTableSchema } from "../types/schemas";
-import { API_ROUTE, SKLAD_ROUTE, MAT_COLORS_SKLAD_ROUTE, MAT_SKLAD_ROUTE, MAT_INCOME_ROUTE, MAT_OUTCOME_ROUTE, CLEAR_ALL_MAT_SKLAD_ROUTE, MAT_THICK_SKLAD_ROUTE } from "../types/routes";
+import { IncomeMatTableSchema, MatSkladColorsTableSchema, MatSkladDepartmentTableSchema, MatSkladTableSchema, MatSkladThicknessTableSchema, OutcomeMatTableSchema } from "../types/schemas";
+import { API_ROUTE, SKLAD_ROUTE, MAT_COLORS_SKLAD_ROUTE, MAT_SKLAD_ROUTE, MAT_INCOME_ROUTE, MAT_OUTCOME_ROUTE, CLEAR_ALL_MAT_SKLAD_ROUTE, MAT_THICK_SKLAD_ROUTE, MAT_DEPART_SKLAD_ROUTE } from "../types/routes";
 import { DefaultMap, ExtMap, makeDefaultMap, makeExtMap } from "./storage";
 import { userAtom } from "./users";
 import messages from "../server/messages";
@@ -10,6 +10,7 @@ import messages from "../server/messages";
 
 export const matSkladColorsAtom = atom<ExtMap<MatSkladColorsTableSchema>>(new Map())
 export const matSkladThickAtom = atom<DefaultMap>(new Map())
+export const matSkladDepartAtom = atom<DefaultMap>(new Map())
 export const matSkladAtom = atom<MatSkladTableSchema[]>([])
 export const matSkladIncomeAtom = atom<IncomeMatTableSchema[]>([])
 export const matSkladOutcomeAtom = atom<OutcomeMatTableSchema[]>([])
@@ -30,6 +31,15 @@ export const loadMatSkladThickAtom = atom(null, async (get, set) => {
         const fetchData: FetchResult<MatSkladThicknessTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${MAT_THICK_SKLAD_ROUTE}`))
         const data = fetchData.data
         set(matSkladThickAtom, makeDefaultMap(data))
+    } catch (e) { console.error(e) }
+})
+export const loadMatSkladDepartAtom = atom(null, async (get, set) => {
+    const { permissions} = get(userAtom)
+    if(!permissions.get(RESOURCE.SKLAD_MAT)?.Read) return { success: false, message: "" }
+    try {
+        const fetchData: FetchResult<MatSkladDepartmentTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${MAT_DEPART_SKLAD_ROUTE}`))
+        const data = fetchData.data
+        set(matSkladDepartAtom, makeDefaultMap(data))
     } catch (e) { console.error(e) }
 })
 export const loadMatSkladAtom = atom(null, async (get, set) => {

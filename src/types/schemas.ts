@@ -228,6 +228,7 @@ export enum SKLAD_TABLE_NAMES {
     MAT_OUTCOME = 'mat_outcome',
     MAT_THICK = 'mat_thick',
     MAT_COLORS = 'materials',
+    MAT_DEPART = 'department',
 }
 
 export enum SETTINGS_TABLE_NAMES {
@@ -258,11 +259,16 @@ export type MatSkladThicknessTableSchema = {
     id: number
     name: string
 }
+export type MatSkladDepartmentTableSchema = {
+    id: number
+    name: string
+}
 export type MatSkladTableSchema = {
     id: number
     length: number
     width: number
     count: number
+    department: number
 }
 export type IncomeMatTableSchema = MatSkladTableSchema & {
     date: number

@@ -5,11 +5,12 @@ import { unitsAtom } from "./storage";
 import { charAtom } from "./materials/chars";
 import { specListAtom } from "./specification";
 import { OutputSpecSchema } from "./specification";
-import { IncomeTableSchema, OutcomeTableSchema, StolTableSchema } from "../types/schemas";
-import { stolColorsAtom, stolIncomeAtom, stolOutcomeAtom, stolSkladAtom } from "./sklad";
+import { IncomeStolTableSchema, OutcomeStolTableSchema, StolTableSchema } from "../types/schemas";
+import { stolColorsAtom, stolIncomeAtom, stolOutcomeAtom, stolSkladAtom } from "./skladStol";
 import { getDateFormat } from "../functions/date";
 import Excel from "exceljs"
 import {saveAs} from "file-saver";
+import { matSkladAtom, matSkladColorsAtom, matSkladIncomeAtom, matSkladOutcomeAtom, matSkladThickAtom } from "./skladMat";
 
 export const saveToExcelAtom = atom(null, async (get, _, specification: SpecificationResult[], fileName: string) => {
     const spec = get(specListAtom)
@@ -75,4 +76,45 @@ export const saveStolToExcelAtom = atom(null, async (get, _) => {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     const blob = new Blob([buffer], {type: fileType});
     saveAs(blob, `Столешницы ${getDateFormat(Date.now())}.xlsx`);
+})
+
+
+export const saveMatToExcelAtom = atom(null, async (get, _) => {
+    const colors = get(matSkladColorsAtom)
+    const thick = get(matSkladThickAtom)
+    const matSklad = get(matSkladAtom)
+    const matIncome = get(matSkladIncomeAtom)
+    const matOutCome = get(matSkladOutcomeAtom)
+    const workbook = new Excel.Workbook();
+    const skladSheet = workbook.addWorksheet('Склад');
+    const incomeSheet = workbook.addWorksheet('Приход');
+    const outcomeSheet = workbook.addWorksheet('Расход');
+    skladSheet.columns = [
+        { header: 'Материал', key: 'name', width: 40, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Толщина', key: 'name', width: 12, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Длина', key: 'length', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Ширина', key: 'name', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Кол-во', key: 'amount', width: 8, alignment: { vertical: 'middle', horizontal: 'center' } }
+    ];
+    incomeSheet.columns = [
+        { header: 'Дата', key: 'date', width: 20, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Материал', key: 'name', width: 40, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Толщина', key: 'thickId', width: 12, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Длина', key: 'length', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Ширина', key: 'width', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Кол-во', key: 'count', width: 8, alignment: { vertical: 'middle', horizontal: 'center' } },
+        { header: 'Пользователь', key: 'user', width: 10, alignment: { vertical: 'middle', horizontal: 'center' } }
+
+    ];
+    outcomeSheet.columns = incomeSheet.columns
+    const skladRows = matSklad.map(s => [colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count])
+    const incomeRows = matIncome.map(s => [getDateFormat(s.date), colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count, s.user])
+    const outcomeRows = matOutCome.map(s => [getDateFormat(s.date), colors.get(s.id)?.name, thick.get(colors.get(s.id)?.thickId || 0), s.length, s.width, s.count, s.user])
+    skladSheet.addRows(skladRows)
+    incomeSheet.addRows(incomeRows)
+    outcomeSheet.addRows(outcomeRows)
+    const buffer = await workbook.xlsx.writeBuffer();
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    const blob = new Blob([buffer], {type: fileType});
+    saveAs(blob, `Остатки плит ${getDateFormat(Date.now())}.xlsx`);
 })

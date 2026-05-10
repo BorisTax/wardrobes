@@ -21,7 +21,7 @@
 }
 
 .table-data {
-  font-size: 0.8rem !important;
+  font-size: 0.8rem;
   -max-height: 85svh !important;
   background-color: $defaultBackColor !important;
   overflow: auto !important;
@@ -81,7 +81,7 @@
 .edit-section-grid {
   display: grid;
   align-items: center;
-  grid-template-columns: auto auto 200px;
+  grid-template-columns: auto auto 300px;
   gap: 0.2rem;
   -background-color: $defaultBackColor;
 }

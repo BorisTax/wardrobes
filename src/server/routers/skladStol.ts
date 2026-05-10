@@ -1,11 +1,12 @@
 import express from "express";
 import { PERMISSION, RESOURCE } from "../../types/user";
 import { MyRequest } from "../../types/server";
-import { CLEAR_ALL_STOL_SKLAD_ROUTE, INCOME_ROUTE, OUTCOME_ROUTE, STOL_COLORS_ROUTE, STOL_SKLAD_ROUTE } from "../../types/routes";
+import { CLEAR_ALL_STOL_SKLAD_ROUTE, STOL_INCOME_ROUTE, STOL_OUTCOME_ROUTE, STOL_COLORS_ROUTE, STOL_SKLAD_ROUTE } from "../../types/routes";
 import { hasPermission } from "./users";
 import { accessDenied } from "../functions/database";
-import { addStol, clearStol, getStol, getStolColors, getStolIncome, getStolOutcome, removeStol } from "./functions/sklad";
+import { addStol, clearStol, getStol, getStolColors, getStolIncome, getStolOutcome, removeStol } from "./functions/skladStol";
 import messages from "../messages";
+import { getUserName } from "../services/userService";
 
 const router = express.Router();
 export default router
@@ -27,7 +28,8 @@ router.get(STOL_SKLAD_ROUTE, async (req, res) => {
 router.put(STOL_SKLAD_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SKLAD_STOL, [PERMISSION.UPDATE]))) return accessDenied(res)
   const { id, length, amount } = req.body
-  const result = await removeStol({id, length, amount});
+  const user = await getUserName((req as MyRequest).token)
+  const result = await removeStol({id, length, amount}, user);
   result.message = (result.success && messages.SKLAD_STOL_DELETED) || result.message
   res.status(result.status).json(result)
 });
@@ -35,20 +37,21 @@ router.put(STOL_SKLAD_ROUTE, async (req, res) => {
 router.post(STOL_SKLAD_ROUTE, async (req, res) => {
     if (!(await hasPermission(req as MyRequest, RESOURCE.SKLAD_STOL, [PERMISSION.UPDATE]))) return accessDenied(res)
     const { id, length, amount } = req.body
-    const result = await addStol({ id, length, amount });
+    const user = await getUserName((req as MyRequest).token)
+    const result = await addStol({ id, length, amount }, user);
     result.message = (result.success && messages.SKLAD_STOL_ADDED) || result.message
     res.status(result.status).json(result)
 });
 
 
-router.get(INCOME_ROUTE, async (req, res) => {
+router.get(STOL_INCOME_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SKLAD_STOL, [PERMISSION.READ]))) return accessDenied(res)
   const result = await getStolIncome();
   if (!result.success) return res.sendStatus(result.status)
   res.status(result.status).json(result);
 });
 
-router.get(OUTCOME_ROUTE, async (req, res) => {
+router.get(STOL_OUTCOME_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SKLAD_STOL, [PERMISSION.READ]))) return accessDenied(res)
   const result = await getStolOutcome();
   if (!result.success) return res.sendStatus(result.status)

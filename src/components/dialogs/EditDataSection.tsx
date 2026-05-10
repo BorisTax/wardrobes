@@ -7,7 +7,8 @@ import useConfirm from "../../custom-hooks/useConfirm"
 import { rusMessages } from "../../functions/messages"
 import CheckBox from "../inputs/CheckBox"
 import { MAX_FILE_SIZE } from "../../options"
-type ValueType = string | boolean | number
+import messages from "../../server/messages"
+export type ValueType = string | boolean | number
 export type EditDataItem = {
     title: string
     value: ValueType
@@ -15,6 +16,7 @@ export type EditDataItem = {
     message?: string
     readonly?: boolean
     optional?: boolean
+    nullValue?: ValueType
     propertyType?: PropertyType
     checkValue?: (value: ValueType) => { success: boolean, message: string }
     onChange?: (value: ValueType) => void
@@ -65,7 +67,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
             <div className="edit-section-grid">
                 {props.items.map((i, index) => <Fragment key={i.title}><span className="text-end text-nowrap">{i.title}</span>
                     {i.readonly || (props.dontUseCheckBoxes || (!props.onUpdate && !props.onAdd)) ? <div></div> : <input type="checkbox" checked={checked[index]} onChange={() => { setChecked(prev => { const p = [...prev]; p[index] = !p[index]; return p }) }} />}
-                    {i.inputType === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value;; i.onChange && i.onChange(p[index]); return [...p] }) }} submitOnLostFocus={true} />}
+                    {i.inputType === InputType.TEXT && <TextBox value={newValues[index] as string} disabled={!checked[index] || i.readonly} type={i.propertyType || PropertyType.STRING} setValue={(value) => { setNewValues(prev => { const p = [...prev]; p[index] = value;; i.onChange && i.onChange(p[index]); return [...p] }) }} submitOnLostFocus={true} nullValue={i.nullValue} />}
                     {i.inputType === InputType.CHECKBOX && <CheckBox caption={i.displayValue && i.displayValue(newValues[index])} checked={newValues[index] as boolean} disabled={!checked[index] || i.readonly} onChange={() => { setNewValues(prev => { const p = [...prev]; p[index] = !p[index]; i.onChange && i.onChange(prev[index]); return [...p] }) }} />}
                     {(i.inputType === InputType.LIST) && <ComboBox<ValueType> value={newValues[index] as ValueType} items={i.list as ValueType[]} displayValue={value => i.displayValue ? i.displayValue(value) : ""} disabled={!checked[index] || i.readonly} withEmpty={i.listWithEmptyRow} onChange={value => { setNewValues(prev => { const p = [...prev]; p[index] = value as string; return [...p] }); i.onChange && i.onChange(value) }} />}
                     {i.inputType === InputType.FILE && <div>
@@ -89,7 +91,7 @@ export default function EditDataSection(props: EditDataSectionProps) {
                 {props.onAdd && < input type="button" value={(props.onAdd as ActionProp)?.caption || "Добавить"} disabled={!(checked.every((c, index) => c || props.items[index].readonly))} onClick={async () => {
                     if (!props.onAdd) return
                     const values = props.items.map((p, i) => p.displayValue ? p.displayValue(newValues[i]) : newValues[i])
-                    const check = checkFields({ checked, items: props.items, newValues: values })
+                    const check = checkFields({ checked, items: props.items, newValues })
                     if (!check.success) { showMessage(rusMessages[check.message] || check.message); return }
                     const question = (props.onAdd as ActionProp).question && ((props.onAdd as ActionProp).question as Function)(values)
                     const message = question || getAddMessage({ checked, items: props.items, newValues: values })
@@ -99,12 +101,12 @@ export default function EditDataSection(props: EditDataSectionProps) {
                     const onAdd = typeof props.onAdd === 'function' ? props.onAdd : props.onAdd.onAction
                     const result = await onAdd(checked, newValues)
                     setLoading(false)
-                    if (result.message) showMessage(rusMessages[result.message])
+                    //if (result.success) showMessage(rusMessages[messages.DATA_ADDED])
                 }} />}
                 {props.onUpdate && < input type="button" value={(props.onUpdate as ActionProp)?.caption ||"Обновить"} disabled={!(checked.some((c, index) => c && !props.items[index].readonly))} onClick={ async () => {
                     if (!props.onUpdate) return
                     const values = props.items.map((p, i) => p.displayValue ? p.displayValue(newValues[i]) : newValues[i])
-                    const check = checkFields({ checked, items: props.items, newValues: values })
+                    const check = checkFields({ checked, items: props.items, newValues })
                     if (!check.success) { showMessage(rusMessages[check.message] || check.message); return }
                     const question = (props.onUpdate as ActionProp).question && ((props.onUpdate as ActionProp).question as Function)(values)
                     const message = question || getMessage({ checked, items: props.items, newValues: values, extValue })

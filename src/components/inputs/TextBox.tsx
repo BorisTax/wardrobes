@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react"
 import { PropertyType, RegExp } from "../../types/property"
+import { ValueType } from "../dialogs/EditDataSection"
 
 export type TextBoxProps = {
     setValue: (value: string) => void
-    value: string | number
+    value: ValueType
+    nullValue?: ValueType
     type: PropertyType
     name?: string
     disabled?: boolean
@@ -16,11 +18,11 @@ export type TextBoxProps = {
 export default function TextBox(props: TextBoxProps) {
     const [state, setState] = useState({ value: String(props.value), prevValue: String(props.value) })
     useEffect(() => {
-        let value = props.value
-        if (typeof value === 'number'){
-          if (props.min && value < props.min) props.setValue(String(props.min));
-          if (props.max && value > props.max) props.setValue(String(props.max));
-        }
+      let value = props.value === undefined ? props.nullValue : props.value
+      if (typeof value === 'number'){
+        if (props.min && value < props.min) props.setValue(String(props.min));
+        if (props.max && value > props.max) props.setValue(String(props.max));
+      }
         setState({ prevValue: String(value), value: String(value) })
     }, [props.value, props.min, props.max])
     const onChange = (v: string) => {

@@ -3,7 +3,7 @@ import ComboBox from "../inputs/ComboBox"
 import { PropertyType } from "../../types/property"
 import { useAtomValue } from "jotai"
 import TextBox from "../inputs/TextBox"
-import { stolColorsAtom, stolIncomeAtom, stolOutcomeAtom } from "../../atoms/sklad"
+import { stolColorsAtom, stolIncomeAtom, stolOutcomeAtom } from "../../atoms/skladStol"
 import TableData, { TableDataHeader } from "../inputs/TableData"
 import { getDateFormat, getDateInputValue, getMaxDateTime } from "../../functions/date"
 import GroupBox from "../inputs/GroupBox"
@@ -17,8 +17,8 @@ export default function SkladStolIncome({ income }: { income: boolean }) {
     const list = listFull.filter(s => (s?.id === filterId || filterId === 0) && s?.length >= filterMinLength && s?.length <= filterMaxLength && s?.date >= filterMinDate && s?.date <= filterMaxDate)
     const minDateValue = getDateInputValue(filterMinDate)
     const maxDateValue = getDateInputValue(filterMaxDate)
-    const header: TableDataHeader[] = [{ caption: "Дата" }, { caption: "Столешница" }, { caption: "Длина" }, { caption: "Кол-во" }]
-    const contents = list.map(ss => ({ key: ss.id, data: [getDateFormat(ss.date), stolColors.get(ss.id), ss.length, ss.amount] }))
+    const header: TableDataHeader[] = [{ caption: "Дата" }, { caption: "Столешница" }, { caption: "Длина" }, { caption: "Кол-во" }, { caption: "Пользователь" }]
+    const contents = list.map(ss => ({ key: ss.id, data: [getDateFormat(ss.date), stolColors.get(ss.id), ss.length, ss.amount, ss.user] }))
     useEffect(() => {
         setFilter(prev => ({ ...prev, filterMinDate: minDate }))
     }, [minDate])
@@ -30,7 +30,7 @@ export default function SkladStolIncome({ income }: { income: boolean }) {
         <br />
         <GroupBox caption="Фильтр">
             <hr />
-            <ComboBox value={filterId} items={listDistinctId} displayValue={v => stolColors.get(v)} onChange={value => setFilter(prev => ({ ...prev, filterId: value || 0 }))} withEmpty={true} styles={filterComboStyle} />
+            <ComboBox value={filterId} items={listDistinctId} displayValue={v => stolColors.get(v)} onChange={value => setFilter(prev => ({ ...prev, filterId: value || 0 }))} styles={filterComboStyle} />
             <hr />
             <div className="d-flex align-items-center gap-1">
                 <div>Длина от</div>

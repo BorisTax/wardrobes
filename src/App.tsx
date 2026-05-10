@@ -32,7 +32,9 @@ import Decoration from './components/decoration/Decoration'
 import Settings from './components/Settings'
 import { RESOURCE } from './types/user'
 import NotifyMessage from './components/dialogs/NotifyMessage'
-const Sklad = lazy(() => import('./components/Sklad/Sklad'))
+import SkladStolList from './components/Sklad/SkladStolList'
+const SkladStol = lazy(() => import('./components/Sklad/SkladStol'))
+const SkladMat = lazy(() => import('./components/Sklad/SkladMat'))
 function App() {
   const user = useAtomValue(userAtom)
   const setAppData = useSetAtom(combiStateAtom)
@@ -70,7 +72,8 @@ function App() {
               <Route path="/login" element={<LoginDialog />} />
               {user.permissions.get(RESOURCE.COMBIFASADES)?.Read ? <Route path="/combi" element={<CombiFasades />} /> : <></>}
               {user.permissions.get(RESOURCE.WARDROBES)?.Read ? <Route path="/calculator" element={<WardrobeCalculator />} /> : <></>}
-              {user.permissions.get(RESOURCE.SKLAD_STOL)?.Read ? <Route path="/sklad_stol" element={<Sklad />} /> : <></>}
+              {user.permissions.get(RESOURCE.SKLAD_STOL)?.Read ? <Route path="/sklad_stol" element={<SkladStol />} /> : <></>}
+              {user.permissions.get(RESOURCE.SKLAD_MAT)?.Read ? <Route path="/sklad_mat" element={<SkladMat />} /> : <></>}
               {user.permissions.get(RESOURCE.MATERIALS_DB)?.Read ? <Route path="/materials" element={<EditMaterialDialog />} /> : <></>}
               {user.permissions.get(RESOURCE.USERS)?.Read ? <Route path="/users" element={<EditUsersDialog />} /> : <></>}
               {user.permissions.get(RESOURCE.SETTINGS)?.Read ? <Route path="/settings" element={<Settings />} /> : <></>}

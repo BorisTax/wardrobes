@@ -171,7 +171,7 @@ export type AllData = {
 }
 
 
-export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES | TEMPLATE_TABLE_NAMES | SKLAD_TABLE_NAMES | SETTINGS_TABLE_NAMES;
+export type TABLE_NAMES = DATA_TABLE_NAMES | USER_TABLE_NAMES | TEMPLATE_TABLE_NAMES | SKLAD_STOL_TABLE_NAMES | SKLAD_TABLE_NAMES | SETTINGS_TABLE_NAMES;
 
 export enum DATA_TABLE_NAMES {
     CHARS = 'chars',
@@ -216,11 +216,18 @@ export enum USER_TABLE_NAMES {
     USERLOG = 'userlog',
 }
 
-export enum SKLAD_TABLE_NAMES {
+export enum SKLAD_STOL_TABLE_NAMES {
     STOL_SKLAD = 'stol_sklad',
     STOL_INCOME = 'stol_income',
     STOL_OUTCOME = 'stol_outcome',
     STOL_COLORS = 'stol_colors',
+}
+export enum SKLAD_TABLE_NAMES {
+    MAT_SKLAD = 'mat_sklad',
+    MAT_INCOME = 'mat_income',
+    MAT_OUTCOME = 'mat_outcome',
+    MAT_THICK = 'mat_thick',
+    MAT_COLORS = 'materials',
 }
 
 export enum SETTINGS_TABLE_NAMES {
@@ -236,7 +243,29 @@ export type StolTableSchema = {
     length: number
     amount: number
 }
-export type IncomeTableSchema = StolTableSchema & {
+export type IncomeStolTableSchema = StolTableSchema & {
     date: number
+    user: string
 }
-export type OutcomeTableSchema = IncomeTableSchema
+export type OutcomeStolTableSchema = IncomeStolTableSchema
+
+export type MatSkladColorsTableSchema = {
+    id: number
+    thickId: number
+    name: string
+}
+export type MatSkladThicknessTableSchema = {
+    id: number
+    name: string
+}
+export type MatSkladTableSchema = {
+    id: number
+    length: number
+    width: number
+    count: number
+}
+export type IncomeMatTableSchema = MatSkladTableSchema & {
+    date: number
+    user: string
+}
+export type OutcomeMatTableSchema = IncomeMatTableSchema

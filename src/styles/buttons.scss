@@ -53,6 +53,8 @@
   padding: 0.2rem;
 }
 .image-button:hover{
+  background-color: rgb(151, 151, 151);
+  color: aliceblue;
   transform: scale($hoverScale);
 }
 .image-text-button {

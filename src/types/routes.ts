@@ -41,10 +41,15 @@ export const WARDTYPE_ID_PARAM = 'wardTypeId';
 export const SKLAD_ROUTE = '/sklad';
 export const STOL_SKLAD_ROUTE = '/stol_sklad';
 export const STOL_COLORS_ROUTE = '/stol_colors';
-export const INCOME_ROUTE = '/income';
-export const OUTCOME_ROUTE = '/outcome';
-export const CLEAR_ALL_STOL_SKLAD_ROUTE = '/clear_all';
-
+export const STOL_INCOME_ROUTE = '/incomeStol';
+export const STOL_OUTCOME_ROUTE = '/outcomeStol';
+export const CLEAR_ALL_STOL_SKLAD_ROUTE = '/clear_all_stol';
+export const MAT_SKLAD_ROUTE = '/mat_sklad';
+export const MAT_COLORS_SKLAD_ROUTE = '/mat_colors';
+export const MAT_THICK_SKLAD_ROUTE = '/mat_thickness';
+export const MAT_INCOME_ROUTE = '/incomeMat';
+export const MAT_OUTCOME_ROUTE = '/outcomeMat';
+export const CLEAR_ALL_MAT_SKLAD_ROUTE = '/clear_all_mat';
 export const SETTINGS_ROUTE = '/settings';
 export const THEME_ROUTE = '/theme';
 

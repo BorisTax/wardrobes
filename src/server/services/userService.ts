@@ -10,6 +10,10 @@ import { getAllUserPermissions } from '../routers/permissions.js'
 
 export const events: Map<string, Response> = new Map()
 
+export async function getUserName(token?: string) {
+  const tokens = await getTokens()
+  return tokens.find(t => t.token === token)?.userName || ""
+}
 
 export async function getTokens(): Promise<Token[]> {
   const userService = getUserService()

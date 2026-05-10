@@ -1,8 +1,8 @@
 import { atom } from "jotai";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { RESOURCE } from "../types/user";
-import { IncomeTableSchema, OutcomeTableSchema, StolColorsTableSchema, StolTableSchema } from "../types/schemas";
-import { API_ROUTE, SKLAD_ROUTE, STOL_COLORS_ROUTE, STOL_SKLAD_ROUTE, INCOME_ROUTE, OUTCOME_ROUTE, CLEAR_ALL_STOL_SKLAD_ROUTE } from "../types/routes";
+import { IncomeStolTableSchema, OutcomeStolTableSchema, StolColorsTableSchema, StolTableSchema } from "../types/schemas";
+import { API_ROUTE, SKLAD_ROUTE, STOL_COLORS_ROUTE, STOL_SKLAD_ROUTE, STOL_INCOME_ROUTE, STOL_OUTCOME_ROUTE, CLEAR_ALL_STOL_SKLAD_ROUTE } from "../types/routes";
 import { DefaultMap, makeDefaultMap } from "./storage";
 import { userAtom } from "./users";
 import messages from "../server/messages";
@@ -10,8 +10,8 @@ import messages from "../server/messages";
 
 export const stolColorsAtom = atom<DefaultMap>(new Map())
 export const stolSkladAtom = atom<StolTableSchema[]>([])
-export const stolIncomeAtom = atom<IncomeTableSchema[]>([])
-export const stolOutcomeAtom = atom<OutcomeTableSchema[]>([])
+export const stolIncomeAtom = atom<IncomeStolTableSchema[]>([])
+export const stolOutcomeAtom = atom<OutcomeStolTableSchema[]>([])
 
 export const loadStolColorsAtom = atom(null, async (get, set) => {
     const { permissions} = get(userAtom)
@@ -36,9 +36,9 @@ export const loadStolSkladAtom = atom(null, async (get, set) => {
 export const loadStolIncomeAtom = atom(null, async (get, set, income: boolean) => {
     const { permissions} = get(userAtom)
     if(!permissions.get(RESOURCE.SKLAD_STOL)?.Read) return { success: false, message: "" }
-    const route = income?INCOME_ROUTE:OUTCOME_ROUTE
+    const route = income?STOL_INCOME_ROUTE:STOL_OUTCOME_ROUTE
     try {
-        const fetchData: FetchResult<IncomeTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${route}`))
+        const fetchData: FetchResult<IncomeStolTableSchema> = await (await fetchGetData(`${API_ROUTE}${SKLAD_ROUTE}${route}`))
         const data = fetchData.data
         income ? set(stolIncomeAtom, data) : set(stolOutcomeAtom, data)
     } catch (e) { console.error(e) }

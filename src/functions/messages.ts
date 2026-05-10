@@ -81,6 +81,11 @@ export const rusMessages = {
   [messages.SKLAD_STOL_DELETED]: "Столешница удалена",
   [messages.SKLAD_STOL_NOEXIST]: "Столешница не найдена",
   [messages.SKLAD_STOL_EXCEED_AMOUNT]: "Кол-во превышено",
+
+    [messages.SKLAD_MAT_ADDED]: "Остаток добавлен",
+  [messages.SKLAD_MAT_DELETED]: "Остаток удален",
+  [messages.SKLAD_MAT_NOEXIST]: "Остаток не найден",
+  [messages.SKLAD_MAT_EXCEED_AMOUNT]: "Кол-во превышено",
 }
 
 

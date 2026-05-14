@@ -1,4 +1,6 @@
-import { AllData, DATA_TABLE_NAMES, DefaultSchema, FasadDefaultCharSchema, LacobelSchema } from "../../../types/schemas"
+import { DefaultSchema } from "../../../types/schemas/schemas"
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas"
+import { AllData, FasadDefaultCharSchema, LacobelSchema } from "../../../types/schemas/wardrobeSchemas"
 import { getConsoleTypes, getFasadTypes, getWardrobes, getWardrobesDimensions, getWardrobesFasadCount, getWardrobeTypes } from "./wardrobe"
 import { getCharPurpose, getChars, getCharTypes } from "./chars"
 import { getFasadTypeToChar } from './fasadTypeToChar'

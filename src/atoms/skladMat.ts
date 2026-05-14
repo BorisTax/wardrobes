@@ -1,11 +1,12 @@
 import { atom } from "jotai";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { RESOURCE } from "../types/user";
-import { IncomeMatTableSchema, MatSkladColorsTableSchema, MatSkladDepartmentTableSchema, MatSkladTableSchema, MatSkladThicknessTableSchema, OutcomeMatTableSchema } from "../types/schemas";
+import { IncomeMatTableSchema, MatSkladColorsTableSchema, MatSkladDepartmentTableSchema, MatSkladTableSchema, MatSkladThicknessTableSchema, OutcomeMatTableSchema } from "../types/schemas/skladSchemas";
 import { API_ROUTE, SKLAD_ROUTE, MAT_COLORS_SKLAD_ROUTE, MAT_SKLAD_ROUTE, MAT_INCOME_ROUTE, MAT_OUTCOME_ROUTE, CLEAR_ALL_MAT_SKLAD_ROUTE, MAT_THICK_SKLAD_ROUTE, MAT_DEPART_SKLAD_ROUTE } from "../types/routes";
 import { DefaultMap, ExtMap, makeDefaultMap, makeExtMap } from "./storage";
 import { userAtom } from "./users";
 import messages from "../server/messages";
+import { OmitId } from "../types/materials";
 
 
 export const matSkladColorsAtom = atom<ExtMap<MatSkladColorsTableSchema>>(new Map())
@@ -93,17 +94,68 @@ export const addMatSkladAtom = atom(null, async (get, set, data: MatSkladTableSc
 })
 
 
-export const clearMatSkladAtom = atom(null, async (get, set) => {
-    const { permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.SKLAD_MAT)?.Delete) return { success: false, message: "" }
+
+export const addMatSkladColor = async (data: OmitId<MatSkladColorsTableSchema>) => {
     try {
-        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${CLEAR_ALL_MAT_SKLAD_ROUTE}`, "DELETE", JSON.stringify({  }))
-        set(loadMatSkladAtom)
-        set(loadMatSkladIncomeAtom, true)
-        set(loadMatSkladIncomeAtom, false)
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${MAT_COLORS_SKLAD_ROUTE}`, "POST", JSON.stringify({ ...data }))
         return { success: result.success as boolean, message: result.message as string }
     } catch (e) {
          console.error(e) 
          return { success: false, message: messages.QUERY_ERROR }
         }
-})
+}
+
+
+export const updateMatSkladColor = async (data: MatSkladColorsTableSchema) => {
+    try {
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${MAT_COLORS_SKLAD_ROUTE}`, "PUT", JSON.stringify({ ...data }))
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+}
+
+
+export const deleteMatSkladColor = async (id: number) => {
+    try {
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${MAT_COLORS_SKLAD_ROUTE}`, "DELETE", JSON.stringify({ id }))
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+}
+
+
+export const addMatSkladThickness = async (data: OmitId<MatSkladThicknessTableSchema>) => {
+    try {
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${MAT_THICK_SKLAD_ROUTE}`, "POST", JSON.stringify({ ...data }))
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+}
+
+
+export const updateMatSkladThickness = async (data: MatSkladThicknessTableSchema) => {
+    try {
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${MAT_THICK_SKLAD_ROUTE}`, "PUT", JSON.stringify({ ...data }))
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+}
+
+
+export const deleteMatSkladThickness = async (id: number) => {
+    try {
+        const result = await fetchData(`${API_ROUTE}${SKLAD_ROUTE}${MAT_THICK_SKLAD_ROUTE}`, "DELETE", JSON.stringify({ id }))
+        return { success: result.success as boolean, message: result.message as string }
+    } catch (e) {
+         console.error(e) 
+         return { success: false, message: messages.QUERY_ERROR }
+        }
+}

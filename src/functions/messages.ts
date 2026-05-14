@@ -3,6 +3,8 @@ export const rusMessages = {
   [messages.DATABASE_OPEN_ERROR]: "Ошибка базы данных",
   [messages.DATABASE_CONSTRAINT_ERROR]: "Данный материал подвязан к другому материалу.",
   [messages.SQL_QUERY_ERROR]: "Ошибка запроса к базе данных",
+  [messages.SQL_FOREIGNKEY_CONSTRAINT_ERROR]: "Нельзя удалить данные пока они используются",
+  [messages.SQL_UNIQUE_CONSTRAINT_ERROR]: "Дублирование данных!",
   [messages.DATA_ADDED]: "Данные добавлены",
   [messages.DATA_UPDATED]: "Данные обновлены",
   [messages.DATA_DELETED]: "Данные удвлены",

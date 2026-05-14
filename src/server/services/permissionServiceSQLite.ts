@@ -1,5 +1,5 @@
 import { dataBaseQuery } from '../functions/database.js'
-import { USER_TABLE_NAMES } from '../../types/schemas.js';
+import { USER_TABLE_NAMES } from '../../types/schemas/schemas.js';
 import { Result } from '../../types/server.js';
 import messages from '../messages.js';
 import { PermissionSchema, UserPermissions, RESOURCE, ResourceSchema } from '../../types/user.js';

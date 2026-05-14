@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes"
 import { ProfileType } from "../../../types/enums"
-import { DATA_TABLE_NAMES, ProfileSchema, SpecSchema, SpecToCharSchema, UnitsSchema } from "../../../types/schemas"
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas"
+import { ProfileSchema, SpecSchema, SpecToCharSchema, UnitsSchema } from "../../../types/schemas/wardrobeSchemas"
 import { Result } from "../../../types/server"
 import { CORPUS_SPECS, FasadSpecById } from "../../../types/specification"
 import { SpecificationMultiResult, SpecificationResult, WardrobeData } from "../../../types/wardrobe"

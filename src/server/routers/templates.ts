@@ -8,7 +8,7 @@ import { Template } from '../../types/templates.js';
 import { hasPermission } from './users.js';
 import { StatusCodes } from 'http-status-codes';
 import { OmitId } from '../../types/materials.js';
-import { TEMPLATE_TABLE_NAMES } from '../../types/schemas.js';
+import { TEMPLATE_TABLE_NAMES } from "../../types/schemas/wardrobeSchemas.js";
 
 const router = express.Router();
 export default router

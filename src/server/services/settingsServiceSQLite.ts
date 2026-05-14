@@ -1,5 +1,5 @@
 import { dataBaseQuery, dataBaseTransaction } from '../functions/database.js'
-import { Query, SETTINGS_TABLE_NAMES } from '../../types/schemas.js';
+import { Query, SETTINGS_TABLE_NAMES } from '../../types/schemas/schemas.js';
 import { Result } from '../../types/server.js';
 import messages from '../messages.js';
 import { StatusCodes } from 'http-status-codes';

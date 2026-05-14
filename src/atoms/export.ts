@@ -5,7 +5,7 @@ import { unitsAtom } from "./storage";
 import { charAtom } from "./materials/chars";
 import { specListAtom } from "./specification";
 import { OutputSpecSchema } from "./specification";
-import { IncomeStolTableSchema, OutcomeStolTableSchema, StolTableSchema } from "../types/schemas";
+import { IncomeStolTableSchema, OutcomeStolTableSchema, StolTableSchema } from "../types/schemas/skladSchemas";
 import { stolColorsAtom, stolIncomeAtom, stolOutcomeAtom, stolSkladAtom } from "./skladStol";
 import { getDateFormat } from "../functions/date";
 import Excel from "exceljs"

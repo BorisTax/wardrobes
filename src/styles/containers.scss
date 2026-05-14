@@ -285,3 +285,16 @@
 .login-container{
   margin: auto;
 }
+
+.sklad-editor-container{
+  display: flex;
+  gap: 1em;
+  
+}
+
+.sklad-editor-container-item{
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.5em;
+  align-self: flex-start;
+}

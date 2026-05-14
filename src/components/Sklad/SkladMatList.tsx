@@ -10,7 +10,7 @@ import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
 import { ValueType } from "write-excel-file"
 import GroupBox from "../inputs/GroupBox"
-import { addMatSkladAtom, clearMatSkladAtom, deleteMatSkladAtom, loadMatSkladAtom, loadMatSkladColorsAtom, loadMatSkladDepartAtom, loadMatSkladIncomeAtom, loadMatSkladThickAtom, matSkladAtom, matSkladColorsAtom, matSkladDepartAtom, matSkladThickAtom } from "../../atoms/skladMat"
+import { addMatSkladAtom, deleteMatSkladAtom, loadMatSkladAtom, loadMatSkladColorsAtom, loadMatSkladDepartAtom, loadMatSkladIncomeAtom, loadMatSkladThickAtom, matSkladAtom, matSkladColorsAtom, matSkladDepartAtom, matSkladThickAtom } from "../../atoms/skladMat"
 import PropertyGrid from "../inputs/PropertyGrid"
 import CheckBox from "../inputs/CheckBox"
 
@@ -24,7 +24,6 @@ export default function SkladMatList() {
     const loadMatIncome = useSetAtom(loadMatSkladIncomeAtom)
     const addMat = useSetAtom(addMatSkladAtom)
     const deleteMat = useSetAtom(deleteMatSkladAtom)
-    const clearMat = useSetAtom(clearMatSkladAtom)
     const matSkladFull = useAtomValue(matSkladAtom)
     const matThickness = useAtomValue(matSkladThickAtom)
     const matDepartment = useAtomValue(matSkladDepartAtom)
@@ -97,7 +96,7 @@ export default function SkladMatList() {
             </div>
             {(perm?.Update) ? <EditDataSection name={matSklad[selected.row]?.id} items={editItems} dontUseCheckBoxes={true}
                 onUpdate={perm?.Update ? {
-                    caption: "Убрать со склада", question: (values) => getTakeOffQuestion(values), onAction: async (_, values) => {
+                    caption: "Убрать со склада", question: (values) => getTakeOffQuestion(values), onAction: async (values) => {
                         const department = (values as ValueType[])[0] as number
                         const id = (values as ValueType[])[1] as number
                         const length = +(values as ValueType[])[2] as number
@@ -109,7 +108,7 @@ export default function SkladMatList() {
                     }
                 } : undefined}
                 onAdd={perm?.Update ? {
-                    caption: "Добавить на склад", question: (values) => getAddQuestion(values), onAction: async (checked, values) => {
+                    caption: "Добавить на склад", question: (values) => getAddQuestion(values), onAction: async (values) => {
                         const department = (values as ValueType[])[0] as number
                         const id = values[1] as number
                         const length = +values[2] as number
@@ -119,12 +118,7 @@ export default function SkladMatList() {
                         return result
                     }
                 } : undefined}
-                onDelete={perm?.Delete ? {
-                    caption: "Очистить все списки", question: () => "Удалить все данные?", onAction: async (checked, values) => {
-                        const result = await clearMat()
-                        return result
-                    }
-                } : undefined} /> : <div></div>}
+                 /> : <div></div>}
         </EditContainer>
     </>
 }

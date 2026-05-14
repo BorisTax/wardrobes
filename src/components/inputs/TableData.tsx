@@ -42,7 +42,7 @@ export default function TableData({ header, content, styles = {}, rowNumbers = t
             {r.data.map((i, colIndex) => <td key={'item' + colIndex} className="table-data-cell" style={r.styles ? r.styles[colIndex] : {}}>{i}</td>)}
         </tr>})
     useEffect(() => {
-        setSortedColumn(header.findIndex(h => h.sorted))
+        setSortedColumn(header.findLastIndex(h => h.sorted && h.defaultSorted))
     }, [header])
     return <div className="table-data" style={{ ...styles }}>
         <table>

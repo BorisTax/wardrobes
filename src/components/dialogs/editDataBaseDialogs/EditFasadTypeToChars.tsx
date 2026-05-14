@@ -54,7 +54,7 @@ export default function EditFasadTypeToChars() {
                 setSelectedCharId(charList[0] || 0)
                 return result
             } : undefined}
-            onAdd={perm?.Create ? async (checked, values) => {
+            onAdd={perm?.Create ? async (values) => {
                 const charId = values[0] as number
                 if (fasadTypeToChar.find(s => s.charId === charId)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addFasadTypeToChar({ id: selectedId, charId })

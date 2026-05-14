@@ -1,16 +1,51 @@
-import { IncomeMatTableSchema, IncomeStolTableSchema, MatSkladColorsTableSchema, MatSkladDepartmentTableSchema, MatSkladTableSchema, MatSkladThicknessTableSchema, OutcomeMatTableSchema, OutcomeStolTableSchema, SKLAD_TABLE_NAMES, StolColorsTableSchema, StolTableSchema } from "../../../types/schemas"
+import { OmitId } from "../../../types/materials"
+import { SKLAD_TABLE_NAMES } from "../../../types/schemas/skladSchemas"
+import { IncomeMatTableSchema, MatSkladColorsTableSchema, MatSkladDepartmentTableSchema, MatSkladTableSchema, MatSkladThicknessTableSchema, OutcomeMatTableSchema, OutcomeStolTableSchema, StolColorsTableSchema, StolTableSchema } from "../../../types/schemas/skladSchemas"
 import { incorrectData, noExistData } from "../../functions/database"
 import messages from "../../messages"
 import { getDataBaseSkladService } from "../../options"
+
+
+export async function getMatThickSklad() {
+    const service = getDataBaseSkladService<MatSkladThicknessTableSchema>()
+    return await service.getData(SKLAD_TABLE_NAMES.MAT_THICK, ["id", "name"], {})
+}
+
+export async function addMatThickSklad(data: OmitId<MatSkladThicknessTableSchema>) {
+    const service = getDataBaseSkladService<MatSkladThicknessTableSchema>()
+    return await service.addData(SKLAD_TABLE_NAMES.MAT_THICK, data)
+}
+export async function updateMatThickSklad(data: MatSkladThicknessTableSchema) {
+    const service = getDataBaseSkladService<MatSkladThicknessTableSchema>()
+    return await service.updateData(SKLAD_TABLE_NAMES.MAT_THICK, { id: data.id }, data)
+}
+export async function deleteMatThickSklad(id: number) {
+    const service = getDataBaseSkladService<MatSkladThicknessTableSchema>()
+    return await service.deleteData(SKLAD_TABLE_NAMES.MAT_THICK, { id })
+}
+
 
 export async function getMatColorsSklad() {
     const service = getDataBaseSkladService<MatSkladColorsTableSchema>()
     return await service.getData(SKLAD_TABLE_NAMES.MAT_COLORS, ["id", "thickId", "name"], {})
 }
-export async function getMatThickSklad() {
-    const service = getDataBaseSkladService<MatSkladThicknessTableSchema>()
-    return await service.getData(SKLAD_TABLE_NAMES.MAT_THICK, ["id", "name"], {})
+export async function addMatColorSklad(data: OmitId<MatSkladColorsTableSchema>) {
+    const service = getDataBaseSkladService<MatSkladColorsTableSchema>()
+    return await service.addData(SKLAD_TABLE_NAMES.MAT_COLORS, data)
 }
+
+export async function updateMatColorSklad(data: MatSkladColorsTableSchema) {
+    const service = getDataBaseSkladService<MatSkladColorsTableSchema>()
+    return await service.updateData(SKLAD_TABLE_NAMES.MAT_COLORS, { id: data.id }, data)
+}
+
+export async function deleteMatColorSklad(id: number) {
+    const service = getDataBaseSkladService<MatSkladColorsTableSchema>()
+    return await service.deleteData(SKLAD_TABLE_NAMES.MAT_COLORS, { id })
+}
+
+
+
 export async function getMatDepartmentSklad() {
     const service = getDataBaseSkladService<MatSkladDepartmentTableSchema>()
     return await service.getData(SKLAD_TABLE_NAMES.MAT_DEPART, ["id", "name"], {})
@@ -62,7 +97,7 @@ export async function removeMatSklad(data: MatSkladTableSchema, user: string) {
 
 export async function clearMatSklad() {
     const service = getDataBaseSkladService<StolTableSchema>()
-    await service.clearData(SKLAD_TABLE_NAMES.MAT_SKLAD)
+    //await service.clearData(SKLAD_TABLE_NAMES.MAT_SKLAD)
     await service.clearData(SKLAD_TABLE_NAMES.MAT_INCOME)
     return await service.clearData(SKLAD_TABLE_NAMES.MAT_OUTCOME)
 }

@@ -9,7 +9,7 @@ import { RESOURCE } from "../../../types/user"
 import messages from "../../../server/messages"
 import { unitsAtom } from "../../../atoms/storage"
 import { specListAtom, updateSpecListAtom } from "../../../atoms/specification"
-import { SpecSchema } from "../../../types/schemas"
+import { SpecSchema } from "../../../types/schemas/wardrobeSchemas"
 import { OmitId } from "../../../types/materials"
 
 export default function EditSpecificationDialog() {
@@ -29,11 +29,11 @@ export default function EditSpecificationDialog() {
     ]
     return <EditContainer>
         <TableData header={heads} content={contents} onSelectRow={key => setSelectedKey(key as number)} />
-        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection items={editItems} onUpdate={async (checked, values) => {
+        {(perm?.Create || perm?.Update || perm?.Delete) ? <EditDataSection items={editItems} onUpdate={async (values) => {
             const { units, charType, ...data } = specList.get(selectedKey) as OmitId<SpecSchema>
-            if (checked[0]) data.name = values[0] as string
-            if (checked[1]) data.coef = +values[1]
-            if (checked[2]) data.code = values[2] as string
+            data.name = values[0] as string
+            data.coef = +values[1]
+            data.code = values[2] as string
             const result = await updateSpecList({ id: selectedKey, units, charType, ...data })
             return result
         }} /> : <div></div>}

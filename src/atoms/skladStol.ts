@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { RESOURCE } from "../types/user";
-import { IncomeStolTableSchema, OutcomeStolTableSchema, StolColorsTableSchema, StolTableSchema } from "../types/schemas";
+import { IncomeStolTableSchema, OutcomeStolTableSchema, StolColorsTableSchema, StolTableSchema } from "../types/schemas/skladSchemas";
 import { API_ROUTE, SKLAD_ROUTE, STOL_COLORS_ROUTE, STOL_SKLAD_ROUTE, STOL_INCOME_ROUTE, STOL_OUTCOME_ROUTE, CLEAR_ALL_STOL_SKLAD_ROUTE } from "../types/routes";
 import { DefaultMap, makeDefaultMap } from "./storage";
 import { userAtom } from "./users";

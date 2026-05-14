@@ -1,6 +1,6 @@
 import { Result, Token } from "./server"
 import { PermissionSchema, RESOURCE, ResourceSchema, User, UserAction, UserPermissions } from "./user"
-import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from "./schemas"
+import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from "./schemas/schemas"
 import { UserRole } from "./user"
 import { SettingsThemeSchema } from "./themes"
 

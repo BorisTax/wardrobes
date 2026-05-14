@@ -1,4 +1,5 @@
-import { DATA_TABLE_NAMES, FurnitureTableSchema } from "../../../types/schemas";
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas";
+import { FurnitureTableSchema } from "../../../types/schemas/wardrobeSchemas";
 import { Result } from "../../../types/server";
 import { getDataBaseService } from "../../options";
 

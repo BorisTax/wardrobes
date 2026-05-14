@@ -1,4 +1,5 @@
-import { IncomeStolTableSchema, OutcomeStolTableSchema, SKLAD_STOL_TABLE_NAMES, StolColorsTableSchema, StolTableSchema } from "../../../types/schemas"
+import { SKLAD_STOL_TABLE_NAMES } from "../../../types/schemas/skladSchemas"
+import { IncomeStolTableSchema, OutcomeStolTableSchema, StolColorsTableSchema, StolTableSchema } from "../../../types/schemas/skladSchemas"
 import { incorrectData, noExistData } from "../../functions/database"
 import messages from "../../messages"
 import { getDataBaseSkladService } from "../../options"

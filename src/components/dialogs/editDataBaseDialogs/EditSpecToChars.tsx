@@ -51,7 +51,7 @@ export default function EditSpecToChars() {
                 setSelectedCharId(charList[0] || 0)
                 return result
             } : undefined}
-            onAdd={perm?.Create ? async (checked, values) => {
+            onAdd={perm?.Create ? async (values) => {
                 const charId = values[0] as number
                 if (specToChar.find(s => s.charId === charId)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addSpecToChar({ id: selectedSpecId, charId })

@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { FurnitureTableSchema } from "../types/schemas";
+import { FurnitureTableSchema } from "../types/schemas/wardrobeSchemas";
 import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { API_ROUTE, FURNITURE_TABLE_ROUTE, WARDROBE_ROUTE } from "../types/routes";

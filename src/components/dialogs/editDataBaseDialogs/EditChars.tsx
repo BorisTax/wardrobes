@@ -37,11 +37,11 @@ export default function EditChars() {
             <TableData header={heads} content={contents} onSelectRow={value => { setSelectedCharId(value as number) }} />
         </div>
         {(perm?.Read) ? <EditDataSection name={chars.get(selectedCharId)?.name} items={editItems}
-            onUpdate={perm?.Update ? async (checked, values) => {
-                const name = checked[0] ? values[0] as string : ""
-                const code = checked[1] ? values[1] as string : ""
-                const char_type_id = checked[2] ? values[2] as number : 0
-                const image = checked[3] ? values[3] as string : ""
+            onUpdate={perm?.Update ? async (values) => {
+                const name = values[0] as string 
+                const code = values[1] as string 
+                const char_type_id = values[2] as number
+                const image =  values[3] as string 
                 const result = await updateChar({ id: selectedCharId, char_type_id, name, code, image })
                 return result
             } : undefined}
@@ -50,11 +50,11 @@ export default function EditChars() {
                 setSelectedCharId([...chars.keys()][0] || 0)
                 return result
             } : undefined}
-            onAdd={perm?.Create ? async (checked, values) => {
-                const name = checked[0] ? values[0] as string : ""
-                const code = checked[1] ? values[1] as string : ""
-                const char_type_id = checked[2] ? values[2] as number : 0
-                const image = checked[3] ? values[3] as string : ""
+            onAdd={perm?.Create ? async (values) => {
+                const name =  values[0] as string 
+                const code =  values[1] as string
+                const char_type_id = values[2] as number
+                const image = values[3] as string
                 const result = await addChar({ name, char_type_id, code, image })
                 return result
             } : undefined} /> : <div></div>}

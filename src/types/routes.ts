@@ -54,4 +54,20 @@ export const CLEAR_ALL_MAT_SKLAD_ROUTE = '/clear_all_mat';
 export const SETTINGS_ROUTE = '/settings';
 export const THEME_ROUTE = '/theme';
 
+ export const MODULE_ROUTE = '/modules'
+ export const MODULE_MAT_BASE_ROUTE = '/matBase'
+ export const MODULE_GROUPS_ROUTE = '/groups'
+ export const MODULE_EDGES_ROUTE = '/edges'
+ export const MODULE_GROOVES_ROUTE = '/grooves'
+ export const MODULE_MODULES_ROUTE = '/modules'
+ export const MODULE_CORRESPOND_ROUTE = '/correspond'
+ export const MODULE_COLORS_ROUTE = '/colors'
+ export const MODULE_COMMENTS_ROUTE = '/comments'
+ export const MODULE_SERIES_ROUTE = '/series'
+ export const MODULE_MATERIALS_ROUTE = '/materials'
+ export const MODULE_FILM_ROUTE = '/film'
+ export const MODULE_SERIES_MATERIALS_ROUTE = '/seriesMaterials'
+ export const MODULE_DETAILS_ROUTE = '/details'
+ export const MODULE_MATERIAL_CORRESPOND_ROUTE = '/materialCorrespond'
+
 export const DONT_SLEEP_ROUTE = '/dont_sleep';

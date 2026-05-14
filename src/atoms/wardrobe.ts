@@ -4,7 +4,7 @@ import { FetchResult, fetchGetData } from "../functions/fetch"
 import { calculateSpecificationsAtom } from "./specification"
 import { API_ROUTE, DETAIL_ROUTE, DETAILS_ROUTE, WARDROBE_ID_PARAM, WARDROBE_ROUTE, WARDTYPE_ID_PARAM } from "../types/routes"
 import { loadedInitialWardrobeDataAtom } from "./storage"
-import { WardrobesFasadCountSchema } from "../types/schemas"
+import { WardrobesFasadCountSchema } from "../types/schemas/wardrobeSchemas"
 
 
 export const initFasades: FasadesData = {

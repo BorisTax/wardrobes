@@ -1,6 +1,7 @@
-import { DATA_TABLE_NAMES, DetailSchema, DVPTableSchema } from "../../../types/schemas"
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas"
+import { DetailSchema, DVPTableSchema } from "../../../types/schemas/wardrobeSchemas"
 import { Result } from "../../../types/server"
-import { WardrobeDetailTableSchema } from "../../../types/schemas"
+import { WardrobeDetailTableSchema } from "../../../types/schemas/wardrobeSchemas"
 import { getDataBaseService } from "../../options"
 
 export async function getDetailTable(data: Partial<WardrobeDetailTableSchema>): Promise<Result<WardrobeDetailTableSchema>> {

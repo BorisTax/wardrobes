@@ -1,6 +1,6 @@
 import { atom } from "jotai"
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { PermissionSchema, UserPermissions, RESOURCE, ResourceSchema } from "../types/user"
+import { PermissionSchema, RESOURCE, ResourceSchema } from "../types/user"
 import { userAtom } from "./users"
 import messages from "../server/messages"
 import { TableFields } from "../types/server"

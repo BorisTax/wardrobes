@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { WardrobeDetailTableSchema } from "../types/schemas";
+import { WardrobeDetailTableSchema } from "../types/schemas/wardrobeSchemas";
 import { userAtom } from "./users";
 import { FetchResult, fetchData, fetchGetData } from "../functions/fetch";
 import { API_ROUTE, WARDROBE_DETAIL_TABLE_ROUTE, WARDROBE_ROUTE } from "../types/routes";

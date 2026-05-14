@@ -12,7 +12,7 @@ import ComboBox from "../../inputs/ComboBox"
 import { addvFurnitureTableAtom, deleteFurnitureTableAtom, furnitureTableAtom, loadFurnitureTableAtom, updateFurnitureTableAtom } from "../../../atoms/furnitureTable"
 import { specListAtom, specToCharAtom } from "../../../atoms/specification"
 import { charAtom } from "../../../atoms/materials/chars"
-import { FurnitureTableSchema } from "../../../types/schemas"
+import { FurnitureTableSchema } from "../../../types/schemas/wardrobeSchemas"
 import ParameterLegend from "./ParametersLegend"
 function emptyFurnitureItem(): FurnitureTableSchema {
     return {
@@ -88,17 +88,17 @@ export default function EditFurnitureTable() {
         </div>
         <div>
             {(perm?.Read) ? <EditDataSection name={spec.get(item.specId)?.name || ""} items={editItems}
-                onUpdate={perm?.Update ? async (checked, values) => {
-                    const specId = checked[0] ? values[0] as number : item.specId
-                    const minWidth = checked[1] ? +values[1] : item.minWidth
-                    const maxWidth = checked[2] ? +values[2] : item.maxWidth
-                    const minDepth = checked[3] ? +values[3] : item.minDepth
-                    const maxDepth = checked[4] ? +values[4] : item.maxDepth
-                    const minHeight = checked[5] ? +values[5] : item.minHeight
-                    const maxHeight = checked[6] ? +values[6] : item.maxHeight
-                    const count = checked[7] ? +values[7] : item.count
-                    const size = checked[8] ? values[8] as string : item.size
-                    const charId = checked[9] ? +values[9] : item.charId
+                onUpdate={perm?.Update ? async (values) => {
+                    const specId = values[0] as number 
+                    const minWidth = +values[1] 
+                    const maxWidth = +values[2] 
+                    const minDepth = +values[3] 
+                    const maxDepth = +values[4]
+                    const minHeight = +values[5] 
+                    const maxHeight =+values[6]
+                    const count = +values[7] 
+                    const size = values[8] as string
+                    const charId = +values[9] 
                     const result = await updateData({ id: item.id, wardrobeId, specId, maxWidth, minWidth, maxDepth, minDepth, minHeight, maxHeight, count, size, charId })
                     return result
                 } : undefined}
@@ -107,17 +107,17 @@ export default function EditFurnitureTable() {
                     setItemId(items.at(0)?.id || 0)
                     return result
                 } : undefined}
-                onAdd={perm?.Create ? async (checked, values) => {
-                    const specId = checked[0] ? values[0] as number : item.specId
-                    const minWidth = checked[1] ? +values[1] : item.minWidth
-                    const maxWidth = checked[2] ? +values[2] : item.maxWidth
-                    const minDepth = checked[3] ? +values[3] : item.minDepth
-                    const maxDepth = checked[4] ? +values[4] : item.maxDepth
-                    const minHeight = checked[5] ? +values[5] : item.minHeight
-                    const maxHeight = checked[6] ? +values[6] : item.maxHeight
-                    const count = checked[7] ? +values[7] : item.count
-                    const size = checked[8] ? values[8] as string : item.size
-                    const charId = checked[9] ? +values[9] : item.charId
+                onAdd={perm?.Create ? async (values) => {
+                    const specId =  values[0] as number
+                    const minWidth =  +values[1] 
+                    const maxWidth =  +values[2]
+                    const minDepth = +values[3]
+                    const maxDepth = +values[4] 
+                    const minHeight = +values[5] 
+                    const maxHeight =+values[6]
+                    const count =  +values[7]
+                    const size = values[8] as string 
+                    const charId = +values[9] 
                     const result = await addData({ wardrobeId, specId, maxWidth, minWidth, maxDepth, minDepth, minHeight, maxHeight, count, size, charId })
                     return result
                 } : undefined} /> : <div></div>}

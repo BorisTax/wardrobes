@@ -2,7 +2,7 @@ import { dataBaseQuery, dataBaseTransaction, hashData } from '../functions/datab
 import { Result, Token } from '../../types/server.js';
 import { USER_ROLE_SCHEMA, User, UserAction } from "../../types/user.js";
 import messages from '../messages.js';
-import { Query, USER_TABLE_NAMES } from '../../types/schemas.js';
+import { Query, USER_TABLE_NAMES } from '../../types/schemas/schemas.js';
 import {  UserRole } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
 import { IUserService } from '../../types/services.js';

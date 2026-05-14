@@ -12,6 +12,7 @@ type MessageAtom = {
 type ConfirmAtom = {
     dialogRef: React.RefObject<HTMLDialogElement> | null
     message: string
+    usePreFormat: boolean
     onYesAction: () => void
     onNoAction?: () => void
 }
@@ -83,11 +84,11 @@ export const messageDialogRefAtom = atom(null, (get, set, dialogRef: React.RefOb
     set(messageAtom, { ...state, dialogRef })
 })
 
-const confirmAtom = atom<ConfirmAtom>({ dialogRef: null, message: "", onYesAction: () => { }, onNoAction: () => { } })
+const confirmAtom = atom<ConfirmAtom>({ dialogRef: null, message: "", usePreFormat: false, onYesAction: () => { }, onNoAction: () => { } })
 
-export const confirmDialogAtom = atom((get) => get(confirmAtom), (get, set, { message, onYesAction, onNoAction = () => { } }) => {
+export const confirmDialogAtom = atom((get) => get(confirmAtom), (get, set, { message, onYesAction, onNoAction = () => { }, usePreFormat = false }) => {
     const state = get(confirmAtom)
-    set(confirmAtom, { ...state, message, onYesAction, onNoAction })
+    set(confirmAtom, { ...state, message, usePreFormat, onYesAction, onNoAction })
 })
 
 export const confirmDialogRefAtom = atom(null, (get, set, dialogRef: React.RefObject<HTMLDialogElement> | null) => {

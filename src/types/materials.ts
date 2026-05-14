@@ -1,5 +1,5 @@
 import { FASAD_TYPE, CHAR_PURPOSE } from "./enums"
-import { ProfileSchema } from "./schemas"
+import { ProfileSchema } from "./schemas/wardrobeSchemas"
 
 export type Profile = Omit<Omit<ProfileSchema, "charId">, "brushSpecId">
 

@@ -10,7 +10,7 @@ import { emptyFullData, flattenSpecification } from "./functions";
 import { getFasadCount, correctFasadCount } from "./functions";
 import { getAllCharOfSpec, getSpecToCharList } from "../../routers/functions/spec";
 import { getLacobels } from "../../routers/functions/materials";
-import { LacobelSchema, ProfileSchema } from "../../../types/schemas";
+import { LacobelSchema, ProfileSchema } from "../../../types/schemas/wardrobeSchemas";
 import { getFasadCutHeight, getFasadCutWidth, getFasadState } from "../../../functions/fasades";
 import { AppState } from "../../../types/app";
 

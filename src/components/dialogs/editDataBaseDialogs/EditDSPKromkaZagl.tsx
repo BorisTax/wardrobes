@@ -43,13 +43,13 @@ export default function EditDSPKromkaZagl() {
     return <EditContainer>
         <TableData header={heads} content={contents} onSelectRow={key => { setDspId(key as number) }} />
         {(perm?.Read) ? <EditDataSection name={char.get(dspId)?.name} items={editItems}
-            onUpdate={perm?.Update ? async (checked, values) => {
-                const usedKromkaId = checked[1] ? values[1] as number : 0
-                const usedZagId = checked[2] ? values[2] as number : 0
+            onUpdate={perm?.Update ? async (values) => {
+                const usedKromkaId = values[1] as number 
+                const usedZagId = values[2] as number 
                 const result = await updateDspEdge({ id: dspId,kromkaId: usedKromkaId, zaglushkaId: usedZagId })
                 return result
             } : undefined}
-            onAdd={perm?.Create ? async (checked, values) => {
+            onAdd={perm?.Create ? async (values) => {
                 const usedDspId = values[0]  as  number
                 const usedKromkaId = values[1]  as  number
                 const usedZagId = values[2]  as  number

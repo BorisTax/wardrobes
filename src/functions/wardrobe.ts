@@ -4,7 +4,7 @@ import { cloneFasad, excludeFasadParent, getFasadState } from "./fasades"
 import { Division, FASAD_TYPE } from "../types/enums"
 import {  Detail, KROMKA_TYPE, WARDROBE_KIND, WARDROBE_TYPE, WardrobeData } from "../types/wardrobe"
 import { Profile } from "../types/materials"
-import { WardrobesDimensionsSchema } from "../types/schemas"
+import { WardrobesDimensionsSchema } from "../types/schemas/wardrobeSchemas"
 
 
 

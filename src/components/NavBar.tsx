@@ -13,14 +13,17 @@ export default function NavBar() {
   const permWard = permissions.get(RESOURCE.WARDROBES)
   const permSkladStol = permissions.get(RESOURCE.SKLAD_STOL)
   const permSkladMat = permissions.get(RESOURCE.SKLAD_MAT)
+  const permModules = permissions.get(RESOURCE.MODULES)
   const downloadDatabase = useSetAtom(downloadDatabaseAtom)
   return <div className="data-navbar">
     {permCombi?.Read && <ImageLink link={"combi"} caption="Комби-фасады" icon="combiButton" />}
     {permWard?.Read && <ImageLink link={"calculator"} caption="Калькулятор шкафов" icon="wardrobeButton" />}
+    {permModules?.Read && <ImageLink link={"modules"} caption="Модульные деталировки" icon="wardrobeButton" />}
     {permSkladStol?.Read && <ImageLink link={"sklad_stol"} caption="Учет столешниц" icon="editMaterials" />}
     {permSkladMat?.Read && <ImageLink link={"sklad_mat"} caption="Учет остатков плит" icon="editMaterials" />}
     <>
       <MenuSeparator />
+      {permModules?.Read && <ImageLink link={"modules_data_base"} caption="База данных модулька" icon="editMaterials" />}
       {permMat?.Read && <ImageLink link={"materials"} caption="База данных" icon="editMaterials" />}
       {permMat?.Update && <ImageLink link={"settings"} caption="Настройки" icon="settingsButton" />}
     </>

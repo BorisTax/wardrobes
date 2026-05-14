@@ -1,4 +1,4 @@
-import { DefaultSchema } from "./schemas"
+import { DefaultSchema } from "./schemas/schemas"
 
 export enum RESOURCE {
     USERS = 1,
@@ -14,6 +14,8 @@ export enum RESOURCE {
     MATERIALS_DB = 11,
     SKLAD_STOL = 12,
     SKLAD_MAT = 13,
+    MODULES = 14,
+    SKLAD_DB_EDIT = 20,
     SETTINGS = 100
 }
 export enum PERMISSION {

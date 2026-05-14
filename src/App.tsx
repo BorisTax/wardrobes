@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/App.scss'
 import './styles/buttons.scss'
@@ -9,8 +9,6 @@ import './styles/messages.scss'
 import './styles/inputs.scss'
 import './styles/templates.scss'
 import './styles/navbar.scss'
-import combi from './images/combi.png';
-import wardrobe from './images/wardrobe.png';
 
 import Header from './components/Header'
 import { createToolTip } from './functions/functions'
@@ -19,7 +17,7 @@ const EditMaterialDialog = lazy(() => import('./components/dialogs/EditDataBaseD
 import { userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
-import { combiStateAtom, loadInitialCombiStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
+import { loadInitialCombiStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import EditUsersDialog from './components/dialogs/editUserDialogs/EditUsersDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
@@ -32,20 +30,16 @@ import Decoration from './components/decoration/Decoration'
 import Settings from './components/Settings'
 import { RESOURCE } from './types/user'
 import NotifyMessage from './components/dialogs/NotifyMessage'
-import SkladStolList from './components/Sklad/SkladStolList'
 const SkladStol = lazy(() => import('./components/Sklad/SkladStol'))
 const SkladMat = lazy(() => import('./components/Sklad/SkladMat'))
+const ModuleDataBase = lazy(() => import('./components/Modules/ModuleDataBase'))
 function App() {
   const user = useAtomValue(userAtom)
-  const setAppData = useSetAtom(combiStateAtom)
   const loadVersion = useSetAtom(loadVersionAtom)
-  const loadInitialAppState = useSetAtom(loadInitialCombiStateAtom)
   const saveToStorage = useSetAtom(saveToStorageAtom)
   useEffect(() => {
-
-    loadInitialAppState()
     loadVersion()
-  }, [user.name])
+  }, [])
   useEffect(() => {
     const onContextMenu = (e: Event) => { e.preventDefault() }
     const onBeforeUnload = () => { saveToStorage() }
@@ -74,6 +68,7 @@ function App() {
               {user.permissions.get(RESOURCE.WARDROBES)?.Read ? <Route path="/calculator" element={<WardrobeCalculator />} /> : <></>}
               {user.permissions.get(RESOURCE.SKLAD_STOL)?.Read ? <Route path="/sklad_stol" element={<SkladStol />} /> : <></>}
               {user.permissions.get(RESOURCE.SKLAD_MAT)?.Read ? <Route path="/sklad_mat" element={<SkladMat />} /> : <></>}
+              {user.permissions.get(RESOURCE.MODULES)?.Read ? <Route path="/modules_data_base" element={<ModuleDataBase />} /> : <></>}
               {user.permissions.get(RESOURCE.MATERIALS_DB)?.Read ? <Route path="/materials" element={<EditMaterialDialog />} /> : <></>}
               {user.permissions.get(RESOURCE.USERS)?.Read ? <Route path="/users" element={<EditUsersDialog />} /> : <></>}
               {user.permissions.get(RESOURCE.SETTINGS)?.Read ? <Route path="/settings" element={<Settings />} /> : <></>}
@@ -92,26 +87,5 @@ function App() {
 }
 
 export default App
-
-function Select() {
-  return <div className='main-screen-select-container'>
-    <div className='main-screen-select-item'>
-      <Link to="combi">
-        <div className='d-flex flex-column align-items-center'>
-          <img className='image' src={combi} />
-          <div>Калькулятор комби фасадов</div>
-        </div>
-      </Link>
-    </div>
-    <div className='main-screen-select-item'>
-      <Link to="calculator">
-        <div className='d-flex flex-column align-items-center'>
-          <img className='image' src={wardrobe} />
-          <div>Калькулятор шкафов</div>
-        </div>
-      </Link>
-    </div>
-  </div>
-}
 
 

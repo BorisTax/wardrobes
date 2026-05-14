@@ -13,6 +13,7 @@ export type TextBoxProps = {
     min?: number
     submitOnLostFocus?: boolean
     width?: string
+    styles?: object
 }
 
 export default function TextBox(props: TextBoxProps) {
@@ -51,7 +52,7 @@ export default function TextBox(props: TextBoxProps) {
       >
         <input
           type="text"
-          style={{ width: props.width || "auto" }}
+          style={props.styles || { width: props.width || "auto" }}
           className={className}
           disabled={props.disabled}
           value={state.value}

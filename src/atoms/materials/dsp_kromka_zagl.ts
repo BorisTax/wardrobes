@@ -5,7 +5,7 @@ import { TableFields } from "../../types/server";
 import messages from "../../server/messages";
 import { RESOURCE } from "../../types/user";
 import { API_ROUTE, DSP_KROMKA_ZAG_ROUTE, MATERIALS_ROUTE } from "../../types/routes";
-import { DspKromkaZaglSchema } from "../../types/schemas";
+import { DspKromkaZaglSchema } from "../../types/schemas/wardrobeSchemas";
 import { ExtMap, makeExtMap } from "../storage";
 
 export const dspKromkaZaglListAtom = atom<ExtMap<DspKromkaZaglSchema>>(new Map())

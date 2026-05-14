@@ -13,6 +13,7 @@ import { InputType } from "../../../types/property"
 import messages from "../../../server/messages"
 import EditContainer from "../../EditContainer"
 import UserActionsDialog from "./UserActionsDialog"
+import EditResourcesDialog from "./EditResourcesDialog"
 
 export default function EditUsersDialog() {
     const navigate = useNavigate()
@@ -69,7 +70,7 @@ export default function EditUsersDialog() {
         <EditContainer>
             <TableData header={userListHeader} content={userlist} onSelectRow={(index) => setUserIndex(index as number)} />
             <EditDataSection items={userEditItems} name={user.name}
-                onAdd={async (checked, values) => {
+                onAdd={async ( values) => {
                     const name = values[0] as string
                     const roleId = values[1] as number
                     const password = values[2] as string
@@ -77,10 +78,10 @@ export default function EditUsersDialog() {
                     const result = await createUser(name, password, roleId)
                     return result
                 }}
-                onUpdate={async (checked, values) => {
-                    const usedName = checked[0] ? values[0] : user.name
-                    const usedRoleId = checked[1] ? values[1] as number : 0
-                    const usedPass = checked[2] ? values[2] : ""
+                onUpdate={async (values) => {
+                    const usedName = values[0] 
+                    const usedRoleId =values[1] as number 
+                    const usedPass = values[2] 
                     const roleId = usedRoleId
                     if (!users.find(u => u.name === usedName)) { return { success: false, message: messages.USER_NAME_NO_EXIST } }
                     const result = await updateUser(usedName as string, usedPass as string, roleId)
@@ -100,6 +101,8 @@ export default function EditUsersDialog() {
         <UserActionsDialog />
         <hr/>
         <EditPermissionsDialog />
+        <hr/>
+        <EditResourcesDialog />
     </div>
 }
 

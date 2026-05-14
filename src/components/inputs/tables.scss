@@ -81,7 +81,7 @@
 .edit-section-grid {
   display: grid;
   align-items: center;
-  grid-template-columns: auto auto 300px;
+  grid-template-columns: auto auto;
   gap: 0.2rem;
   -background-color: $defaultBackColor;
 }

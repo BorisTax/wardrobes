@@ -17,11 +17,18 @@ export const databaseFolder = path.resolve(__dirname, 'database')
 export const usersPath = path.resolve(__dirname, 'database/users/users.db')
 export const dataPath = path.resolve(__dirname, 'database/wardrobes/data.db')
 export const skladPath = path.resolve(__dirname, 'database/sklad/sklad.db')
+export const modulePath = path.resolve(__dirname, 'database/modules/module.db')
 export const templatePath = path.resolve(__dirname, 'database/wardrobes/templates.db')
 export const settingsPath = path.resolve(__dirname, 'database/settings/settings.db')
 
+export function getDataBaseModuleService<T>() {
+  return new DataBaseServiceSQLite<T>(modulePath)
+}
 export function getDataBaseSkladService<T>() {
   return new DataBaseServiceSQLite<T>(skladPath)
+}
+export function getDataBaseUserService<T>() {
+  return new DataBaseServiceSQLite<T>(usersPath)
 }
 export function getDataBaseService<T>() {
   return new DataBaseServiceSQLite<T>(dataPath)

@@ -61,18 +61,18 @@ export default function EditDetailDialog() {
         <EditContainer>
             <TableData header={heads} content={contents} onSelectRow={key => setDetIndex(key as number)} />
             <EditDataSection name={""} items={editItems} dontAsk={true}
-            onUpdate={async (checked, values) => {
+            onUpdate={async (values) => {
                 const newDetails = [...details]
-                if (checked[0]) newDetails[detIndex].id = values[0] as number
-                if (checked[1]) newDetails[detIndex].length = +values[1]
-                if (checked[2]) newDetails[detIndex].width = +values[2]
-                if (checked[3]) newDetails[detIndex].count = +values[3]
-                if (checked[4] && newDetails[detIndex].kromka) newDetails[detIndex].kromka.L1 = values[4] as KROMKA_TYPE
-                if (checked[5] && newDetails[detIndex].kromka) newDetails[detIndex].kromka.L2 = values[5] as KROMKA_TYPE
-                if (checked[6] && newDetails[detIndex].kromka) newDetails[detIndex].kromka.W1 = values[6] as KROMKA_TYPE
-                if (checked[7] && newDetails[detIndex].kromka) newDetails[detIndex].kromka.W2 = values[7] as KROMKA_TYPE
-                if (checked[8]) newDetails[detIndex].confirmat = values[8] as number
-                if (checked[9]) newDetails[detIndex].minifix = values[9] as number
+                newDetails[detIndex].id = values[0] as number
+                newDetails[detIndex].length = +values[1]
+                newDetails[detIndex].width = +values[2]
+                newDetails[detIndex].count = +values[3]
+                if (newDetails[detIndex].kromka) newDetails[detIndex].kromka.L1 = values[4] as KROMKA_TYPE
+                if (newDetails[detIndex].kromka) newDetails[detIndex].kromka.L2 = values[5] as KROMKA_TYPE
+                if (newDetails[detIndex].kromka) newDetails[detIndex].kromka.W1 = values[6] as KROMKA_TYPE
+                if (newDetails[detIndex].kromka) newDetails[detIndex].kromka.W2 = values[7] as KROMKA_TYPE
+                newDetails[detIndex].confirmat = values[8] as number
+                newDetails[detIndex].minifix = values[9] as number
                 setData(prev => ({ ...prev, details: newDetails }))
                 return { success: true, message: "" }
             }}
@@ -81,7 +81,7 @@ export default function EditDetailDialog() {
                 setData(prev => ({ ...prev, details: newDetails }))
                 return { success: true, message: "" }
             }}
-            onAdd={async (_, values) => {
+            onAdd={async (values) => {
                 const newDetails = [...details]
                 const detail: Detail = {
                     id: values[0] as number,

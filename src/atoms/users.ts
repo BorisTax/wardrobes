@@ -3,8 +3,7 @@ import { fetchData, fetchGetData } from "../functions/fetch"
 import { PermissionSchema, UserPermissions, RESOURCE, UserData, UserLoginResult, UserRole, UserAction } from "../types/user"
 import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
 import { API_ROUTE, USER_ACTIONS_ROUTE, USERS_ROUTE, VERIFY_ROUTE } from "../types/routes"
-import { DefaultMap, loadAllDataAtom, loadedInitialWardrobeDataAtom, makeDefaultMap } from "./storage"
-import { loadInitialCombiStateAtom } from "./app"
+import { DefaultMap, makeDefaultMap } from "./storage"
 import { loadResourceListAtom } from "./permissions"
 
 
@@ -84,8 +83,8 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
         set(userAtomPrivate, storeUser)
         set(closeEventSourceAtom)
     }
-    set(loadInitialCombiStateAtom)
-    if (!get(loadedInitialWardrobeDataAtom)) set(loadAllDataAtom, storeUser.permissions)
+    //set(loadInitialCombiStateAtom)
+    //if (!get(loadedInitialWardrobeDataAtom)) set(loadAllDataAtom, storeUser.permissions)
     if (storeUser.permissions.get(RESOURCE.USERS)?.Read) {
         set(loadUserRolesAtom)
         set(loadResourceListAtom)

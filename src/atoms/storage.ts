@@ -1,8 +1,8 @@
 import { atom, Getter } from "jotai";
 import { OmitId } from "../types/materials";
 import { FetchResult, fetchGetData } from "../functions/fetch";
-import { UserPermissions, RESOURCE } from "../types/user";
-import { AllData, DefaultSchema, WardrobesDimensionsSchema, WardrobesFasadCountSchema, WardrobesSchema } from "../types/schemas";
+import { DefaultSchema } from "../types/schemas/schemas";
+import { AllData, WardrobesDimensionsSchema, WardrobesFasadCountSchema, WardrobesSchema } from "../types/schemas/wardrobeSchemas";
 import { API_ROUTE, MATERIALS_ROUTE, ALLDATA_ROUTE, WARDROBE_ROUTE, INITIAL_WARDROBEDATA_ROUTE } from "../types/routes";
 import { WardrobeData } from "../types/wardrobe";
 import { setWardrobeDataAtom } from "./wardrobe";
@@ -34,9 +34,8 @@ export const getFasadDefaultCharsAtom = (get: Getter, fasadType: FASAD_TYPE) => 
 
 export const loadedInitialWardrobeDataAtom = atom(false)
 
-export const loadAllDataAtom = atom(null, async (get, set, permissions: Map<RESOURCE, UserPermissions>) => {
+export const loadAllDataAtom = atom(null, async (get, set) => {
     set(loadedInitialWardrobeDataAtom, false)
-    if(!permissions.get(RESOURCE.MATERIALS)?.Read) return { success: false, message: "" }
     try {
         let fetchData: FetchResult<AllData> = await (await fetchGetData(`${API_ROUTE}${MATERIALS_ROUTE}${ALLDATA_ROUTE}`))
         const allData = fetchData.data[0]

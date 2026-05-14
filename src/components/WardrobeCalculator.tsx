@@ -14,11 +14,11 @@ import { useDetail } from "../custom-hooks/useDetail"
 import useConfirm from "../custom-hooks/useConfirm"
 import { showDetailDialogAtom } from "../atoms/dialogs"
 import EditDetailDialog from "./dialogs/EditDetailDialog"
-import { consoleTypesAtom, ExtMap, wardrobeAtom, wardrobesDimensionsAtom, wardrobesFasadCountAtom, wardrobeTypesAtom, wardrobeUseAtom } from "../atoms/storage"
+import { consoleTypesAtom, ExtMap, loadAllDataAtom, wardrobeAtom, wardrobesDimensionsAtom, wardrobesFasadCountAtom, wardrobeTypesAtom, wardrobeUseAtom } from "../atoms/storage"
 import { fasadTypesToCharAtom } from "../atoms/materials/chars"
 import { profileAtom } from "../atoms/materials/profiles"
 import { charAtom, charPurposeAtom } from "../atoms/materials/chars"
-import { CharsSchema } from "../types/schemas"
+import { CharsSchema } from "../types/schemas/wardrobeSchemas"
 import { useDefaultFasadChars } from "../custom-hooks/materials"
 import { getInitialWardrobeDimensions } from "../functions/wardrobe"
 import Selector from "./inputs/Selector"
@@ -28,6 +28,7 @@ const styles = { fontStyle: "italic", color: "gray" }
 const maxFasades = 6
 const consoleWidth = [150, 200, 250, 300, 350, 400, 450, 500]
 export default function WardrobeCalculator() {
+    const loadAllData = useSetAtom(loadAllDataAtom)
     const wardTypes = useAtomValue(wardrobeTypesAtom)
     const wardTypeUse = useAtomValue(wardrobeUseAtom)
     const wardKinds = useAtomValue(wardrobeAtom)
@@ -58,6 +59,9 @@ export default function WardrobeCalculator() {
         const newDepth = consoleSameDepth ? depth : extComplect.console.depth
         setData(prev => ({ ...prev, extComplect: { ...prev.extComplect, console: { ...prev.extComplect.console, height: newHeight, depth: newDepth } } }))
     }, [depth, height, setData, consoleSameDepth, consoleSameHeight, extComplect.console.depth, extComplect.console.height])
+    useEffect(() => {
+        loadAllData()
+    }, [])
     return <div className="wardrobe-calculator-container">
         <div>
             <div className="wardrobe-param-container">

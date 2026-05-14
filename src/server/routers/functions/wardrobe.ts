@@ -1,7 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { InitialAppState as InitialCombiState } from "../../../types/app";
 import { FASAD_TYPE, ProfileType } from "../../../types/enums";
-import { DATA_TABLE_NAMES, WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema, WardrobesDimensionsSchema, WardrobesFasadCountSchema } from "../../../types/schemas";
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas";
+import { WardrobesSchema, WardrobeTypesSchema, ConsoleTypesSchema, FasadTypesSchema, WardrobesDimensionsSchema, WardrobesFasadCountSchema } from "../../../types/schemas/wardrobeSchemas";
 import { Result } from "../../../types/server";
 import { WARDROBE_KIND, WARDROBE_TYPE, FasadesData, WardrobeData, CONSOLE_TYPE } from "../../../types/wardrobe";
 import { getDetails } from "../../wardrobes/specifications/corpus";

@@ -1,5 +1,5 @@
 import { FASAD_TYPE, ProfileType } from "./enums"
-import { SpecSchema } from "./schemas"
+import { SpecSchema } from "./schemas/wardrobeSchemas"
 import { SPEC_GROUP } from "./specification"
 import { SpecItem } from "./specification"
 

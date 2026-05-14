@@ -65,7 +65,7 @@ export default function SkladStolList() {
             </div>
             {(perm?.Update) ? <EditDataSection name={stolSklad[selected.row]?.id} items={editItems} dontUseCheckBoxes={true}
                 onUpdate={perm?.Update ? {
-                    caption: "Убрать со склада", question: (values) => getTakeOffQuestion(values), onAction: async (_, values) => {
+                    caption: "Убрать со склада", question: (values) => getTakeOffQuestion(values), onAction: async (values) => {
                         const id = (values as ValueType[])[0] as number
                         const length = +(values as ValueType[])[1] as number
                         const amount = +(values as ValueType[])[2] as number
@@ -75,7 +75,7 @@ export default function SkladStolList() {
                     }
                 } : undefined}
                 onAdd={perm?.Update ? {
-                    caption: "Добавить на склад", question: (values) => getAddQuestion(values), onAction: async (checked, values) => {
+                    caption: "Добавить на склад", question: (values) => getAddQuestion(values), onAction: async (values) => {
                         const id = values[0] as number
                         const length = +values[1] as number
                         const amount = +values[2] as number
@@ -84,7 +84,7 @@ export default function SkladStolList() {
                     }
                 } : undefined}
                 onDelete={perm?.Delete ? {
-                    caption: "Очистить все списки", question: () => "Удалить все данные?", onAction: async (checked, values) => {
+                    caption: "Очистить все списки", question: () => "Удалить все данные?", onAction: async (values) => {
                         const result = await clearStol()
                         return result
                     }

@@ -1,4 +1,5 @@
-import { DATA_TABLE_NAMES, DspKromkaZaglSchema } from '../../../types/schemas.js';
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas.js";
+import { DspKromkaZaglSchema } from "../../../types/schemas/wardrobeSchemas.js";
 import { OmitId } from '../../../types/materials.js';
 import { getAllCharOfSpec } from './spec.js';
 import { SpecItem } from '../../../types/specification.js';

@@ -44,14 +44,14 @@ export default function EditCharPurpose() {
                 setSelectedCharId(0)
                 return result
             } : undefined}
-            onAdd={perm?.Create ? async (checked, values) => {
+            onAdd={perm?.Create ? async (values) => {
                 const charId = values[0] as number
                 const purposeId = values[1] as number
                 if (charPurposes.find(s => s.charId === charId)) { return { success: false, message: messages.MATERIAL_EXIST } }
                 const result = await addCharPurpose({ charId, purposeId })
                 return result
             } : undefined} 
-            onUpdate={perm?.Update ? async (checked, values) => {
+            onUpdate={perm?.Update ? async (values) => {
                 const charId = values[0] as number
                 const purposeId = values[1] as number
                 const result = await updateCharPurpose({ charId: selectedCharId, purposeId: selectedPurposeId }, { charId, purposeId })

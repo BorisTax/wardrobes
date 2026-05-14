@@ -7,7 +7,7 @@ import { TableFields } from "../../types/server";
 import messages from "../../server/messages";
 import { RESOURCE } from "../../types/user";
 import { API_ROUTE } from "../../types/routes";
-import { ProfileSchema } from "../../types/schemas";
+import { ProfileSchema } from "../../types/schemas/wardrobeSchemas";
 import { ExtMap, DefaultMap } from "../storage";
 const initProfile: ProfileSchema = { id: -1, charId: 0, type: ProfileType.STANDART, brushSpecId: 0 }
 

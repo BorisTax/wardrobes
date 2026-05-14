@@ -8,7 +8,7 @@ import { wardrobeDataAtom } from "./wardrobe";
 import { combiStateJSONAtom } from "./app";
 import { AppState } from "../types/app";
 import { API_ROUTE, COMBIDATA_ROUTE, DATA_ROUTE, SPECIFICATION_ROUTE } from "../types/routes";
-import { SpecSchema, SpecToCharSchema } from "../types/schemas";
+import { SpecSchema, SpecToCharSchema } from "../types/schemas/wardrobeSchemas";
 import { ExtMap } from "./storage";
 import messages from "../server/messages";
 

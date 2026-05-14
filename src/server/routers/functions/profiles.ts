@@ -1,5 +1,7 @@
 import { OmitId } from '../../../types/materials.js';
-import { DATA_TABLE_NAMES, DefaultSchema, ProfileSchema } from '../../../types/schemas.js';
+import { DefaultSchema } from '../../../types/schemas/schemas.js';
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas.js";
+import { ProfileSchema } from "../../../types/schemas/wardrobeSchemas.js";
 import { getDataBaseService } from '../../options.js';
 
 export async function getProfiles() {

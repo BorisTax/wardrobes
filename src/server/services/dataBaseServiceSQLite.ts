@@ -2,7 +2,7 @@ import { Result } from '../../types/server.js';
 import { IDataBaseService } from '../../types/services.js';
 import { dataBaseQuery } from '../functions/database.js';
 import messages from '../messages.js';
-import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from '../../types/schemas.js';
+import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from '../../types/schemas/schemas.js';
 import { StatusCodes } from 'http-status-codes';
 
 export default class DataBaseServiceSQLite<T> implements IDataBaseService<T> {

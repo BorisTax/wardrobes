@@ -4,7 +4,7 @@ import { PERMISSION, RESOURCE } from "../../types/user.js";
 import { accessDenied, incorrectData, noExistData } from "../functions/database.js";
 import messages from "../messages.js";
 import { hasPermission } from "./users.js";
-import { SpecSchema } from "../../types/schemas.js";
+import { SpecSchema } from "../../types/schemas/wardrobeSchemas.js";
 import { COMBIDATA_ROUTE, DATA_ROUTE } from "../../types/routes.js";
 import { getSpecCombiData, getSpecData, getSpecList, updateSpecData } from "./functions/spec.js";
 

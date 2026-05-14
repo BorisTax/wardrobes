@@ -1,4 +1,5 @@
-import { DefaultSchema, DetailSchema, FurnitureTableSchema } from "../../../types/schemas";
+import { DefaultSchema } from "../../../types/schemas/schemas";
+import { DetailSchema, FurnitureTableSchema } from "../../../types/schemas/wardrobeSchemas";
 import { SpecItem } from "../../../types/specification";
 import { DETAIL_NAME, DRILL_TYPE, Detail, KROMKA_SIDE, KROMKA_TYPE, FullData, SpecificationResult, WARDROBE_TYPE, WardrobeData } from "../../../types/wardrobe";
 import { getSpecList } from "../../routers/functions/spec";

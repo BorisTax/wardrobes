@@ -1,4 +1,5 @@
-import { DATA_TABLE_NAMES, FasadTypeToCharSchema } from "../../../types/schemas"
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas";
+import { FasadTypeToCharSchema } from "../../../types/schemas/wardrobeSchemas";
 import { Result } from "../../../types/server"
 import { getDataBaseService } from "../../options";
 

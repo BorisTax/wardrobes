@@ -1,5 +1,7 @@
 import { OmitId } from '../../../types/materials.js';
-import { CharPurposeSchema, CharsSchema, DATA_TABLE_NAMES, DefaultSchema } from '../../../types/schemas.js';
+import { DefaultSchema } from '../../../types/schemas/schemas.js';
+import { DATA_TABLE_NAMES } from "../../../types/schemas/wardrobeSchemas.js";
+import { CharPurposeSchema, CharsSchema } from "../../../types/schemas/wardrobeSchemas.js";
 import { getDataBaseService } from '../../options.js';
 
 export async function getMaterialTypes() {

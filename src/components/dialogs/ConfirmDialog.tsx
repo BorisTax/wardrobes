@@ -5,12 +5,13 @@ import { useEffect, useRef } from "react"
 export default function ConfirmDialog() {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const setConfirmDialogRef = useSetAtom(confirmDialogRefAtom)
-    const { message, onYesAction, onNoAction = () => { } } = useAtomValue(confirmDialogAtom)
+    const { message, usePreFormat, onYesAction, onNoAction = () => { } } = useAtomValue(confirmDialogAtom)
     useEffect(() => {
         setConfirmDialogRef(dialogRef)
     }, [setConfirmDialogRef])
+    const msg = usePreFormat ? <pre>{message}</pre> : message
     return <dialog ref={dialogRef}>
-        <div className="confirm-message"><pre>{message}</pre></div>
+        <div className="confirm-message">{msg}</div>
         <div className="d-flex justify-content-center gap-2">
             <button className="btn btn-primary" onClick={() => { onYesAction(); dialogRef.current?.close(); }}>Да</button>
             <button className="btn btn-secondary"  onClick={() => { onNoAction(); dialogRef.current?.close(); }}>Нет</button>

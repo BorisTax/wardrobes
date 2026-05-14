@@ -5,7 +5,7 @@ import messages from '../messages.js';
 import { Response } from "express"
 import { Result } from '../../types/server.js';
 import { StatusCodes } from 'http-status-codes';
-import { Query } from '../../types/schemas.js';
+import { Query } from '../../types/schemas/schemas.js';
 
 type QuerySettings<T> = {
     successStatusCode?: StatusCodes,
@@ -13,21 +13,22 @@ type QuerySettings<T> = {
     successMessage?: string
 }
 
-export function dataBaseQuery<T>(dbFile: string, query: string, params: any[], {successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR }: QuerySettings<T>): Promise<Result<T>> {
+export function dataBaseQuery<T>(dbFile: string, query: string, params: any[], { successStatusCode = StatusCodes.OK, errorStatusCode = StatusCodes.INTERNAL_SERVER_ERROR, successMessage = messages.NO_ERROR }: QuerySettings<T>): Promise<Result<T>> {
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
-            if (err) { 
+            if (err) {
                 console.log(query, err)
-                resolve({ success: false, status: errorStatusCode, data: [], message: messages.DATABASE_OPEN_ERROR, error: err }); 
-                db.close(); 
-                return 
+                resolve({ success: false, status: errorStatusCode, data: [], message: messages.DATABASE_OPEN_ERROR, error: err });
+                db.close();
+                return
             }
             if (!query) { resolve({ success: false, data: [], status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.close(); return }
             try {
+                db.run("PRAGMA foreign_keys = ON;");
                 db.all(query, params, (err: Error, rows: []) => {
                     if (err) {
-                        resolve({ success: false, data: [], status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
-                        console.log(query, err.message)
+                        resolve({ success: false, data: [], status: errorStatusCode, message: getSQLError(err.message), error: err });
+                        console.log(query, err)
                         db.close();
                         return
                     }
@@ -48,20 +49,21 @@ export function dataBaseTransaction<T>(dbFile: string, queries: Query[], { succe
     return new Promise((resolve) => {
         const db = new sqlite3.Database(dbFile, (err) => {
             if (err) { resolve({ success: false, data: [], status: errorStatusCode, message: messages.DATABASE_OPEN_ERROR, error: err }); db.close(); return }
-            db.serialize(()=>{
+            db.serialize(() => {
+                db.run("PRAGMA foreign_keys = ON;");
                 db.run("BEGIN TRANSACTION");
                 queries.forEach((query, index) => {
                     if (!query) { resolve({ success: false, data: [], status: errorStatusCode, message: messages.SQL_QUERY_ERROR }); db.run("ROLLBACK"); db.close(); return }
                     try {
                         db.all(query.query, query.params, (err: Error, rows: []) => {
                             if (err) {
-                                resolve({ success: false, data: [], status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: err });
+                                resolve({ success: false, data: [], status: errorStatusCode, message: getSQLError(err.message), error: err });
                                 console.log(query, err.message)
                                 db.run("ROLLBACK");
                                 db.close();
                                 return
                             }
-                            else { 
+                            else {
                                 if (index === queries.length - 1) {
                                     db.run("COMMIT");
                                     resolve({ success: true, status: successStatusCode, data: rows as T[], message: successMessage })
@@ -71,7 +73,7 @@ export function dataBaseTransaction<T>(dbFile: string, queries: Query[], { succe
                         });
                     } catch (e: any) {
                         db.run("ROLLBACK");
-                        resolve({ success: false, data: [], status: errorStatusCode, message: messages.SQL_QUERY_ERROR, error: e });
+                        resolve({ success: false, data: [], status: errorStatusCode, message: getSQLError(e), error: e });
                         console.log(query)
                         db.close();
                     }
@@ -84,6 +86,12 @@ export function dataBaseTransaction<T>(dbFile: string, queries: Query[], { succe
 }
 
 
+function getSQLError(message: string) {
+    if (message.startsWith("SQLITE_CONSTRAINT: UNIQUE constraint failed")) return messages.SQL_UNIQUE_CONSTRAINT_ERROR
+    if (message.startsWith("SQLITE_CONSTRAINT: FOREIGN KEY constraint failed")) return messages.SQL_FOREIGNKEY_CONSTRAINT_ERROR
+
+    return messages.SQL_QUERY_ERROR
+}
 
 
 export async function moveFile(sourcefile: string, destfile: string): Promise<{ copy: boolean, delete: boolean }> {

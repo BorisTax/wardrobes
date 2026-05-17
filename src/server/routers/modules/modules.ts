@@ -14,7 +14,7 @@ export default router
 
 export async function getModulesBySerie(serieId: number | undefined) {
     const res = (await getModules())
-    const modules = res.data.filter(m => m.serieId === serieId || !serieId)
+    const modules = res.data.filter(m => m.serieId === serieId)
     return {...res, data: modules}
 }
 

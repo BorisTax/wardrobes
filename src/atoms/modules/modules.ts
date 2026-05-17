@@ -1,31 +1,27 @@
-import { atom } from "jotai";
 import { FetchResult, fetchData, fetchGetData } from "../../functions/fetch";
-import { RESOURCE } from "../../types/user";
 import { API_ROUTE, MODULE_MODULES_ROUTE } from "../../types/routes";
-import { ExtMap, makeExtMap } from "../storage";
-import { userAtom } from "../users";
+import { makeExtMap } from "../storage";
 import messages from "../../server/messages";
 import { ModuleModulesTableSchema } from "../../types/schemas/moduleSchemas";
 import { MODULE_ROUTE } from "../../types/routes";
 import { OmitId } from "../../types/materials";
+import { atom } from "jotai";
 
+export const modulesLastStateDBAtom = atom<{ groupId: number, serieId: number, moduleId: number }>({ groupId: 0, serieId: 0, moduleId: 0 })
 
-export const modulesAtom = atom<ExtMap<ModuleModulesTableSchema>>(new Map())
-
-export const loadModulesAtom = atom(null, async (get, set, serieId: number) => {
-    const { permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MODULES)?.Read) return { success: false, message: "" }
+export const loadModules =  async (serieId: number) => {
     try {
         const fetchData: FetchResult<ModuleModulesTableSchema> = await (await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_MODULES_ROUTE}?serieId=${serieId}`))
         const data = fetchData.data.filter(d => d.id !== 0)
-        set(modulesAtom, makeExtMap(data))
-    } catch (e) { console.error(e) }
-})
+        return makeExtMap(data)
+    } catch (e) { 
+        console.error(e)
+        return new Map()
+     }
+}
 
 
-export const addModuleAtom = atom(null, async (get, set, data: OmitId<ModuleModulesTableSchema>) => {
-    const { permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MODULES)?.Create) return { success: false, message: "" }
+export const addModule = async (data: OmitId<ModuleModulesTableSchema>) => {
     try {
         const result = await fetchData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_MODULES_ROUTE}`, "POST", JSON.stringify({ ...data }))
         return { success: result.success as boolean, message: result.message as string }
@@ -33,11 +29,9 @@ export const addModuleAtom = atom(null, async (get, set, data: OmitId<ModuleModu
          console.error(e) 
          return { success: false, message: messages.QUERY_ERROR }
         }
-})
+}
 
-export const updateModuleAtom = atom(null, async (get, set, data: ModuleModulesTableSchema) => {
-    const { permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MODULES)?.Update) return { success: false, message: "" }
+export const updateModule = async (data: ModuleModulesTableSchema) => {
     try {
         const result = await fetchData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_MODULES_ROUTE}`, "PUT", JSON.stringify({ ...data }))
         return { success: result.success as boolean, message: result.message as string }
@@ -45,11 +39,9 @@ export const updateModuleAtom = atom(null, async (get, set, data: ModuleModulesT
          console.error(e) 
          return { success: false, message: messages.QUERY_ERROR }
         }
-})
+}
 
-export const deleteModuleAtom = atom(null, async (get, set, id: number) => {
-    const { permissions } = get(userAtom)
-    if(!permissions.get(RESOURCE.MODULES)?.Delete) return { success: false, message: "" }
+export const deleteModule = async (id: number) => {
     try {
         const result = await fetchData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_MODULES_ROUTE}`, "DELETE", JSON.stringify({ id }))
         return { success: result.success as boolean, message: result.message as string }
@@ -57,4 +49,4 @@ export const deleteModuleAtom = atom(null, async (get, set, id: number) => {
          console.error(e) 
          return { success: false, message: messages.QUERY_ERROR }
         }
-})
+}

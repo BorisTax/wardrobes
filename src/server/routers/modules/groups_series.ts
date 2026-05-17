@@ -8,6 +8,7 @@ import { PERMISSION, RESOURCE } from "../../../types/user";
 import { accessDenied } from "../../functions/database";
 import messages from "../../messages";
 import { OmitId } from "../../../types/materials";
+import { group } from "console";
 
 const router = express.Router();
 export default router
@@ -30,6 +31,12 @@ export async function removeModuleGroup(id: number) {
 export async function updateModuleGroup(data: ModuleGroupsTableSchema) {
     const service = getDataBaseModuleService<ModuleGroupsTableSchema>()
     return await service.updateData(MODULE_TABLE_NAMES.GROUPS, { id: data.id }, data)
+}
+
+export async function getModuleSeriesByGroup(groupId: number) {
+    const res = (await getModuleSeries())
+    const series = res.data.filter(m => m.groupId === groupId)
+    return {...res, data: series}
 }
 
 export async function getModuleSeries() {
@@ -86,10 +93,11 @@ router.delete(MODULE_GROUPS_ROUTE, async (req, res) => {
 
 
 router.get(MODULE_SERIES_ROUTE, async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.MODULES, [PERMISSION.READ]))) return accessDenied(res)
-  const result = await getModuleSeries();
-  if (!result.success) return res.sendStatus(result.status)
-  res.status(result.status).json(result);
+    if (!(await hasPermission(req as MyRequest, RESOURCE.MODULES, [PERMISSION.READ]))) return accessDenied(res)
+    const { groupId } = req.query
+    const result = await getModuleSeriesByGroup(+(groupId || 0));
+    if (!result.success) return res.sendStatus(result.status)
+    res.status(result.status).json(result);
 });
 
 router.post(MODULE_SERIES_ROUTE, async (req, res) => {

@@ -20,11 +20,11 @@ export default function ComboBox<T>(props: ComboBoxProps<T> = { items: [], disab
     let value: T = items.find(i => i === props.value) as T
     const options: ReactNode[] = []
     if (props.withEmpty) options.push(<option key={-1}>{""}</option>)
-        items?.forEach((i, index) =>
-            options.push(
-                <option key={index}>
-                {props.displayValue(i) || ""}
-            </option>))
+        items?.forEach((i, index) =>{
+            const opt = props.displayValue ? props.displayValue(i) : `${i}`
+            options.push(<option key={index}>{opt}</option>)
+            }
+        )
     if (props.altValue) options.push(<option key={-2} hidden>{props.altValue}</option>)
     return (
         <>

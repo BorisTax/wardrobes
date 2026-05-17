@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useAtomValue } from "jotai"
 import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
@@ -7,23 +7,23 @@ import TableData, { TableDataRow } from "../inputs/TableData"
 import EditDataSection, { EditDataItem } from "../dialogs/EditDataSection"
 import { InputType } from "../../types/property"
 import { MODULE_COMMENTS_ROUTE, MODULE_GROOVES_ROUTE, MODULE_GROUPS_ROUTE } from "../../types/routes"
-import useModuleIdNameData from "../../custom-hooks/modules/useModuleGroups"
-import { addModuleIdNameData, deleteModuleModuleIdNameData, updateModuleIdNameData } from "../../atoms/modules/idNameData"
+import { addModuleIdNameData, deleteModuleModuleIdNameData, loadModuleIdNameData, updateModuleIdNameData } from "../../atoms/modules/idNameData"
+import { DefaultMap } from "../../atoms/storage"
 
 const _IdNameRoutes = [MODULE_GROUPS_ROUTE, MODULE_GROOVES_ROUTE, MODULE_COMMENTS_ROUTE] as const
 export type IdNameRoutes =  typeof _IdNameRoutes[keyof typeof _IdNameRoutes] 
 export default function EditModuleIdName({ route }: { route: IdNameRoutes }) {
     const { permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.MODULES)
-    const [data, loadData] = useModuleIdNameData(route)
-    const initialId = useMemo(() => [...data.keys()][0] || 0, [data])
-    const [selectedId, setSelectedId] = useState(initialId)
+    const [data, setData] = useState<DefaultMap>(new Map())
+    const dataList = [...data.keys()].filter(id => id !== 0)
+    const [selectedId, setSelectedId] = useState(0)
     const heads = [{ caption: 'id' }, { caption: 'Наименование' }]
-    const contents: TableDataRow[] = []
-    data.forEach((value, key) => contents.push({key, data: [key, value]}))
+    const contents: TableDataRow[] = dataList.map(d => ({ key: d, data: [d, data.get(d)] }))
     const editItems: EditDataItem[] = [
-        { title: "Наименование:", value: data.get(selectedId) || "", inputType: InputType.TEXT, checkValue: (value) => ({ success: value !== "", message: "Введите наименование" }) },
+        { title: "Наименование:", value: data.get(selectedId) || "", inputType: InputType.TEXT, checkValue: (value) => ({ success: (value as string).trim() !== "", message: "Введите наименование" }) },
     ]
+    const loadData = () => loadModuleIdNameData(route).then(data => { setData(data); setSelectedId([...data.keys()][0] || 0) })
     useEffect(() => {
         loadData()
     }, [route])
@@ -48,7 +48,6 @@ export default function EditModuleIdName({ route }: { route: IdNameRoutes }) {
                 onAction: async () => {
                     const result = await deleteModuleModuleIdNameData(route, selectedId)
                     if(result.success) loadData()
-                    setSelectedId([...data.keys()][0] || 0)
                     return result
                 }
             } : undefined}

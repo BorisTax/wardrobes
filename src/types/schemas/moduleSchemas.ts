@@ -50,7 +50,7 @@ export type ModuleCorrespondTableSchema = {
 export type ModuleColorsTableSchema = {
     id: number
     name: string
-    code: number
+    code: string
     texture: number
 }
 
@@ -95,6 +95,7 @@ export type ModuleMaterialsTableSchema = {
 
 export type ModuleFilmTableSchema = {
     id: number
+    materialId: number
     glossy: number
 }
 

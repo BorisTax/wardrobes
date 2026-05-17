@@ -17,7 +17,7 @@ const EditMaterialDialog = lazy(() => import('./components/dialogs/EditDataBaseD
 import { userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
-import { loadInitialCombiStateAtom, loadVersionAtom, saveToStorageAtom } from './atoms/app'
+import { loadVersionAtom, saveToStorageAtom } from './atoms/app'
 import EditUsersDialog from './components/dialogs/editUserDialogs/EditUsersDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'

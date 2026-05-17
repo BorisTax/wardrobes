@@ -1,39 +1,32 @@
-import { useEffect, useMemo, useState } from "react"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useEffect, useState } from "react"
+import { useAtomValue } from "jotai"
 import { userAtom } from "../../atoms/users"
 import { RESOURCE } from "../../types/user"
 import EditContainer from "../EditContainer"
 import TableData, { TableDataRow } from "../inputs/TableData"
-import {  moduleGroupsAtom } from "../../atoms/modules/groups"
+import {  loadModuleGroups } from "../../atoms/modules/groups"
 import EditDataSection, { EditDataItem } from "../dialogs/EditDataSection"
 import { InputType, PropertyType } from "../../types/property"
-import { loadModuleSeriesAtom, moduleSeriesAtom } from "../../atoms/modules/series"
+import { loadModuleSeries } from "../../atoms/modules/series"
 import ComboBox from "../inputs/ComboBox"
-import { loadModulesAtom, modulesAtom } from "../../atoms/modules/modules"
+import { loadModules } from "../../atoms/modules/modules"
 import PropertyGrid from "../inputs/PropertyGrid"
-import { addModuleCorrespondAtom, deleteModuleCorrespondAtom, loadModulesCorrespondAtom, modulesCorrespondAtom, updateModuleCorrespondAtom } from "../../atoms/modules/modulesCorrespond"
-import { Value } from "sass"
+import { addModuleCorrespond, deleteModuleCorrespond, loadModulesCorrespond, updateModuleCorrespond } from "../../atoms/modules/modulesCorrespond"
+import { ExtMap } from "../../atoms/storage"
+import { ModuleModulesTableSchema } from "../../types/schemas/moduleSchemas"
 
 export default function EditModulesCorrespond() {
     const { permissions } = useAtomValue(userAtom)
     const perm = permissions.get(RESOURCE.MODULES)
-    const loadData = useSetAtom(loadModulesCorrespondAtom)
-    const loadSeries = useSetAtom(loadModuleSeriesAtom)
-    const loadModules = useSetAtom(loadModulesAtom)
-    const updateData = useSetAtom(updateModuleCorrespondAtom)
-    const addData = useSetAtom(addModuleCorrespondAtom)
-    const deleteData = useSetAtom(deleteModuleCorrespondAtom)
-    const modules = useAtomValue(modulesAtom)
-    const modulesCorr = useAtomValue(modulesCorrespondAtom)
-    const groups = useAtomValue(moduleGroupsAtom)
-    const [selectedGroupId, setSelectedGroupId] = useState([...groups.keys()][0])
-    const allSeries = useAtomValue(moduleSeriesAtom)
-    const seriesList = [...allSeries.keys()].filter(k => allSeries.get(k)?.groupId === selectedGroupId)
-    const initialSerieId = useMemo(() => seriesList[0] || 0, [seriesList])
-    const [selectedSerieId, setSelectedSerieId] = useState(initialSerieId)
+    const [modules, setModules] = useState<ExtMap<ModuleModulesTableSchema>>(new Map())
+    const [groups, setGroups] = useState(new Map())
+    const [series, setSeries] = useState(new Map())
+    const [modulesCorr, setModulesCorr] = useState(new Map())
+    const [selectedGroupId, setSelectedGroupId] = useState(0)
+    const seriesList = [...series.keys()]
+    const [selectedSerieId, setSelectedSerieId] = useState(0)
     const modulesCorrList = [...modulesCorr.keys()].filter(k => modulesCorr.get(k)?.serieId === selectedSerieId)
-    const initialModuleCorrId = useMemo(() => modulesCorrList[0] || 0, [modulesCorrList])
-    const [selectedModuleCorrId, setSelectedModuleCorrId] = useState(initialModuleCorrId)
+    const [selectedModuleCorrId, setSelectedModuleCorrId] = useState(0)
     const { moduleId, name1C, code1C, orderName } = modulesCorr.get(selectedModuleCorrId) || { moduleId: 0, name1C: "", code1C: 0, orderName: "" }
     const heads = [{ caption: 'id', sorted: true }, { caption: 'Модуль', sorted: true }, { caption: 'Наименование 1С' }, { caption: 'Код 1С' }, { caption: 'Заказ' }]
     const contents: TableDataRow[] = []
@@ -44,24 +37,26 @@ export default function EditModulesCorrespond() {
         { title: "Код 1С:", value: code1C, inputType: InputType.TEXT, propertyType: PropertyType.INTEGER_POSITIVE_NUMBER, optional: true},
         { title: "Заказ:", value: orderName, inputType: InputType.TEXT, optional: true},
     ]
+    const loadData = (serieId: number) => { loadModulesCorrespond(serieId).then(data => { setModulesCorr(() => data); setSelectedModuleCorrId(() => [...data.keys()][0] || 0) }) }
     useEffect(() => {
-        loadModules(selectedSerieId)
-        loadData(selectedSerieId)
-    }, [selectedSerieId])
-    useEffect(() => {
-        loadSeries()
+        loadModuleGroups().then(data => { setGroups(() => data); setSelectedGroupId(() => [...data.keys()][0] || 0) })
     }, [])
     useEffect(() => {
-        setSelectedSerieId(initialSerieId)
-        setSelectedModuleCorrId(initialModuleCorrId)
-    }, [initialSerieId, initialModuleCorrId])
+        if (selectedGroupId === 0) return
+        loadModuleSeries(selectedGroupId).then(data => { setSeries(() => data); setSelectedSerieId(() => [...data.keys()][0] || 0) })
+    }, [selectedGroupId])
+    useEffect(() => {
+        if (selectedSerieId === 0) return
+        loadModules(selectedSerieId).then(data => setModules(data))
+        loadData(selectedSerieId)
+    }, [selectedSerieId])
     return <EditContainer>
         <div>
             <PropertyGrid>
             <ComboBox title="Группа" value={selectedGroupId} displayValue={(value) => groups.get(value)} items={[...groups.keys()]} onChange={(value) => setSelectedGroupId(value)} />
-            <ComboBox title="Серия" value={selectedSerieId} displayValue={(value) => allSeries.get(value)?.name} items={seriesList} onChange={(value) => setSelectedSerieId(value)} />
+            <ComboBox title="Серия" value={selectedSerieId} displayValue={(value) => series.get(value)?.name} items={seriesList} onChange={(value) => setSelectedSerieId(value)} />
             </PropertyGrid>
-            <TableData header={heads} content={contents} onSelectRow={value => { setSelectedModuleCorrId(value as number) }} />
+            <TableData header={heads} content={contents} onSelectRow={value => { setSelectedModuleCorrId(value as number) }}  styles={{maxHeight: "70svh"}}/>
         </div>
         {(perm?.Read) ? <EditDataSection items={editItems}
             onUpdate={perm?.Update ? {
@@ -72,16 +67,16 @@ export default function EditModulesCorrespond() {
                     const name1C = values[1] as string
                     const code1C = values[2] as number
                     const orderName = values[3] as string
-                    const result = await updateData({ id: selectedModuleCorrId, moduleId, serieId: selectedSerieId, name1C, code1C, orderName })
+                    const result = await updateModuleCorrespond({ id: selectedModuleCorrId, moduleId, serieId: selectedSerieId, name1C, code1C, orderName })
                     if (result.success) loadData(selectedSerieId)
                     return result
                 }
             } : undefined}
             onDelete={perm?.Delete ? {
                 disabled: !modulesCorrList.includes(selectedModuleCorrId),
-                question: () => `Удалить соответствие:\nid=${selectedModuleCorrId}`, 
+                question: () => `Удалить соответствие:\nid=${selectedModuleCorrId}\nМодуль: ${modules.get(moduleId)?.name}\nНаименование 1С: ${name1C}\nКод 1С: ${code1C}`, 
                 onAction: async () => {
-                    const result = await deleteData(selectedModuleCorrId)
+                    const result = await deleteModuleCorrespond(selectedModuleCorrId)
                     if (result.success) loadData(selectedSerieId)
                     return result
                 }
@@ -93,7 +88,7 @@ export default function EditModulesCorrespond() {
                     const name1C = values[1] as string
                     const code1C = values[2] as number
                     const orderName = values[3] as string
-                    const result = await addData({ moduleId, serieId: selectedSerieId, code1C, name1C, orderName })
+                    const result = await addModuleCorrespond({ moduleId, serieId: selectedSerieId, code1C, name1C, orderName })
                     if (result.success) loadData(selectedSerieId)
                     return result
                 }

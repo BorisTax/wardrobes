@@ -22,9 +22,10 @@
 
 .table-data {
   font-size: 0.8rem;
-  -max-height: 85svh !important;
-  background-color: $defaultBackColor !important;
-  overflow: auto !important;
+  -max-height: 70svh;
+  background-color: $defaultBackColor;
+  overflow: auto;
+  -border: 1px solid black;
 }
 
 .table-data-row {

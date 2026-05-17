@@ -13,7 +13,10 @@ import skladMatRouter from './routers/skladMat.js'
 
 import moduleGroupsRouter from './routers/modules/groups_series.js'
 import modulesRouter from './routers/modules/modules.js'
-
+import moduleDetailsRouter from './routers/modules/details.js'
+import moduleMaterialsRouter from './routers/modules/materials.js'
+import moduleSerieMaterialsRouter from './routers/modules/serieMaterials.js'
+import moduleMaterialCorrespondRouter from './routers/modules/materialsCorrespond.js'
 import edgeGrooveCommentRouter from './routers/modules/edgesGroovesComments.js'
 
 import { StatusCodes } from "http-status-codes";
@@ -30,7 +33,7 @@ router.use(DATABASE_ROUTE, databaseRouter)
 router.use(WARDROBE_ROUTE, wardrobeRouter)
 router.use(SETTINGS_ROUTE, settingsRouter)
 router.use(SKLAD_ROUTE, skladStolRouter, skladMatRouter)
-router.use(MODULE_ROUTE, moduleGroupsRouter, modulesRouter, edgeGrooveCommentRouter)
+router.use(MODULE_ROUTE, moduleGroupsRouter, modulesRouter, moduleDetailsRouter, moduleMaterialsRouter,moduleMaterialCorrespondRouter, moduleSerieMaterialsRouter, edgeGrooveCommentRouter)
 router.get(VERSION_ROUTE, (req, res) => {
     res.status(StatusCodes.OK).json({ success: true, data: [process.env.VERSION] })
 })

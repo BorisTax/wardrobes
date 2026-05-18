@@ -18,7 +18,7 @@ export type UserPermissionsSchema = {
 
 export type UserResourcesSchema = DefaultSchema
 
-export type UserRolesSchema = DefaultSchema
+export type RolesSchema = DefaultSchema
 
 export type UserSuperRolesSchema = {
     id: number
@@ -28,24 +28,22 @@ export type UserSuperUsersSchema = {
     id: number
 }
 
-export type UserTokensSchema = {
-    id: number
+export type UserTokenSchema = {
     token: string
-    userUUID: string
-    userName: string
-    time: number
+    userSessionId: string
+    userId: number
+    loginTime: number
     lastActionTime: number
 }
 
 
-export type UserUserRolesSchema = {
+export type UserRolesSchema = {
     id: number
     userId: number
     roleId: number
 }
 
 export type UserLogSchema = {
-    id: number
     userId: number
     time: number
     action: string

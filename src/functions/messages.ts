@@ -7,7 +7,7 @@ export const rusMessages = {
   [messages.SQL_UNIQUE_CONSTRAINT_ERROR]: "Дублирование данных!",
   [messages.DATA_ADDED]: "Данные добавлены",
   [messages.DATA_UPDATED]: "Данные обновлены",
-  [messages.DATA_DELETED]: "Данные удвлены",
+  [messages.DATA_DELETED]: "Данные удалены",
   [messages.INVALID_NAME]: "Некорректное имя",
   [messages.INVALID_PASSWORD]: "Некорректный пароль",
   [messages.INVALID_USER_DATA]: "Некорректные данные пользователя",

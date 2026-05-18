@@ -1,93 +1,59 @@
 import { atom, Setter, Getter } from "jotai"
 import { fetchData, fetchGetData } from "../functions/fetch"
-import { PermissionSchema, UserPermissions, RESOURCE, UserData, UserLoginResult, UserRole, UserAction } from "../types/user"
+import { PermissionSchema, UserPermissions, RESOURCE, UserLoginResult, UserAction, ActiveUser } from "../types/user"
 import { closeEventSourceAtom, newEventSourceAtom } from "./serverEvents"
 import { API_ROUTE, USER_ACTIONS_ROUTE, USERS_ROUTE, VERIFY_ROUTE } from "../types/routes"
-import { DefaultMap, makeDefaultMap } from "./storage"
-import { loadResourceListAtom } from "./permissions"
+import { UserLogSchema } from "../types/schemas/userSchemas"
 
 
 export type UserState = {
     name: string
-    roleId: number
-    userId: string
+    roles: number[]
+    userSessionId: string
     permissions: Map<RESOURCE, UserPermissions>
 }
-export type ActiveUserState = UserState & {
-    time: number
-    lastActionTime: number
-}
-export const userRolesAtom = atom<DefaultMap>(new Map())
-export const loadUserRolesAtom = atom(null, async (get,set)=>{
-    const { permissions } = get(userAtom)
-    const perm = permissions.get(RESOURCE.USERS)
-    if (!perm?.Read) return
-    const result = await fetchGetData<UserRole>(`${API_ROUTE}/users/roles`)
-    if(result.success){
-        set(userRolesAtom, makeDefaultMap(result.data))
-    }
-})
 
-export const allUsersAtom = atom<UserData[]>([])
-export const activeUsersAtom = atom<ActiveUserState[]>([])
-export const userActionsAtom = atom<UserAction[]>([])
-export const loadUsersAtom = atom(null, async (get, set) => {
-    const { permissions } = get(userAtom)
-    const perm = permissions.get(RESOURCE.USERS)
-    if (!perm?.Read) return
-    const result = await fetchGetData(`${API_ROUTE}/users/users`)
-    if (result.success) {
-        set(allUsersAtom, result.data as UserData[])
-    }
-})
-export const loadActiveUsersAtom = atom(null, async (get, set) => {
-    const { permissions } = get(userAtom)
-    if (!permissions.get(RESOURCE.USERS)?.Read) return
-    const result = await fetchGetData(`${API_ROUTE}/users/active`)
+export const loadActiveUsers = async () => {
+    const result = await fetchGetData(`${API_ROUTE}${USERS_ROUTE}/active`)
     if(result.success){
-        set(activeUsersAtom, result.data as ActiveUserState[])
-    }
-})
-export const loadUserActionsAtom = atom(null, async (get, set) => {
-    const { permissions } = get(userAtom)
-    if (!permissions.get(RESOURCE.USERS)?.Read) return
+        return result.data as ActiveUser[]
+    } else return []
+}
+
+export const loadUserActions = async () => {
     const result = await fetchGetData(`${API_ROUTE}${USERS_ROUTE}${USER_ACTIONS_ROUTE}`)
     if(result.success){
-        set(userActionsAtom, result.data as UserAction[])
-    }
-})
+        return result.data as UserLogSchema[]
+    } else return []
+}
 
-export const clearUserActionsAtom = atom(null, async (get, set) => {
-    const { permissions } = get(userAtom)
-    if (!permissions.get(RESOURCE.USERS)?.Read) return
-    const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${USER_ACTIONS_ROUTE}`, "DELETE", "")
-    if(result.success){
-        set(userActionsAtom, result.data as UserAction[])
-    }
-})
+export const clearUserActions = async () => {
+    try{
+        const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}${USER_ACTIONS_ROUTE}`, "DELETE", "")
+        if(result.success){
+            return result.data as UserAction[]}
+        }catch(e){
+            console.error(e)
+        }
+}
 
 const userAtomPrivate = atom(getInitialUser())
-export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, set: Setter, {name, roleId, userId, permissions }: UserLoginResult, verify = false) => {
+
+export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, set: Setter, {name, roles, userSessionId, permissions }: UserLoginResult, verify = false) => {
     if (verify) {
         set(verifyUserAtom)
         return
     }
-    let storeUser: UserState = { name: "", roleId: 0, userId:"", permissions: new Map() }
+    let storeUser: UserState = { name: "", roles: [], userSessionId:"", permissions: new Map() }
     try {
-        localStorage.setItem("user", JSON.stringify({ name, roleId, userId, permissions }))
-        storeUser = { name, roleId, userId, permissions: permissionsToMap(permissions) }
+        localStorage.setItem("user", JSON.stringify({ name, roles, userSessionId, permissions }))
+        storeUser = { name, roles, userSessionId, permissions: permissionsToMap(permissions) }
         set(newEventSourceAtom)
         set(userAtomPrivate, storeUser)
     } catch (e) {
-        storeUser = { name: "", roleId: 0, userId:"", permissions: new Map() }
+        storeUser = { name: "", roles: [], userSessionId:"", permissions: new Map() }
         set(userAtomPrivate, storeUser)
         set(closeEventSourceAtom)
-    }
-    //set(loadInitialCombiStateAtom)
-    //if (!get(loadedInitialWardrobeDataAtom)) set(loadAllDataAtom, storeUser.permissions)
-    if (storeUser.permissions.get(RESOURCE.USERS)?.Read) {
-        set(loadUserRolesAtom)
-        set(loadResourceListAtom)
     }
 }
 )
@@ -95,57 +61,23 @@ export const userAtom = atom(get => get(userAtomPrivate), async (get: Getter, se
 export const verifyUserAtom = atom(null, async (get: Getter, set: Setter) => {
     const result = await fetchGetData<UserLoginResult>(`${API_ROUTE}${USERS_ROUTE}${VERIFY_ROUTE}`)
     if (!result.success) {
-        set(userAtom, { name: "", roleId: 0, userId: "", permissions: [] })
+        set(userAtom, { name: "", roles: [], userSessionId: "", permissions: [] })
         return
     }
-    set(userAtom, {name: result.data[0].name, roleId: result.data[0].roleId, userId: result.data[0].userId, permissions: result.data[0].permissions || [] })
+    set(userAtom, {name: result.data[0].name, roles: result.data[0].roles, userSessionId: result.data[0].userSessionId, permissions: result.data[0].permissions || [] })
 })
 
 
 export const logoutAtom = atom(null, async (get: Getter, set: Setter) => {
     set(closeEventSourceAtom)
-    set(userAtom, { name: "", roleId: 0, userId: "", permissions: [] })
+    set(userAtom, { name: "", roles: [], userSessionId: "", permissions: [] })
     localStorage.setItem('combiState', "")
     fetchData(`${API_ROUTE}${USERS_ROUTE}/logout`, "POST", "")
 })
 
-export const logoutUserAtom = atom(null, async (get: Getter, set: Setter, userId: string) => {
-    await fetchData(`${API_ROUTE}${USERS_ROUTE}/logoutUser`, "POST", JSON.stringify({ userId }))
-    set(loadActiveUsersAtom)
-})
-
-export const createUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, roleId: number) => {
-    const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}/add`, "POST", JSON.stringify({ name, password, roleId }))
-    if (result.success) set(loadUsersAtom)
-    return { success: result.success as boolean, message: result.message  as string }
-})
-export const updateUserAtom = atom(null, async (get: Getter, set: Setter, name: string, password: string, roleId: number) => {
-    const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}/update`, "POST", JSON.stringify({ name, password, roleId }))
-    if (result.success) set(loadUsersAtom)
-    return { success: result.success as boolean, message: result.message  as string }
-})
-export const deleteUserAtom = atom(null, async (get: Getter, set: Setter, name: string) => {
-    const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}/delete`, "DELETE", JSON.stringify({ name }))
-    if (result.success) {
-        set(loadUsersAtom)
-        set(loadActiveUsersAtom)
-    }
-    return{ success: result.success as boolean, message: result.message  as string }
-})
-
-export const createRoleAtom = atom(null, async (get: Getter, set: Setter, { name }: { name: string }) => {
-    const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}/addRole`, "POST", JSON.stringify({ name }))
-    if (result.success) set(loadUserRolesAtom)
-    return {success: result.success, message: result.message}
-})
-
-export const deleteRoleAtom = atom(null, async (get: Getter, set: Setter, { id }: { id: number}) => {
-    const result = await fetchData(`${API_ROUTE}${USERS_ROUTE}/deleteRole`, "DELETE", JSON.stringify({ id }))
-    if (result.success) {
-        set(loadUserRolesAtom)
-    }
-    return {success: result.success, message: result.message}
-})
+export const logoutUser = async (userSessionId: string) => {
+    await fetchData(`${API_ROUTE}${USERS_ROUTE}/logoutUser`, "POST", JSON.stringify({ userSessionId }))
+}
 
 
 export function getInitialUser(): UserState {
@@ -156,8 +88,8 @@ export function getInitialUser(): UserState {
     finally {
         const user = {
             name: storeUser?.name || "",
-            roleId: storeUser?.roleId || 0,
-            userId: storeUser?.userId || "",
+            roles: storeUser?.roles || [],
+            userSessionId: storeUser?.userSessionId || "",
             permissions: storeUser?.permissions ? permissionsToMap(storeUser.permissions) : new Map()
         }
         return user

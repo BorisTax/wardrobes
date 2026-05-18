@@ -10,7 +10,7 @@ export const MatIndexes = [0, 1, 2, 3]
 
 export const loadModuleSerieMaterials = async (serieId: number) => {
     try {
-        const fetchData: FetchResult<ModuleSerieMaterialsTableSchema> = await (await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_SERIES_MATERIALS_ROUTE}?serieId=${serieId}`))
+        const fetchData: FetchResult<ModuleSerieMaterialsTableSchema> = await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_SERIES_MATERIALS_ROUTE}?serieId=${serieId}`)
         const data = fetchData.data
         return makeExtMap(data)
     } catch (e) { 

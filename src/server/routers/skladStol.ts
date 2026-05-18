@@ -6,7 +6,7 @@ import { hasPermission } from "./users";
 import { accessDenied } from "../functions/database";
 import { addStol, clearStol, getStol, getStolColors, getStolIncome, getStolOutcome, removeStol } from "./functions/skladStol";
 import messages from "../messages";
-import { getUserName } from "../services/userService";
+import { getUserByToken, getUserName } from "./functions/users";
 
 const router = express.Router();
 export default router
@@ -28,8 +28,8 @@ router.get(STOL_SKLAD_ROUTE, async (req, res) => {
 router.put(STOL_SKLAD_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SKLAD_STOL, [PERMISSION.UPDATE]))) return accessDenied(res)
   const { id, length, amount } = req.body
-  const user = await getUserName((req as MyRequest).token)
-  const result = await removeStol({id, length, amount}, user);
+  const user = await getUserByToken((req as MyRequest).token as string)
+  const result = await removeStol({id, length, amount}, user?.name || "");
   result.message = (result.success && messages.SKLAD_STOL_DELETED) || result.message
   res.status(result.status).json(result)
 });
@@ -37,8 +37,8 @@ router.put(STOL_SKLAD_ROUTE, async (req, res) => {
 router.post(STOL_SKLAD_ROUTE, async (req, res) => {
     if (!(await hasPermission(req as MyRequest, RESOURCE.SKLAD_STOL, [PERMISSION.UPDATE]))) return accessDenied(res)
     const { id, length, amount } = req.body
-    const user = await getUserName((req as MyRequest).token)
-    const result = await addStol({ id, length, amount }, user);
+    const user = await getUserByToken((req as MyRequest).token as string)
+    const result = await addStol({ id, length, amount }, user?.name || "");
     result.message = (result.success && messages.SKLAD_STOL_ADDED) || result.message
     res.status(result.status).json(result)
 });

@@ -6,8 +6,8 @@ import { hasPermission } from "./users";
 import { accessDenied } from "../functions/database";
 import messages from "../messages";
 import { addMatColorSklad, addMatSklad, addMatThickSklad, clearMatSklad, deleteMatColorSklad, deleteMatThickSklad, getMatColorsSklad, getMatDepartmentSklad, getMatSklad, getMatSkladIncome, getMatSkladOutcome, getMatThickSklad, removeMatSklad, updateMatColorSklad, updateMatThickSklad } from "./functions/skladMat";
-import { getUserName } from "../services/userService";
 import { MatSkladColorsTableSchema, MatSkladThicknessTableSchema } from "../../types/schemas/skladSchemas";
+import { getUserByToken, getUserIdByToken } from "./functions/users";
 
 const router = express.Router();
 export default router
@@ -81,8 +81,8 @@ router.get(MAT_SKLAD_ROUTE, async (req, res) => {
 router.put(MAT_SKLAD_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.SKLAD_MAT, [PERMISSION.UPDATE]))) return accessDenied(res)
   const { id, length, width, count, department } = req.body
-const user = await getUserName((req as MyRequest).token)
-  const result = await removeMatSklad({id, length, width, count, department}, user);
+  const user = await getUserByToken((req as MyRequest).token as string)
+  const result = await removeMatSklad({id, length, width, count, department}, user?.name || "");
   result.message = (result.success && messages.SKLAD_MAT_DELETED) || result.message
   res.status(result.status).json(result)
 });
@@ -90,8 +90,8 @@ const user = await getUserName((req as MyRequest).token)
 router.post(MAT_SKLAD_ROUTE, async (req, res) => {
     if (!(await hasPermission(req as MyRequest, RESOURCE.SKLAD_MAT, [PERMISSION.UPDATE]))) return accessDenied(res)
     const { id, length, width, count, department} = req.body
-    const user = await getUserName((req as MyRequest).token)
-    const result = await addMatSklad({ id, length, width, count, department }, user);
+    const user = await getUserByToken((req as MyRequest).token as string)
+    const result = await addMatSklad({ id, length, width, count, department }, user?.name || "");
     result.message = (result.success && messages.SKLAD_MAT_ADDED) || result.message
     res.status(result.status).json(result)
 });

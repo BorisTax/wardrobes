@@ -20,7 +20,7 @@ export default function LoginDialog() {
         setState({ loading: true, message: "" })
         const onResolve = (r: Result<UserLoginResult>) => { 
             setNotifyMessage("")
-            setUser({ name: r.data[0].name || "", roleId: r.data[0].roleId, userId: r.data[0].userId, permissions: r.data[0].permissions || [] }); 
+            setUser({ name: r.data[0].name || "", roles: r.data[0].roles, userSessionId: r.data[0].userSessionId, permissions: r.data[0].permissions || [] }); 
             navigate('/') 
         }
         const onReject = () => { setState({ loading: false, message: "Неверные имя пользователя и/или пароль" }) }

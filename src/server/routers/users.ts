@@ -1,20 +1,77 @@
 import messages from '../messages.js'
-import express from "express";
+import express, { Response } from "express";
 import bcrypt from 'bcrypt';
-import { clearUserActions, events, getTokens, getUserActions, logoutUser, notifyActiveUsers } from '../services/userService.js';
 import { accessDenied, hashData, incorrectData } from '../functions/database.js';
-import { MyRequest, Result, Token } from '../../types/server.js';
-import { Action, ActiveUser, PERMISSION, User, UserLoginResult } from "../../types/user.js";
+import { MyRequest, Result } from '../../types/server.js';
+import { Action, ActiveUser, PERMISSION, PermissionSchema, User, UserLoginResult } from "../../types/user.js";
 import { SERVER_EVENTS } from "../../types/enums.js";
 import { RESOURCE } from '../../types/user.js';
 import { StatusCodes } from 'http-status-codes';
 import { getAllUserPermissions, getPermissions } from './permissions.js';
 import { randomUUID } from 'crypto';
-import { getUserService } from '../options.js';
-import { USER_ACTIONS_ROUTE } from '../../types/routes.js';
+import { getDataBaseUserService } from '../options.js';
+import { ROLES_ROUTE, USER_ACTIONS_ROUTE, USER_ROLES_ROUTE } from '../../types/routes.js';
+import { RolesSchema, UserLogSchema, UserRolesSchema, UserSchema, UserTokenSchema } from '../../types/schemas/userSchemas.js';
+import { USER_TABLE_NAMES } from '../../types/schemas/schemas.js';
+import { addRole, addToken, addUserLog, addUserRole, clearUserLog, deleteRole, deleteToken, deleteUserRole, getRoles, getTokenByUserSessionId, getTokenData, getTokens, getUserIdByName, getUserIdByToken, getUserLog, getUserName, getUserPermissions, getUserRoles, getUserRolesByUserId, getUsers, updateRole, updateToken, updateUserRole } from './functions/users.js';
 
 const router = express.Router();
 export default router
+
+export const events: Map<string, Response> = new Map()
+
+
+const expiredInterval = 3600 * 1000
+const clearExpiredTokens = async () => {
+  const tokens = await getTokens()
+  for (let t of tokens) {
+    if (Date.now() - t.lastActionTime > expiredInterval) {
+      await deleteToken(t.token)
+      addUserLog({userId: t.userId, action: Action.EXPIRE_LOGOUT, time: Date.now()})
+      //console.log('Token was deleted by expiration', t.userName, t.userId, t.token)
+      events.forEach((v, k) => {
+        try {
+          if (k === t.token) {
+            logoutUser(t.token, SERVER_EVENTS.EXPIRE)
+            v.end()
+            events.delete(k)
+          }
+        } catch (e) { 
+          console.error(e)
+        }
+      })
+    }
+  }
+}
+
+setInterval(clearExpiredTokens, 60000)
+
+export async function notifyActiveUsers(message: SERVER_EVENTS) {
+  const tokens = await getTokens()
+  events.forEach(async (v, k) => {
+    const userId = tokens.find(t => t.token === k)?.userId || 0
+    const perm = await getUserPermissions(userId, RESOURCE.USERS)
+    if (!perm.Read) return
+    try {
+      v.write(getEventSourceMessage(message))
+    } catch (e) {
+      console.error(e)
+    }
+  })
+}
+
+export function logoutUser(token: string, message: SERVER_EVENTS) {
+  events.forEach((v, k) => {
+    try {
+      if (k === token) {
+        v.write(getEventSourceMessage(message))
+        events.delete(k)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  })
+}
 
 router.get("/hash", async (req, res) => {
   const result = await hashData(req.query.data as string);
@@ -35,30 +92,27 @@ router.get("/events", async (req, res) => {
 
 router.get("/verify", async (req, res) => {
   const token = (req as MyRequest).token as string;
-  const userService = getUserService()
-  const tokens = await userService.getTokens();
-  const tokenData = (tokens.data as Token[]).find((t: Token) => t.token === token)
+  const tokenData = await getTokenData(token)
   if (!tokenData) return res.json({ success: false });
-  const roleId = await userService.getUserRoleId(tokenData?.userName)
-  const permissions = await getAllUserPermissions(roleId)
-  const result = await userService.updateToken(token)
+  const roles = (await getUserRolesByUserId(tokenData?.userId)).map(r => r.roleId)
+  const permissions  = await getAllUserPermissions(roles)
+  const result = await updateToken(tokenData)
+  const userName = await getUserName(tokenData.userId)
   notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
-  res.status(result.status).json({ ...result, data: [{ name: tokenData.userName, userId: tokenData.userId, roleId, permissions }], success: true });
+  res.status(result.status).json({ ...result, data: [{ name: userName, userSessionId: tokenData.userSessionId, roles, permissions }], success: true });
 });
 
 router.post("/login", async (req, res) => {
   const user = req.body;
   if (!user.name) user.name = "";
   if (!user.password) user.password = "";
-  const userService = getUserService()
   const result = await loginUser(user);
-  const time = Date.now()
-  const lastActionTime = time
+  const loginTime = Date.now()
+  const lastActionTime = loginTime
   if (result.success) {
-    userService.addToken({ token: result.token as string, userName: user.name, userId: result.data[0].userId, time, lastActionTime })
+    const userId = await getUserIdByName(user.name) || 0
+    await addToken({ token: result.token as string, userId, userSessionId: result.data[0].userSessionId, loginTime, lastActionTime })
     await notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
-    //const userRoleId = await userService.getUserRoleId(user.name)
-    //const permissions = await getAllUserPermissions(userRoleId)
     res.cookie('token', result.token, { httpOnly: true })
   }
   result.token = undefined
@@ -67,41 +121,36 @@ router.post("/login", async (req, res) => {
 
 router.post("/logout", async (req, res) => {
   const token = (req as MyRequest).token as string;
-  const userService = getUserService()
-  const user = await userService.getUser(token)
-  const result = await userService.deleteToken(token)
-  if (user) await userService.dispatchUserAction(user.name, Action.LOGOUT)
+  const userId = await getUserIdByToken(token)
+  const result = await deleteToken(token)
+  if (userId) await addUserLog({userId, action: Action.LOGOUT, time: Date.now()})
   res.cookie('token', "")
   res.status(result.status).json(result);
 });
 
 router.post("/logoutuser", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const userService = getUserService()
-  const {userId} = req.body;
-  const {token} = await userService.getTokenByUserId(userId)
-  const user = await userService.getUser(token)
-  const result = await userService.deleteToken(token)
+  const { userSessionId } = req.body;
+  const tokenData = await getTokenByUserSessionId(userSessionId)
+  const userId = await getUserIdByToken(tokenData.token)
+  const result = await deleteToken(tokenData.token)
   if(result.success) {
-    logoutUser(token, SERVER_EVENTS.LOGOUT)
+    logoutUser(tokenData.token, SERVER_EVENTS.LOGOUT)
     await notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
-    if (user) await userService.dispatchUserAction(user.name, Action.FORCE_LOGOUT)
+    if (userId) await addUserLog({userId, action: Action.FORCE_LOGOUT, time: Date.now()})
   }
   res.status(result.status).json(result);
 });
 
 router.get("/active", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const userService = getUserService()
   const result: Result<ActiveUser> = { success: true, status: StatusCodes.OK, data: [] }
   const tokens = await getTokens();
-  const users = await userService.getUsers();
+  const users = (await getUsers()).data;
   for (let t of tokens){
-    const user = (users.data as User[]).find((u: User) => u.name === t.userName)
+    const user = users.find(u => u.id === t.userId)
     if (user) {
-      const userRoleId = await userService.getUserRoleId(user.name)
-      const role = (await userService.getRoles()).data.find(r => r.id === userRoleId) || { name: "", id: 0 }
-      result.data.push({ userId: t.userId, name: user.name, roleId: role.id, time: t.time, lastActionTime: t.lastActionTime })
+      result.data.push({ userSessionId: t.userSessionId, name: user.name, loginTime: t.loginTime, lastActionTime: t.lastActionTime })
     }
   }
   res.status(result.status).json(result);
@@ -109,111 +158,147 @@ router.get("/active", async (req, res) => {
 
 router.post("/logoutall", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const userService = getUserService()
-  userService.clearAllTokens()
+  const service = getDataBaseUserService<UserTokenSchema>()
+  await service.clearData(USER_TABLE_NAMES.TOKENS)
   await notifyActiveUsers(SERVER_EVENTS.UPDATE_ACTIVE_USERS)
   events.clear()
   res.status(StatusCodes.OK).json({ success: true });
 });
 
-router.post("/add", async (req, res) => {
+router.post("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
-  const userService = getUserService()
   const user = req.body;
   if (!user.name || !user.password) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
-  const result = await userService.registerUser(user.name, user.password, user.roleId);
+  const password = (await hashData(user.password)).data[0]
+  const service = getDataBaseUserService<UserSchema>()
+  const result = await service.addData(USER_TABLE_NAMES.USERS, {name: user.name, password});
   res.status(result.status).json(result);
 });
-router.post("/update", async (req, res) => {
+router.put("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const userService = getUserService()
-  const user = req.body;
+  const user = req.body as UserSchema;
   if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
-  const result = await userService.updateUser({userName: user.name, password: user.password, roleId: user.roleId});
+  const password = (await hashData(user.password)).data[0]
+  const service = getDataBaseUserService<UserSchema>()
+  const result = await service.updateData(USER_TABLE_NAMES.USERS, {id: user.id},{name: user.name, password});
   res.status(result.status).json(result);
 });
-router.delete("/delete", async (req, res) => {
+router.delete("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
-  const userService = getUserService()
-  const user = req.body;
-  if (!user.name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
-  const result = await userService.deleteUser(user);
+  const { id } = req.body as UserSchema;
+  const service = getDataBaseUserService<UserSchema>()
+  const result = await service.deleteData(USER_TABLE_NAMES.USERS, { id });
   res.status(result.status).json(result);
 });
 
-router.get("/users", async (req, res) => {
+router.get("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const userService = getUserService()
-  const users = (await userService.getUsers()).data
-  const roles = (await userService.getRoles()).data
-  const result = []
-  for(let u of users){
-    const userRoleId = await userService.getUserRoleId(u.name)
-    const role = roles.find(r => r.id === userRoleId) || { name: "", id: 0 }
-    result.push({ name: u.name, roleId: role.id })
-  }
-  res.status(StatusCodes.OK).json({ success: true, data: result })
+  const result = await getUsers()
+  res.status(result.status).json(result);
 });
 
-router.get("/roles", async (req, res) => {
-  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const userService = getUserService()
-  let result = await userService.getRoles()
-  res.status(result.status).json(result)
-});
 
 router.get(USER_ACTIONS_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const result = await getUserActions()
+    const result = await getUserLog()
   res.status(result.status).json(result)
 });
 router.delete(USER_ACTIONS_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
-  const result = await clearUserActions()
+    const result = await clearUserLog()
   res.status(result.status).json(result)
 });
 
-router.post("/addRole", async (req, res) => {
+router.get(ROLES_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
+  let result = await getRoles()
+  res.status(result.status).json(result)
+});
+
+router.post(ROLES_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
-  const userService = getUserService()
   const { name } = req.body;
   if (!name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
-  const result = await userService.addRole(name);
+  const result = await addRole({ name });
   res.status(result.status).json(result);
 });
 
-router.delete("/deleteRole", async (req, res) => {
+router.put(ROLES_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
+  const { id, name } = req.body as RolesSchema;
+  if (!name) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
+  const result = await updateRole({id, name});
+  res.status(result.status).json(result);
+});
+
+router.delete(ROLES_ROUTE, async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
-  const userService = getUserService()
   const { id } = req.body;
   if (!id) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
-  const result = await userService.deleteRole(id);
+  const result = await deleteRole(id);
+  res.status(result.status).json(result);
+});
+
+
+router.get(USER_ROLES_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
+  let result = await getUserRoles()
+  res.status(result.status).json(result)
+});
+
+router.post(USER_ROLES_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
+  const { roleId, userId } = req.body as UserRolesSchema;
+  const result = await addUserRole({ roleId, userId });
+  res.status(result.status).json(result);
+});
+
+router.put(USER_ROLES_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.CREATE]))) return accessDenied(res)
+  const { id, roleId, userId } = req.body as UserRolesSchema;
+  const result = await updateUserRole({id, roleId, userId});
+  res.status(result.status).json(result);
+});
+
+router.delete(USER_ROLES_ROUTE, async (req, res) => {
+  if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
+  const { id } = req.body;
+  if (!id) return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.INVALID_USER_DATA });
+  const result = await deleteUserRole(id);
   res.status(result.status).json(result);
 });
 
 async function loginUser(user: User): Promise<Result<UserLoginResult>> {
-  const userService = getUserService()
-  const result = await userService.getUsers()
+  const result = await getUsers()
   if (!result.success) return { success: false, status: StatusCodes.NOT_FOUND, data: [] };
   const userList = result.data
-  const foundUser = (userList as User[]).find(u => (user.name === u.name))
+  const foundUser = userList.find(u => (user.name === u.name))
   if (!foundUser) return incorrectData(messages.INVALID_USER_DATA)
   if (!bcrypt.compareSync(user.password, foundUser.password)) return incorrectData(messages.INVALID_USER_DATA)
-  const userRoleId = await userService.getUserRoleId(foundUser.name)
-  const permissions = await getAllUserPermissions(userRoleId)
-  const userId = randomUUID()
+  const roles = (await getUserRolesByUserId(foundUser.id)).map(r => r.roleId)
+  const permissions = await getAllUserPermissions(roles)
+  const userSessionId = randomUUID()
   const token = randomUUID();
-  userService.dispatchUserAction(user.name, Action.LOGIN)
-  return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, token, data: [{ permissions, roleId: userRoleId, userId, name: user.name }] };
+  addUserLog({ userId: foundUser.id, action: Action.LOGIN, time: Date.now() })
+  return { success: true, status: StatusCodes.OK, message: messages.LOGIN_SUCCEED, token, data: [{ permissions, roles, userSessionId, name: user.name }] };
 }
 
-export async function hasPermission(req: MyRequest, resource: RESOURCE, permissions: PERMISSION[]): Promise<boolean>{
-  const userRoleId = req.userRoleId as number;
-  const { read: Read, create: Create, update: Update, delete: Delete } = (await getPermissions(userRoleId, resource)).data[0] ||{ read: 0, create: 0, update: 0, delete: 0 }
-  return permissions.every(p => {
-    if (p === PERMISSION.CREATE) return Create
-    if (p === PERMISSION.READ) return Read
-    if (p === PERMISSION.UPDATE) return Update
-    if (p === PERMISSION.DELETE) return Delete
-  })
+export async function hasPermission(req: MyRequest, resource: RESOURCE, permissions: PERMISSION[]): Promise<boolean> {
+  const roles = req.roles as number[];
+  let ok = false; 
+  for (let role of roles) {
+    const { read: Read, create: Create, update: Update, delete: Delete } = (await getPermissions(role, resource)).data[0] || { read: 0, create: 0, update: 0, delete: 0 }
+    ok = ok || permissions.every(p => {
+      if (p === PERMISSION.CREATE) return Create
+      if (p === PERMISSION.READ) return Read
+      if (p === PERMISSION.UPDATE) return Update
+      if (p === PERMISSION.DELETE) return Delete
+    })
+  }
+  return ok
+}
+
+
+function getEventSourceMessage(message: string, comment: string = ""){
+  return `data: {"message":"${message}", "comment":"${comment}"}\n\n`
 }

@@ -10,7 +10,7 @@ export const modulesDetailsLastStateDBAtom = atom<{ groupId: number, serieId: nu
 
 export const loadModuleDetails = async (moduleId: number) => {
     try {
-        const fetchData: FetchResult<ModuleDetailsTableSchema> = await (await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_DETAILS_ROUTE}?moduleId=${moduleId}`))
+        const fetchData: FetchResult<ModuleDetailsTableSchema> = await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_DETAILS_ROUTE}?moduleId=${moduleId}`)
         const data = fetchData.data
         return data
     } catch (e) { 

@@ -6,10 +6,10 @@ import TableData from "../../inputs/TableData"
 import EditContainer from "../../EditContainer"
 import { userAtom } from "../../../atoms/users"
 import { RESOURCE } from "../../../types/user"
-import { addResource, deleteResource, loadResources, updateResource } from "../../../atoms/resources"
+import { addResource, deleteResource, loadResources, updateResource } from "../../../atoms/users/resources"
 import { DefaultMap } from "../../../atoms/storage"
 
-export default function EditResourcesDialog() {
+export default function EditResources() {
     const perm = useAtomValue(userAtom).permissions.get(RESOURCE.USERS)
     const [resources, setResources] = useState(new Map())
     const resList = [...resources.keys()]

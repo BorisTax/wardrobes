@@ -10,7 +10,7 @@ import { DefaultSchema } from "../../types/schemas/schemas";
 
 export const loadModulesEdges = async () => {
     try {
-        const fetchData: FetchResult<ModuleEdgesTableSchema> = await (await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_EDGES_ROUTE}`))
+        const fetchData: FetchResult<ModuleEdgesTableSchema> = await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_EDGES_ROUTE}`)
         const data = fetchData.data
         return makeExtMap(data)
     } catch (e) {
@@ -20,7 +20,7 @@ export const loadModulesEdges = async () => {
 }
 export const loadModulesGrooves = async () => {
     try {
-        const fetchData: FetchResult<DefaultSchema> = await (await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_GROOVES_ROUTE}`))
+        const fetchData: FetchResult<DefaultSchema> = await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_GROOVES_ROUTE}`)
         const data = fetchData.data
         return makeDefaultMap(data)
     } catch (e) {
@@ -31,7 +31,7 @@ export const loadModulesGrooves = async () => {
 
 export const loadModulesComments = async () => {
     try {
-        const fetchData: FetchResult<DefaultSchema> = await (await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_COMMENTS_ROUTE}`))
+        const fetchData: FetchResult<DefaultSchema> = await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_COMMENTS_ROUTE}`)
         const data = fetchData.data
         return makeDefaultMap(data)
     } catch (e) {

@@ -1,8 +1,8 @@
-import { fetchData, fetchGetData } from "../functions/fetch"
-import {ResourceSchema } from "../types/user"
-import messages from "../server/messages"
-import { API_ROUTE, RESOURCES_ROUTE, USERS_ROUTE } from "../types/routes"
-import { makeDefaultMap } from "./storage"
+import { fetchData, fetchGetData } from "../../functions/fetch"
+import {ResourceSchema } from "../../types/user"
+import messages from "../../server/messages"
+import { API_ROUTE, RESOURCES_ROUTE, USERS_ROUTE } from "../../types/routes"
+import { makeDefaultMap } from "../storage"
 
 
 export const loadResources = async () => {

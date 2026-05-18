@@ -11,7 +11,7 @@ export const modulesLastStateDBAtom = atom<{ groupId: number, serieId: number, m
 
 export const loadModules =  async (serieId: number) => {
     try {
-        const fetchData: FetchResult<ModuleModulesTableSchema> = await (await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_MODULES_ROUTE}?serieId=${serieId}`))
+        const fetchData: FetchResult<ModuleModulesTableSchema> = await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_MODULES_ROUTE}?serieId=${serieId}`)
         const data = fetchData.data.filter(d => d.id !== 0)
         return makeExtMap(data)
     } catch (e) { 

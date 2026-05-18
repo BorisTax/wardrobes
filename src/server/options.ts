@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { MyRequest } from '../types/server.js'
 import { Response, NextFunction, Request } from "express"
-import UserServiceSQLite from './services/userServiceSQLite.js'
+import { getTokenData, getUserByToken, getUserRolesByUserId, updateToken } from './routers/functions/users.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import PermissionServiceSQLite from './services/permissionServiceSQLite.js'
@@ -34,27 +34,26 @@ export function getDataBaseService<T>() {
   return new DataBaseServiceSQLite<T>(dataPath)
 }
 
+
 export function getDataBaseTemplateService() {
   return new DataBaseServiceSQLite<Template>(templatePath)
 }
 export function getSettingsService() {
   return new SettingsServiceSQLite(settingsPath)
 }
-export function getUserService(){
-  return new UserServiceSQLite(usersPath)
-}
+
 export function getPermissionService(){
   return new PermissionServiceSQLite(usersPath)
 }
 export const userRoleParser = async (req: Request, res: Response, next: NextFunction) => {
-  const userService = getUserService()
   let token = req.cookies.token as string
   (req as MyRequest).token = token
-  await userService.updateToken(token)
-  const user = await userService.getUser(token)
+  const tokenData = await getTokenData(token)
+  const user = await getUserByToken(token)
   if (user) {
-    const roleId = await userService.getUserRoleId(user?.name);
-    (req as MyRequest).userRoleId = roleId
+    await updateToken(tokenData)
+    const roles = (await getUserRolesByUserId(user.id)).map(r => r.roleId);
+    (req as MyRequest).roles = roles
   }
   next()
 }

@@ -13,7 +13,8 @@ export default router
 
 router.get("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.READ]))) return accessDenied(res)
-  const result = await getAllUserPermissions(+(req.query.roleId as string));
+  const { roleId } = req.query
+  const result = await getAllUserPermissions([+(roleId || 0)]);
   res.status(200).json({success: true, data: result});
 });
 router.get(RESOURCES_ROUTE, async (req, res) => {
@@ -25,9 +26,9 @@ router.get(RESOURCES_ROUTE, async (req, res) => {
 
 router.delete("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.DELETE]))) return accessDenied(res)
-  const { permissions } = req.body
+  const { roleId, resourceId } = req.body
   let result
-  result = await deletePermissions(permissions.roleId, permissions.resourceId);
+  result = await deletePermissions(roleId, resourceId);
   const status = result.success ? StatusCodes.OK : StatusCodes.NOT_FOUND
   res.status(status).json(result);  
 });
@@ -42,7 +43,7 @@ router.post("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   if (!(await hasPermission(req as MyRequest, RESOURCE.USERS, [PERMISSION.UPDATE]))) return accessDenied(res)
-  const { permissions } = req.body
+  const { permissions } = req.body 
   const result = await updatePermissions(permissions);
   res.status(result.status).json(result);
 });
@@ -52,9 +53,22 @@ export async function getPermissions(roleId: number, resourceId: RESOURCE) {
   return await service.getPermissions(roleId, resourceId)
 }
 
-export async function getAllUserPermissions(roleId: number): Promise<PermissionSchema[]> {
+export async function getAllUserPermissions(roles: number[]): Promise<PermissionSchema[]> {
   const service = getPermissionService()
-  return (await service.getAllRolePermissions(roleId)).data
+  let allPermissions: PermissionSchema[] = []
+  for (let roleId of roles) {
+    const permissions = (await service.getAllRolePermissions(roleId)).data
+    permissions.forEach(p => {
+      const found = allPermissions.find(ap => ap.resourceId === p.resourceId)
+      if (found) {
+        found.read = found.read || p.read
+        found.create = found.create || p.create
+        found.update = found.update || p.update
+        found.delete = found.delete || p.delete
+      } else allPermissions.push(p)
+    })
+  }
+  return allPermissions
 }
 
 export async function getAllPermissions(): Promise<PermissionSchema[]> {

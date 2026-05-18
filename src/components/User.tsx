@@ -1,6 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { getInitialUser, logoutAtom, userAtom, userRolesAtom } from "../atoms/users";
+import { getInitialUser, logoutAtom, userAtom } from "../atoms/users";
 import useConfirm from "../custom-hooks/useConfirm";
 import { versionAtom } from "../atoms/app";
 import { useNavigate } from "react-router-dom";
@@ -8,8 +8,6 @@ import { useNavigate } from "react-router-dom";
 export default function User() {
     const navigate = useNavigate()
     const [user, setUser] = useAtom(userAtom)
-    const roles = useAtomValue(userRolesAtom)
-    const role = roles.get(user.roleId) || ""
     const logout = useSetAtom(logoutAtom)
     const showConfirm = useConfirm()
     const version = useAtomValue(versionAtom)
@@ -29,7 +27,6 @@ export default function User() {
         {user.name === "" ? loginButton :<>
             <div className="d-flex flex-column align-items-center p-0">
                 <div>{user.name}</div>
-                <div>{role}</div>
             </div>
              {logoutButton}
         </>}

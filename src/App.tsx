@@ -18,7 +18,6 @@ import { userAtom } from './atoms/users'
 import MessageDialog from './components/dialogs/MessageDialog'
 import ConfirmDialog from './components/dialogs/ConfirmDialog'
 import { loadVersionAtom, saveToStorageAtom } from './atoms/app'
-import EditUsersDialog from './components/dialogs/editUserDialogs/EditUsersDialog'
 import CopyFasadDialog from './components/dialogs/CopyFasadDialog'
 import FasadTemplatesDialog from './components/dialogs/FasadTemplatesDialog'
 const CombiFasades = lazy(() => import('./components/CombiFasades'))
@@ -30,6 +29,7 @@ import Decoration from './components/decoration/Decoration'
 import Settings from './components/Settings'
 import { RESOURCE } from './types/user'
 import NotifyMessage from './components/dialogs/NotifyMessage'
+import UserDataBase from './components/dialogs/editUserDialogs/UserEditor'
 const SkladStol = lazy(() => import('./components/Sklad/SkladStol'))
 const SkladMat = lazy(() => import('./components/Sklad/SkladMat'))
 const ModuleDataBase = lazy(() => import('./components/Modules/ModuleDataBase'))
@@ -70,7 +70,7 @@ function App() {
               {user.permissions.get(RESOURCE.SKLAD_MAT)?.Read ? <Route path="/sklad_mat" element={<SkladMat />} /> : <></>}
               {user.permissions.get(RESOURCE.MODULES)?.Read ? <Route path="/modules_data_base" element={<ModuleDataBase />} /> : <></>}
               {user.permissions.get(RESOURCE.MATERIALS_DB)?.Read ? <Route path="/materials" element={<EditMaterialDialog />} /> : <></>}
-              {user.permissions.get(RESOURCE.USERS)?.Read ? <Route path="/users" element={<EditUsersDialog />} /> : <></>}
+              {user.permissions.get(RESOURCE.USERS)?.Read ? <Route path="/users" element={<UserDataBase />} /> : <></>}
               {user.permissions.get(RESOURCE.SETTINGS)?.Read ? <Route path="/settings" element={<Settings />} /> : <></>}
             </Routes>
           </Suspense>

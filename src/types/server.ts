@@ -1,20 +1,14 @@
 import { Request } from "express"
 import { SpecItem } from "./specification"
 import { FASAD_TYPE } from "./enums"
-export type Token = {
-    token: string
-    userName: string
-    userId: string
-    time: number
-    lastActionTime: number
-}
+
 export type RequestBody = {
     token?: string
     name?: string
     password?: string
 }
 export interface MyRequest extends Request {
-    userRoleId: number
+    roles: number[]
     token?: string
 }
 export enum TableFields {

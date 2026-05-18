@@ -1,6 +1,8 @@
 
 export const API_ROUTE = '/api';
 export const USERS_ROUTE = '/users';
+export const ROLES_ROUTE = '/roles';
+export const USER_ROLES_ROUTE = '/userroles';
 export const USER_ACTIONS_ROUTE = '/userActions';
 export const VERIFY_ROUTE = '/verify';
 export const PERMISSIONS_ROUTE = USERS_ROUTE + '/permissions';

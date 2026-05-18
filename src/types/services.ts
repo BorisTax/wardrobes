@@ -1,16 +1,17 @@
-import { Result, Token } from "./server"
+import { Result } from "./server"
 import { PermissionSchema, RESOURCE, ResourceSchema, User, UserAction, UserPermissions } from "./user"
 import { DataBaseSelectOptions, KeySet, TABLE_NAMES } from "./schemas/schemas"
 import { UserRole } from "./user"
 import { SettingsThemeSchema } from "./themes"
+import { UserTokenSchema } from "./schemas/userSchemas"
 
 export interface IUserService {
     getUsers: () => Promise<Result<User>>
     getUser: (token: string) => Promise<User>
-    getTokens: () => Promise<Result<Token>>
-    getToken: (token: string) => Promise<Result<Token>>
-    getTokenByUserId: (userId: string) => Promise<Token>
-    addToken: ({ token, userName, userId, time, lastActionTime }: Token) => Promise<Result<null>>
+    getTokens: () => Promise<Result<UserTokenSchema>>
+    getToken: (token: string) => Promise<Result<UserTokenSchema>>
+    getTokenByUserId: (userId: string) => Promise<UserTokenSchema>
+    addToken: ({ token, userId, userSessionId, loginTime, lastActionTime }: UserTokenSchema) => Promise<Result<null>>
     updateToken: (token: string, lastActionTime: number) => Promise<Result<null>>
     deleteToken: (token: string) => Promise<Result<null>>
     clearAllTokens: () => Promise<Result<null>>

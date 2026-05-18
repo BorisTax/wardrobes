@@ -1,6 +1,5 @@
 import { Getter, Setter, atom } from "jotai";
 import React from "react";
-import { loadActiveUsersAtom, loadUsersAtom } from "./users";
 import { loadTemplateListAtom } from "./templates";
 import { activeRootFasadIndexAtom, setActiveFasadAtom } from "./fasades";
 import { combiStateAtom } from "./app";
@@ -63,13 +62,7 @@ export const showSchemaDialogAtom = atom(null, (get, set) => {
     dialogRef?.current?.showModal()
     set(rerenderDialogAtom, Math.random())
 })
-export const editUsersDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
-export const showEditUsersDialogAtom = atom(null, (get, set) => {
-    const dialogRef = get(editUsersDialogAtom)
-    set(loadUsersAtom)
-    set(loadActiveUsersAtom)
-    dialogRef?.current?.showModal()
-})
+
 export const settingsDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 export const copyFasadDialogAtom = atom<React.RefObject<HTMLDialogElement> | null>(null)
 

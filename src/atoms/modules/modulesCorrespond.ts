@@ -9,7 +9,7 @@ import { OmitId } from "../../types/materials";
 
 export const loadModulesCorrespond =   async (serieId: number) => {
     try {
-        const fetchData: FetchResult<ModuleCorrespondTableSchema> = await (await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_CORRESPOND_ROUTE}?serieId=${serieId}`))
+        const fetchData: FetchResult<ModuleCorrespondTableSchema> = await fetchGetData(`${API_ROUTE}${MODULE_ROUTE}${MODULE_CORRESPOND_ROUTE}?serieId=${serieId}`)
         const data = fetchData.data.filter(d => d.id !== 0)
         return makeExtMap(data)
     } catch (e) { 

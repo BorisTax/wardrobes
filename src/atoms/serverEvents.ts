@@ -1,12 +1,12 @@
 import { atom } from 'jotai'
 import { SERVER_EVENTS } from '../types/enums'
-import { loadActiveUsersAtom, loadUserActionsAtom, logoutAtom } from './users'
-import { API_ROUTE } from '../types/routes'
+import { logoutAtom } from './users'
+import { API_ROUTE, USERS_ROUTE } from '../types/routes'
 import { notifyMessageAtom } from './messages'
 
 export const eventSourceAtom = atom<EventSource | null>(null)
 export const newEventSourceAtom = atom(null, async (get, set) => {
-    const eventSource = new EventSource(`${API_ROUTE}/users/events`);
+    const eventSource = new EventSource(`${API_ROUTE}${USERS_ROUTE}/events`);
     eventSource.onmessage = function (event) {
         const data = JSON.parse(event.data)
         console.log("Новое сообщение", data);
@@ -18,10 +18,6 @@ export const newEventSourceAtom = atom(null, async (get, set) => {
             case SERVER_EVENTS.EXPIRE:
                 set(notifyMessageAtom, "Сеанс завершен из-за длительной неактивности")
                 set(logoutAtom)
-                break;
-            case SERVER_EVENTS.UPDATE_ACTIVE_USERS:
-                set(loadActiveUsersAtom)
-                set(loadUserActionsAtom)
                 break;
             default:
         }

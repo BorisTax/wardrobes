@@ -24,7 +24,11 @@ export default function ActiveUsers() {
             key: u.name, data: [u.name,
             <TimeField key={u.userSessionId + "1"} time={u.loginTime} />,
             <TimeField key={u.userSessionId + "2"} time={u.lastActionTime} />,
-            <div key={u.userSessionId + "3"} className={you ? "text-center" : " text-center user-logout-button"} onClick={async () => { if (!you && await showConfirm(`Отключить пользователя ${u.name}?`)) logoutUser(u.userSessionId) }}>{you ? "Это вы" : "Отсоединить"}</div>]
+            <div key={u.userSessionId + "3"} className={you ? "text-center" : " text-center user-logout-button"} 
+                onClick={async () => { 
+                    if (!you && await showConfirm(`Отключить пользователя ${u.name}?`)) {
+                        logoutUser(u.userSessionId)
+                    } }}>{you ? "Это вы" : "Отсоединить"}</div>]
         }
     }
     )

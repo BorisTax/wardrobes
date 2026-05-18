@@ -30,7 +30,7 @@ export default function SkladMatList() {
     const matColors = useAtomValue(matSkladColorsAtom)
     const [sortTable, setSortTable] = useState(false)
     const [{ filterId, filterMinLength, filterMaxLength, filterMinWidth, filterMaxWidth, filterThick, filterDepart }, setFilter] = useState({ filterId: 0, filterMinLength: 0, filterMaxLength: 3000, filterMinWidth: 0, filterMaxWidth: 3000, filterThick: 0 , filterDepart: 0 })
-    const matColorsFiltered = [...matColors.keys()].filter(m => matColors.get(m)?.thickId === filterThick || filterThick === 0)
+    const matColorsFiltered = [...matColors.keys()].filter(m => matColors.get(m)?.thickId === filterThick || filterThick === 0).toSorted((id1, id2) => (matColors.get(id1)?.name || "") > (matColors.get(id2)?.name || "") ? 1 : -1)
     const matSklad = matSkladFull.filter(s => (s?.id === filterId || filterId === 0) && (s?.department === filterDepart || filterDepart === 0) && (matColors.get(s.id)?.thickId === filterThick || filterThick === 0) && s?.length >= filterMinLength && s?.length <= filterMaxLength && s?.width >= filterMinWidth && s?.width <= filterMaxWidth)
     const matSkladDistinctId = [...new Set(matSkladFull.map(s => s.id).filter(id => matColors.get(id)?.thickId === filterThick || filterThick === 0))]
     const [selected, setSelected] = useState({row: 0})
